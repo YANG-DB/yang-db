@@ -64,7 +64,7 @@ public class CreateQueryRequest implements CreateQueryRequestMetadata<Query> {
     public CreateQueryRequest() {
         this.planTraceOptions = new PlanTraceOptions();
         this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
-        this.type = TYPE_V1_QUERY;
+        this.type = TYPE_V1QL;
         this.ttl = 300000;
     }
 

@@ -76,8 +76,29 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
+    public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
+        return controller.runSparql(sparql, ontology, pageSize, cursorType);
+    }
+
+    @Override
     public ContentResponse<ValidationResult> validate(Query query) {
         return controller.validate(query);
+    }
+
+    @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return controller.getVertex(ontology,ontology,id);
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return controller.getNeighbors(ontology,type,id);
+    }
+
+
+    @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity, String targetId, String relationType, int maxHops) {
+        return controller.findPath(ontology,sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
     }
 
     @Override

@@ -64,6 +64,11 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
         super(eNum, eTag, next, b);
         this.eType = eType;
     }
+
+    public ETyped(EEntityBase base,String eType) {
+        this(base.geteNum(),base.geteTag(),eType,base.getNext());
+    }
+
     //endregion
 
     //region Properties
@@ -98,6 +103,15 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
     }
 
     @Override
+    public String[] getParentTyped() {
+        return parentType;
+    }
+
+    public void setParentType(String[] parentType) {
+        this.parentType = parentType;
+    }
+
+    @Override
     public EBase clone() {
         return clone(geteNum());
     }
@@ -117,5 +131,6 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
 
     //region Fields
     private String	eType;
+    private String[]	parentType;
     //endregion
 }

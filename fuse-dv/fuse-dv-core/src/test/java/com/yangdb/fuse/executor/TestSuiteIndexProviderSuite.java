@@ -2,7 +2,7 @@ package com.yangdb.fuse.executor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryIT;
 import com.yangdb.fuse.executor.ontology.schema.*;
@@ -48,11 +48,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static Config config;
     public static Ontology ontology;
 
-    public static RawSchema nestedSchema,embeddedSchema;
-    public static IndexProvider nestedProvider,embeddedProvider;
+    public static RawSchema nestedSchema,embeddedSchema,singleIndexSchema;
+    public static IndexProvider nestedProvider,embeddedProvider,singleIndexProvider;
 
     public static OntologyProvider ontologyProvider;
-    public static IndexProviderIfc nestedProviderIfc,embeddedProviderIfc;
+    public static IndexProviderFactory nestedProviderIfc,embeddedProviderIfc, singleIndexProviderFactory;
 
     public static Client client;
 
@@ -60,18 +60,23 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         client = ElasticEmbeddedNode.getClient();
         InputStream providerNestedStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
         InputStream providerEmbeddedStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderEmbedded.conf");
+        InputStream providerSingleIndexStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsSingleIndexProvider.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
         nestedProvider = mapper.readValue(providerNestedStream, IndexProvider.class);
         embeddedProvider = mapper.readValue(providerEmbeddedStream, IndexProvider.class);
+        singleIndexProvider = mapper.readValue(providerSingleIndexStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
 
-        nestedProviderIfc = Mockito.mock(IndexProviderIfc.class);
+        nestedProviderIfc = Mockito.mock(IndexProviderFactory.class);
         when(nestedProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(nestedProvider));
 
-        embeddedProviderIfc = Mockito.mock(IndexProviderIfc.class);
+        embeddedProviderIfc = Mockito.mock(IndexProviderFactory.class);
         when(embeddedProviderIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(embeddedProvider));
+
+        singleIndexProviderFactory = Mockito.mock(IndexProviderFactory.class);
+        when(singleIndexProviderFactory.get(any())).thenAnswer(invocationOnMock -> Optional.of(singleIndexProvider));
 
         ontologyProvider = Mockito.mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
@@ -81,6 +86,7 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
         GraphElementSchemaProvider nestedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc,ontologyProvider).get(ontology);
         GraphElementSchemaProvider embeddedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, embeddedProviderIfc,ontologyProvider).get(ontology);
+        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderFactory,ontologyProvider).get(ontology);
 
         nestedSchema = new RawSchema() {
             @Override
@@ -147,11 +153,45 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
                 return IndexProviderRawSchema.indices(embeddedSchemaProvider);
             }
         };
+
+        singleIndexSchema = new RawSchema() {
+            @Override
+            public IndexPartitions getPartition(String type) {
+                return getIndexPartitions(singleIndexSchemaProvider,type);
+            }
+
+            @Override
+            public String getIdPrefix(String type) {
+                return "";
+            }
+            @Override
+            public String getIdFormat(String type) {
+                return "";
+            }
+
+            @Override
+            public String getIndexPrefix(String type) {
+                return "";
+            }
+
+            @Override
+            public List<IndexPartitions.Partition> getPartitions(String type) {
+                return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
+                        .collect(Collectors.toList());
+
+            }
+
+            @Override
+            public Iterable<String> indices() {
+                return IndexProviderRawSchema.indices(singleIndexSchemaProvider);
+            }
+        };
     }
 
     @BeforeClass
     public static void setup() throws Exception {
         init(true);
+        //init elasticsearch provider mapping factory
         setUpInternal();
     }
 
@@ -159,19 +199,17 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         // Start embedded ES
         if(embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
         }
 
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        if(elasticEmbeddedNode!=null)
-            elasticEmbeddedNode.close();
-
+        GlobalElasticEmbeddedNode.close();
     }
 
 

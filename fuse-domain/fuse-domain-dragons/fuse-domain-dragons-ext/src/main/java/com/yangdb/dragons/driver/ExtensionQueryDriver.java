@@ -41,7 +41,6 @@ import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -72,10 +71,10 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = Optional.empty();
-            if (request.getType().equals(CreateJsonQueryRequest.TYPE_CYPHER)) {
+            if (request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHERQL)) {
                 //support cypher type
                 queryResourceInfo = this.create(request, metadata);
-            } else if (request.getType().equals(TYPE_CLAUSE)) {
+            } else if (request.getQueryType().equals(TYPE_CLAUSE)) {
                 //support clause type
                 Query query = transformer.transform(request.getQuery());
                 queryResourceInfo = this.create(new CreateQueryRequest(request.getId(), request.getName(), query, request.getCreateCursorRequest()));

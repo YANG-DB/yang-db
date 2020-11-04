@@ -14,7 +14,7 @@ import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.RelPropGroup;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
@@ -96,7 +97,7 @@ public class RelationFilterOpTranslationStrategyTest {
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 
-            return Collections.singletonList(timestampProperty);
+            return Collections.singleton(timestampProperty);
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
@@ -170,7 +171,7 @@ public class RelationFilterOpTranslationStrategyTest {
             hourProperty.setType("int");
 
 
-            return Arrays.asList(timestampProperty, hourProperty);
+            return new HashSet<>(Arrays.asList(timestampProperty, hourProperty));
         });
 
 
@@ -214,7 +215,7 @@ public class RelationFilterOpTranslationStrategyTest {
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 
-            return Collections.singletonList(timestampProperty);
+            return Collections.singleton(timestampProperty);
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);

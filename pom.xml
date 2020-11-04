@@ -5,7 +5,7 @@
     <groupId>com.yangdb</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.51-SNAPSHOT</version>
 
     <name>YangDb open source graph DB project</name>
 
@@ -139,9 +139,16 @@
 
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
-
+        <!--ahocorasick-->
+        <ahocorasick.version>0.4.0</ahocorasick.version>
         <!-- spatial4j -->
         <spatial4j.version>0.7</spatial4j.version>
+
+        <!-- owl -->
+        <owlapi.version>4.0.2</owlapi.version>
+
+        <!-- rdf4j -->
+        <rdf4j.version>3.3.1</rdf4j.version>
 
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
@@ -183,14 +190,18 @@
         <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
         <!-- opencsv / common csv  -->
-        <opencsv.version>3.8</opencsv.version>
+        <commons-validator>1.6</commons-validator>
         <commons.csv.version>1.7</commons.csv.version>
+        <opencsv.version>3.8</opencsv.version>
+        <!-- date - parser       -->
+        <dateparser>1.0.6</dateparser>
 
         <!-- javaslang -->
         <javaslang.version>2.0.4</javaslang.version>
 
         <!-- jooq -->
-        <jooq.version>0.9.12</jooq.version>
+        <jooq.version>3.13.4</jooq.version>
+        <jool.version>0.9.14</jool.version>
 
         <!--jooby plugin -->
         <jooby.version>1.6.0</jooby.version>
@@ -342,6 +353,18 @@
                 <version>${fuse.version}</version>
             </dependency>
 
+            <!-- Cyber Deployment Assemblies   -->
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-cyber-ext</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-domain-cyber-assembly</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+
             <!-- Property Graph Deployment Assemblies   -->
 
             <!-- jmx monitoring    -->
@@ -369,6 +392,61 @@
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
                 <version>1.16.0</version>
+            </dependency>
+
+            <!-- rdf4j -->
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-model</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-query</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryparser-sparql</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryparser-serql</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+
+            <!-- owl -->
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-api</artifactId>
+                <version>${owlapi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-apibinding</artifactId>
+                <version>${owlapi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- cypher -->
@@ -429,6 +507,13 @@
                 <version>${jansi.version}</version>
             </dependency>
             <!-- jansi -->
+
+            <!--    Aho–Corasick algorithm        -->
+            <dependency>
+                <groupId>org.ahocorasick</groupId>
+                <artifactId>ahocorasick</artifactId>
+                <version>${ahocorasick.version}</version>
+            </dependency>
 
             <!-- spatial4j -->
             <dependency>
@@ -608,7 +693,16 @@
                 <version>${opencsv.version}</version>
             </dependency>
             <!-- opencsv -->
-
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.sisyphsu</groupId>
+                <artifactId>dateparser</artifactId>
+                <version>${dateparser}</version>
+            </dependency>
             <!-- javaslang -->
             <dependency>
                 <groupId>io.javaslang</groupId>
@@ -618,10 +712,16 @@
             <!-- javaslang -->
 
             <!-- jooq -->
+            <!-- https://mvnrepository.com/artifact/org.jooq/jooq -->
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jool</artifactId>
-                <version>${jooq.version}</version>
+                <version>${jool.version}</version>
             </dependency>
             <!-- jooq -->
 

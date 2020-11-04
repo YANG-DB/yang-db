@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.PlanOp;
 import com.yangdb.fuse.model.execution.plan.composite.CompositePlanOp;
@@ -35,6 +36,7 @@ import com.yangdb.fuse.services.engine2.SmartEpbCountTestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -60,12 +62,12 @@ import static java.util.Collections.singletonList;
 public class SmartEpbCountIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(SmartEpbCountTestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(SmartEpbCountTestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 
@@ -293,14 +295,14 @@ public class SmartEpbCountIT implements BaseITMarker {
                 fireEdge.put("id", FIRE.getName() + counter);
                 fireEdge.put("type", FIRE.getName());
                 fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdge.put("direction", Direction.OUT.name());
+                fireEdge.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.name());
                 fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", FIRE.getName() + counter + 1);
                 fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdgeDual.put("direction", Direction.IN.name());
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN.name());
                 fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> entityAI = new HashMap<>();
@@ -317,9 +319,9 @@ public class SmartEpbCountIT implements BaseITMarker {
                 entityBJ.put("type", DRAGON.name);
 
                 fireEdge.put("entityA", entityAI);
-                fireEdge.put("entityB", entityBJ);
+                fireEdge.put(GlobalConstants.EdgeSchema.DEST, entityBJ);
                 fireEdgeDual.put("entityA", entityAJ);
-                fireEdgeDual.put("entityB", entityBI);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DEST, entityBI);
 
                 fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
 
@@ -334,12 +336,12 @@ public class SmartEpbCountIT implements BaseITMarker {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TIMESTAMP.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TEMPERATURE.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.integer))
                 .addProperty("entityA", new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-                .addProperty("entityB", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -359,11 +361,11 @@ public class SmartEpbCountIT implements BaseITMarker {
     private static Mappings.Mapping getOriginMapping() {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
             .addProperty("entityA", new Mappings.Mapping.Property()
                 .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-            .addProperty("entityB", new Mappings.Mapping.Property()
+            .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                     .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                     .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -375,12 +377,12 @@ public class SmartEpbCountIT implements BaseITMarker {
             Map<String, Object> originEdgeOut = new HashMap<>();
             originEdgeOut.put("id", ORIGINATED_IN.getName() + counter);
             originEdgeOut.put("type", ORIGINATED_IN.getName());
-            originEdgeOut.put("direction", Direction.OUT.name());
+            originEdgeOut.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.name());
 
             Map<String, Object> originEdgeIn = new HashMap<>();
             originEdgeIn.put("id", ORIGINATED_IN.getName() + counter+1);
             originEdgeIn.put("type", ORIGINATED_IN.getName());
-            originEdgeIn.put("direction", Direction.IN.name());
+            originEdgeIn.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN.name());
 
 
             Map<String, Object> dragonEntity = new HashMap<>();
@@ -392,10 +394,10 @@ public class SmartEpbCountIT implements BaseITMarker {
             kingdomEntity.put("type", KINGDOM.name);
 
             originEdgeOut.put("entityA", dragonEntity);
-            originEdgeOut.put("entityB", kingdomEntity);
+            originEdgeOut.put(GlobalConstants.EdgeSchema.DEST, kingdomEntity);
 
             originEdgeIn.put("entityA", kingdomEntity);
-            originEdgeIn.put("entityB", dragonEntity);
+            originEdgeIn.put(GlobalConstants.EdgeSchema.DEST, dragonEntity);
 
             originEdges.add(originEdgeOut);
             originEdges.add(originEdgeIn);

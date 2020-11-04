@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.queries;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.assembly.Setup;
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -38,11 +39,11 @@ import static com.yangdb.fuse.client.FuseClientSupport.query;
 
 public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
     public static final String DRAGONS = "Dragons";
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup();
+//        Setup.setup(); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -122,7 +123,7 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
 
     private void initIndices() throws IOException {
         Map map = new ObjectMapper().readValue(fuseClient.initIndices(DRAGONS), Map.class);
-        Assert.assertEquals(map.get("data").toString().trim(), "indices created:20");
+        Assert.assertEquals(map.get("data").toString().trim(), "indices created:19");
         //refresh cluster
         Setup.client.admin().indices().refresh(new RefreshRequest("_all")).actionGet();
     }

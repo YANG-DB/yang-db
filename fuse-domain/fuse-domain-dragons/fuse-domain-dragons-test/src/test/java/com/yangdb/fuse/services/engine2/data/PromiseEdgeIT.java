@@ -1,8 +1,10 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
@@ -56,7 +58,7 @@ public class PromiseEdgeIT implements BaseITMarker {
         String idField = "id";
         registry = new MetricRegistry();
 
-        client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
+        client = ElasticEmbeddedNode.getClient();
 
         new ElasticDataPopulator(
                 client,
@@ -81,7 +83,7 @@ public class PromiseEdgeIT implements BaseITMarker {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        NonRedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+        ElasticEmbeddedNode.getClient().admin().indices()
                 .delete(new DeleteIndexRequest(INDEX_NAME)).actionGet();
     }
 
@@ -95,7 +97,7 @@ public class PromiseEdgeIT implements BaseITMarker {
     public void testPromiseEdges() {
 
         //basic edge constraint
-        Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
+        Traversal constraint = __.and(__.has(T.label, "fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
@@ -234,13 +236,13 @@ public class PromiseEdgeIT implements BaseITMarker {
 
             Map<String, Object> entityA = new HashMap<>();
             entityA.put("id", "d" + r.nextInt(9));
-            fire.put("entityA", entityA);
+            fire.put(GlobalConstants.EdgeSchema.SOURCE, entityA);
 
             Map<String, Object> entityB = new HashMap<>();
             entityB.put("id", "d" + r.nextInt(9));
-            fire.put("entityB", entityB);
+            fire.put(GlobalConstants.EdgeSchema.DEST, entityB);
 
-            fire.put("direction", "out");
+            fire.put(GlobalConstants.EdgeSchema.DIRECTION, "out");
             fire.put("time", DateTime.now().toString());
 
             ownDocs.add(fire);

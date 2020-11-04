@@ -63,6 +63,8 @@ public interface QueryDriver {
 
     Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
 
+    Optional<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType);
+
     Optional<Object> getNextPageData(String queryId, Optional<String> cursorId,int pageSize, boolean deleteCurrentPage);
 
     Optional<StoreResourceInfo> getInfo();
@@ -82,4 +84,12 @@ public interface QueryDriver {
     Optional<Boolean> delete(String queryId);
 
     Optional<GraphTraversal> traversal(Query query);
+
+    Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops);
+
+    Optional<Object> getVertex(String ontology, String type, String vertexId);
+
+    Optional<Object> getNeighbors(String ontology, String type, String vertexId);
+
+
 }

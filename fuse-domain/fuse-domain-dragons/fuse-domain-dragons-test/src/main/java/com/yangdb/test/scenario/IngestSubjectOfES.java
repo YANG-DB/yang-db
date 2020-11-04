@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
@@ -67,12 +68,12 @@ public class IngestSubjectOfES {
         ObjectReader reader = new CsvMapper().reader(
                 CsvSchema.builder().setColumnSeparator(',')
                         .addColumn("id", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
+                        .addColumn(GlobalConstants.EdgeSchema.SOURCE_ID, CsvSchema.ColumnType.STRING)
+                        .addColumn(GlobalConstants.EdgeSchema.DEST_ID, CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
-                        .addColumn("direction", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityA.type", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.type", CsvSchema.ColumnType.STRING)
+                        .addColumn(GlobalConstants.EdgeSchema.DIRECTION, CsvSchema.ColumnType.STRING)
+                        .addColumn(GlobalConstants.EdgeSchema.SOURCE_TYPE, CsvSchema.ColumnType.STRING)
+                        .addColumn(GlobalConstants.EdgeSchema.DEST_TYPE, CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.firstName", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.firstName", CsvSchema.ColumnType.STRING)
                         .build()
@@ -86,20 +87,20 @@ public class IngestSubjectOfES {
                 Map<String, Object> fire = reader.readValue(line);
                 String id = fire.remove("id").toString();
 
-                fire.put("direction", fire.get("direction").toString().toUpperCase());
+                fire.put(GlobalConstants.EdgeSchema.DIRECTION, fire.get(GlobalConstants.EdgeSchema.DIRECTION).toString().toUpperCase());
 
                 Map<String, Object> entityA = new HashMap<>();
-                entityA.put("type", fire.remove("entityA.type"));
-                entityA.put("id", entityA.get("type").toString() + "_" + fire.remove("entityA.id"));
+                entityA.put("type", fire.remove(GlobalConstants.EdgeSchema.SOURCE_TYPE));
+                entityA.put("id", entityA.get("type").toString() + "_" + fire.remove(GlobalConstants.EdgeSchema.SOURCE_ID));
                 entityA.put("firstName", fire.remove("entityA.firstName"));
 
                 Map<String, Object> entityB = new HashMap<>();
-                entityB.put("type", fire.remove("entityB.type"));
-                entityB.put("id", entityB.get("type").toString() + "_" + fire.remove("entityB.id"));
+                entityB.put("type", fire.remove(GlobalConstants.EdgeSchema.DEST_TYPE));
+                entityB.put("id", entityB.get("type").toString() + "_" + fire.remove(GlobalConstants.EdgeSchema.DEST_ID));
                 entityB.put("firstName", fire.remove("entityB.firstName"));
 
-                fire.put("entityA", entityA);
-                fire.put("entityB", entityB);
+                fire.put(GlobalConstants.EdgeSchema.SOURCE, entityA);
+                fire.put(GlobalConstants.EdgeSchema.DEST, entityB);
 
                 processor.add(new IndexRequest("ors"+index, type, id)
                         .source(fire)

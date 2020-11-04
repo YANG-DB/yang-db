@@ -14,7 +14,7 @@ public class GraphQLOntologySpaceXTranslatorTest {
     public static void setUp() throws Exception {
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/spaceX.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
-        ontology = new GraphQL2OntologyTransformer().transform(resource,whereInoput);
+        ontology = new GraphQLToOntologyTransformer().transform(resource,whereInoput);
         Assert.assertNotNull(ontology);
     }
 

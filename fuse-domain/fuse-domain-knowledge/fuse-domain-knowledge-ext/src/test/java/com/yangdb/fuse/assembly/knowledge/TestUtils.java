@@ -1,6 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.map.MapBuilder;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
@@ -15,7 +16,7 @@ public abstract class TestUtils {
     private static SimpleDateFormat sdf;
 
     static {
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

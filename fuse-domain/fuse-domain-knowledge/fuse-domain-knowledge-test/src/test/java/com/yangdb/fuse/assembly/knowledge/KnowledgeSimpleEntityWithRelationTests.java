@@ -4,6 +4,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RefBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -43,8 +44,8 @@ public class KnowledgeSimpleEntityWithRelationTests {
     static SimpleDateFormat sdf;
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(false,true);//todo remove for CI tests
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//        Setup.setup(false,true); //todo remove remark when running IT tests
+        sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());

@@ -2,6 +2,7 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Start;
 import com.yangdb.fuse.model.query.entity.EConcrete;
@@ -36,13 +37,13 @@ public class KnowledgeSimpleEvalueWithFilterE2ETests {
 
     static KnowledgeWriterContext ctx;
     static ValueBuilder v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
     public static void setup() throws Exception
     {
-//        Setup.setup();
+//        Setup.setup(); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Evalue entities for tests

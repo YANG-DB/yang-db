@@ -46,9 +46,7 @@ package com.yangdb.fuse.model.execution.plan.descriptors;
 import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.asgQuery.IQuery;
 import com.yangdb.fuse.model.descriptors.Descriptor;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
@@ -127,31 +125,34 @@ public class QueryDescriptor implements Descriptor<Query> {
         return joiner.toString();
     }
 
-    static String shortLabel(EBase e, StringJoiner joiner) {
+    static String shortLabel(EBase e, StringJoiner joiner,boolean printId) {
+        String id = printId ? Integer.toString(e.geteNum()) : "$";
         if (e instanceof QuantBase) {
             List<Integer> next = ((Next<List>) e).getNext();
             if(next!=null) {
                 String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
-                joiner.add("Q" + "[" + e.geteNum() + "]").add("{" + join + "}");
+                joiner.add("Q" + "[" + id + "]").add("{" + join + "}");
             }
         } else if (e instanceof EUntyped)
-            joiner.add("UnTyp" + "[" + e.geteNum() + "]");
+            joiner.add("EUntyped" + "(" + "["+String.join(",", ((Untyped) e).getvTypes())+"]" + ":" + id + ")");
         else if (e instanceof EConcrete)
-            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + ":ID["+((EConcrete) e).geteID()+"]]");
+            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + id + ":ID["+((EConcrete) e).geteID()+"]]");
         else if (e instanceof ETyped)
-            joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + e.geteNum() + "]");
+            joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + id + "]");
+        else if (e instanceof RelUntyped)
+            joiner.add("RelUntyped" + "(" + "["+String.join(",", ((Untyped) e).getvTypes())+"]" + ":" + id + ")");
         else if (e instanceof Rel)
-            joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + e.geteNum() + ")");
+            joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + id + ")");
         else if (e instanceof EPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((EPropGroup) e));
+            joiner.add("?" + "[" + id + "]" + printProps((EPropGroup) e));
         else if (e instanceof EProp)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new EPropGroup((EProp) e)));
+            joiner.add("?" + "[" + id + "]" + printProps(new EPropGroup((EProp) e)));
         else if (e instanceof RelProp)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new RelPropGroup((RelProp) e)));
+            joiner.add("?" + "[" + id + "]" + printProps(new RelPropGroup((RelProp) e)));
         else if (e instanceof RelPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((RelPropGroup) e));
+            joiner.add("?" + "[" + id + "]" + printProps((RelPropGroup) e));
         else
-            joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
+            joiner.add(e.getClass().getSimpleName() + "[" + id + "]");
 
         return joiner.toString();
     }
@@ -195,9 +196,9 @@ public class QueryDescriptor implements Descriptor<Query> {
         return new QueryDescriptor().describe(query);
     }
 
-    static void print(List<String> builder, IQuery<EBase> query, Optional<? extends EBase> element, boolean isTail, boolean child, int level, int currentLine) {
+    static void print(List<String> builder, IQuery<EBase> query, Optional<? extends EBase> element, boolean isTail, boolean child, int level, int currentLine,boolean printId) {
         if (!element.isPresent()) return;
-        String text = getPrefix(isTail, element.get()) + shortLabel(element.get(), new StringJoiner(":"));
+        String text = getPrefix(isTail, element.get()) + shortLabel(element.get(), new StringJoiner(":"),printId);
         if (child) {
             char[] zeros = new char[builder.get(level - 1).length() - 5];
             Arrays.fill(zeros, ' ');
@@ -214,30 +215,30 @@ public class QueryDescriptor implements Descriptor<Query> {
                 if(next!=null) {
                     level = builder.size();
                     for (int i = 0; i < next.size(); i++) {
-                        print(builder, query, findByEnum(query, next.get(i)), true, true, level, i);
+                        print(builder, query, findByEnum(query, next.get(i)), true, true, level, i,printId);
                     }
                 }
             } else if (element.get() instanceof EEntityBase) {
-                print(builder, query, findByEnum(query, ((EEntityBase) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
+                print(builder, query, findByEnum(query, ((EEntityBase) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine,printId);
             } else if (element.get() instanceof Rel) {
-                print(builder, query, findByEnum(query, ((Rel) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine);
+                print(builder, query, findByEnum(query, ((Rel) element.get()).getNext()), !((Next) element.get()).hasNext(), false, level, currentLine,printId);
                 if(((Rel) element.get()).getB() > 0 && findByEnum(query, ((Rel) element.get()).getB()).isPresent()  )
-                    print(builder, query, findByEnum(query, ((Rel) element.get()).getB()), false, true, level+1, currentLine);
+                    print(builder, query, findByEnum(query, ((Rel) element.get()).getB()), false, true, level+1, currentLine,printId);
             } else if (element.get() instanceof ScoreEProp) {
-                print(builder, query, element, true, true, level + 1, currentLine);
+                print(builder, query, element, true, true, level + 1, currentLine,printId);
             } else if (element.get() instanceof EPropGroup) {
                 level = builder.size();
                 for (int i = 0; i < ((EPropGroup) element.get()).getGroups().size(); i++) {
                     EPropGroup ePropGroup = ((EPropGroup) element.get()).getGroups().get(i);
-                    print(builder, query, Optional.of(ePropGroup), true, true, level, i);
+                    print(builder, query, Optional.of(ePropGroup), true, true, level, i,printId);
                 }
             } else if (element.get() instanceof EProp || element.get() instanceof RelProp) {
-                print(builder, query, element, true, true, level + 1, currentLine);
+                print(builder, query, element, true, true, level + 1, currentLine,printId);
             } else if (element.get() instanceof RelPropGroup) {
                 level = builder.size();
                 for (int i = 0; i < ((RelPropGroup) element.get()).getGroups().size(); i++) {
                     BasePropGroup rPropGroup = ((RelPropGroup) element.get()).getGroups().get(i);
-                    print(builder, query, Optional.of(rPropGroup), true, true, level, i);
+                    print(builder, query, Optional.of(rPropGroup), true, true, level, i,printId);
                 }
             }
         }
@@ -253,6 +254,10 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     public static String print(IQuery<EBase> query) {
+        return print(query,true);
+    }
+
+    public static String print(IQuery<EBase> query,boolean printId) {
         List<String> builder = new LinkedList<>();
         builder.add("└── " + "Start");
         Iterator<EBase> iterator = query.getElements().iterator();
@@ -260,7 +265,7 @@ public class QueryDescriptor implements Descriptor<Query> {
             iterator.next();
             if (iterator.hasNext()) {
                 EBase next = iterator.next();
-                print(builder, query, Optional.ofNullable(next), false, true, 1, 0);
+                print(builder, query, Optional.ofNullable(next), false, true, 1, 0,printId);
             }
         }
         return builder.toString();

@@ -23,6 +23,7 @@ package com.yangdb.fuse.assembly.knowledge.load;
 import com.google.inject.Inject;
 import com.yangdb.fuse.assembly.knowledge.load.builder.*;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
@@ -54,11 +55,13 @@ public class KnowledgeCSVTransformer implements DataTransformer<KnowledgeContext
     private OntologyTransformer transformer;
     private IdGeneratorDriver<Range> idGenerator;
     private StoreAccessor accessor;
+    private OntologyProvider ontologyProvider;
     private RawSchema schema;
     private KnowledgeWriterContext writerContext;
 
     @Inject
-    public KnowledgeCSVTransformer(RawSchema schema, OntologyTransformer transformer, IdGeneratorDriver<Range> idGenerator, StoreAccessor client) {
+    public KnowledgeCSVTransformer(OntologyProvider ontologyProvider,RawSchema schema, OntologyTransformer transformer, IdGeneratorDriver<Range> idGenerator, StoreAccessor client) {
+        this.ontologyProvider = ontologyProvider;
         this.schema = schema;
         this.transformer = transformer;
         this.idGenerator = idGenerator;

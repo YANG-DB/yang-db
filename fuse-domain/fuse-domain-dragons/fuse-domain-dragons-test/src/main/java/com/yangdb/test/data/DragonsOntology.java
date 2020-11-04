@@ -359,7 +359,7 @@ public class DragonsOntology {
                 EnumeratedType.from(TYPE_COLOR, Color.values())));
 
         //properties
-        ontologyShortObj.setProperties(properties.stream().map(p->get().build(p.type,p.name,p.className)).collect(Collectors.toList()));
+        ontologyShortObj.setProperties(properties.stream().map(p->get().build(p.type,p.name,p.className)).collect(Collectors.toSet()));
 
         //relationships
         ontologyShortObj.setRelationshipTypes(relationships);

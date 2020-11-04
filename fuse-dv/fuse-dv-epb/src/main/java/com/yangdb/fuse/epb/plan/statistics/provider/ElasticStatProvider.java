@@ -23,6 +23,7 @@ package com.yangdb.fuse.epb.plan.statistics.provider;
 import com.google.inject.Inject;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.map.MapBuilder;
 import javaslang.collection.Stream;
 import org.elasticsearch.search.SearchHit;
@@ -165,7 +166,7 @@ public class ElasticStatProvider {
                 indices,
                 types,
                 fields,
-                new MapBuilder<String, Object>().put("direction", direction).get());
+                new MapBuilder<String, Object>().put(GlobalConstants.EdgeSchema.DIRECTION, direction).get());
 
         return Stream.ofAll(statDocuments)
                 .map(statDocument -> {

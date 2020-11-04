@@ -1,6 +1,7 @@
 package com.yangdb.fuse.unipop.schemaProviders;
 
 import com.google.common.collect.Lists;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
@@ -81,13 +82,13 @@ public class OntologySchemaProviderTest {
                     new GraphEdgeSchema.Impl(
                         "Fire",
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityA.id"),
+                                Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
                                 Optional.of("Dragon"))),
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityB.id"),
+                                Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
                                 Optional.of("Dragon"))),
                         Direction.OUT,
-                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                         new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));
     }
@@ -106,7 +107,7 @@ public class OntologySchemaProviderTest {
         nameProp.setName("name");
         nameProp.setpType("1");
 
-        when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
+        when(ontology.getProperties()).then(invocationOnMock -> Collections.singleton(nameProp));
 
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

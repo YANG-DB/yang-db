@@ -46,33 +46,36 @@ package com.yangdb.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.Untyped;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by lior.perry on 16-Feb-17.
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EUntyped extends EEntityBase {
+public class EUntyped extends EEntityBase implements Untyped {
     //region Constructors
     public EUntyped() {
         super();
-        this.vTypes = new ArrayList<>();
-        this.nvTypes = new ArrayList<>();
+        this.vTypes = new HashSet<>();
+        this.nvTypes = new HashSet<>();
     }
 
     public EUntyped(int eNum, String eTag, int next, int b) {
-        this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), next, b);
+        this(eNum, eTag, Collections.emptySet(), Collections.emptySet(), next, b);
     }
 
-    public EUntyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, int next, int b) {
+    public EUntyped(int eNum, String eTag, Set<String> vTypes, int next, int b) {
+            this(eNum,eTag,vTypes,new HashSet<>(),next,b );
+    }
+
+    public EUntyped(int eNum, String eTag, Set<String> vTypes, Set<String> nvTypes, int next, int b) {
         super(eNum, eTag, next, b);
-        this.vTypes = Stream.ofAll(vTypes).toJavaList();
-        this.nvTypes = Stream.ofAll(nvTypes).toJavaList();
+        this.vTypes = Stream.ofAll(vTypes).toJavaSet();
+        this.nvTypes = Stream.ofAll(nvTypes).toJavaSet();
     }
     //endregion
 
@@ -105,33 +108,37 @@ public class EUntyped extends EEntityBase {
         final EUntyped clone = new EUntyped();
         clone.seteTag(geteTag());
         clone.seteNum(eNum);
-        clone.nvTypes = new ArrayList<>(nvTypes);
-        clone.vTypes = new ArrayList<>(vTypes);
+        clone.nvTypes = new HashSet<>(nvTypes);
+        clone.vTypes = new HashSet<>(vTypes);
         return clone;
     }
 
 //endregion
 
     //region Properties
-    public List<String> getvTypes() {
+    @Override
+    public Set<String> getvTypes() {
         return vTypes;
     }
 
-    public void setvTypes(List<String> vTypes) {
+    @Override
+    public void setvTypes(Set<String> vTypes) {
         this.vTypes = vTypes;
     }
 
-    public List<String> getNvTypes() {
+    @Override
+    public Set<String> getNvTypes() {
         return nvTypes;
     }
 
-    public void setNvTypes(List<String> nvTypes) {
+    @Override
+    public void setNvTypes(Set<String> nvTypes) {
         this.nvTypes = nvTypes;
     }
     //endregion
 
     //region Fields
-    private List<String> vTypes;
-    private	List<String> nvTypes;
+    private Set<String> vTypes;
+    private	Set<String> nvTypes;
     //endregion
 }

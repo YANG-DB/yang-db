@@ -33,6 +33,7 @@ import com.yangdb.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 /**
  * Created by moti on 29/05/2017.
@@ -58,7 +59,9 @@ public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, Co
         EntityOp start = entityStep.getStart();
         EntityFilterOp startFilter = entityStep.getStartFilter();
 
-        StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt()).get());
+        //todo - verify ontology name was not change during Asg reWrite as part of mapping phase
+        StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + context.getQuery().getOnt()))));
 
         //estimate
         double entityTotal = statisticsProvider.getNodeStatistics(start.getAsgEbase().geteBase()).getTotal();

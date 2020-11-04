@@ -16,6 +16,7 @@ import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.client.FuseClient;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping;
@@ -49,7 +50,7 @@ public class EntityRelationEntityIT implements BaseITMarker {
 
         String idField = "id";
 
-        TransportClient client = RedundantTestSuite.elasticEmbeddedNode.getClient();
+        TransportClient client = ElasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
                 new Mapping().addProperty("type", new Mapping.Property(keyword))
@@ -105,7 +106,7 @@ public class EntityRelationEntityIT implements BaseITMarker {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        RedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+        ElasticEmbeddedNode.getClient().admin().indices()
                 .delete(new DeleteIndexRequest("person1", "person2", "dragon1", "dragon2")).actionGet();
     }
     //endregion

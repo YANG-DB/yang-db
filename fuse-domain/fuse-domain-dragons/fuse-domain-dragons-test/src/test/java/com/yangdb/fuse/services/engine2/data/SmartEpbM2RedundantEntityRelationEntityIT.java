@@ -1,7 +1,8 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.services.engine2.SmartEpbM2RedundantTestSuite;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
@@ -22,12 +23,12 @@ import java.util.List;
 public class SmartEpbM2RedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityIT.setup(SmartEpbM2RedundantTestSuite.elasticEmbeddedNode.getClient(), true);
+        EntityRelationEntityIT.setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityIT.cleanup(SmartEpbM2RedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(ElasticEmbeddedNode.getClient());
     }
 
     @Override
@@ -48,11 +49,11 @@ public class SmartEpbM2RedundantEntityRelationEntityIT extends EntityRelationEnt
         }
 
         if (entityBTypes != null && !Stream.ofAll(entityBTypes).isEmpty()) {
-            traversals.add(__.has("entityB.type", P.within(Stream.ofAll(entityBTypes).toJavaArray(String.class))));
+            traversals.add(__.has(GlobalConstants.EdgeSchema.DEST_TYPE, P.within(Stream.ofAll(entityBTypes).toJavaArray(String.class))));
         }
 
         if (entityBId != null) {
-            traversals.add(__.has("entityB.id", P.eq(entityBId)));
+            traversals.add(__.has(GlobalConstants.EdgeSchema.DEST_ID, P.eq(entityBId)));
         }
 
         return Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class)));

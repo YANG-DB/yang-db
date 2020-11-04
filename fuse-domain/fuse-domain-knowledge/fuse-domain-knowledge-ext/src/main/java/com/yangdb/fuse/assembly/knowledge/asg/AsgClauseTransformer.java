@@ -26,10 +26,14 @@ import com.yangdb.fuse.assembly.knowledge.parser.JsonQueryTranslator;
 import com.yangdb.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.QueryInfo;
 
 import java.io.IOException;
+import java.util.function.Function;
 
-public class AsgClauseTransformer implements QueryTransformer<String, Query> {
+public class AsgClauseTransformer implements QueryTransformer<String, Query> , Function<QueryInfo<String>,Boolean> {
+
+    public static final String CLAUSE_QUERY_LANGUAGE = "clause";
 
     //region Constructors
     public AsgClauseTransformer(JsonQueryTranslator translator,BusinessTypesProvider typesProvider) {
@@ -49,6 +53,10 @@ public class AsgClauseTransformer implements QueryTransformer<String, Query> {
         }
     }
     //endregion
+    @Override
+    public Boolean apply(QueryInfo<String> queryInfo) {
+        return CLAUSE_QUERY_LANGUAGE.equalsIgnoreCase(queryInfo.getQueryType());
+    }
 
     //region Fields
     private JsonQueryTranslator translator;

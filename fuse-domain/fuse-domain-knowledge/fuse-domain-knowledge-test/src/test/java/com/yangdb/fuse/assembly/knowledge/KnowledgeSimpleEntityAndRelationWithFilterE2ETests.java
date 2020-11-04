@@ -3,6 +3,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -49,12 +50,12 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     static KnowledgeWriterContext ctx;
     static EntityBuilder e1, e2, e3, e4, e5, e6, e7, e8, e9, e10;
     static RelationBuilder rel1, rel2, rel3, rel4, rel5;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
     public static void setup() throws Exception {
-        Setup.setup();//Todo remove while running in Suite Context
+//        Setup.setup();//Todo remove while running in Suite Context
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests
@@ -322,7 +323,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     }
 
     @Test
-    public void testEqByEntityCategoryAndRelationContainsCategory() throws IOException, InterruptedException {
+    public void testEqByEntityCategoryAndRelationContainsCategoryWithProfile() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -343,7 +344,8 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         }
 
         // Press on Cursor
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
+                new CreateGraphCursorRequest(new CreatePageRequest(1000)).withProfile(true));
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
         // return the relevant data
@@ -377,7 +379,7 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
     }
 
     @Test
-    public void testNonFoundByEntityCategoryAndRelationContainsCategory() throws IOException, InterruptedException {
+    public void testNonFoundByEntityCategoryAndRelationContainsCategoryWithProfile() throws IOException, InterruptedException {
         // Create v1 query to fetch newly created entity
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Query query = Query.Builder.instance().withName("query").withOnt(KNOWLEDGE)
@@ -398,7 +400,8 @@ public class KnowledgeSimpleEntityAndRelationWithFilterE2ETests {
         }
 
         // Press on Cursor
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest(new CreatePageRequest(1000)));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(),
+                new CreateGraphCursorRequest(new CreatePageRequest(1000)).withProfile(true));
         // Press on page to get the relevant page
         PageResourceInfo pageResourceInfo = getPageResourceInfo(fuseClient, cursorResourceInfo, 1000);
         // return the relevant data

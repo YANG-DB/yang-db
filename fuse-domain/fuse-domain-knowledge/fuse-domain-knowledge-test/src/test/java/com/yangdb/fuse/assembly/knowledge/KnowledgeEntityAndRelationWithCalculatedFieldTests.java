@@ -4,6 +4,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.EntityBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext;
 import com.yangdb.fuse.assembly.knowledge.domain.RelationBuilder;
 import com.yangdb.fuse.assembly.knowledge.domain.ValueBuilder;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -44,12 +45,12 @@ public class KnowledgeEntityAndRelationWithCalculatedFieldTests {
     static EntityBuilder e1, e2, e3, e4, e5, e6, e7, e8, e9, e10;
     static ValueBuilder v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
     static RelationBuilder rel1, rel2, rel3, rel4, rel5;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true,true);
+//        Setup.setup(true,true); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests

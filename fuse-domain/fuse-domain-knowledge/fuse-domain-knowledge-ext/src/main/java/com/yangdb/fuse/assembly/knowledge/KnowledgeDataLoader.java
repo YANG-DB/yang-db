@@ -34,13 +34,13 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.load.Response;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.elasticsearch.client.Client;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,6 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.assembly.knowledge.load.KnowledgeWriterContext.commit;
@@ -63,7 +62,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     public static final String E_VALUES = "eValues";
     public static final String R_VALUES = "rValues";
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -90,11 +89,13 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     /**
      * transform json graph and load all data to designated indices according to schema
      *
+     *
+     * @param ontology
      * @param root graph document
      * @param directive
      * @return
      */
-    public LoadResponse<String, FuseError> load(LogicalGraphModel root, Directive directive) throws JsonProcessingException {
+    public LoadResponse<String, FuseError> load(String ontology, LogicalGraphModel root, Directive directive) throws JsonProcessingException {
         final KnowledgeContext context = transformer.transform(root, directive);
         List<String> success = new ArrayList<>();
         success.add(ENTITIES + ":" +context.getEntities().size());
@@ -111,7 +112,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     }
 
     @Override
-    public LoadResponse<String, FuseError> load(File data, Directive directive) throws IOException {
+    public LoadResponse<String, FuseError> load(String ontology, File data, Directive directive) throws IOException {
         String contentType = Files.probeContentType(data.toPath());
         if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
             ByteArrayOutputStream stream = null; //unzip
@@ -125,12 +126,12 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
             }
 
             String graph = new String(stream.toByteArray());
-            return load(mapper.readValue(graph, LogicalGraphModel.class), directive);
+            return load(ontology , mapper.readValue(graph, LogicalGraphModel.class), directive);
         }
         String graph = new String(Files.readAllBytes(data.toPath()));
         //read
         LogicalGraphModel root = mapper.readValue(graph, LogicalGraphModel.class);
-        return load(root, directive);
+        return load(ontology, root, directive);
     }
 
 

@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -50,7 +51,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     private static final String STRING = "string";
 
     private static final String FIELD_NAME_TYPE = "type";
-    private static final String FIELD_NAME_EDGE = "entityA.id";
+    private static final String FIELD_NAME_EDGE = GlobalConstants.EdgeSchema.SOURCE_ID;
     //endregion
 
     //region Constructors

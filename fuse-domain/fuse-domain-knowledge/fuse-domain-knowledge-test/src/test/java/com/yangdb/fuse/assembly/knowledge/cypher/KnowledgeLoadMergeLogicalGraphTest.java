@@ -1,5 +1,6 @@
 package com.yangdb.fuse.assembly.knowledge.cypher;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
@@ -13,14 +14,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.management.relation.Relation;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.assembly.KNOWLEDGE.KNOWLEDGE;
+import static com.yangdb.fuse.assembly.knowledge.Setup.fuseClient;
 import static com.yangdb.fuse.client.FuseClientSupport.nextPage;
 
 /**
@@ -31,12 +31,12 @@ public class KnowledgeLoadMergeLogicalGraphTest {
 
     //number of elements on les miserables graph
 
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true);
-//        loadData();
+       // Setup.setup(true); //todo remove remark when running IT tests
+       // loadData();       //todo remove remark when running IT tests
     }
 
     private static void loadData() throws IOException {

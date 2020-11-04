@@ -1,0 +1,836 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://yangdb.org#"
+     xml:base="http://yangdb.org"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://yangdb.org"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.org#addRelatedConceptWhiteList -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#addRelatedConceptWhiteList">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#addable -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#addable">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#boost -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#boost">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#color -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#color">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#deleteable -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#deleteable">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#dependentPropertyIri -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#dependentPropertyIri">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#dependentPropertyIris -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#dependentPropertyIris">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#displayFormula -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#displayFormula">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#displayName -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#displayName">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#displayType -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#displayType">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#extendedDataTableDomain -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#extendedDataTableDomain">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#glyphIconFileName -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#glyphIconFileName">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#intent -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#intent">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#mapGlyphIconFileName -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#mapGlyphIconFileName">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#objectPropertyDomain -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#objectPropertyDomain">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#possibleValues -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#possibleValues">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#propertyGroup -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#propertyGroup">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#searchable -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#searchable">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#sortPriority -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#sortPriority">
+        <userVisible>false</userVisible>
+        <rdfs:comment>Determines property sort order in the inspector. If not set the default is 0.
+            Properties are sorted highest to lowest.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#sortable -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#sortable">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#subtitleFormula -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#subtitleFormula">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#textIndexHints -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#textIndexHints">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#timeFormula -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#timeFormula">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#titleFormula -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#titleFormula">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#updateable -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#updateable">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#userVisible -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#userVisible">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://yangdb.org#validationFormula -->
+
+    <owl:AnnotationProperty rdf:about="http://yangdb.org#validationFormula">
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.org#currency -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#currency"/>
+    
+
+
+    <!-- http://yangdb.org#extendedDataTable -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#extendedDataTable"/>
+    
+
+
+    <!-- http://yangdb.org#geolocation -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#geolocation"/>
+    
+
+
+    <!-- http://yangdb.org#geoshape -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#geoshape"/>
+    
+
+
+    <!-- http://yangdb.org#image -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#image"/>
+    
+
+
+    <!-- http://yangdb.org#directory/entity -->
+
+    <rdfs:Datatype rdf:about="http://yangdb.org#directory/entity"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.org#hasSource -->
+
+    <owl:ObjectProperty rdf:about="http://yangdb.org#hasSource">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <userVisible>false</userVisible>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.org#audio-mp3 -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#audio-mp3">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Audio MP3</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#audio-mp4 -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#audio-mp4">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Audio MP4</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#audio-ogg -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#audio-ogg">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Audio OGG</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#cached-image -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#cached-image">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Cached Image</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#conceptType -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#conceptType">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Entity Type</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#confidence -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#confidence">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Confidence</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#contentHash -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#contentHash">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Content Hash</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#dataType -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#dataType">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#detectedObject -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#detectedObject">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Detected Object</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#entityImageUrl -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#entityImageUrl">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Entity Image URL</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#entityImageVertexId -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#entityImageVertexId">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Entity Image Vertex ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#fileName -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#fileName">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>FULL_TEXT,EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">File Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#graphPropertyWorkerBlackList -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#graphPropertyWorkerBlackList">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Graph Property Worker Black List</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#graphPropertyWorkerWhiteList -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#graphPropertyWorkerWhiteList">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Graph Property Worker White List</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#justification -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#justification">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#linkTitle -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#linkTitle">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#mappingJson -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#mappingJson">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Mapping JSON</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#metadataJson -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#metadataJson">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Metadata JSON</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#mimeType -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#mimeType">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Mime Type</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#modifiedBy -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#modifiedBy">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Modified By</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#modifiedDate -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#modifiedDate">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Modified Date</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#ontologyTitle -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#ontologyTitle">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#process -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#process">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Process</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#raw -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#raw">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Raw Data</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#rawPosterFrame -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#rawPosterFrame">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Raw Poster Frame</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#rowKey -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#rowKey">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Row Key</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#source -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#source">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>FULL_TEXT,EXACT_MATCH</textIndexHints>
+        <rdfs:label xml:lang="en">Source</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#sourceUrl -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#sourceUrl">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>FULL_TEXT,EXACT_MATCH</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Source URL</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#text -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#text">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <displayType>longText</displayType>
+        <textIndexHints>FULL_TEXT</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Text</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#title -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#title">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <boost>1.5</boost>
+        <textIndexHints>FULL_TEXT,EXACT_MATCH</textIndexHints>
+        <userVisible>true</userVisible>
+        <rdfs:label xml:lang="en">Title</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#video-mp4 -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#video-mp4">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Video MP4</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#video-webm -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#video-webm">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Video WebM</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#videoFrame -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#videoFrame">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Video Frame</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#videoPreviewImage -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#videoPreviewImage">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#hexBinary"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible xml:lang="en">false</userVisible>
+        <rdfs:label xml:lang="en">Video Preview Image</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#videoTranscript -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#videoTranscript">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <displayType>longText</displayType>
+        <textIndexHints>FULL_TEXT</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Video Transcript</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#visibilityJson -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#visibilityJson">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Visibility JSON</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org#visibilitySource -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org#visibilitySource">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <textIndexHints>NONE</textIndexHints>
+        <userVisible>false</userVisible>
+        <rdfs:label xml:lang="en">Visibility Source</rdfs:label>
+    </owl:DatatypeProperty>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

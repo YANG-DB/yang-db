@@ -1,6 +1,7 @@
 package index.test;
 
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.fuse.test.framework.providers.FileJsonDataProvider;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -25,8 +26,8 @@ public class ElasticIndexTests {
         String indexName = "index";
         String type = "docType";
         FileJsonDataProvider provider = new FileJsonDataProvider(docsFile);
-        try (ElasticEmbeddedNode index = new ElasticEmbeddedNode()){
-            TransportClient indexClient = index.getClient();
+        try (ElasticEmbeddedNode index = GlobalElasticEmbeddedNode.getInstance()){
+            TransportClient indexClient = ElasticEmbeddedNode.getClient();
             ElasticDataPopulator populator = new ElasticDataPopulator(indexClient, indexName, type, "id", provider);
             populator.populate();
             indexClient.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();

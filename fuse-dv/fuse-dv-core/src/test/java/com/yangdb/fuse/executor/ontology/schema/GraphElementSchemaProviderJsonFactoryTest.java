@@ -2,7 +2,7 @@ package com.yangdb.fuse.executor.ontology.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
@@ -26,17 +26,17 @@ import static org.mockito.Mockito.when;
 
 public class GraphElementSchemaProviderJsonFactoryTest {
     private ObjectMapper mapper = new ObjectMapper();
-    private IndexProvider provider;
     private Ontology ontology;
     private static Config config;
     private static OntologyProvider ontologyProvider;
-    private static IndexProviderIfc providerIfc;
+    private IndexProvider provider;
+    private static IndexProviderFactory providerFactory;
 
     @Before
     public void setUp() throws Exception {
 
-        providerIfc = Mockito.mock(IndexProviderIfc.class);
-        when(providerIfc.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
+        providerFactory = Mockito.mock(IndexProviderFactory.class);
+        when(providerFactory.get(any())).thenAnswer(invocationOnMock -> Optional.of(provider));
 
         ontologyProvider = Mockito.mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenAnswer(invocationOnMock -> Optional.of(ontology));
@@ -52,14 +52,14 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProvider(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerFactory,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
     }
 
     @Test
     public void testGraphElementSchemaProviderLabel(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerFactory,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(StreamSupport.stream(schemaProvider.getEdgeLabels().spliterator(),false)
@@ -70,7 +70,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProviderVertex(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerFactory,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(5, StreamSupport.stream(schemaProvider.getVertexSchemas().spliterator(), false)
@@ -82,7 +82,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphEdgeSchemaImpl(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerFactory,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals( 26,StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(),false).count());
@@ -165,7 +165,7 @@ public class GraphElementSchemaProviderJsonFactoryTest {
 
     @Test
     public void testGraphElementSchemaProviderEdge(){
-        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerIfc,ontologyProvider);
+        GraphElementSchemaProviderJsonFactory jsonFactory = new GraphElementSchemaProviderJsonFactory(config, providerFactory,ontologyProvider);
         GraphElementSchemaProvider schemaProvider = jsonFactory.get(ontology);
         Assert.assertNotNull(schemaProvider);
         Assert.assertEquals(26, StreamSupport.stream(schemaProvider.getEdgeSchemas().spliterator(), false)
@@ -214,18 +214,18 @@ public class GraphElementSchemaProviderJsonFactoryTest {
      *                                 "fire",
      *                                 new GraphElementConstraint.Impl(__.has(T.label, "fire")),
      *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityA.id"),
+     *                                         Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
      *                                         Optional.of("Dragon"),
      *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     *                                                 new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     *                                                 new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      *                                         ))),
      *                                 Optional.of(new GraphEdgeSchema.End.Impl(
-     *                                         Collections.singletonList("entityB.id"),
+     *                                         Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
      *                                         Optional.of("Dragon"),
      *                                         Arrays.asList(
-     *                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-     *                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+     *                                                 new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, "string"),
+     *                                                 new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, "string")
      *                                         ))),
      *                                 Direction.OUT,
      *                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),

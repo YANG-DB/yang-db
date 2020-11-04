@@ -27,10 +27,12 @@ import com.yangdb.fuse.assembly.knowledge.load.KnowledgeCSVTransformer;
 import com.yangdb.fuse.assembly.knowledge.load.KnowledgeContext;
 import com.yangdb.fuse.assembly.knowledge.load.StoreAccessor;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.*;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -55,7 +57,7 @@ public class KnowledgeCSVDataLoader implements CSVDataLoader {
     public static final String E_VALUES = "eValues";
     public static final String R_VALUES = "rValues";
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
     static {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -67,14 +69,14 @@ public class KnowledgeCSVDataLoader implements CSVDataLoader {
     private ObjectMapper mapper;
 
     @Inject
-    public KnowledgeCSVDataLoader(Config config, Client client, RawSchema schema, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
+    public KnowledgeCSVDataLoader(Config config, Client client, RawSchema schema, OntologyProvider ontologyProvider, OntologyTransformerProvider transformerProvider, IdGeneratorDriver<Range> idGenerator) {
         this.schema = schema;
         this.mapper = new ObjectMapper();
         //load knowledge transformer
         final Optional<OntologyTransformer> assembly = transformerProvider.transformer(config.getString("assembly"));
         if (!assembly.isPresent())
             throw new IllegalArgumentException("No transformer provider found for selected ontology " + config.getString("assembly"));
-        this.transformer = new KnowledgeCSVTransformer(schema, assembly.get(), idGenerator, new StoreAccessor.DefaultAccessor(client));
+        this.transformer = new KnowledgeCSVTransformer(ontologyProvider, schema, assembly.get(), idGenerator, new StoreAccessor.DefaultAccessor(client));
         this.client = client;
     }
 

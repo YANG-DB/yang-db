@@ -46,8 +46,11 @@ public class HomeAppRegistrar implements AppRegistrar{
                             "<ul>\n" +
                             "<li>Resource Url: <a href=\"/fuse\">Fuse</a></li>\n" +
                             "<li>Swagger API: <a href=\"/swagger\">Swagger</a></li>\n" +
-                            "<li>Cypher-Queries Sample: <a href=\"/cypher-queries-samples\">cypher-queries</a></li>\n" +
-                            "<li>les_miserables-data Sample: <a href=\"/les_miserables-data\">les_miserables-data</a></li>\n" +
+                            "<li><hr></li>"+
+                            "<li>Graphql-Queries builder: <a href=\"queryBuilder/graphql\">graphql-query builder</a></li>\n" +
+                            "<li>Sparql-Queries builder: <a href=\"queryBuilder/sparql\">sparql-query builder</a></li>\n" +
+                            "<li>Cypher-Queries builder: <a href=\"queryBuilder/cypher\">cypher-query builder</a></li>\n" +
+                            "<li><hr></li>"+
                             "<li>BigDesk E/S online Monitor: <a href=\"/bigdesk\">bigDesk</a></li>\n" +
                             "<li><hr></li>"+
                             "<li>Health Url: <a href=\"/fuse/health\">healthUrl</a></li>\n" +

@@ -26,7 +26,7 @@ public class DragonsE2EWithNonRedundantEpbTestSuite implements BaseSuiteMarker {
     public static void setup() throws Exception {
         System.out.println("DragonsE2EWithNonRedundantEpbTestSuite - setup");
         Setup.withPath(Paths.get( "src","resources", "assembly", "Dragons", "config", "application.test.engine3.m1.dfs.dragons.public.conf"));
-        Setup.setup();
+        Setup.setup();//DO NOT REMOVE
     }
 
     @AfterClass

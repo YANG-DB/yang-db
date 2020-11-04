@@ -150,6 +150,57 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    new LogMessage.Impl(this.logger, debug, String.format("getVertex: [%s,%s] { }",
+                            ontology,type,id), Sequence.incr(), LogType.of(log), createAndFetch)
+                            .log();
+                    return this.controller.getVertex(ontology,type,id);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    new LogMessage.Impl(this.logger, debug, String.format("getNeighbors: [%s,%s] { }",
+                            ontology,type,id), Sequence.incr(), LogType.of(log), createAndFetch)
+                            .log();
+                    return this.controller.getNeighbors(ontology,type,id);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops){
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                        new LogMessage.Impl(this.logger, debug, String.format("findPath: [%s,%s,%s,%s,%s,%s,%d] { }",
+                                ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops), Sequence.incr(), LogType.of(log), createAndFetch)
+                                .log();
+                    return this.controller.findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,
@@ -201,6 +252,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                                 .with(graphQL).log();
                     }
                     return this.controller.runGraphQL(graphQL,ontology , pageSize, cursorType);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                run,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (sparql != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(sparql).log();
+                    }
+                    return this.controller.runSparql(sparql,ontology , pageSize, cursorType);
                 }, this.resultHandler());
     }
 

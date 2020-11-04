@@ -192,27 +192,27 @@ public class BaseFuseClient implements FuseClient {
 
     @Override
     public QueryResourceInfo postGraphQLQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
-            CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_GRAPH_QL);
+            CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_GRAPHQL);
             String id = UUID.randomUUID().toString();
             request.setId(id);
             request.setName(id);
             request.setQuery(query);
             request.setOntology(ontology);
             request.setPlanTraceOptions(planTraceOptions);
-            final String response = postRequest(queryStoreUrl +"/" + TYPE_GRAPH_QL, request);
+            final String response = postRequest(queryStoreUrl +"/" + TYPE_GRAPHQL, request);
             return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
     }
 
     @Override
     public QueryResourceInfo postCypherQuery(String queryStoreUrl, String query, String ontology, PlanTraceOptions planTraceOptions) throws IOException {
-        CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_CYPHER);
+        CreateJsonQueryRequest request = new CreateJsonQueryRequest(TYPE_CYPHERQL);
         String id = UUID.randomUUID().toString();
         request.setId(id);
         request.setName(id);
         request.setQuery(query);
         request.setOntology(ontology);
         request.setPlanTraceOptions(planTraceOptions);
-        final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE_CYPHER, request);
+        final String response = postRequest(queryStoreUrl +"/" + CreateJsonQueryRequest.TYPE_CYPHERQL, request);
         return this.objectMapper.readValue(unwrap(response), QueryResourceInfo.class);
     }
 

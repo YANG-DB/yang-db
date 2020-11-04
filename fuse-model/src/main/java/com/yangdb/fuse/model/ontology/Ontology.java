@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,14 +46,21 @@ package com.yangdb.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.*;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -62,13 +69,14 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
     public Ontology() {
+        directives = new ArrayList<>();
         primitiveTypes = new ArrayList<>();
         entityTypes = new ArrayList<>();
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
-        properties = new ArrayList<>();
+        properties = new HashSet<>();
+        metadata = new ArrayList<>();
         compositeTypes = new ArrayList<>();
-
 
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
@@ -94,11 +102,11 @@ public class Ontology {
         return entityTypes;
     }
 
-    public List<Property> getProperties() {
+    public Set<Property> getProperties() {
         return this.properties;
     }
 
-    public void setProperties(List<Property> properties) {
+    public void setProperties(Set<Property> properties) {
         this.properties = properties;
     }
 
@@ -108,6 +116,14 @@ public class Ontology {
 
     public List<RelationshipType> getRelationshipTypes() {
         return relationshipTypes;
+    }
+
+    public List<DirectiveType> getDirectives() {
+        return directives;
+    }
+
+    public void setDirectives(List<DirectiveType> directives) {
+        this.directives = directives;
     }
 
     public void setRelationshipTypes(List<RelationshipType> relationshipTypes) {
@@ -139,9 +155,8 @@ public class Ontology {
     //region Public Methods
 
     @Override
-    public String toString()
-    {
-        return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
+    public String toString() {
+        return "Ontology [enumeratedTypes = " + enumeratedTypes + ", ont = " + ont + ", relationshipTypes = " + relationshipTypes + ", entityTypes = " + entityTypes + "]";
     }
 
     @Override
@@ -150,6 +165,7 @@ public class Ontology {
         if (o == null || getClass() != o.getClass()) return false;
         Ontology ontology = (Ontology) o;
         return ont.equals(ontology.ont) &&
+                directives.equals(ontology.directives) &&
                 entityTypes.equals(ontology.entityTypes) &&
                 relationshipTypes.equals(ontology.relationshipTypes) &&
                 properties.equals(ontology.properties) &&
@@ -161,16 +177,17 @@ public class Ontology {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ont, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
+        return Objects.hash(ont, directives, entityTypes, relationshipTypes, properties, metadata, enumeratedTypes, compositeTypes, primitiveTypes);
     }
 
     //endregion
 
     //region Fields
     private String ont;
+    private List<DirectiveType> directives;
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
-    private List<Property> properties;
+    private Set<Property> properties;
     private List<Property> metadata;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
@@ -181,16 +198,18 @@ public class Ontology {
 
     public static final class OntologyBuilder {
         private String ont = "Generic";
+        private List<DirectiveType> directives;
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
-        private List<Property> properties;
+        private LinkedHashSet<Property> properties;
         private List<EnumeratedType> enumeratedTypes;
         private List<CompositeType> compositeTypes;
 
         private OntologyBuilder() {
+            this.directives = new ArrayList<>();
             this.entityTypes = new ArrayList<>();
             this.relationshipTypes = new ArrayList<>();
-            this.properties = new ArrayList<>();
+            this.properties = new LinkedHashSet<>();
             this.enumeratedTypes = new ArrayList<>();
             this.compositeTypes = new ArrayList<>();
         }
@@ -213,9 +232,14 @@ public class Ontology {
             this.entityTypes.addAll(entityTypes);
             return this;
         }
+
         public OntologyBuilder addEntityType(EntityType entityType) {
             this.entityTypes.add(entityType);
             return this;
+        }
+
+        public Optional<EntityType> getEntityType(String entityType) {
+            return this.entityTypes.stream().filter(et -> et.geteType().equals(entityType)).findAny();
         }
 
         public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
@@ -228,15 +252,38 @@ public class Ontology {
             return this;
         }
 
+        public Optional<RelationshipType> getRelationshipType(String relationshipType) {
+            return this.relationshipTypes.stream().filter(et -> et.getrType().equals(relationshipType)).findAny();
+        }
 
         public OntologyBuilder addRelationshipType(RelationshipType relationshipType) {
             this.relationshipTypes.add(relationshipType);
             return this;
         }
 
+        public Optional<Property> getProperty(String property) {
+            return this.properties.stream().filter(et -> et.getName().equals(property)).findAny();
+        }
+
+        public OntologyBuilder withDirective(DirectiveType directive) {
+            this.directives.add(directive);
+            return this;
+
+        }
+
+        public OntologyBuilder withDirectives(List<DirectiveType> directives) {
+            this.directives.addAll(directives);
+            return this;
+
+        }
 
         public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
             this.enumeratedTypes = enumeratedTypes;
+            return this;
+        }
+
+        public OntologyBuilder addEnumeratedTypes(EnumeratedType enumeratedType) {
+            this.enumeratedTypes.add(enumeratedType);
             return this;
         }
 
@@ -245,14 +292,25 @@ public class Ontology {
             return this;
         }
 
-        public OntologyBuilder withProperties(List<Property> properties) {
-            this.properties = properties;
+        public OntologyBuilder withProperties(Set<Property> properties) {
+            this.properties = new LinkedHashSet<>(properties);
+            return this;
+        }
+
+        public OntologyBuilder addProperty(Property property) {
+            this.properties.add(property);
+            return this;
+        }
+
+        public OntologyBuilder addProperties(List<Property> properties) {
+            this.properties.addAll(properties);
             return this;
         }
 
         public Ontology build() {
             Ontology ontology = new Ontology();
             ontology.setOnt(ont);
+            ontology.setDirectives(directives);
             ontology.setEntityTypes(entityTypes);
             ontology.setRelationshipTypes(relationshipTypes);
             ontology.setEnumeratedTypes(enumeratedTypes);
@@ -298,12 +356,30 @@ public class Ontology {
             return this.ontology.getOnt();
         }
 
-        public Optional<EntityType> $entity(String eType) {
+        public Optional<? extends BaseElement> $element(String type) {
+            if(this.entitiesByEtype.get(type)!=null)
+                return Optional.of(this.entitiesByEtype.get(type));
+            if(this.relationsByName.get(type)!=null)
+                return Optional.of(this.relationsByName.get(type));
+            return Optional.empty();
+        }
+
+       public Optional<EntityType> $entity(String eType) {
             return Optional.ofNullable(this.entitiesByEtype.get(eType));
         }
 
+        public Optional<DirectiveType> $directive(String name) {
+            return this.ontology.directives.stream().filter(d -> d.getName().equals(name)).findFirst();
+        }
+
+        public DirectiveType $directive$(String name) {
+            return this.ontology.directives.stream().filter(d -> d.getName().equals(name)).findFirst()
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology $directive$ for value ", "No Ontology $directive$ for value[" + name + "]")));
+        }
+
         public EntityType $entity$(String eType) {
-            return $entity(eType).get();
+            return $entity(eType)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entity for value ", "No Ontology entity for value[" + eType + "]")));
         }
 
         public Optional<EntityType> entity(String entityName) {
@@ -311,7 +387,8 @@ public class Ontology {
         }
 
         public EntityType entity$(String entityName) {
-            return entity(entityName).get();
+            return entity(entityName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName + "]")));
         }
 
         public Optional<String> eType(String entityName) {
@@ -320,7 +397,8 @@ public class Ontology {
         }
 
         public String eType$(String entityName) {
-            return eType(entityName).get();
+            return eType(entityName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology entityType for value ", "No Ontology entityType for value[" + entityName + "]")));
         }
 
         public Optional<RelationshipType> $relation(String rType) {
@@ -328,7 +406,8 @@ public class Ontology {
         }
 
         public RelationshipType $relation$(String rType) {
-            return $relation(rType).get();
+            return $relation(rType)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology Relation for value ", "No Ontology Relation for value[" + rType + "]")));
         }
 
         public Optional<RelationshipType> relation(String relationName) {
@@ -336,7 +415,8 @@ public class Ontology {
         }
 
         public RelationshipType relation$(String relationName) {
-            return relation(relationName).get();
+            return relation(relationName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName + "]")));
         }
 
         public Optional<String> rType(String relationName) {
@@ -345,7 +425,8 @@ public class Ontology {
         }
 
         public String rType$(String relationName) {
-            return rType(relationName).get();
+            return rType(relationName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology relationName for value ", "No Ontology relationName for value[" + relationName + "]")));
         }
 
         public Optional<Property> $property(String pType) {
@@ -353,8 +434,8 @@ public class Ontology {
         }
 
         public Property $property$(String pType) {
-            if(!$property(pType).isPresent())
-                throw new IllegalArgumentException(String.format("No Such ontology value present %s",pType));
+            if (!$property(pType).isPresent())
+                throw new IllegalArgumentException(String.format("No Such ontology value present %s", pType));
             return $property(pType).get();
         }
 
@@ -362,8 +443,13 @@ public class Ontology {
             return Optional.ofNullable(this.propertiesByName.get(propertyName));
         }
 
+        public Set<Property> properties() {
+            return this.ontology.properties;
+        }
+
         public Property property$(String propertyName) {
-            return property(propertyName).get();
+            return property(propertyName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName + "]")));
         }
 
         public Optional<String> pType(String propertyName) {
@@ -372,7 +458,8 @@ public class Ontology {
         }
 
         public String pType$(String propertyName) {
-            return pType(propertyName).get();
+            return pType(propertyName)
+                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology propertyName for value ", "No Ontology propertyName for value[" + propertyName + "]")));
         }
 
         public Iterable<String> pTypes() {
@@ -388,17 +475,17 @@ public class Ontology {
         }
 
         public List<EntityType> nested$(String eType) {
-            return entity$(eType).getProperties().stream()
-                    .filter(p->$entity(p).isPresent())
-                    .map(p->$entity(p).get())
+            return entity$(eType).fields().stream()
+                    .filter(p -> $entity(p).isPresent())
+                    .map(p -> $entity(p).get())
                     .collect(Collectors.toList());
 
         }
 
         public boolean isNested(String eType) {
-            if(!entity(eType).isPresent()) return false;
+            if (!entity(eType).isPresent()) return false;
 
-            return entity$(eType).getProperties().stream().anyMatch(p->$entity(p).isPresent());
+            return entity$(eType).fields().stream().anyMatch(p -> $entity(p).isPresent());
         }
 
         public Iterable<String> eNames() {
@@ -414,11 +501,11 @@ public class Ontology {
         }
 
         public List<RelationshipType> relationBySideA(String eType) {
-            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideA(eType)).toJavaList();
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r -> r.hasSideA(eType)).toJavaList();
         }
 
         public List<RelationshipType> relationBySideB(String eType) {
-            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r->r.hasSideB(eType)).toJavaList();
+            return Stream.ofAll(ontology.getRelationshipTypes()).filter(r -> r.hasSideB(eType)).toJavaList();
         }
 
         public Iterable<String> rTypes() {
@@ -446,7 +533,7 @@ public class Ontology {
 
         public Optional<EnumeratedType> enumeratedType(String typeName) {
             return Stream.ofAll(ontology.getEnumeratedTypes())
-                    .filter(type -> type.geteType().equals(typeName))
+                    .filter(type -> type.isOfType(typeName))
                     .toJavaOptional();
         }
 
@@ -467,8 +554,77 @@ public class Ontology {
         private Map<String, Property> propertiesByName;
         private Map<String, Property> propertiesByPtype;
 
+        /**
+         * match named element to true type (included typed value identifier)
+         *
+         * @param name
+         * @return
+         */
+        public Optional<Tuple2<NodeType, String>> matchNameToType(String name) {
+            //entity TYPE
+            if (eType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.ENTITY, eType$(name)));
+            //relation TYPE
+            if (rType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.RELATION, rType$(name)));
+            //property TYPE
+            if (property(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.PROPERTY, property$(name).getpType()));
+            //ENUMERATED TYPE
+            if (enumeratedType(name).isPresent())
+                return Optional.of(Tuple.of(NodeType.ENUM, enumeratedType$(name).geteType()));
+
+            return Optional.empty();
+        }
+
+        public enum NodeType {
+            ENUM, PROPERTY, RELATION, ENTITY
+        }
 
         //endregion
+    }
+
+    public enum OntologyPrimitiveType {
+        STRING,
+        TEXT,
+        DATE,
+        LONG,
+        INT,
+        FLOAT,
+        DOUBLE,
+        GEO;
+
+
+        public static OntologyPrimitiveType translate(String clazzName) {
+            if (String.class.getName().equals(clazzName))
+                return STRING;
+            if (Boolean.class.getName().equals(clazzName))
+                return STRING;//no special case for bool
+
+            if (Integer.class.getName().equals(clazzName))
+                return INT;
+
+            if (Float.class.getName().equals(clazzName))
+                return FLOAT;
+
+            if (Double.class.getName().equals(clazzName))
+                return DOUBLE;
+
+            if (Long.class.getName().equals(clazzName))
+                return LONG;
+            if (BigDecimal.class.getName().equals(clazzName))
+                return LONG;
+
+            if (java.sql.Date.class.getName().equals(clazzName))
+                return DATE;
+            if (java.sql.Timestamp.class.getName().equals(clazzName))
+                return DATE;
+            if (Date.class.getName().equals(clazzName))
+                return DATE;
+
+            return TEXT;
+        }
+
     }
     //endregion
 

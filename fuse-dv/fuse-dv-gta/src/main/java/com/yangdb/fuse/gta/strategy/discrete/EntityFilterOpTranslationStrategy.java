@@ -44,7 +44,7 @@ import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.RankingProp;
 import com.yangdb.fuse.model.query.properties.SchematicEProp;
 import com.yangdb.fuse.model.query.properties.constraint.WhereByConstraint;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.process.traversal.dsl.graph.__;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;

@@ -1,0 +1,4 @@
+SELECT ?tom ?movies
+    WHERE {?tom a <Person?;
+        <name> "Tom Hanks";
+        <ACTED_IN> ?movies}

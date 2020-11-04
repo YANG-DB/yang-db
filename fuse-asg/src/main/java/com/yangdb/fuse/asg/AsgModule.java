@@ -21,21 +21,16 @@ package com.yangdb.fuse.asg;
  */
 
 
-
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.CypherAsgStrategyRegistrar;
 import com.yangdb.fuse.asg.strategy.M1AsgStrategyRegistrar;
-import com.yangdb.fuse.asg.strategy.M1CypherAsgStrategyRegistrar;
 import com.yangdb.fuse.dispatcher.asg.QueryToCompositeAsgTransformer;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.Query;
-import com.typesafe.config.Config;
-import com.yangdb.fuse.model.query.QueryInfo;
 import org.jooby.Env;
 
 /**
@@ -47,23 +42,13 @@ public class AsgModule extends ModuleBase {
         binder.bind(AsgStrategyRegistrar.class)
                 .to(getAsgStrategyRegistrar(conf));
 
-        binder.bind(CypherAsgStrategyRegistrar.class)
-                .to(M1CypherAsgStrategyRegistrar.class)
-                .asEagerSingleton();
-
         binder.bind(new TypeLiteral<QueryTransformer<Query, AsgQuery>>(){})
                 .to(QueryToCompositeAsgTransformer.class)
-                .asEagerSingleton();
-
-        binder.bind(new TypeLiteral<QueryTransformer<QueryInfo<String>, AsgQuery>>(){})
-                .to(AsgCypherTransformer.class)
                 .asEagerSingleton();
 
         binder.bind(new TypeLiteral<QueryTransformer<AsgQuery, AsgQuery>>(){})
                 .to(AsgQueryTransformer.class)
                 .asEagerSingleton();
-
-        binder.bind(JsonQueryTransformerFactory.class).to(BasicJsonQueryTransformerFactory.class);
 
     }
 

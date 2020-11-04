@@ -67,7 +67,7 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
             if (path.objects().stream().map(p -> ((UniElement) p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
                 builder.withAssignment(toAssignment(path));
         });
-        return builder.build();
+        return AssignmentsQueryResult.distinct(builder.build());
     }
 
 }

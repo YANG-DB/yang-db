@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.logical.LogicalNode;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.Property;
@@ -67,7 +68,8 @@ public class KnowledgeLogicalGraphCursor extends KnowledgeGraphHierarchyTraversa
     public KnowledgeLogicalGraphCursor(TraversalCursorContext context, String logicalOntology, Iterable<String> countTags, LogicalGraphCursorRequest.GraphFormat format) {
         super(context, countTags);
         //assuming logical ontology must exist since this stage would not been reached is ontology was not present
-        this.logicalOntologyAccessor = new Ontology.Accessor(context.getOntologyProvider().get(logicalOntology).get());
+        this.logicalOntologyAccessor = new Ontology.Accessor(context.getOntologyProvider().get(logicalOntology)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + logicalOntology))));
         this.schemaProvider = context.getSchemaProvider();
         this.format = format;
     }

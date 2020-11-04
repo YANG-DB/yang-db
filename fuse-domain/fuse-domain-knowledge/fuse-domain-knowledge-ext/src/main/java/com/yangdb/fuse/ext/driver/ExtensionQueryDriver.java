@@ -77,7 +77,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         try {
             QueryMetadata metadata = getQueryMetadata(request);
             Optional<QueryResourceInfo> queryResourceInfo = Optional.empty();
-            if (request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHER)) {
+            if (request.getQueryType().equals(CreateJsonQueryRequest.TYPE_CYPHERQL)) {
                 //support cypher type
                 queryResourceInfo = this.create(request, metadata);
             } else if (request.getQueryType().equals(TYPE_CLAUSE)) {

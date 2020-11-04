@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology;
  */
 
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -34,7 +35,8 @@ public interface DataTransformer<T,G> {
         public static SimpleDateFormat sdf;
 
         static {
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            //todo load the pattern from the application.conf ${assembly}.storage_dateFormat
+            sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
 

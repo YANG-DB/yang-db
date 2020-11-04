@@ -1,6 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.assembly.knowledge.domain.*;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
@@ -26,13 +27,13 @@ import static com.yangdb.fuse.assembly.knowledge.domain.KnowledgeWriterContext.c
 public class KnowledgeSimpleEntityWithFilterE2ETests {
     static KnowledgeWriterContext ctx;
     static EntityBuilder e1, e2, e3, e4, e5, e6, e7, e8, e9, e10;
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
     public static void setup() throws Exception
     {
-//        Setup.setup();
+//        Setup.setup(); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests

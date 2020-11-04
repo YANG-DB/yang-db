@@ -1,0 +1,1 @@
+SELECT ?ee WHERE { ?ee a <Person>;<name> ?name. FILTER(?name = "Emil")}

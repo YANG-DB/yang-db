@@ -34,6 +34,7 @@ import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 
 import java.util.Optional;
@@ -57,7 +58,8 @@ public class KnowledgeDefaultSelectionAsgStrategy implements AsgStrategy {
     //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        Ontology.Accessor ont = new Ontology.Accessor(this.ontologyProvider.get(query.getOnt()).get());
+        Ontology.Accessor ont = new Ontology.Accessor(this.ontologyProvider.get(query.getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology field found for " + query.getOnt()))));
 
         AsgQueryUtil.elements(query, EPropGroup.class).forEach(ePropGroupAsgEBase -> {
                     if (Stream.ofAll(ePropGroupAsgEBase.geteBase().getProps())

@@ -21,13 +21,14 @@ package com.yangdb.test.scenario;
  */
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 
 /**
  * Created by moti on 06/04/2017.
  */
 public class DragonScenarioConversionConstants {
-    public static String SIDE_A_ID = "entityA.id";
-    public static String SIDE_B_ID = "entityB.id";
+    public static String SIDE_A_ID = GlobalConstants.EdgeSchema.SOURCE_ID;
+    public static String SIDE_B_ID = GlobalConstants.EdgeSchema.DEST_ID;
     public static String DIRECTION_COLUMN = "dir";
     public static String OUT_DIRECTION = "out";
     public static String IN_DIRECTION = "in";

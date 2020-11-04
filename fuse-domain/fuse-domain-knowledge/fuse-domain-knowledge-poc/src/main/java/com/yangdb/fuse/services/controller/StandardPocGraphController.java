@@ -279,8 +279,8 @@ public class StandardPocGraphController implements PocGraphController {
                 .map(key -> mapper.createObjectNode().put(key,
                         node.getAttribute(key).toString())).collect(Collectors.toList()));
         return mapper.createObjectNode().put("id", node.getId())
-                .put("source", node.getSourceNode().getId())
-                .put("target", node.getTargetNode().getId())
+                .put("entityA", node.getSourceNode().getId())
+                .put("entityB", node.getTargetNode().getId())
                 .set("attributes", attributes);
     }
 }

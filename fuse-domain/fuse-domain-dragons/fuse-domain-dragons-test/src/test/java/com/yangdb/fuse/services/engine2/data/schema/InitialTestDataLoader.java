@@ -25,12 +25,12 @@ public class InitialTestDataLoader implements GraphDataLoader, CSVDataLoader {
     }
 
     @Override
-    public LoadResponse load(LogicalGraphModel root, Directive directive) throws IOException {
+    public LoadResponse load(String ontology, LogicalGraphModel root, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 
     @Override
-    public LoadResponse load(File data, Directive directive) throws IOException {
+    public LoadResponse load(String ontology, File data, Directive directive) throws IOException {
         return LoadResponse.EMPTY;
     }
 

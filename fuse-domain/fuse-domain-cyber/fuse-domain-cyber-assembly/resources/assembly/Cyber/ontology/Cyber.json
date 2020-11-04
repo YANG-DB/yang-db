@@ -1,0 +1,3749 @@
+{
+  "ont": "Cyber",
+  "directives": [],
+  "entityTypes": [
+    {
+      "idField": [
+        "trace_id"
+      ],
+      "eType": "traces",
+      "name": "traces",
+      "mandatory": [
+        "trace_id"
+      ],
+      "properties": [
+        "insert_time",
+        "update_time",
+        "customer_id",
+        "source_id",
+        "trace_id",
+        "trace_type",
+        "trace_status",
+        "closing_reason",
+        "is_alert",
+        "trace_severity",
+        "start_time",
+        "end_time",
+        "min_detected_time",
+        "max_detected_time",
+        "status_update_time",
+        "update_by",
+        "distinct_alerting_behavior_count",
+        "trace_identifier"
+      ]
+    },
+    {
+      "idField": [
+        "event_id"
+      ],
+      "eType": "enrichmentevents",
+      "name": "enrichmentevents",
+      "mandatory": [
+        "event_id"
+      ],
+      "properties": [
+        "network_id",
+        "source_type",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "behavior_entity_side",
+        "behavior_entity_uid",
+        "behavior_entity_md5",
+        "behavior_entity_name",
+        "behavior_entity_type",
+        "behavior_entity_linked_uid",
+        "behavior_entity_file_type",
+        "linked_entity_uid",
+        "linked_entity_md5",
+        "linked_entity_name",
+        "linked_entity_type",
+        "linked_entity_linked_uid",
+        "linked_entity_file_type",
+        "is_enrichment_rel",
+        "is_insight",
+        "is_md5_linked_null",
+        "is_md5_behavior_null",
+        "md5_behavior_hash",
+        "md5_linked_hash",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "by_sid",
+        "by_file_directory",
+        "by_process_pid",
+        "by_process_directory",
+        "by_file_alternate_file_stream",
+        "to_registry_key",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_registry_data",
+        "to_file_directory",
+        "to_file_alternate_file_stream",
+        "to_process_pid",
+        "to_process_directory",
+        "to_endpoint_ip",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_endpoint_port",
+        "data_remote_ip",
+        "insert_time",
+        "stage_id",
+        "rel_id"
+      ]
+    },
+    {
+      "idField": [
+        "behavior_id"
+      ],
+      "eType": "behaviors",
+      "name": "behaviors",
+      "mandatory": [
+        "behavior_id"
+      ],
+      "properties": [
+        "behavior_id",
+        "behavior_hash",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "lone_behavior",
+        "type_id",
+        "frequency",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_is_linked",
+        "by_file_md5",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_is_linked",
+        "to_file_md5",
+        "data_network_ratio",
+        "data_file_extension",
+        "data_operation_system_hash",
+        "data_directory",
+        "created_by_analysis_id",
+        "port",
+        "to_process_pid",
+        "data_memory_functionname",
+        "insert_time",
+        "stage_id"
+      ]
+    },
+    {
+      "idField": [
+        "event_id"
+      ],
+      "eType": "events_analysis",
+      "name": "events_analysis",
+      "properties": [
+        "event_id",
+        "stage_id",
+        "load_id",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "source_event_id",
+        "type_id",
+        "severity",
+        "detected_time",
+        "alerted_time",
+        "insert_time",
+        "network_id",
+        "source_type",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_file_type",
+        "by_linked_entity_uid",
+        "by_file_md5",
+        "by_file_directory",
+        "by_file_alternate_file_stream",
+        "by_process_directory",
+        "by_process_pid",
+        "by_process_creation_time",
+        "by_process_integrity_level",
+        "by_sid",
+        "by_file_normalized_path",
+        "by_process_command_line",
+        "by_file_executable",
+        "by_directory_type",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_file_type",
+        "to_linked_entity_uid",
+        "to_file_extension",
+        "to_file_md5",
+        "to_file_directory",
+        "to_file_executable",
+        "to_file_alternate_file_stream",
+        "to_process_directory",
+        "to_process_pid",
+        "to_process_creation_time",
+        "to_process_integrity_level",
+        "to_endpoint_protocol",
+        "to_endpoint_ip",
+        "to_endpoint_port",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_registry_key",
+        "to_registry_data",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_sid",
+        "to_stripped_imagepath",
+        "to_file_normalized_path",
+        "to_process_command_line",
+        "to_directory_type",
+        "to_ip_version",
+        "data_network_send_bytecount",
+        "data_network_recv_bytecount",
+        "data_memory_dllname",
+        "data_memory_functionname",
+        "data_lnk_destination_path",
+        "data_file_sharemode",
+        "data_file_oldfilename",
+        "data_file_old_md5",
+        "data_registry_valuename",
+        "data_registry_newkeyname",
+        "data_registry_privilege",
+        "data_registry_file_path",
+        "data_registry_service_type",
+        "by_file_signature_hash",
+        "to_file_signature_hash",
+        "data_remote_ip",
+        "data_file_md5_already_seen",
+        "date_key"
+      ]
+    },
+    {
+      "idField": [
+        "entity_hash"
+      ],
+      "eType": "entities",
+      "name": "entities",
+      "mandatory": [
+        "entity_hash"
+      ],
+      "properties": [
+        "entity_hash",
+        "uid",
+        "customer_id",
+        "source_id",
+        "name",
+        "type_id",
+        "parent_uid",
+        "parent_name",
+        "insert_time",
+        "update_time",
+        "linked_entity_uid",
+        "directory_type",
+        "driver_description",
+        "driver_signed_by",
+        "driver_path",
+        "endpoint_ip",
+        "endpoint_sid",
+        "endpoint_pid",
+        "endpoint_port",
+        "endpoint_protocol",
+        "endpoint_remoteip",
+        "endpoint_remoteport",
+        "endpoint_ip_version",
+        "file_extension",
+        "file_directory",
+        "file_size",
+        "file_attributes",
+        "file_executable",
+        "file_md5",
+        "file_sha1",
+        "file_sha256",
+        "file_type",
+        "file_pe_type",
+        "file_alternate_file_stream",
+        "file_normalized_path",
+        "file_is_directory",
+        "file_drive_type",
+        "process_pid",
+        "process_creation_time",
+        "process_directory",
+        "process_normalized_path",
+        "process_command_line",
+        "process_command_line_truncated",
+        "process_command_line_length",
+        "process_drive_type",
+        "process_integrity_level",
+        "profile_username",
+        "sid",
+        "registry_key",
+        "registry_value_type",
+        "registry_value_size",
+        "registry_permissions",
+        "registry_data",
+        "service_signed_by",
+        "service_description",
+        "service_imagepath",
+        "service_startmode",
+        "service_startname",
+        "service_servicetype",
+        "service_servicedll",
+        "service_issigned",
+        "stripped_imagepath",
+        "group_is_admin",
+        "share_path",
+        "nic_adapter_name",
+        "nic_description",
+        "nic_physical_address",
+        "nic_ip_address",
+        "nic_subnet_mask",
+        "nic_gateway",
+        "nic_dns_server_list",
+        "nic_dhcp_enabled",
+        "nic_dhcp_server",
+        "nic_dhcp_lease_obtained",
+        "nic_dhcp_lease_expires",
+        "nic_wins_primary_server",
+        "nic_wins_seconday_server",
+        "nic_interface_index",
+        "login_user_sid",
+        "login_domain",
+        "login_user_name",
+        "login_logon_server",
+        "login_user_ou",
+        "login_creation_date",
+        "login_session_id",
+        "logoff_session_id",
+        "routing_destination",
+        "routing_interface_index",
+        "routing_mask",
+        "routing_next_hop",
+        "routing_metric",
+        "routing_is_persistent",
+        "session_boot_time",
+        "systeminfo_active_directory_ou",
+        "systeminfo_os_type",
+        "systeminfo_os_major",
+        "systeminfo_os_minor",
+        "systeminfo_os_sp",
+        "systeminfo_platform",
+        "systeminfo_host_name",
+        "systeminfo_domain",
+        "systeminfo_product_type",
+        "systeminfo_ram_in_mb",
+        "systeminfo_num_of_cores",
+        "partition_deviceid",
+        "partition_caption",
+        "partition_number_of_blocks",
+        "partition_index",
+        "partition_starting_offset",
+        "partition_partition_type",
+        "partition_is_boot",
+        "partition_bootable",
+        "partition_size",
+        "partition_volume_letter",
+        "partition_serial_number",
+        "partition_file_system_name",
+        "partition_file_system_flag",
+        "partition_disk_device_id",
+        "disk_drive_deviceid",
+        "disk_drive_caption",
+        "disk_drive_model",
+        "disk_drive_partitions",
+        "disk_drive_manufacturer",
+        "disk_drive_size",
+        "disk_drive_total_cylinders",
+        "disk_drive_total_heads",
+        "disk_drive_total_sectors",
+        "disk_drive_sectors_per_track",
+        "disk_drive_total_tracks",
+        "disk_drive_tracks_per_cylinder",
+        "disk_drive_bytes_per_sector",
+        "disk_drive_serial_number",
+        "bios_version",
+        "computer_name",
+        "daylight_in_effect",
+        "computer_current_time_zone",
+        "computer_daylight_in_effect",
+        "computer_domain",
+        "computer_manufacturer",
+        "computer_model",
+        "computer_system_type",
+        "computer_total_physical_memory",
+        "os_name",
+        "os_build_number",
+        "os_build_type",
+        "os_service_pack",
+        "os_install_date",
+        "os_boot_device",
+        "os_locale",
+        "os_system_dir",
+        "os_total_virtual_memory_size",
+        "os_os_version",
+        "os_windows_dir",
+        "page_file_caption",
+        "page_file_description",
+        "page_file_initial_size_mb",
+        "page_file_maximum_size_mb",
+        "page_file_name",
+        "page_file_setting_id",
+        "hotfix_hotfix_id",
+        "hotfix_installed_by",
+        "hotfix_installed_on",
+        "scheduled_task_interval",
+        "scheduled_task_description",
+        "file_owner_account",
+        "file_date_created",
+        "file_date_modified",
+        "file_date_accessed",
+        "file_language",
+        "file_signature_hash",
+        "entity_attributes"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "idField": [
+        "trace_id",
+        "behavior_id"
+      ],
+      "rType": "tracestobehaviors",
+      "name": "tracestobehaviors",
+      "directional": true,
+      "mandatory": [
+        "trace_id",
+        "behavior_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_trace",
+          "eTypeA": "traces",
+          "sideAIdField": "trace_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
+        }
+      ],
+      "properties": [
+        "insert_time",
+        "customer_id",
+        "source_id",
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_md5",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_md5",
+        "behavior_is_alert",
+        "attributes_hash"
+      ]
+    },
+    {
+      "idField": [
+        "base_behavior_id",
+        "behavior_id"
+      ],
+      "rType": "behavior_to_behavior",
+      "name": "behavior_to_behavior",
+      "directional": true,
+      "mandatory": [
+        "base_behavior_id",
+        "behavior_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_behavior2behavior_source",
+          "eTypeA": "behaviors",
+          "sideAIdField": "base_behavior_id",
+          "eTypeB": "behaviors",
+          "sideBIdField": "behavior_id"
+        }
+      ],
+      "properties": [
+        "customer_id",
+        "source_id",
+        "behavior_id",
+        "behavior_type_id",
+        "attributes_hash",
+        "base_behavior_id",
+        "is_alerted",
+        "insert_time"
+      ]
+    },
+    {
+      "idField": [
+        "behavior_id",
+        "entity_hash"
+      ],
+      "rType": "behaviorentities",
+      "name": "behaviorentities",
+      "directional": true,
+      "mandatory": [
+        "behavior_id",
+        "entity_hash"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_behavior_entities_behavior",
+          "eTypeA": "behaviors",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "entities",
+          "sideBIdField": "entity_hash"
+        }
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_frequency",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "entity_id",
+        "md5",
+        "entity_hash",
+        "entity_name",
+        "entity_type_id",
+        "entity_file_type",
+        "is_linked_entity",
+        "is_in_merge",
+        "md5_hash",
+        "is_md5_null",
+        "insert_time",
+        "stage_id"
+      ]
+    },
+    {
+      "idField": [
+        "trace_id",
+        "event_id"
+      ],
+      "rType": "traceevents",
+      "name": "traceevents",
+      "directional": true,
+      "mandatory": [
+        "trace_id",
+        "event_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_trace_entities",
+          "eTypeA": "traces",
+          "sideAIdField": "trace_id",
+          "eTypeB": "enrichmentevents",
+          "sideBIdField": "event_id"
+        }
+      ],
+      "properties": [
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "by_process_pid",
+        "by_file_directory",
+        "by_sid",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "to_process_pid",
+        "is_insight",
+        "insert_time",
+        "stage_id"
+      ]
+    },
+    {
+      "idField": [
+        "trace_id",
+        "entity_id"
+      ],
+      "rType": "traceentities",
+      "name": "traceentities",
+      "directional": true,
+      "mandatory": [
+        "trace_id",
+        "entity_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_trace_entities",
+          "eTypeA": "traces",
+          "sideAIdField": "trace_id",
+          "eTypeB": "entities",
+          "sideBIdField": "entity_id"
+        }
+      ],
+      "properties": [
+        "trace_id",
+        "trace_type",
+        "behavior_id",
+        "behavior_type_id",
+        "customer_id",
+        "source_id",
+        "session_id",
+        "entity_id",
+        "md5",
+        "entity_hash",
+        "entity_name",
+        "entity_type_id",
+        "entity_file_type",
+        "is_linked_entity",
+        "is_in_merge",
+        "insert_time",
+        "update_time"
+      ]
+    },
+    {
+      "idField": [
+        "behavior_id",
+        "event_id"
+      ],
+      "rType": "behaviorevents",
+      "name": "behaviorevents",
+      "directional": true,
+      "mandatory": [
+        "behavior_id",
+        "event_id"
+      ],
+      "ePairs": [
+        {
+          "name": "fk_events_behaviors",
+          "eTypeA": "behaviors",
+          "sideAIdField": "behavior_id",
+          "eTypeB": "events_analysis",
+          "sideBIdField": "event_id"
+        }
+      ],
+      "properties": [
+        "rel_id",
+        "behavior_id",
+        "behavior_type_id",
+        "network_id",
+        "source_type",
+        "session_id",
+        "customer_id",
+        "source_id",
+        "event_id",
+        "event_type_id",
+        "event_severity",
+        "event_detected_time",
+        "behavior_frequency",
+        "by_uid",
+        "by_name",
+        "by_type_id",
+        "by_linked_entity_uid",
+        "by_file_type",
+        "by_file_md5",
+        "by_file_directory",
+        "by_file_alternate_file_stream",
+        "by_process_pid",
+        "by_process_directory",
+        "by_sid",
+        "to_uid",
+        "to_name",
+        "to_type_id",
+        "to_linked_entity_uid",
+        "to_file_type",
+        "to_file_md5",
+        "to_file_directory",
+        "to_file_alternate_file_stream",
+        "to_process_pid",
+        "to_process_directory",
+        "to_registry_key",
+        "to_registry_value_type",
+        "to_registry_permissions",
+        "to_registry_data",
+        "to_endpoint_ip",
+        "to_endpoint_remoteip",
+        "to_endpoint_remoteport",
+        "to_endpoint_port",
+        "data_remote_ip",
+        "is_insight",
+        "insert_time",
+        "stage_id"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "insert_time",
+      "name": "insert_time",
+      "type": "date"
+    },
+    {
+      "pType": "update_time",
+      "name": "update_time",
+      "type": "date"
+    },
+    {
+      "pType": "customer_id",
+      "name": "customer_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_id",
+      "name": "source_id",
+      "type": "long"
+    },
+    {
+      "pType": "trace_id",
+      "name": "trace_id",
+      "type": "int"
+    },
+    {
+      "pType": "trace_type",
+      "name": "trace_type",
+      "type": "lov_tracestypes"
+    },
+    {
+      "pType": "trace_status",
+      "name": "trace_status",
+      "type": "int"
+    },
+    {
+      "pType": "closing_reason",
+      "name": "closing_reason",
+      "type": "int"
+    },
+    {
+      "pType": "is_alert",
+      "name": "is_alert",
+      "type": "string"
+    },
+    {
+      "pType": "trace_severity",
+      "name": "trace_severity",
+      "type": "double"
+    },
+    {
+      "pType": "start_time",
+      "name": "start_time",
+      "type": "date"
+    },
+    {
+      "pType": "end_time",
+      "name": "end_time",
+      "type": "date"
+    },
+    {
+      "pType": "min_detected_time",
+      "name": "min_detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "max_detected_time",
+      "name": "max_detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "status_update_time",
+      "name": "status_update_time",
+      "type": "date"
+    },
+    {
+      "pType": "update_by",
+      "name": "update_by",
+      "type": "string"
+    },
+    {
+      "pType": "distinct_alerting_behavior_count",
+      "name": "distinct_alerting_behavior_count",
+      "type": "int"
+    },
+    {
+      "pType": "trace_identifier",
+      "name": "trace_identifier",
+      "type": "long"
+    },
+    {
+      "pType": "network_id",
+      "name": "network_id",
+      "type": "string"
+    },
+    {
+      "pType": "source_type",
+      "name": "source_type",
+      "type": "lov_cyberobjecttypes"
+    },
+    {
+      "pType": "session_id",
+      "name": "session_id",
+      "type": "int"
+    },
+    {
+      "pType": "event_id",
+      "name": "event_id",
+      "type": "int"
+    },
+    {
+      "pType": "event_type_id",
+      "name": "event_type_id",
+      "type": "lov_eventstypes"
+    },
+    {
+      "pType": "event_severity",
+      "name": "event_severity",
+      "type": "int"
+    },
+    {
+      "pType": "event_detected_time",
+      "name": "event_detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "behavior_entity_side",
+      "name": "behavior_entity_side",
+      "type": "string"
+    },
+    {
+      "pType": "behavior_entity_uid",
+      "name": "behavior_entity_uid",
+      "type": "long"
+    },
+    {
+      "pType": "behavior_entity_md5",
+      "name": "behavior_entity_md5",
+      "type": "string"
+    },
+    {
+      "pType": "behavior_entity_name",
+      "name": "behavior_entity_name",
+      "type": "string"
+    },
+    {
+      "pType": "behavior_entity_type",
+      "name": "behavior_entity_type",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_entity_linked_uid",
+      "name": "behavior_entity_linked_uid",
+      "type": "long"
+    },
+    {
+      "pType": "behavior_entity_file_type",
+      "name": "behavior_entity_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "linked_entity_uid",
+      "name": "linked_entity_uid",
+      "type": "long"
+    },
+    {
+      "pType": "linked_entity_md5",
+      "name": "linked_entity_md5",
+      "type": "string"
+    },
+    {
+      "pType": "linked_entity_name",
+      "name": "linked_entity_name",
+      "type": "string"
+    },
+    {
+      "pType": "linked_entity_type",
+      "name": "linked_entity_type",
+      "type": "int"
+    },
+    {
+      "pType": "linked_entity_linked_uid",
+      "name": "linked_entity_linked_uid",
+      "type": "long"
+    },
+    {
+      "pType": "linked_entity_file_type",
+      "name": "linked_entity_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "is_enrichment_rel",
+      "name": "is_enrichment_rel",
+      "type": "string"
+    },
+    {
+      "pType": "is_insight",
+      "name": "is_insight",
+      "type": "string"
+    },
+    {
+      "pType": "is_md5_linked_null",
+      "name": "is_md5_linked_null",
+      "type": "int"
+    },
+    {
+      "pType": "is_md5_behavior_null",
+      "name": "is_md5_behavior_null",
+      "type": "int"
+    },
+    {
+      "pType": "md5_behavior_hash",
+      "name": "md5_behavior_hash",
+      "type": "long"
+    },
+    {
+      "pType": "md5_linked_hash",
+      "name": "md5_linked_hash",
+      "type": "long"
+    },
+    {
+      "pType": "by_uid",
+      "name": "by_uid",
+      "type": "long"
+    },
+    {
+      "pType": "by_name",
+      "name": "by_name",
+      "type": "string"
+    },
+    {
+      "pType": "by_type_id",
+      "name": "by_type_id",
+      "type": "lov_cyberobjecttypes"
+    },
+    {
+      "pType": "by_linked_entity_uid",
+      "name": "by_linked_entity_uid",
+      "type": "long"
+    },
+    {
+      "pType": "by_file_type",
+      "name": "by_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_md5",
+      "name": "by_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "to_uid",
+      "name": "to_uid",
+      "type": "long"
+    },
+    {
+      "pType": "to_name",
+      "name": "to_name",
+      "type": "string"
+    },
+    {
+      "pType": "to_type_id",
+      "name": "to_type_id",
+      "type": "lov_cyberobjecttypes"
+    },
+    {
+      "pType": "to_linked_entity_uid",
+      "name": "to_linked_entity_uid",
+      "type": "long"
+    },
+    {
+      "pType": "to_file_type",
+      "name": "to_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_md5",
+      "name": "to_file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "by_sid",
+      "name": "by_sid",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_directory",
+      "name": "by_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_pid",
+      "name": "by_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "by_process_directory",
+      "name": "by_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_alternate_file_stream",
+      "name": "by_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_key",
+      "name": "to_registry_key",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_value_type",
+      "name": "to_registry_value_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_registry_permissions",
+      "name": "to_registry_permissions",
+      "type": "string"
+    },
+    {
+      "pType": "to_registry_data",
+      "name": "to_registry_data",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_directory",
+      "name": "to_file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_alternate_file_stream",
+      "name": "to_file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_pid",
+      "name": "to_process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "to_process_directory",
+      "name": "to_process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "to_endpoint_ip",
+      "name": "to_endpoint_ip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteip",
+      "name": "to_endpoint_remoteip",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_remoteport",
+      "name": "to_endpoint_remoteport",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_port",
+      "name": "to_endpoint_port",
+      "type": "int"
+    },
+    {
+      "pType": "data_remote_ip",
+      "name": "data_remote_ip",
+      "type": "int"
+    },
+    {
+      "pType": "stage_id",
+      "name": "stage_id",
+      "type": "int"
+    },
+    {
+      "pType": "rel_id",
+      "name": "rel_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_id",
+      "name": "behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "behavior_type_id",
+      "name": "behavior_type_id",
+      "type": "lov_behaviorstypes"
+    },
+    {
+      "pType": "behavior_is_alert",
+      "name": "behavior_is_alert",
+      "type": "string"
+    },
+    {
+      "pType": "attributes_hash",
+      "name": "attributes_hash",
+      "type": "long"
+    },
+    {
+      "pType": "behavior_hash",
+      "name": "behavior_hash",
+      "type": "long"
+    },
+    {
+      "pType": "lone_behavior",
+      "name": "lone_behavior",
+      "type": "string"
+    },
+    {
+      "pType": "type_id",
+      "name": "type_id",
+      "type": "int"
+    },
+    {
+      "pType": "frequency",
+      "name": "frequency",
+      "type": "double"
+    },
+    {
+      "pType": "by_type_id",
+      "name": "by_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "by_is_linked",
+      "name": "by_is_linked",
+      "type": "string"
+    },
+    {
+      "pType": "to_type_id",
+      "name": "to_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "to_is_linked",
+      "name": "to_is_linked",
+      "type": "string"
+    },
+    {
+      "pType": "data_network_ratio",
+      "name": "data_network_ratio",
+      "type": "double"
+    },
+    {
+      "pType": "data_file_extension",
+      "name": "data_file_extension",
+      "type": "string"
+    },
+    {
+      "pType": "data_operation_system_hash",
+      "name": "data_operation_system_hash",
+      "type": "long"
+    },
+    {
+      "pType": "data_directory",
+      "name": "data_directory",
+      "type": "string"
+    },
+    {
+      "pType": "created_by_analysis_id",
+      "name": "created_by_analysis_id",
+      "type": "int"
+    },
+    {
+      "pType": "port",
+      "name": "port",
+      "type": "int"
+    },
+    {
+      "pType": "data_memory_functionname",
+      "name": "data_memory_functionname",
+      "type": "string"
+    },
+    {
+      "pType": "behavior_type_id",
+      "name": "behavior_type_id",
+      "type": "int"
+    },
+    {
+      "pType": "base_behavior_id",
+      "name": "base_behavior_id",
+      "type": "int"
+    },
+    {
+      "pType": "is_alerted",
+      "name": "is_alerted",
+      "type": "string"
+    },
+    {
+      "pType": "behavior_frequency",
+      "name": "behavior_frequency",
+      "type": "double"
+    },
+    {
+      "pType": "entity_id",
+      "name": "entity_id",
+      "type": "int"
+    },
+    {
+      "pType": "md5",
+      "name": "md5",
+      "type": "string"
+    },
+    {
+      "pType": "entity_hash",
+      "name": "entity_hash",
+      "type": "long"
+    },
+    {
+      "pType": "entity_name",
+      "name": "entity_name",
+      "type": "string"
+    },
+    {
+      "pType": "entity_type_id",
+      "name": "entity_type_id",
+      "type": "lov_cyberobjecttypes"
+    },
+    {
+      "pType": "entity_file_type",
+      "name": "entity_file_type",
+      "type": "int"
+    },
+    {
+      "pType": "is_linked_entity",
+      "name": "is_linked_entity",
+      "type": "string"
+    },
+    {
+      "pType": "is_in_merge",
+      "name": "is_in_merge",
+      "type": "string"
+    },
+    {
+      "pType": "md5_hash",
+      "name": "md5_hash",
+      "type": "long"
+    },
+    {
+      "pType": "is_md5_null",
+      "name": "is_md5_null",
+      "type": "int"
+    },
+    {
+      "pType": "load_id",
+      "name": "load_id",
+      "type": "int"
+    },
+    {
+      "pType": "source_event_id",
+      "name": "source_event_id",
+      "type": "int"
+    },
+    {
+      "pType": "severity",
+      "name": "severity",
+      "type": "int"
+    },
+    {
+      "pType": "detected_time",
+      "name": "detected_time",
+      "type": "date"
+    },
+    {
+      "pType": "alerted_time",
+      "name": "alerted_time",
+      "type": "date"
+    },
+    {
+      "pType": "by_process_creation_time",
+      "name": "by_process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "by_process_integrity_level",
+      "name": "by_process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_normalized_path",
+      "name": "by_file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "by_process_command_line",
+      "name": "by_process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "by_file_executable",
+      "name": "by_file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "by_directory_type",
+      "name": "by_directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_file_extension",
+      "name": "to_file_extension",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_executable",
+      "name": "to_file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_creation_time",
+      "name": "to_process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "to_process_integrity_level",
+      "name": "to_process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "to_endpoint_protocol",
+      "name": "to_endpoint_protocol",
+      "type": "int"
+    },
+    {
+      "pType": "to_sid",
+      "name": "to_sid",
+      "type": "string"
+    },
+    {
+      "pType": "to_stripped_imagepath",
+      "name": "to_stripped_imagepath",
+      "type": "string"
+    },
+    {
+      "pType": "to_file_normalized_path",
+      "name": "to_file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "to_process_command_line",
+      "name": "to_process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "to_directory_type",
+      "name": "to_directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "to_ip_version",
+      "name": "to_ip_version",
+      "type": "int"
+    },
+    {
+      "pType": "data_network_send_bytecount",
+      "name": "data_network_send_bytecount",
+      "type": "int"
+    },
+    {
+      "pType": "data_network_recv_bytecount",
+      "name": "data_network_recv_bytecount",
+      "type": "int"
+    },
+    {
+      "pType": "data_memory_dllname",
+      "name": "data_memory_dllname",
+      "type": "string"
+    },
+    {
+      "pType": "data_lnk_destination_path",
+      "name": "data_lnk_destination_path",
+      "type": "string"
+    },
+    {
+      "pType": "data_file_sharemode",
+      "name": "data_file_sharemode",
+      "type": "int"
+    },
+    {
+      "pType": "data_file_oldfilename",
+      "name": "data_file_oldfilename",
+      "type": "string"
+    },
+    {
+      "pType": "data_file_old_md5",
+      "name": "data_file_old_md5",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_valuename",
+      "name": "data_registry_valuename",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_newkeyname",
+      "name": "data_registry_newkeyname",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_privilege",
+      "name": "data_registry_privilege",
+      "type": "int"
+    },
+    {
+      "pType": "data_registry_file_path",
+      "name": "data_registry_file_path",
+      "type": "string"
+    },
+    {
+      "pType": "data_registry_service_type",
+      "name": "data_registry_service_type",
+      "type": "int"
+    },
+    {
+      "pType": "by_file_signature_hash",
+      "name": "by_file_signature_hash",
+      "type": "long"
+    },
+    {
+      "pType": "to_file_signature_hash",
+      "name": "to_file_signature_hash",
+      "type": "long"
+    },
+    {
+      "pType": "data_file_md5_already_seen",
+      "name": "data_file_md5_already_seen",
+      "type": "int"
+    },
+    {
+      "pType": "date_key",
+      "name": "date_key",
+      "type": "int"
+    },
+    {
+      "pType": "uid",
+      "name": "uid",
+      "type": "int"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "parent_uid",
+      "name": "parent_uid",
+      "type": "long"
+    },
+    {
+      "pType": "parent_name",
+      "name": "parent_name",
+      "type": "string"
+    },
+    {
+      "pType": "directory_type",
+      "name": "directory_type",
+      "type": "int"
+    },
+    {
+      "pType": "driver_description",
+      "name": "driver_description",
+      "type": "string"
+    },
+    {
+      "pType": "driver_signed_by",
+      "name": "driver_signed_by",
+      "type": "string"
+    },
+    {
+      "pType": "driver_path",
+      "name": "driver_path",
+      "type": "string"
+    },
+    {
+      "pType": "endpoint_ip",
+      "name": "endpoint_ip",
+      "type": "int"
+    },
+    {
+      "pType": "endpoint_sid",
+      "name": "endpoint_sid",
+      "type": "string"
+    },
+    {
+      "pType": "endpoint_pid",
+      "name": "endpoint_pid",
+      "type": "string"
+    },
+    {
+      "pType": "endpoint_port",
+      "name": "endpoint_port",
+      "type": "int"
+    },
+    {
+      "pType": "endpoint_protocol",
+      "name": "endpoint_protocol",
+      "type": "int"
+    },
+    {
+      "pType": "endpoint_remoteip",
+      "name": "endpoint_remoteip",
+      "type": "int"
+    },
+    {
+      "pType": "endpoint_remoteport",
+      "name": "endpoint_remoteport",
+      "type": "int"
+    },
+    {
+      "pType": "endpoint_ip_version",
+      "name": "endpoint_ip_version",
+      "type": "int"
+    },
+    {
+      "pType": "file_extension",
+      "name": "file_extension",
+      "type": "string"
+    },
+    {
+      "pType": "file_directory",
+      "name": "file_directory",
+      "type": "string"
+    },
+    {
+      "pType": "file_size",
+      "name": "file_size",
+      "type": "int"
+    },
+    {
+      "pType": "file_attributes",
+      "name": "file_attributes",
+      "type": "int"
+    },
+    {
+      "pType": "file_executable",
+      "name": "file_executable",
+      "type": "string"
+    },
+    {
+      "pType": "file_md5",
+      "name": "file_md5",
+      "type": "string"
+    },
+    {
+      "pType": "file_sha1",
+      "name": "file_sha1",
+      "type": "string"
+    },
+    {
+      "pType": "file_sha256",
+      "name": "file_sha256",
+      "type": "string"
+    },
+    {
+      "pType": "file_type",
+      "name": "file_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_pe_type",
+      "name": "file_pe_type",
+      "type": "int"
+    },
+    {
+      "pType": "file_alternate_file_stream",
+      "name": "file_alternate_file_stream",
+      "type": "string"
+    },
+    {
+      "pType": "file_normalized_path",
+      "name": "file_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "file_is_directory",
+      "name": "file_is_directory",
+      "type": "string"
+    },
+    {
+      "pType": "file_drive_type",
+      "name": "file_drive_type",
+      "type": "int"
+    },
+    {
+      "pType": "process_pid",
+      "name": "process_pid",
+      "type": "int"
+    },
+    {
+      "pType": "process_creation_time",
+      "name": "process_creation_time",
+      "type": "date"
+    },
+    {
+      "pType": "process_directory",
+      "name": "process_directory",
+      "type": "string"
+    },
+    {
+      "pType": "process_normalized_path",
+      "name": "process_normalized_path",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line",
+      "name": "process_command_line",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line_truncated",
+      "name": "process_command_line_truncated",
+      "type": "string"
+    },
+    {
+      "pType": "process_command_line_length",
+      "name": "process_command_line_length",
+      "type": "int"
+    },
+    {
+      "pType": "process_drive_type",
+      "name": "process_drive_type",
+      "type": "int"
+    },
+    {
+      "pType": "process_integrity_level",
+      "name": "process_integrity_level",
+      "type": "int"
+    },
+    {
+      "pType": "profile_username",
+      "name": "profile_username",
+      "type": "string"
+    },
+    {
+      "pType": "sid",
+      "name": "sid",
+      "type": "string"
+    },
+    {
+      "pType": "registry_key",
+      "name": "registry_key",
+      "type": "string"
+    },
+    {
+      "pType": "registry_value_type",
+      "name": "registry_value_type",
+      "type": "int"
+    },
+    {
+      "pType": "registry_value_size",
+      "name": "registry_value_size",
+      "type": "int"
+    },
+    {
+      "pType": "registry_permissions",
+      "name": "registry_permissions",
+      "type": "string"
+    },
+    {
+      "pType": "registry_data",
+      "name": "registry_data",
+      "type": "string"
+    },
+    {
+      "pType": "service_signed_by",
+      "name": "service_signed_by",
+      "type": "string"
+    },
+    {
+      "pType": "service_description",
+      "name": "service_description",
+      "type": "string"
+    },
+    {
+      "pType": "service_imagepath",
+      "name": "service_imagepath",
+      "type": "string"
+    },
+    {
+      "pType": "service_startmode",
+      "name": "service_startmode",
+      "type": "int"
+    },
+    {
+      "pType": "service_startname",
+      "name": "service_startname",
+      "type": "string"
+    },
+    {
+      "pType": "service_servicetype",
+      "name": "service_servicetype",
+      "type": "int"
+    },
+    {
+      "pType": "service_servicedll",
+      "name": "service_servicedll",
+      "type": "string"
+    },
+    {
+      "pType": "service_issigned",
+      "name": "service_issigned",
+      "type": "string"
+    },
+    {
+      "pType": "stripped_imagepath",
+      "name": "stripped_imagepath",
+      "type": "string"
+    },
+    {
+      "pType": "group_is_admin",
+      "name": "group_is_admin",
+      "type": "string"
+    },
+    {
+      "pType": "share_path",
+      "name": "share_path",
+      "type": "string"
+    },
+    {
+      "pType": "nic_adapter_name",
+      "name": "nic_adapter_name",
+      "type": "string"
+    },
+    {
+      "pType": "nic_description",
+      "name": "nic_description",
+      "type": "string"
+    },
+    {
+      "pType": "nic_physical_address",
+      "name": "nic_physical_address",
+      "type": "string"
+    },
+    {
+      "pType": "nic_ip_address",
+      "name": "nic_ip_address",
+      "type": "string"
+    },
+    {
+      "pType": "nic_subnet_mask",
+      "name": "nic_subnet_mask",
+      "type": "string"
+    },
+    {
+      "pType": "nic_gateway",
+      "name": "nic_gateway",
+      "type": "string"
+    },
+    {
+      "pType": "nic_dns_server_list",
+      "name": "nic_dns_server_list",
+      "type": "string"
+    },
+    {
+      "pType": "nic_dhcp_enabled",
+      "name": "nic_dhcp_enabled",
+      "type": "string"
+    },
+    {
+      "pType": "nic_dhcp_server",
+      "name": "nic_dhcp_server",
+      "type": "string"
+    },
+    {
+      "pType": "nic_dhcp_lease_obtained",
+      "name": "nic_dhcp_lease_obtained",
+      "type": "date"
+    },
+    {
+      "pType": "nic_dhcp_lease_expires",
+      "name": "nic_dhcp_lease_expires",
+      "type": "date"
+    },
+    {
+      "pType": "nic_wins_primary_server",
+      "name": "nic_wins_primary_server",
+      "type": "string"
+    },
+    {
+      "pType": "nic_wins_seconday_server",
+      "name": "nic_wins_seconday_server",
+      "type": "string"
+    },
+    {
+      "pType": "nic_interface_index",
+      "name": "nic_interface_index",
+      "type": "int"
+    },
+    {
+      "pType": "login_user_sid",
+      "name": "login_user_sid",
+      "type": "string"
+    },
+    {
+      "pType": "login_domain",
+      "name": "login_domain",
+      "type": "string"
+    },
+    {
+      "pType": "login_user_name",
+      "name": "login_user_name",
+      "type": "string"
+    },
+    {
+      "pType": "login_logon_server",
+      "name": "login_logon_server",
+      "type": "string"
+    },
+    {
+      "pType": "login_user_ou",
+      "name": "login_user_ou",
+      "type": "string"
+    },
+    {
+      "pType": "login_creation_date",
+      "name": "login_creation_date",
+      "type": "date"
+    },
+    {
+      "pType": "login_session_id",
+      "name": "login_session_id",
+      "type": "int"
+    },
+    {
+      "pType": "logoff_session_id",
+      "name": "logoff_session_id",
+      "type": "int"
+    },
+    {
+      "pType": "routing_destination",
+      "name": "routing_destination",
+      "type": "string"
+    },
+    {
+      "pType": "routing_interface_index",
+      "name": "routing_interface_index",
+      "type": "int"
+    },
+    {
+      "pType": "routing_mask",
+      "name": "routing_mask",
+      "type": "int"
+    },
+    {
+      "pType": "routing_next_hop",
+      "name": "routing_next_hop",
+      "type": "int"
+    },
+    {
+      "pType": "routing_metric",
+      "name": "routing_metric",
+      "type": "int"
+    },
+    {
+      "pType": "routing_is_persistent",
+      "name": "routing_is_persistent",
+      "type": "string"
+    },
+    {
+      "pType": "session_boot_time",
+      "name": "session_boot_time",
+      "type": "date"
+    },
+    {
+      "pType": "systeminfo_active_directory_ou",
+      "name": "systeminfo_active_directory_ou",
+      "type": "string"
+    },
+    {
+      "pType": "systeminfo_os_type",
+      "name": "systeminfo_os_type",
+      "type": "string"
+    },
+    {
+      "pType": "systeminfo_os_major",
+      "name": "systeminfo_os_major",
+      "type": "int"
+    },
+    {
+      "pType": "systeminfo_os_minor",
+      "name": "systeminfo_os_minor",
+      "type": "int"
+    },
+    {
+      "pType": "systeminfo_os_sp",
+      "name": "systeminfo_os_sp",
+      "type": "int"
+    },
+    {
+      "pType": "systeminfo_platform",
+      "name": "systeminfo_platform",
+      "type": "string"
+    },
+    {
+      "pType": "systeminfo_host_name",
+      "name": "systeminfo_host_name",
+      "type": "string"
+    },
+    {
+      "pType": "systeminfo_domain",
+      "name": "systeminfo_domain",
+      "type": "string"
+    },
+    {
+      "pType": "systeminfo_product_type",
+      "name": "systeminfo_product_type",
+      "type": "int"
+    },
+    {
+      "pType": "systeminfo_ram_in_mb",
+      "name": "systeminfo_ram_in_mb",
+      "type": "int"
+    },
+    {
+      "pType": "systeminfo_num_of_cores",
+      "name": "systeminfo_num_of_cores",
+      "type": "int"
+    },
+    {
+      "pType": "partition_deviceid",
+      "name": "partition_deviceid",
+      "type": "string"
+    },
+    {
+      "pType": "partition_caption",
+      "name": "partition_caption",
+      "type": "string"
+    },
+    {
+      "pType": "partition_number_of_blocks",
+      "name": "partition_number_of_blocks",
+      "type": "int"
+    },
+    {
+      "pType": "partition_index",
+      "name": "partition_index",
+      "type": "int"
+    },
+    {
+      "pType": "partition_starting_offset",
+      "name": "partition_starting_offset",
+      "type": "int"
+    },
+    {
+      "pType": "partition_partition_type",
+      "name": "partition_partition_type",
+      "type": "string"
+    },
+    {
+      "pType": "partition_is_boot",
+      "name": "partition_is_boot",
+      "type": "string"
+    },
+    {
+      "pType": "partition_bootable",
+      "name": "partition_bootable",
+      "type": "string"
+    },
+    {
+      "pType": "partition_size",
+      "name": "partition_size",
+      "type": "int"
+    },
+    {
+      "pType": "partition_volume_letter",
+      "name": "partition_volume_letter",
+      "type": "string"
+    },
+    {
+      "pType": "partition_serial_number",
+      "name": "partition_serial_number",
+      "type": "string"
+    },
+    {
+      "pType": "partition_file_system_name",
+      "name": "partition_file_system_name",
+      "type": "string"
+    },
+    {
+      "pType": "partition_file_system_flag",
+      "name": "partition_file_system_flag",
+      "type": "int"
+    },
+    {
+      "pType": "partition_disk_device_id",
+      "name": "partition_disk_device_id",
+      "type": "string"
+    },
+    {
+      "pType": "disk_drive_deviceid",
+      "name": "disk_drive_deviceid",
+      "type": "string"
+    },
+    {
+      "pType": "disk_drive_caption",
+      "name": "disk_drive_caption",
+      "type": "string"
+    },
+    {
+      "pType": "disk_drive_model",
+      "name": "disk_drive_model",
+      "type": "string"
+    },
+    {
+      "pType": "disk_drive_partitions",
+      "name": "disk_drive_partitions",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_manufacturer",
+      "name": "disk_drive_manufacturer",
+      "type": "string"
+    },
+    {
+      "pType": "disk_drive_size",
+      "name": "disk_drive_size",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_total_cylinders",
+      "name": "disk_drive_total_cylinders",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_total_heads",
+      "name": "disk_drive_total_heads",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_total_sectors",
+      "name": "disk_drive_total_sectors",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_sectors_per_track",
+      "name": "disk_drive_sectors_per_track",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_total_tracks",
+      "name": "disk_drive_total_tracks",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_tracks_per_cylinder",
+      "name": "disk_drive_tracks_per_cylinder",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_bytes_per_sector",
+      "name": "disk_drive_bytes_per_sector",
+      "type": "int"
+    },
+    {
+      "pType": "disk_drive_serial_number",
+      "name": "disk_drive_serial_number",
+      "type": "string"
+    },
+    {
+      "pType": "bios_version",
+      "name": "bios_version",
+      "type": "string"
+    },
+    {
+      "pType": "computer_name",
+      "name": "computer_name",
+      "type": "string"
+    },
+    {
+      "pType": "daylight_in_effect",
+      "name": "daylight_in_effect",
+      "type": "string"
+    },
+    {
+      "pType": "computer_current_time_zone",
+      "name": "computer_current_time_zone",
+      "type": "int"
+    },
+    {
+      "pType": "computer_daylight_in_effect",
+      "name": "computer_daylight_in_effect",
+      "type": "string"
+    },
+    {
+      "pType": "computer_domain",
+      "name": "computer_domain",
+      "type": "string"
+    },
+    {
+      "pType": "computer_manufacturer",
+      "name": "computer_manufacturer",
+      "type": "string"
+    },
+    {
+      "pType": "computer_model",
+      "name": "computer_model",
+      "type": "string"
+    },
+    {
+      "pType": "computer_system_type",
+      "name": "computer_system_type",
+      "type": "string"
+    },
+    {
+      "pType": "computer_total_physical_memory",
+      "name": "computer_total_physical_memory",
+      "type": "int"
+    },
+    {
+      "pType": "os_name",
+      "name": "os_name",
+      "type": "string"
+    },
+    {
+      "pType": "os_build_number",
+      "name": "os_build_number",
+      "type": "int"
+    },
+    {
+      "pType": "os_build_type",
+      "name": "os_build_type",
+      "type": "string"
+    },
+    {
+      "pType": "os_service_pack",
+      "name": "os_service_pack",
+      "type": "string"
+    },
+    {
+      "pType": "os_install_date",
+      "name": "os_install_date",
+      "type": "date"
+    },
+    {
+      "pType": "os_boot_device",
+      "name": "os_boot_device",
+      "type": "string"
+    },
+    {
+      "pType": "os_locale",
+      "name": "os_locale",
+      "type": "int"
+    },
+    {
+      "pType": "os_system_dir",
+      "name": "os_system_dir",
+      "type": "string"
+    },
+    {
+      "pType": "os_total_virtual_memory_size",
+      "name": "os_total_virtual_memory_size",
+      "type": "int"
+    },
+    {
+      "pType": "os_os_version",
+      "name": "os_os_version",
+      "type": "string"
+    },
+    {
+      "pType": "os_windows_dir",
+      "name": "os_windows_dir",
+      "type": "string"
+    },
+    {
+      "pType": "page_file_caption",
+      "name": "page_file_caption",
+      "type": "string"
+    },
+    {
+      "pType": "page_file_description",
+      "name": "page_file_description",
+      "type": "string"
+    },
+    {
+      "pType": "page_file_initial_size_mb",
+      "name": "page_file_initial_size_mb",
+      "type": "int"
+    },
+    {
+      "pType": "page_file_maximum_size_mb",
+      "name": "page_file_maximum_size_mb",
+      "type": "int"
+    },
+    {
+      "pType": "page_file_name",
+      "name": "page_file_name",
+      "type": "string"
+    },
+    {
+      "pType": "page_file_setting_id",
+      "name": "page_file_setting_id",
+      "type": "string"
+    },
+    {
+      "pType": "hotfix_hotfix_id",
+      "name": "hotfix_hotfix_id",
+      "type": "string"
+    },
+    {
+      "pType": "hotfix_installed_by",
+      "name": "hotfix_installed_by",
+      "type": "string"
+    },
+    {
+      "pType": "hotfix_installed_on",
+      "name": "hotfix_installed_on",
+      "type": "string"
+    },
+    {
+      "pType": "scheduled_task_interval",
+      "name": "scheduled_task_interval",
+      "type": "string"
+    },
+    {
+      "pType": "scheduled_task_description",
+      "name": "scheduled_task_description",
+      "type": "string"
+    },
+    {
+      "pType": "file_owner_account",
+      "name": "file_owner_account",
+      "type": "string"
+    },
+    {
+      "pType": "file_date_created",
+      "name": "file_date_created",
+      "type": "date"
+    },
+    {
+      "pType": "file_date_modified",
+      "name": "file_date_modified",
+      "type": "date"
+    },
+    {
+      "pType": "file_date_accessed",
+      "name": "file_date_accessed",
+      "type": "date"
+    },
+    {
+      "pType": "file_language",
+      "name": "file_language",
+      "type": "string"
+    },
+    {
+      "pType": "file_signature_hash",
+      "name": "file_signature_hash",
+      "type": "long"
+    },
+    {
+      "pType": "entity_attributes",
+      "name": "entity_attributes",
+      "type": "string"
+    },
+    {
+      "pType": "entity_type_id",
+      "name": "entity_type_id",
+      "type": "int"
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "lov_cyberobjecttypes",
+      "values": [
+        {
+          "val": 0,
+          "name": "File"
+        },
+        {
+          "val": 1,
+          "name": "Process"
+        },
+        {
+          "val": 2,
+          "name": "RegistryValue"
+        },
+        {
+          "val": 3,
+          "name": "User"
+        },
+        {
+          "val": 4,
+          "name": "Driver"
+        },
+        {
+          "val": 5,
+          "name": "Socket"
+        },
+        {
+          "val": 6,
+          "name": "Group"
+        },
+        {
+          "val": 9,
+          "name": "RegistreyKey"
+        },
+        {
+          "val": 10,
+          "name": "NIC"
+        },
+        {
+          "val": 11,
+          "name": "Routing entry"
+        },
+        {
+          "val": 12,
+          "name": "SystemInfo"
+        },
+        {
+          "val": 13,
+          "name": "Session"
+        },
+        {
+          "val": 14,
+          "name": "Login"
+        },
+        {
+          "val": 15,
+          "name": "Logoff"
+        },
+        {
+          "val": 16,
+          "name": "Service"
+        },
+        {
+          "val": 17,
+          "name": "Event Log"
+        },
+        {
+          "val": 18,
+          "name": "Disk Drive"
+        },
+        {
+          "val": 19,
+          "name": "Partition"
+        },
+        {
+          "val": 20,
+          "name": "BIOS"
+        },
+        {
+          "val": 21,
+          "name": "Host"
+        },
+        {
+          "val": 22,
+          "name": "OS"
+        },
+        {
+          "val": 23,
+          "name": "Page File"
+        },
+        {
+          "val": 24,
+          "name": "Hot Fix"
+        },
+        {
+          "val": 25,
+          "name": "Physical Disk"
+        },
+        {
+          "val": 26,
+          "name": "Kernel Table"
+        },
+        {
+          "val": 28,
+          "name": "Scheduled Task"
+        },
+        {
+          "val": 50027,
+          "name": "URL"
+        },
+        {
+          "val": 50028,
+          "name": "Network Share"
+        }
+      ]
+    },
+    {
+      "eType": "lov_behaviorstypes",
+      "values": [
+        {
+          "val": -2,
+          "name": "File Executed"
+        },
+        {
+          "val": -1,
+          "name": "Create Process"
+        },
+        {
+          "val": 1007,
+          "name": "Event log message"
+        },
+        {
+          "val": 1041,
+          "name": "Driver loaded"
+        },
+        {
+          "val": 1048,
+          "name": "Remote Access"
+        },
+        {
+          "val": 1080,
+          "name": "Service deleted"
+        },
+        {
+          "val": 1117,
+          "name": "Check for remote debugger"
+        },
+        {
+          "val": 1144,
+          "name": "Executable Blocked"
+        },
+        {
+          "val": 1145,
+          "name": "User Execution blocked"
+        },
+        {
+          "val": 1146,
+          "name": "Key logger – Set Windows Hook"
+        },
+        {
+          "val": 1152,
+          "name": "Ransomware blocked"
+        },
+        {
+          "val": 1154,
+          "name": "Code injection - Process hollowing"
+        },
+        {
+          "val": 1155,
+          "name": "MBR change blocked"
+        },
+        {
+          "val": 1159,
+          "name": "Use Domain Generation Algorithm (DGA)"
+        },
+        {
+          "val": 1160,
+          "name": "Screenshot Taken"
+        },
+        {
+          "val": 1163,
+          "name": "WMI Event Subscription"
+        },
+        {
+          "val": 1164,
+          "name": "WMI Event Subscription Change"
+        },
+        {
+          "val": 2007,
+          "name": "Unknown Double ext. - file created"
+        },
+        {
+          "val": 2015,
+          "name": "Sensitive file accessed"
+        },
+        {
+          "val": 2017,
+          "name": "Unknown Double ext. - file renamed"
+        },
+        {
+          "val": 2023,
+          "name": "Execution from removable media"
+        },
+        {
+          "val": 2029,
+          "name": "Program files - file created"
+        },
+        {
+          "val": 2030,
+          "name": "Program files - file deleted"
+        },
+        {
+          "val": 2031,
+          "name": "Program files - file renamed"
+        },
+        {
+          "val": 2038,
+          "name": "Suspicious path - execution"
+        },
+        {
+          "val": 2049,
+          "name": "RTL override - file created"
+        },
+        {
+          "val": 2050,
+          "name": "RTL override - file renamed"
+        },
+        {
+          "val": 2052,
+          "name": "Writable code section"
+        },
+        {
+          "val": 2054,
+          "name": "Abnormal ext. - file created"
+        },
+        {
+          "val": 2057,
+          "name": "UAC Bypass"
+        },
+        {
+          "val": 2061,
+          "name": "Abnormal ext. - file renamed"
+        },
+        {
+          "val": 2066,
+          "name": "Security Settings modification"
+        },
+        {
+          "val": 2072,
+          "name": "YARA rules matched"
+        },
+        {
+          "val": 2089,
+          "name": "Reflective DLL loading"
+        },
+        {
+          "val": 2093,
+          "name": "Masquerading - file created"
+        },
+        {
+          "val": 2095,
+          "name": "Check for Sandbox Products"
+        },
+        {
+          "val": 2096,
+          "name": "Access to Windows Authentication Service"
+        },
+        {
+          "val": 2098,
+          "name": "COM Hijacking - Search Order Hijack"
+        },
+        {
+          "val": 2099,
+          "name": "Suspicious Command Line"
+        },
+        {
+          "val": 2100,
+          "name": "Self Delete"
+        },
+        {
+          "val": 2101,
+          "name": "Self Copy"
+        },
+        {
+          "val": 2102,
+          "name": "Remote Management"
+        },
+        {
+          "val": 2103,
+          "name": "Abnormal Process Network Activity"
+        },
+        {
+          "val": 2104,
+          "name": "Privileged Process In User Folder"
+        },
+        {
+          "val": 2105,
+          "name": "Create And Execute"
+        },
+        {
+          "val": 2110,
+          "name": " Hijacking - COM Object in a Suspicious Folder"
+        },
+        {
+          "val": 2208,
+          "name": "Key logger – Raw input devices"
+        },
+        {
+          "val": 3000,
+          "name": "AM Prevention - Known IOC"
+        },
+        {
+          "val": 3002,
+          "name": "AM Prevention - Behavioral"
+        },
+        {
+          "val": 11005,
+          "name": "Registry - executable added"
+        },
+        {
+          "val": 11012,
+          "name": "Network - upload rate"
+        },
+        {
+          "val": 11023,
+          "name": "Uncommon driver installed"
+        },
+        {
+          "val": 11029,
+          "name": "System folder - exec. changed"
+        },
+        {
+          "val": 11036,
+          "name": "LNK file  changed"
+        },
+        {
+          "val": 11038,
+          "name": "Registry - delete after boot"
+        },
+        {
+          "val": 11039,
+          "name": "Pentest tool used"
+        },
+        {
+          "val": 11041,
+          "name": "Child with high privileges"
+        },
+        {
+          "val": 11042,
+          "name": "Service created"
+        },
+        {
+          "val": 11043,
+          "name": "Driver created"
+        },
+        {
+          "val": 11044,
+          "name": "Service changed"
+        },
+        {
+          "val": 11045,
+          "name": "Driver changed"
+        },
+        {
+          "val": 11046,
+          "name": "Registry - service added"
+        },
+        {
+          "val": 11047,
+          "name": "Registry - driver added"
+        },
+        {
+          "val": 11048,
+          "name": "Registry - autorun added "
+        },
+        {
+          "val": 11050,
+          "name": "Abnormal ext. - registry autorun"
+        },
+        {
+          "val": 11051,
+          "name": "Autorun folder - file added"
+        },
+        {
+          "val": 11055,
+          "name": "Process executed from Office"
+        },
+        {
+          "val": 11056,
+          "name": "Suspicious PowerShell Command-line"
+        },
+        {
+          "val": 11057,
+          "name": "UAC bypass - DLL Hijack"
+        },
+        {
+          "val": 11058,
+          "name": "Windows Process Suspicious Path"
+        },
+        {
+          "val": 11059,
+          "name": "Remotely Executed Service - Source"
+        },
+        {
+          "val": 11060,
+          "name": "Remotely Executed Service - Target"
+        },
+        {
+          "val": 11068,
+          "name": "Reverse shell"
+        },
+        {
+          "val": 12036,
+          "name": "LNK file - target changed"
+        },
+        {
+          "val": 13001,
+          "name": "Code injection - Classical"
+        },
+        {
+          "val": 13002,
+          "name": "Code injection - Shared section"
+        },
+        {
+          "val": 13003,
+          "name": "Code injection - APC"
+        },
+        {
+          "val": 13004,
+          "name": "Code injection - SetThreadContext"
+        },
+        {
+          "val": 13011,
+          "name": "WMI Execution by PowerShell"
+        },
+        {
+          "val": 13012,
+          "name": "WMI Script Executed"
+        },
+        {
+          "val": 13013,
+          "name": "Remote WMI command execution"
+        },
+        {
+          "val": 13014,
+          "name": "WMI Script Suspicious Traffic"
+        },
+        {
+          "val": 13015,
+          "name": "WMI Script Executed process"
+        },
+        {
+          "val": 13017,
+          "name": "WinRM Execution"
+        },
+        {
+          "val": 13021,
+          "name": "Entity with Revoked Certificate"
+        },
+        {
+          "val": 13022,
+          "name": "Entity with Invalid Certificate"
+        },
+        {
+          "val": 13023,
+          "name": "WebShell"
+        },
+        {
+          "val": 13024,
+          "name": "Office Executing suspicious app"
+        },
+        {
+          "val": 13025,
+          "name": "Suspicious Execution of Windows Utility"
+        },
+        {
+          "val": 13030,
+          "name": "Host Scanning"
+        },
+        {
+          "val": 13031,
+          "name": "Downloaded file executed"
+        },
+        {
+          "val": 13032,
+          "name": "Outlook attachment executed"
+        },
+        {
+          "val": 13033,
+          "name": "File executed from an external drive"
+        },
+        {
+          "val": 13034,
+          "name": "File downloaded from a network share"
+        },
+        {
+          "val": 13841,
+          "name": "Suspicious Execution of Script File"
+        },
+        {
+          "val": 13842,
+          "name": "Suspicious Execution by trusted application"
+        },
+        {
+          "val": 13843,
+          "name": "Potential UAC Bypass"
+        },
+        {
+          "val": 13844,
+          "name": "Check Locale"
+        },
+        {
+          "val": 13845,
+          "name": "Execute VBscript using sysinternals Utility"
+        },
+        {
+          "val": 13846,
+          "name": "Execution using Windows Debugger"
+        },
+        {
+          "val": 13847,
+          "name": "Execute dll which is stored in alternate data stream"
+        },
+        {
+          "val": 13848,
+          "name": "Network Configuration/Scanning- abnormal"
+        },
+        {
+          "val": 13849,
+          "name": "Change file permission"
+        },
+        {
+          "val": 13851,
+          "name": "Start a Service"
+        },
+        {
+          "val": 13852,
+          "name": "Suspicious Task Schedule"
+        },
+        {
+          "val": 13853,
+          "name": "Stop a Service"
+        },
+        {
+          "val": 13854,
+          "name": "List Running Processes"
+        },
+        {
+          "val": 13855,
+          "name": "Query Computer/User Info"
+        },
+        {
+          "val": 13856,
+          "name": "Use Code Injection Utility"
+        },
+        {
+          "val": 13858,
+          "name": "Modify Users Accounts"
+        },
+        {
+          "val": 13859,
+          "name": "Delayed Execution"
+        },
+        {
+          "val": 13861,
+          "name": "Remote file/desktop utility"
+        },
+        {
+          "val": 13862,
+          "name": "Network Configuration/Scanning"
+        },
+        {
+          "val": 13863,
+          "name": "Remote Process Execution Service"
+        },
+        {
+          "val": 13864,
+          "name": "WMI Execution"
+        },
+        {
+          "val": 13865,
+          "name": "Dump Process Memory"
+        },
+        {
+          "val": 13866,
+          "name": "Search for Data in Files"
+        },
+        {
+          "val": 13867,
+          "name": "Lists the Kerberos principal and Kerberos tickets"
+        },
+        {
+          "val": 13869,
+          "name": "Create Upload or Download Job"
+        },
+        {
+          "val": 13870,
+          "name": "Execute Script File"
+        },
+        {
+          "val": 13871,
+          "name": "Run PowerShell script"
+        },
+        {
+          "val": 13872,
+          "name": "Use Certificate management utility"
+        },
+        {
+          "val": 13873,
+          "name": "Modify registry permission"
+        },
+        {
+          "val": 13874,
+          "name": "Modify Registry keys"
+        },
+        {
+          "val": 13875,
+          "name": "Use Microsoft Virtualisation for PowerShell"
+        },
+        {
+          "val": 13876,
+          "name": "List Domain Administrators"
+        },
+        {
+          "val": 13877,
+          "name": "Check for file permission"
+        },
+        {
+          "val": 13878,
+          "name": "Schedule a task"
+        },
+        {
+          "val": 13879,
+          "name": "Shut Down Computer"
+        },
+        {
+          "val": 13880,
+          "name": "list local accounts"
+        },
+        {
+          "val": 13881,
+          "name": "Impersonation to Another User"
+        },
+        {
+          "val": 13882,
+          "name": "Dump the registry hive"
+        },
+        {
+          "val": 13883,
+          "name": "Query Active Directory"
+        },
+        {
+          "val": 13884,
+          "name": "Modify shadow copy"
+        },
+        {
+          "val": 13885,
+          "name": "Potential UAC bypass Using Command Line"
+        },
+        {
+          "val": 13886,
+          "name": "Show List of Services"
+        },
+        {
+          "val": 13887,
+          "name": "Port Forwarding"
+        },
+        {
+          "val": 13888,
+          "name": "Execution by trusted application"
+        },
+        {
+          "val": 13889,
+          "name": "Change file attributes"
+        },
+        {
+          "val": 13890,
+          "name": "Kill a Process"
+        },
+        {
+          "val": 13891,
+          "name": "Managing File System Properties"
+        },
+        {
+          "val": 13892,
+          "name": "Microsoft HTML Application Host"
+        },
+        {
+          "val": 13893,
+          "name": "Manage Services"
+        },
+        {
+          "val": 13894,
+          "name": "Search for Stored Credentials"
+        },
+        {
+          "val": 13895,
+          "name": "Manage File Shares"
+        },
+        {
+          "val": 13896,
+          "name": "Windows Event Logs"
+        },
+        {
+          "val": 60020,
+          "name": "new B"
+        }
+      ]
+    },
+    {
+      "eType": "lov_ eventstypes",
+      "values": [
+        {
+          "val": 2,
+          "name": "User created"
+        },
+        {
+          "val": 3,
+          "name": "Group created"
+        },
+        {
+          "val": 5,
+          "name": "Disk drive added"
+        },
+        {
+          "val": 6,
+          "name": "Driver created"
+        },
+        {
+          "val": 7,
+          "name": "Event log message"
+        },
+        {
+          "val": 27,
+          "name": "NIC added"
+        },
+        {
+          "val": 30,
+          "name": "Network listen"
+        },
+        {
+          "val": 32,
+          "name": "Network send"
+        },
+        {
+          "val": 33,
+          "name": "Network receive"
+        },
+        {
+          "val": 38,
+          "name": "Process created"
+        },
+        {
+          "val": 40,
+          "name": "Process load image"
+        },
+        {
+          "val": 41,
+          "name": "Driver loaded"
+        },
+        {
+          "val": 43,
+          "name": "Partition loaded"
+        },
+        {
+          "val": 44,
+          "name": "Process execution Information"
+        },
+        {
+          "val": 45,
+          "name": "Route entry added"
+        },
+        {
+          "val": 47,
+          "name": "Service created"
+        },
+        {
+          "val": 48,
+          "name": "Remote access"
+        },
+        {
+          "val": 49,
+          "name": "Boot"
+        },
+        {
+          "val": 60,
+          "name": "Kernel table changed"
+        },
+        {
+          "val": 61,
+          "name": "Kernel table hooked"
+        },
+        {
+          "val": 73,
+          "name": "User login"
+        },
+        {
+          "val": 74,
+          "name": "User log out"
+        },
+        {
+          "val": 75,
+          "name": "Autorun folder - file changed"
+        },
+        {
+          "val": 77,
+          "name": "NIC changed"
+        },
+        {
+          "val": 78,
+          "name": "NIC deleted"
+        },
+        {
+          "val": 79,
+          "name": "NIC information"
+        },
+        {
+          "val": 80,
+          "name": "Service deleted"
+        },
+        {
+          "val": 81,
+          "name": "Service changed"
+        },
+        {
+          "val": 82,
+          "name": "Service information"
+        },
+        {
+          "val": 83,
+          "name": "Driver deleted"
+        },
+        {
+          "val": 84,
+          "name": "Driver changed"
+        },
+        {
+          "val": 85,
+          "name": "Driver information"
+        },
+        {
+          "val": 86,
+          "name": "Disk Drive deleted"
+        },
+        {
+          "val": 87,
+          "name": "Disk Drive changed"
+        },
+        {
+          "val": 88,
+          "name": "Disk drive information"
+        },
+        {
+          "val": 89,
+          "name": "Partition changed"
+        },
+        {
+          "val": 90,
+          "name": "Partition deleted"
+        },
+        {
+          "val": 94,
+          "name": "User changed"
+        },
+        {
+          "val": 95,
+          "name": "User deleted"
+        },
+        {
+          "val": 96,
+          "name": "Group changed"
+        },
+        {
+          "val": 97,
+          "name": "Group deleted"
+        },
+        {
+          "val": 98,
+          "name": "Route entry changed"
+        },
+        {
+          "val": 99,
+          "name": "Route entry deleted"
+        },
+        {
+          "val": 100,
+          "name": "System info changed"
+        },
+        {
+          "val": 102,
+          "name": "System info information"
+        },
+        {
+          "val": 103,
+          "name": "MBR changed"
+        },
+        {
+          "val": 104,
+          "name": "Bios changed"
+        },
+        {
+          "val": 105,
+          "name": "Host configuration changed"
+        },
+        {
+          "val": 106,
+          "name": "OS changed"
+        },
+        {
+          "val": 107,
+          "name": "Pagefile added"
+        },
+        {
+          "val": 108,
+          "name": "Pagefile changed"
+        },
+        {
+          "val": 109,
+          "name": "Pagefile deleted"
+        },
+        {
+          "val": 110,
+          "name": "Hotfix added"
+        },
+        {
+          "val": 111,
+          "name": "Hotfix changed"
+        },
+        {
+          "val": 112,
+          "name": " Hotfix deleted"
+        },
+        {
+          "val": 113,
+          "name": "Virtual Alloc EX"
+        },
+        {
+          "val": 114,
+          "name": "Create remote thread"
+        },
+        {
+          "val": 115,
+          "name": "Write process memory"
+        },
+        {
+          "val": 117,
+          "name": "Check for remote debugger"
+        },
+        {
+          "val": 118,
+          "name": "Process enumeration"
+        },
+        {
+          "val": 119,
+          "name": "Process enumeration (toll32help)"
+        },
+        {
+          "val": 125,
+          "name": "Disk drive first seen"
+        },
+        {
+          "val": 126,
+          "name": "Driver first seen"
+        },
+        {
+          "val": 127,
+          "name": "Service first seen"
+        },
+        {
+          "val": 128,
+          "name": "Bios first seen"
+        },
+        {
+          "val": 129,
+          "name": "Configuration first seen"
+        },
+        {
+          "val": 130,
+          "name": "OS first seen"
+        },
+        {
+          "val": 131,
+          "name": "Pagefile first seen"
+        },
+        {
+          "val": 132,
+          "name": "Hotfix first seen"
+        },
+        {
+          "val": 133,
+          "name": "Group first seen"
+        },
+        {
+          "val": 134,
+          "name": "User first seen"
+        },
+        {
+          "val": 135,
+          "name": "System information first seen"
+        },
+        {
+          "val": 136,
+          "name": "NIC first seen"
+        },
+        {
+          "val": 137,
+          "name": "Partition first seen"
+        },
+        {
+          "val": 138,
+          "name": "Route entry first seen"
+        },
+        {
+          "val": 144,
+          "name": "Executable Blocked"
+        },
+        {
+          "val": 145,
+          "name": "User Execution blocked"
+        },
+        {
+          "val": 146,
+          "name": "Key logger - set windows hook extended"
+        },
+        {
+          "val": 149,
+          "name": "Set thread context"
+        },
+        {
+          "val": 150,
+          "name": "Queue user APC"
+        },
+        {
+          "val": 151,
+          "name": "File encrypted"
+        },
+        {
+          "val": 152,
+          "name": "Ransomware blocked"
+        },
+        {
+          "val": 153,
+          "name": "File extension changed"
+        },
+        {
+          "val": 154,
+          "name": "Process hollowing"
+        },
+        {
+          "val": 155,
+          "name": "MBR change blocked"
+        },
+        {
+          "val": 156,
+          "name": "Network send/receive"
+        },
+        {
+          "val": 158,
+          "name": "Map View of section message"
+        },
+        {
+          "val": 159,
+          "name": "DNS Domain Generation Algorithm"
+        },
+        {
+          "val": 160,
+          "name": "Screenshot Taken"
+        },
+        {
+          "val": 161,
+          "name": "Screenshot Taken"
+        },
+        {
+          "val": 163,
+          "name": "WMI Event Subscription"
+        },
+        {
+          "val": 164,
+          "name": "WMI Event Subscription Change"
+        },
+        {
+          "val": 166,
+          "name": "WMI Event Subscription"
+        },
+        {
+          "val": 1000,
+          "name": "Alternate data stream write"
+        },
+        {
+          "val": 1007,
+          "name": "Unknown Double ext. - file created"
+        },
+        {
+          "val": 1015,
+          "name": "Sensitive file accessed"
+        },
+        {
+          "val": 1017,
+          "name": "Unknown Double ext. - file renamed"
+        },
+        {
+          "val": 1018,
+          "name": "Executable created"
+        },
+        {
+          "val": 1019,
+          "name": "Executable changed"
+        },
+        {
+          "val": 1020,
+          "name": "Registry - executable added"
+        },
+        {
+          "val": 1023,
+          "name": "Execution from removable media"
+        },
+        {
+          "val": 1024,
+          "name": "Executable deleted"
+        },
+        {
+          "val": 1025,
+          "name": "Script file read"
+        },
+        {
+          "val": 1026,
+          "name": "Executable renamed"
+        },
+        {
+          "val": 1029,
+          "name": "Program files - file created"
+        },
+        {
+          "val": 1030,
+          "name": "Program files - file deleted"
+        },
+        {
+          "val": 1031,
+          "name": "Program files - file renamed"
+        },
+        {
+          "val": 1032,
+          "name": "User folders - file created"
+        },
+        {
+          "val": 1034,
+          "name": "User folders - file renamed"
+        },
+        {
+          "val": 1035,
+          "name": "User folders - file deleted"
+        },
+        {
+          "val": 1036,
+          "name": "Process accessed new extension"
+        },
+        {
+          "val": 1038,
+          "name": "Suspicious path - execution"
+        },
+        {
+          "val": 1039,
+          "name": "Non-standard entry point"
+        },
+        {
+          "val": 1040,
+          "name": "No code-section"
+        },
+        {
+          "val": 1041,
+          "name": "Registry - autorun key created"
+        },
+        {
+          "val": 1042,
+          "name": "COM Hijacking"
+        },
+        {
+          "val": 1043,
+          "name": "Non-standard section"
+        },
+        {
+          "val": 1044,
+          "name": "Missing mandatory section"
+        },
+        {
+          "val": 1045,
+          "name": "Multiple code sections"
+        },
+        {
+          "val": 1046,
+          "name": "Last section is code"
+        },
+        {
+          "val": 1047,
+          "name": "Only code Section"
+        },
+        {
+          "val": 1048,
+          "name": "Suspicious import"
+        },
+        {
+          "val": 1049,
+          "name": "RTL override - file created"
+        },
+        {
+          "val": 1050,
+          "name": "RTL override - file renamed"
+        },
+        {
+          "val": 1051,
+          "name": "High entropy section"
+        },
+        {
+          "val": 1052,
+          "name": "Writeable code-section"
+        },
+        {
+          "val": 1053,
+          "name": "Runtime proxy Dll"
+        },
+        {
+          "val": 1054,
+          "name": "Abnormal ext. - file created"
+        },
+        {
+          "val": 1057,
+          "name": "UAC Bypass"
+        },
+        {
+          "val": 1058,
+          "name": "Entry point is not section"
+        },
+        {
+          "val": 1061,
+          "name": "Abnormal ext. - file renamed"
+        },
+        {
+          "val": 1062,
+          "name": "Registry - autorun key deleted"
+        },
+        {
+          "val": 1063,
+          "name": "Registry - autorun value deleted"
+        },
+        {
+          "val": 1065,
+          "name": "Registry Key created"
+        },
+        {
+          "val": 1066,
+          "name": "Security Settings modification"
+        },
+        {
+          "val": 1067,
+          "name": "Security Settings modification"
+        },
+        {
+          "val": 1068,
+          "name": "Registry value deleted"
+        },
+        {
+          "val": 1069,
+          "name": "Lnk file created"
+        },
+        {
+          "val": 1070,
+          "name": "Lnk file changed"
+        },
+        {
+          "val": 1071,
+          "name": "Lnk file renamed"
+        },
+        {
+          "val": 1072,
+          "name": "YARA rules matched"
+        },
+        {
+          "val": 1073,
+          "name": "YARA rules skipped scan"
+        },
+        {
+          "val": 1074,
+          "name": "DNS request"
+        },
+        {
+          "val": 1075,
+          "name": "DNS unusual query"
+        },
+        {
+          "val": 1076,
+          "name": "Http request"
+        },
+        {
+          "val": 1077,
+          "name": "Http malformed request"
+        },
+        {
+          "val": 1078,
+          "name": "Scheduled task created"
+        },
+        {
+          "val": 1079,
+          "name": "Scheduled task changed"
+        },
+        {
+          "val": 1080,
+          "name": "Registry key renamed"
+        },
+        {
+          "val": 1083,
+          "name": "User folders - file changed"
+        },
+        {
+          "val": 1084,
+          "name": "Program files - file changed"
+        },
+        {
+          "val": 1086,
+          "name": "Certificate file created"
+        },
+        {
+          "val": 1087,
+          "name": "Autorun folder - file created"
+        },
+        {
+          "val": 1088,
+          "name": "Autorun folder - file renamed"
+        },
+        {
+          "val": 1089,
+          "name": "Reflective DLL loading"
+        },
+        {
+          "val": 1090,
+          "name": "Abnormal ext. - file changed"
+        },
+        {
+          "val": 1091,
+          "name": "Certificate file renamed"
+        },
+        {
+          "val": 1092,
+          "name": "Certificate file changed"
+        },
+        {
+          "val": 1093,
+          "name": "Known Double ext. - file created"
+        },
+        {
+          "val": 1094,
+          "name": "Known Double ext. - file renamed"
+        },
+        {
+          "val": 1095,
+          "name": "Check for Sandbox Products"
+        },
+        {
+          "val": 1096,
+          "name": "Access to Windows Authentication Service"
+        },
+        {
+          "val": 1097,
+          "name": "Remote Thread Create Message"
+        },
+        {
+          "val": 1098,
+          "name": "COM Hijacking - Search Order Hijack"
+        },
+        {
+          "val": 1099,
+          "name": "Suspicious Command Line"
+        },
+        {
+          "val": 1100,
+          "name": "Self Delete"
+        },
+        {
+          "val": 1101,
+          "name": "Self Copy"
+        },
+        {
+          "val": 1102,
+          "name": "Remote Management"
+        },
+        {
+          "val": 1103,
+          "name": "Abnormal Process Network Activity"
+        },
+        {
+          "val": 1104,
+          "name": "Privileged Process In User Folder"
+        },
+        {
+          "val": 1105,
+          "name": "Create And Execute"
+        },
+        {
+          "val": 1106,
+          "name": "File moved"
+        },
+        {
+          "val": 1107,
+          "name": "File modified"
+        },
+        {
+          "val": 1108,
+          "name": "Key logger - register raw input device"
+        },
+        {
+          "val": 1109,
+          "name": "File Saved By Outlook Msg"
+        },
+        {
+          "val": 1110,
+          "name": "COM Hijacking - COM Object in a Suspicious Folder"
+        },
+        {
+          "val": 1111,
+          "name": "Nt MapView Of SectionNtDll "
+        },
+        {
+          "val": 1112,
+          "name": "Nt Dll File Read"
+        },
+        {
+          "val": 1113,
+          "name": "Thread handler with TSC"
+        },
+        {
+          "val": 2000,
+          "name": "AM Detection - Known IOC"
+        },
+        {
+          "val": 2002,
+          "name": "AM Prevention - Behavioral"
+        },
+        {
+          "val": 50001,
+          "name": "Insight - Executable to Registry"
+        },
+        {
+          "val": 50003,
+          "name": "Insight- Old name to New name"
+        },
+        {
+          "val": 50005,
+          "name": "Insight- File Origin"
+        }
+      ]
+    },
+    {
+      "eType": "lov_tracestypes",
+      "values": [
+        {
+          "val": 1,
+          "name": "Sequence based"
+        },
+        {
+          "val": 2,
+          "name": "Time based"
+        },
+        {
+          "val": 3,
+          "name": "Graph based"
+        },
+        {
+          "val": 4,
+          "name": "Immediate trace based"
+        }
+      ]
+    }
+  ],
+  "compositeTypes": []
+}

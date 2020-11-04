@@ -70,15 +70,7 @@ public class LoggingCostEstimator<P, C, Q> implements CostEstimatorDriver<P, C, 
     @Override
     public Long count(GraphTraversal<?, ?> driver) {
         return new LoggingSyncMethodDecorator<Long>(this.logger, this.metricRegistry, estimate, trace)
-                .decorate(() -> {
-                    Long count = this.costEstimator.count(driver);
-                    if (count > -1) {
-                        //log profiling message
-                        new LogMessage.Impl(this.logger, trace, "cost estimation profile", sequence, LogType.of(metric), profile,
-                                new LogMessage.MDCWriter.KeyValue(PROFILER, driver.asAdmin().getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new).toString())).log();
-                    }
-                    return count;
-                });
+                .decorate(() -> this.costEstimator.count(driver));
 
     }
     //endregion

@@ -67,7 +67,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
                 new DefaultETagAsgStrategy(this.ontologyProvider),
-                new KnowledgeLogicalEntityGraphTranslatorStrategy(this.schemaProviderFactory,this.ontologyProvider, EEntityBase.class),
+                new KnowledgeLogicalEntityGraphAsgTranslatorStrategy(this.schemaProviderFactory,this.ontologyProvider, EEntityBase.class),
                 new AsgNamedParametersStrategy(),
                 new RelationPatternRangeAsgStrategy(),
                 new UntypedInferTypeLeftSideRelationAsgStrategy(),

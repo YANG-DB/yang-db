@@ -58,6 +58,7 @@ import com.yangdb.fuse.model.query.entity.Typed;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
+        @JsonSubTypes.Type(name = "RelUntyped", value = RelUntyped.class),
         @JsonSubTypes.Type(name = "RelPattern", value = RelPattern.class)})
 public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped, Tagged {
 
@@ -107,6 +108,15 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     //endregion
 
     //region Properties
+    @Override
+    public String[] getParentTyped() {
+        return parentType;
+    }
+
+    public void setParentType(String[] parentType) {
+        this.parentType = parentType;
+    }
+
     public String getrType() {
         return rType;
     }
@@ -167,6 +177,8 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
     //region Fields
     private String rType;
+    private String[] parentType;
+
     private Direction dir;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private String wrapper;

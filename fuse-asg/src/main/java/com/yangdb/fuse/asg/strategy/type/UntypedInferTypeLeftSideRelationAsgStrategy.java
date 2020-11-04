@@ -35,9 +35,13 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static com.yangdb.fuse.model.GlobalConstants._ALL;
 
 /**
  * try to infer type for empty list of vTypes in an UnTyped entity
+ * Also
  */
 public class UntypedInferTypeLeftSideRelationAsgStrategy implements AsgStrategy {
 
@@ -45,6 +49,12 @@ public class UntypedInferTypeLeftSideRelationAsgStrategy implements AsgStrategy 
     public void apply(AsgQuery query, AsgStrategyContext context) {
         Stream.ofAll(AsgQueryUtil.elements(query, EUntyped.class))
                 .forEach(sideA -> {
+                    //replace implicit types wildcard call with explicit types
+                    if(sideA.geteBase().getvTypes().contains(_ALL)) {
+                        //replace the "_all" statement with each existing type
+                        sideA.geteBase().setvTypes(StreamSupport.stream(context.getOntologyAccessor().eTypes().spliterator(),true).collect(Collectors.toSet()));
+                    }
+
                     Optional<AsgEBase<Rel>> relation = AsgQueryUtil.nextAdjacentDescendant(sideA, Rel.class);
                     if(relation.isPresent()) {
                         AsgEBase<Rel> rel = relation.get();

@@ -1,0 +1,209 @@
+schema{
+  query: Query
+}
+
+type Query {
+  filter(where: MessageQuery!): BulkMessages
+  statistics(offset: [String]): [QueryStatistics]
+  statisticsByFiter(where: MessageQuery, offset: [String]): [QueryStatistics]
+  node(id: ID!): Node
+}
+
+type Mutation {
+  createProject(input: ProjectInput, documents: [DocumentInput]): Project
+  createWorkspace(input: MessageQuery): Workspace
+  createSpec(id: ID!): Specification
+  updateSpec(input: FieldInput): FieldSpec
+  callAlgorithm(input: AlgorithmInput): AlgorithmResults
+}
+interface Node {
+  id: ID!
+}
+
+input ProjectInput  {
+  id: ID!
+  name: String!
+  description: String
+  tag: [String]
+}
+
+input DocumentInput {
+  name: String
+  url: String
+}
+
+input AlgorithmInput {
+  algoId: ID!
+  description: String
+  constraints: MessageQuery
+}
+
+input FieldInput {
+  id: ID!
+  name: String!
+  description: String
+  type: String
+  offset: String
+  semantics: String
+  notes: [String]
+}
+
+input MessageQuery {
+  id: ID!
+  name: String!
+  description: String
+  creationTime : Time
+  size: String
+  clause: [WhereClause]
+  resultType: ResultType!
+}
+
+enum ResultType {
+    DATA
+    METADATA
+    ALL
+}
+
+enum WhereOperator {
+    AND
+    OR
+}
+
+input Constraint {
+  operand: String!
+  operator: String!
+  expression: String
+}
+
+input WhereClause {
+  operator: WhereOperator
+  constraints: [Constraint]
+}
+
+type User implements Node{
+  id: ID!
+  name: String!
+  description: String
+  roles: [String]
+}
+
+type Project implements Node{
+  id: ID!
+  name: String!
+  description: String
+  tag: [String]
+  users: [User]
+  documents: [Document]
+  workspace: Workspace
+  specification: Specification
+  creationTime : Time
+}
+
+type Specification implements Node{
+  id: ID!
+  name: String!
+  description: String
+  version: String
+  fields: [FieldSpec]
+}
+
+type Note {
+    content: String
+    time: Time
+    owner: User
+}
+
+type FieldSpec implements Node{
+  id: ID!
+  name: String!
+  description: String
+  type: String
+  offset: String
+  semantics: String
+  creationDate: Time
+  references: [DocumentReference]
+  notes: [Note]
+  childs: [FieldSpec]
+}
+
+type Document {
+  name: String
+  url: String
+  references: [DocumentReference]
+}
+
+type DocumentReference {
+    name: String
+    url: String
+    anchor: [String]
+}
+
+type Workspace implements Node{
+  id: ID!
+  name: String!
+  description: String
+}
+
+type PcapFile {
+  name: String!
+  url: String!
+  creationTime: Time
+  size: Int
+  payload: [Byte]!
+
+}
+
+type BulkMessages {
+    query: String!
+    size: Int
+    page: Int
+    result: [Message]
+}
+
+type Message {
+    metadata: MessageMetadata
+    payload: [Byte]
+}
+
+type MessageMetadata {
+    id: ID!
+    source: String
+    dest: String
+    time: Time
+    size: Int
+}
+
+type QueryStatistics {
+    id: ID!
+    offset: String
+    histogram: Histogram
+    time: Time
+    size: Int
+}
+
+type Histogram {
+    histValue: [HistValue]
+    dimension: Int
+}
+
+type HistValue {
+    range: Time
+    value: Float
+}
+
+type Algorithm implements Node{
+    id: ID!
+    name: String
+    desc: String
+}
+
+type AlgorithmResults {
+    id: ID!
+    algo: [Algorithm]
+    confidence: Float
+    suggestion: [FieldSpec]
+    time: Time
+}
+
+scalar Byte
+scalar Time

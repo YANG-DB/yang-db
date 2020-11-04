@@ -59,7 +59,7 @@ public class KnowledgeM2AsgStrategyTest {
                 .withEntityTypes(Collections.singletonList(
                         EntityType.Builder.get().withEType("Person").withName("Person").withProperties(
                                 Collections.singletonList("stringValue")).build()))
-                .withProperties(Collections.singletonList(
+                .withProperties(Collections.singleton(
                         Property.Builder.get().withPType("stringValue").withName("stringValue").withType("string").build()))
                 .build();
 

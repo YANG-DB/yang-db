@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.structure.promise;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.map.MapBuilder;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;

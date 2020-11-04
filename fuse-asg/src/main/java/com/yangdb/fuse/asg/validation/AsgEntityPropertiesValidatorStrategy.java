@@ -100,7 +100,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             EntityType entityType = accessor.$entity$(((Typed.eTyped) base.geteBase()).geteType());
             String pType = property.getpType();
 
-            if (entityType.getProperties().stream().noneMatch(p -> p.equals(pType))) {
+            if (entityType.fields().stream().noneMatch(p -> p.equals(pType))) {
                 errors.add(ERROR_2 + ":" + print(base, property));
             }
 

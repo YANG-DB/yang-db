@@ -23,7 +23,7 @@ import static com.yangdb.fuse.model.query.properties.EProp.of;
 import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
-import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHER;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHERQL;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -44,7 +44,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_pattern() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a {name: 'Alice'}) where a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         String expected = "[└── Start, \n" +
                 "    ──UnTyp[:[] a#1]──Q[100:all]:{101}, \n" +
@@ -58,7 +58,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_multi_pattern() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
 
@@ -88,7 +88,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_AND_B_OfType_Return_A_with_multi_pattern() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a {name: 'Alice'})--(b {age: 30}) where a:Horse and b:Dragon RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
 
@@ -120,7 +120,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_wildcard() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where (a.name =~ 'jh.*') AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -138,7 +138,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_contains() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where (a.name CONTAINS 'jh') AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -156,7 +156,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_endsWith() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where (a.name ENDS WITH 'jh*') AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -175,7 +175,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_in() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where (a.name STARTS WITH 'jh*')  AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -195,7 +195,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_Return_A() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where a:Dragon RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -210,7 +210,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where a:Dragon AND a:Hours RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -229,7 +229,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_in() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where a.name in ['jhone','jane'] AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -248,7 +248,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_equal() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where a.name = 'jhone' AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -267,7 +267,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_notEqual() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a) where a.name <> 'jhone' AND a:Horse RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         AsgQuery expected = AsgQuery.Builder
                 .start("cypher_", "Dragons")
@@ -286,7 +286,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)--(b) where a:Dragon AND a:Hours AND b:Person RETURN a";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, "*", Rel.Direction.RL,"Rel_#2")
@@ -314,7 +314,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_AND_B_OfType_Return_A() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)--(b) where a:Dragon AND b:Person RETURN a,b";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
 
         //region Test Methods
@@ -343,7 +343,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
         AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
         String s = "MATCH (a)-[c]-(b) where a:Dragon AND b:Person AND c:Fire AND c:Freeze RETURN a,b";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q",TYPE_CYPHER, "ont"));
+        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
 
 
         //region Test Methods

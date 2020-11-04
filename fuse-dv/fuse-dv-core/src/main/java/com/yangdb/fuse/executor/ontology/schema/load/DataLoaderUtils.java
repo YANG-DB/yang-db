@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,25 +20,18 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.yangdb.fuse.executor.ontology.DataTransformer;
+import com.github.sisyphsu.dateparser.DateParser;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
-import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -52,47 +45,58 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.InflaterInputStream;
 
+import static java.lang.Double.parseDouble;
+
 public interface DataLoaderUtils {
+    DateParser parser = DateParser.newBuilder().build();
 
     /**
      * init E/S indices templates
+     *
      * @param client
      * @param schema
      * @return
      * @throws IOException
      */
-    static long init(Client client, RawSchema schema) throws IOException {
-        String workingDir = System.getProperty("user.dir");
-        File templates = Paths.get(workingDir, "indexTemplates").toFile();
-        File[] templateFiles = templates.listFiles();
-        if (templateFiles != null) {
-            for (File templateFile : templateFiles) {
-                String templateName = FilenameUtils.getBaseName(templateFile.getName());
-                String template = FileUtils.readFileToString(templateFile, "utf-8");
-                if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
-                    final AcknowledgedResponse acknowledgedResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
+    static long init(Client client, RawSchema schema) {
+        try {
+            String workingDir = System.getProperty("user.dir");
+            File templates = Paths.get(workingDir, "indexTemplates").toFile();
+            File[] templateFiles = templates.listFiles();
+            if (templateFiles != null) {
+                for (File templateFile : templateFiles) {
+                    String templateName = FilenameUtils.getBaseName(templateFile.getName());
+                    String template = FileUtils.readFileToString(templateFile, "utf-8");
+                    if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
+                        final AcknowledgedResponse acknowledgedResponse = client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet(1500);
+                        if (!acknowledgedResponse.isAcknowledged()) return -1;
+                    }
+                    final AcknowledgedResponse acknowledgedResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
                     if (!acknowledgedResponse.isAcknowledged()) return -1;
                 }
-                final AcknowledgedResponse acknowledgedResponse = client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet(1500);
-                if (!acknowledgedResponse.isAcknowledged()) return -1;
             }
+
+            Iterable<String> allIndices = schema.indices();
+
+            Stream.ofAll(allIndices)
+                    .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                    .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
+            Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
+                    .create(new CreateIndexRequest(index)).actionGet());
+
+            return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
+        } catch (Throwable t) {
+            throw new FuseError.FuseErrorException("INIT() - Create Indices error ", t);
+
         }
-
-        Iterable<String> allIndices = schema.indices();
-
-        Stream.ofAll(allIndices)
-                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
-                .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
-        Stream.ofAll(allIndices).forEach(index -> client.admin().indices()
-                .create(new CreateIndexRequest(index)).actionGet());
-
-        return Stream.ofAll(allIndices).count(s -> !s.isEmpty());
     }
 
     /**
      * drop all indices existing for this ontology
+     *
      * @param client
      * @param schema
      * @return
@@ -108,7 +112,6 @@ public interface DataLoaderUtils {
 
 
     /**
-     *
      * @param zipIn
      * @return
      * @throws IOException
@@ -159,12 +162,12 @@ public interface DataLoaderUtils {
             case "date":
             case "dateValue":
                 try {
-                    return sdf.parse(value.toString());
+                    return sdf.format(sdf.parse(value.toString()));
                 } catch (ParseException e) {
                     try {
                         return sdf.format(new Date(value.toString()));
                     } catch (Throwable e1) {
-                        return value.toString();
+                        return sdf.format(parser.parseDate(value.toString()));
                     }
                 }
             case "geo":
@@ -174,6 +177,74 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
         return value;
+    }
+
+    static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
+        switch (explicitType) {
+            case "text":
+            case "string":
+            case "stringValue":
+                return Objects.nonNull(value);
+            case "int":
+            case "intValue":
+                try {
+                    Integer.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    try {
+                        Long.valueOf(value.toString());
+                        return true;
+                    } catch (NumberFormatException e1) {
+                        return false;
+                    }
+                }
+            case "long":
+            case "longValue":
+                try {
+                    Long.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            case "float":
+            case "floatValue":
+                try {
+                    Float.valueOf(value.toString());
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            case "date":
+            case "dateValue":
+                try {
+                    sdf.parse(value.toString());
+                    return true;
+                } catch (ParseException e) {
+                    try {
+                        sdf.format(new Date(value.toString()));
+                        return true;
+                    } catch (Throwable e1) {
+                        try {
+                            parser.parseDate(value.toString());
+                            return true;
+                        }catch (Throwable err) {
+                            return false;
+                        }
+                    }
+
+                }
+            case "geo":
+            case "geoValue":
+                try {
+                    new Point(
+                            parseDouble(value.toString().split("[,]")[1]),
+                            parseDouble(value.toString().split("[,]")[0]));
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+        }
+        return false;
     }
 
 }

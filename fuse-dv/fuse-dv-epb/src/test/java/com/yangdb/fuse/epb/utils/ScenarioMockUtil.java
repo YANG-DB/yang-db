@@ -2,6 +2,7 @@ package com.yangdb.fuse.epb.utils;
 
 import com.yangdb.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -246,7 +247,7 @@ public class ScenarioMockUtil {
                                                         this.ont.property$(redundantEntry.getKey()).getType()))
                                                 .toJavaList())),
                                 Direction.OUT,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                                 Optional.empty(),
                                 Optional.of(indexPartitionMap.getOrDefault(new Tuple<>(relation.getrType(), ElementType.edge),
                                         new StaticIndexPartitions(Collections.singletonList("idx1")))),

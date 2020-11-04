@@ -1,0 +1,23 @@
+{
+  "source.ontology": "LogicalDragons",
+  "target.ontology": "Dragons",
+  "entityTypes": [
+    {
+      "source": ["Person","Dragon","Profession","Guild","Kingdom","Horse"],
+      "source.field": "type",
+      "target": "Entity",
+      "target.field": "type"
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "source": ["Own","Fire","Freeze","Know","MemberOf","RegisteredIn","HasProfession","SubjectOf","OriginatedIn"],
+      "source.field": "type",
+      "target": "Relationship",
+      "target.field": "type"
+    }
+  ],
+  "properties": [
+    {}
+  ]
+}

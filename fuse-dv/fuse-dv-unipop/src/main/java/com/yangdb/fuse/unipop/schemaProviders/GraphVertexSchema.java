@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -33,6 +35,8 @@ public interface GraphVertexSchema extends GraphElementSchema {
         return Vertex.class;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl extends GraphElementSchema.Impl implements GraphVertexSchema {
         //region Constructors
         public Impl(String label ) {

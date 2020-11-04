@@ -50,6 +50,8 @@ public interface Typed {
 
     String getTyped();
 
+    String[] getParentTyped();
+
     interface eTyped extends Typed{
         void seteType(String eType);
 

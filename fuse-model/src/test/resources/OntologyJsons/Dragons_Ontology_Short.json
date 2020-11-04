@@ -1,21 +1,72 @@
 {
   "ont": "Dragons",
-  "enumeratedTypes": [
+  "directives": [],
+  "entityTypes": [
     {
-      "eType": "TYPE_Gender",
-      "values": [
+      "idField": ["id"],
+      "eType": "Person",
+      "name": "Person",
+      "properties": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
+      ]
+    },
+    {
+      "idField": ["id"],
+      "eType": "Dragon",
+      "name": "Dragon",
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "idField": ["id"],
+      "eType": "Guild",
+      "name": "Guild",
+      "properties": [
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "idField": ["id"],
+      "rType": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
         {
-          "val": 1,
-          "name": "Female"
-        },
-        {
-          "val": 2,
-          "name": "Male"
-        },
-        {
-          "val": 3,
-          "name": "Other"
+          "eTypeA": "Person",
+          "sideAIdField": "entityA.id",
+          "eTypeB": "Dragon",
+          "sideBIdField": "entityB.id"
         }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "idField": ["id"],
+      "rType": "memberOf",
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "sideAIdField": "entityA.id",
+          "eTypeB": "Guild",
+          "sideBIdField": "entityB.id"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
       ]
     }
   ],
@@ -66,64 +117,24 @@
       "type": "date"
     }
   ],
-  "entityTypes": [
+  "enumeratedTypes": [
     {
-      "eType": "Person",
-      "name": "Person",
-      "properties": [
-        "firstName",
-        "lastName",
-        "gender",
-        "birthDate",
-        "deathDate",
-        "height"
-      ]
-    },
-    {
-      "eType": "Dragon",
-      "name": "Dragon",
-      "properties": [
-        "name"
-      ]
-    },
-    {
-      "eType": "Guild",
-      "name": "Guild",
-      "properties": [
-        "name"
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
       ]
     }
   ],
-  "relationshipTypes": [
-    {
-      "rType": "own",
-      "name": "own",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Dragon"
-        }
-      ],
-      "properties": [
-        "startDate",
-        "endDate"
-      ]
-    },
-    {
-      "rType": "memberOf",
-      "name": "memberOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Guild"
-        }
-      ],
-      "properties": [
-        "startDate",
-        "endDate"
-      ]
-    }
-  ]
+  "compositeTypes": []
 }

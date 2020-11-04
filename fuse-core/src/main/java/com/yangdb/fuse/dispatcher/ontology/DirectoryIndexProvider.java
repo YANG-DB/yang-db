@@ -23,8 +23,6 @@ package com.yangdb.fuse.dispatcher.ontology;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.OntologyFinalizer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import javaslang.Tuple2;
@@ -43,7 +41,7 @@ import java.util.Optional;
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class DirectoryIndexProvider implements IndexProviderIfc {
+public class DirectoryIndexProvider implements IndexProviderFactory {
     //region Constructors
     public DirectoryIndexProvider(String dirName) throws URISyntaxException {
         this.map = new HashMap<>();

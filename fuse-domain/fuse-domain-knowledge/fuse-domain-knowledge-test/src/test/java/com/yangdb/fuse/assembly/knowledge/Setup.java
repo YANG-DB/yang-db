@@ -57,16 +57,17 @@ public abstract class Setup {
         // Start embedded ES
         if (embedded) {
             elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(KNOWLEDGE_CLUSTER_NAME);
-            client = elasticEmbeddedNode.getClient();
+            client = ElasticEmbeddedNode.getClient();
             try {
-                new BasicIdGenerator(client, IDGENERATOR_INDEX).init(Arrays.asList("Entity", "Relation", "Evalue", "Rvalue", "workerId"));
+                new BasicIdGenerator(client, IDGENERATOR_INDEX)
+                        .init(Arrays.asList("Entity", "Relation", "Evalue", "Rvalue", "workerId"));
             } catch (Exception e) {
                 //probably index already exists
                 System.out.println(e.getMessage());
             }
         } else {
             //use existing running ES
-            client = elasticEmbeddedNode.getClient(KNOWLEDGE_CLUSTER_NAME, 9300);
+            client = ElasticEmbeddedNode.getClient(KNOWLEDGE_CLUSTER_NAME, 9300);
         }
         // Load fuse engine config file
         String confFilePath = path.toString();
@@ -105,8 +106,7 @@ public abstract class Setup {
             }
         }
         if (elastic) {
-            if (elasticEmbeddedNode != null)
-                elasticEmbeddedNode.close();
+            GlobalElasticEmbeddedNode.close();
         }
     }
 }

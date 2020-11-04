@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,7 +70,7 @@ import java.util.*;
         @JsonSubTypes.Type(name = "AsgCompositeQuery", value = AsgCompositeQuery.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
+public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
 
     //region Getters & Setters
 
@@ -123,6 +123,13 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         this.elements = elements;
     }
 
+    public List<String> getProjectedFields() {
+        return projectedFields;
+    }
+
+    public void setProjectedFields(List<String> projectedFields) {
+        this.projectedFields = projectedFields;
+    }
 //endregion
 
     @Override
@@ -138,7 +145,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AsgQuery other = (AsgQuery)o;
+        AsgQuery other = (AsgQuery) o;
 
         if (!this.ont.equals(other.ont)) {
             return false;
@@ -168,6 +175,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
     private String name;
     private AsgEBase<Start> start;
     private Query origin;
+    private List<String> projectedFields = new ArrayList<>();
 
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
@@ -176,7 +184,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
     //region Builders
     public static final class AsgQueryBuilder {
-        private AsgQuery asgQuery ;
+        private AsgQuery asgQuery;
 
         private AsgQueryBuilder() {
             asgQuery = new AsgQuery();
@@ -200,6 +208,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             this.asgQuery.name = name;
             return this;
         }
+
         public AsgQueryBuilder withParams(Collection<NamedParameter> params) {
             this.asgQuery.parameters = params;
             return this;
@@ -216,10 +225,14 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return this;
         }
 
+        public AsgQueryBuilder withProjectedFields(List<String> projectedFields) {
+            this.asgQuery.projectedFields = projectedFields;
+            return this;
+        }
+
         public AsgQuery build() {
             return asgQuery;
         }
-
     }
 
     public static class Builder {
@@ -242,13 +255,13 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         }
 
         public static Builder start(String queryName, String ontologyName) {
-            return new Builder(queryName,ontologyName);
+            return new Builder(queryName, ontologyName);
         }
 
         private AsgEBase addNextChild(AsgEBase element, boolean within) {
             current.addNextChild(element);
             query.elements.add(element);
-            if(!within) {
+            if (!within) {
                 current = element;
             }
             return current;
@@ -272,13 +285,13 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(concrete);
         }
 
-        public Builder in(AsgEBase ... eBase) {
-            Arrays.asList(eBase).forEach(element -> addNextChild(element,true));
+        public Builder in(AsgEBase... eBase) {
+            Arrays.asList(eBase).forEach(element -> addNextChild(element, true));
             return this;
         }
 
         public Builder next(AsgEBase eBase) {
-            addNextChild(eBase,false);
+            addNextChild(eBase, false);
             return this;
         }
 
@@ -289,7 +302,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
 
         public static AsgEBase<Quant1> quant1(int eNum, QuantType type) {
-            Quant1 quant1  = new Quant1();
+            Quant1 quant1 = new Quant1();
             quant1.seteNum(eNum);
             quant1.setqType(type);
 
@@ -329,14 +342,14 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         public static AsgEBase<EUntyped> unTyped(int eNum, String... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.seteNum(eNum);
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
+            untyped.setvTypes(Stream.of(vTypes).toJavaSet());
 
             return new AsgEBase<>(untyped);
         }
 
         public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaSet());
             untyped.seteNum(eNum);
             untyped.seteTag(eTag);
 
@@ -345,8 +358,8 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
         public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
-            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaSet());
+            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaSet());
             untyped.seteNum(eNum);
             untyped.seteTag(eTag);
 
@@ -372,13 +385,31 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(rel);
         }
 
-        public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity,EProp... props) {
-            EndPattern<T> endPattern = new EndPattern<>(entity, Arrays.asList(props));
+        public static AsgEBase<RelUntyped> relUntyped(int eNum, Rel.Direction direction, String... rType) {
+            RelUntyped rel = new RelUntyped();
+            rel.setDir(direction);
+            rel.setvTypes(new HashSet<>(Arrays.asList(rType)));
+            rel.seteNum(eNum);
+            return new AsgEBase<>(rel);
+        }
+
+        public static <T extends ETyped> AsgEBase<TypedEndPattern<T>> endTypedPattern(T entity, EProp... props) {
+            TypedEndPattern<T> endPattern = new TypedEndPattern<>(entity, Arrays.asList(props));
             return new AsgEBase<>(endPattern);
         }
 
-        public static <T extends EEntityBase> AsgEBase<EndPattern<T>> endPattern(T entity) {
-            EndPattern<T> endPattern = new EndPattern<>(entity);
+        public static <T extends ETyped> AsgEBase<TypedEndPattern<T>> endTypedPattern(T entity) {
+            TypedEndPattern<T> endPattern = new TypedEndPattern<>(entity);
+            return new AsgEBase<>(endPattern);
+        }
+
+        public static <T extends EUntyped> AsgEBase<UnTypedEndPattern<T>> endUnTypedPattern(T entity, EProp... props) {
+            UnTypedEndPattern<T> endPattern = new UnTypedEndPattern<>(entity, Arrays.asList(props));
+            return new AsgEBase<>(endPattern);
+        }
+
+        public static <T extends EUntyped> AsgEBase<UnTypedEndPattern<T>> endUnTypedPattern(T entity) {
+            UnTypedEndPattern<T> endPattern = new UnTypedEndPattern<>(entity);
             return new AsgEBase<>(endPattern);
         }
 
@@ -427,19 +458,19 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             return new AsgEBase<>(new EPropGroup(eNum, quantType, props, groups));
         }
 
-        public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
+        public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp... props) {
             RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
             return new AsgEBase<>(relPropGroup);
         }
 
-        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, RelProp ... props) {
+        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, RelProp... props) {
             RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
             return new AsgEBase<>(relPropGroup);
         }
 
-        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, QuantType quantType, RelProp ... props) {
+        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, QuantType quantType, RelProp... props) {
             RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
             relPropGroup.setQuantType(quantType);

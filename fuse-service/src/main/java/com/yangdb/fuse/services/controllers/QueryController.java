@@ -75,6 +75,25 @@ public interface QueryController<C,D> extends Controller<C,D> {
     ContentResponse<ValidationResult> validate(Query query);
 
     /**
+     * run findPath graph query
+     *
+     * */
+    ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops);
+
+
+    /**
+     * get vertex by id
+     *
+     * */
+    ContentResponse<Object> getVertex(String ontology, String type, String id);
+
+    /**
+     * get vertex and its neighbors by id
+     *
+     * */
+    ContentResponse<Object> getNeighbors(String ontology, String type, String id);
+
+    /**
      * run a stateless cypher query and get immediate graph results (first page only)
      * type may be volatile or persistent
      * @param cypher
@@ -105,6 +124,17 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @return
      */
     ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
+
+    /**
+     * run a stateless sparql query and get immediate graph results (first page only)
+     * type may be volatile or persistent
+     * @param `query
+     * @param ontology
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType);
 
 
     /**

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * profiling info for
+ * profiling info for query debug & investigation
  */
 public interface QueryProfileInfo {
 

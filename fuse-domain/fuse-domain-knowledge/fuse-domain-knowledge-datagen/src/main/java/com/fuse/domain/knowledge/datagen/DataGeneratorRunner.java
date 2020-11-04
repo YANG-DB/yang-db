@@ -445,7 +445,7 @@ public class DataGeneratorRunner {
                                                 100000))
                                         .toJavaList()),
                         generationContext.getContextGenerationConfiguration().getEntityValueOverlapFactor(),
-                        new UniformFileLinesCachedSupplier(String.format("%s.generation.values.txt", fieldId))); //TODO
+                        new UniformFileLinesCachedSupplier(String.format("%s.generation.values.txt", fieldId)));
 
         return new KnowledgeContextEntityValueDataGenerator(
                 client,

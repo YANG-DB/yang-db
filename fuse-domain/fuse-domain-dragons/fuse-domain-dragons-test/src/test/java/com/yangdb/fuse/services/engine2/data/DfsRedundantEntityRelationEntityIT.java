@@ -1,7 +1,8 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.services.engine2.RedundantTestSuite;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
@@ -16,18 +17,20 @@ import org.junit.BeforeClass;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.*;
+
 /**
  * Created by Roman on 22/05/2017.
  */
 public class DfsRedundantEntityRelationEntityIT extends EntityRelationEntityIT {
     @BeforeClass
     public static void setup() throws Exception {
-        EntityRelationEntityIT.setup(RedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.setup(ElasticEmbeddedNode.getClient());
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        EntityRelationEntityIT.cleanup(RedundantTestSuite.elasticEmbeddedNode.getClient());
+        EntityRelationEntityIT.cleanup(ElasticEmbeddedNode.getClient());
     }
 
     @Override
@@ -48,11 +51,11 @@ public class DfsRedundantEntityRelationEntityIT extends EntityRelationEntityIT {
         }
 
         if (entityBTypes != null && !Stream.ofAll(entityBTypes).isEmpty()) {
-            traversals.add(__.has("entityB.type", P.within(Stream.ofAll(entityBTypes).toJavaArray(String.class))));
+            traversals.add(__.has(DEST_TYPE, P.within(Stream.ofAll(entityBTypes).toJavaArray(String.class))));
         }
 
         if (entityBId != null) {
-            traversals.add(__.has("entityB.id", P.eq(entityBId)));
+            traversals.add(__.has(DEST_ID, P.eq(entityBId)));
         }
 
         return Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class)));

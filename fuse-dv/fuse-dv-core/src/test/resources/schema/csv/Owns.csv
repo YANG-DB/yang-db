@@ -1,4 +1,4 @@
-id,source,source.type,source.firstName,source.name,target,target.type,target.name,startDate,endDate
+id,entityA,entityA.type,entityA.firstName,entityA.name,entityB,entityB.type,entityB.name,startDate,endDate
 OWN_P01D03,P01_Napoleon,Person,Napoleon,Napoleon Bonaparte,D03_Neptun,Dragon,Neptun,01/01/1773,
 OWN_P02D01,P02_Mlle.Baptistine,Person,Mlle,Mlle.Baptistine,D01_Myriel,Dragon,Myriel,4/14/1793,1/1/1799
 OWN_P02D02,P02_Mlle.Baptistine,Person,Mlle,Mlle.Baptistine,D02_Kolbert,Dragon,Kolbert,1/11/1800,

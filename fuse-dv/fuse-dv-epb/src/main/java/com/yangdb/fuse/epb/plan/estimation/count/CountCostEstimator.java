@@ -34,6 +34,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.DoubleCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.unipop.process.Profiler;
 
@@ -61,7 +62,10 @@ public class CountCostEstimator implements CostEstimatorDriver<Plan, PlanDetaile
     //region CostEstimator Implementation
     @Override
     public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> estimationContext) {
-        Ontology ontology = this.ontologyProvider.get(estimationContext.getQuery().getOnt()).get();
+        String ont = estimationContext.getQuery().getOnt();
+        Ontology ontology = this.ontologyProvider.get(ont)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + ont)));
+
         GraphTraversal<?, ?> traversal = null;
         try {
             traversal = this.planTraversalTranslator.translate(

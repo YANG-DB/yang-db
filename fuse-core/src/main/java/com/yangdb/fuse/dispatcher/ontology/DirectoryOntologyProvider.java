@@ -56,8 +56,8 @@ public class DirectoryOntologyProvider implements OntologyProvider {
                     .filter(file -> !FilenameUtils.getBaseName(file.getName()).toLowerCase().contains("transformation"))
                     .toJavaMap(file -> {
                         try {
-                            return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),
-                                    OntologyFinalizer.finalize(mapper.readValue(file, Ontology.class)));
+                            Ontology ontology = OntologyFinalizer.finalize(mapper.readValue(file, Ontology.class));
+                            return new Tuple2<>(ontology.getOnt(),ontology);
                         } catch (IOException e) {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()), new Ontology());
                         }

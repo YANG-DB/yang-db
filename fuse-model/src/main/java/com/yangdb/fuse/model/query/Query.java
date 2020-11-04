@@ -63,10 +63,7 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.Tuple2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -110,11 +107,20 @@ public class Query implements IQuery<EBase> {
         this.nonidentical = nonidentical;
     }
 
+    public List<String> getProjectedFields() {
+        return projectedFields;
+    }
+
+    public void setProjectedFields(List<String> projectedFields) {
+        this.projectedFields = projectedFields;
+    }
+
     //region Fields
     private String ont;
     private String name;
     private List<List<String>> nonidentical;
     private List<EBase> elements = new ArrayList<>();
+    private List<String> projectedFields = new ArrayList<>();
     //endregion
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
@@ -124,6 +130,7 @@ public class Query implements IQuery<EBase> {
 
         private String ont;
         private String name;
+        private List<String> projectedFields = new ArrayList<>();
         private List<Wrapper<? extends EBase>> elements;
         private List<List<String>> nonidentical;
 
@@ -224,6 +231,11 @@ public class Query implements IQuery<EBase> {
             return this;
         }
 
+        public Builder projectField(String ... name) {
+            this.projectedFields.addAll(Arrays.asList(name));
+            return this;
+        }
+
         public Builder rProp(String pType, Constraint constraint) {
             populateNext();
             getElements().add(new Wrapper<>(new RelProp(sequence.get(), pType, constraint), current()));
@@ -310,6 +322,7 @@ public class Query implements IQuery<EBase> {
             Query query = new Query();
             query.setOnt(ont);
             query.setName(name);
+            query.setProjectedFields(projectedFields);
             if (elements != null)
                 query.setElements(elements.stream().map(Wrapper::getCurrent).collect(Collectors.toList()));
             if (nonidentical != null)

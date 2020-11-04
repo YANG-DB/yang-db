@@ -1,6 +1,7 @@
 package com.yangdb.fuse.assembly.knowledge;
 
 import com.yangdb.fuse.assembly.knowledge.domain.*;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.ParameterizedQuery;
 import com.yangdb.fuse.model.query.Query;
@@ -44,12 +45,12 @@ public class KnowledgeInnerQueryWithRuntimeEvalE2ETests {
     static RelationBuilder rel1, rel2, rel3, rel4, rel5;
     static RvalueBuilder rv1, rv2, rv3, rv4, rv5, rv6, rv7, rv8, rv9;
 
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 
     @BeforeClass
     public static void setup() throws Exception {
-//        Setup.setup(true, true);
+//        Setup.setup(true, true); //todo remove remark when running IT tests
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         ctx = KnowledgeWriterContext.init(client, manager.getSchema());
         // Entities for tests

@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,9 +48,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.google.common.collect.Streams.concat;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -58,7 +61,7 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RelationshipType {
+public class RelationshipType implements BaseElement {
     public RelationshipType() {
         properties = new ArrayList<>();
         metadata = new ArrayList<>();
@@ -109,28 +112,40 @@ public class RelationshipType {
         this.DBrName = DBrName;
     }
 
-    public List<EPair> getePairs() {
-        return ePairs;
-    }
-
-    public Set<String> getSources() {
-        return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
-    }
-    public Set<String> getTargets() {
-        return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
-    }
-
     public void setePairs(List<EPair> ePairs) {
         this.ePairs = ePairs;
     }
 
+    public List<EPair> getePairs() {
+        return ePairs;
+    }
+
+    @JsonIgnore
+    public Set<String> getSidesA() {
+        return ePairs.stream().map(EPair::geteTypeA).collect(Collectors.toSet());
+    }
+
+    @JsonIgnore
+    public Set<String> getSidesB() {
+        return ePairs.stream().map(EPair::geteTypeB).collect(Collectors.toSet());
+    }
+
+    @JsonIgnore
     public RelationshipType addPair(EPair pair) {
         this.getePairs().add(pair);
         return this;
     }
 
     public List<String> getMetadata() {
-        return metadata !=null ? metadata : Collections.emptyList();
+        return metadata != null ? metadata : Collections.emptyList();
+    }
+
+    public List<String> getIdField() {
+        return idField;
+    }
+
+    public void setIdField(List<String> idField) {
+        this.idField = idField;
     }
 
     public void setMetadata(List<String> metadata) {
@@ -138,11 +153,11 @@ public class RelationshipType {
     }
 
     public List<String> getProperties() {
-        return properties !=null ? properties : Collections.emptyList();
+        return properties != null ? properties : Collections.emptyList();
     }
 
     public List<String> getMandatory() {
-        return mandatory!=null ? mandatory :  Collections.emptyList();
+        return mandatory != null ? mandatory : Collections.emptyList();
     }
 
     public void setMandatory(List<String> mandatory) {
@@ -153,31 +168,41 @@ public class RelationshipType {
         this.properties = properties;
     }
 
+    @JsonIgnore
+    public List<String> fields() {
+        return concat(properties.stream(), metadata.stream()).collect(Collectors.toList());
+    }
+
+    @JsonIgnore
     public RelationshipType addProperty(String type) {
         this.properties.add(type);
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType withProperty(String... properties) {
         this.properties.addAll(Arrays.asList(properties));
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType addMetadata(String type) {
         this.metadata.add(type);
         return this;
     }
 
+    @JsonIgnore
     public RelationshipType withMetadata(String... properties) {
         this.metadata.addAll(Arrays.asList(properties));
         return this;
     }
 
     @JsonIgnore
-    public RelationshipType withEPairs(EPair ... pairs) {
+    public RelationshipType withEPairs(EPair... pairs) {
         this.setePairs(Arrays.asList(pairs));
         return this;
     }
+
 
     //endregion
 
@@ -188,6 +213,7 @@ public class RelationshipType {
         if (o == null || getClass() != o.getClass()) return false;
         RelationshipType that = (RelationshipType) o;
         return directional == that.directional &&
+                idField.equals(that.idField) &&
                 rType.equals(that.rType) &&
                 name.equals(that.name) &&
                 mandatory.equals(that.mandatory) &&
@@ -198,23 +224,29 @@ public class RelationshipType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rType, name, directional,  mandatory, ePairs, properties, metadata);
+        return Objects.hash(idField,rType, name, directional, mandatory, ePairs, properties, metadata);
     }
 
     @Override
     public String toString() {
-        return "RelationshipType [ePairs = " + ePairs + ", rType = " + rType + ", directional = " + directional + ", name = " + name + ", properties = " + properties + ", metadata = " + metadata  +", mandatory = " + mandatory + "]";
+        return "RelationshipType [name = " + name +", ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
+    }
+
+    @JsonIgnore
+    public String idFieldName() {
+        return BaseElement.idFieldName(getIdField());
     }
 
     //region Fields
+    private List<String> idField = Collections.singletonList(GlobalConstants.ID);
     private String rType;
     private String name;
     private boolean directional;
     private String DBrName;
-    private List<String> mandatory;
-    private List<EPair> ePairs;
-    private List<String> properties;
-    private List<String> metadata;
+    private List<String> mandatory = new ArrayList<>();
+    private List<EPair> ePairs = new ArrayList<>();
+    private List<String> properties = new ArrayList<>();
+    private List<String> metadata = new ArrayList<>();
 
     @JsonIgnore
     public boolean containsMetadata(String key) {
@@ -233,12 +265,12 @@ public class RelationshipType {
 
     @JsonIgnore
     public boolean hasSideA(String eType) {
-        return ePairs.stream().anyMatch(ep->ep.geteTypeA().equals(eType));
+        return ePairs.stream().anyMatch(ep -> ep.geteTypeA().equals(eType));
     }
 
     @JsonIgnore
     public boolean hasSideB(String eType) {
-        return ePairs.stream().anyMatch(ep->ep.geteTypeB().equals(eType));
+        return ePairs.stream().anyMatch(ep -> ep.geteTypeB().equals(eType));
     }
 
 
@@ -246,6 +278,7 @@ public class RelationshipType {
 
     //region Builder
     public static final class Builder {
+        private List<String> idField = new ArrayList<>();
         private String rType;
         private String name;
         private boolean directional;
@@ -256,6 +289,7 @@ public class RelationshipType {
         private List<String> metatada = new ArrayList<>();
 
         private Builder() {
+            idField.add(GlobalConstants.ID);
         }
 
         public static Builder get() {
@@ -298,6 +332,11 @@ public class RelationshipType {
             return this;
         }
 
+        public Builder withEPair(EPair ePair) {
+            this.ePairs.add(ePair);
+            return this;
+        }
+
         public Builder withProperties(List<String> properties) {
             this.properties = properties;
             return this;
@@ -305,6 +344,11 @@ public class RelationshipType {
 
         public Builder withProperty(String property) {
             this.properties.add(property);
+            return this;
+        }
+
+        public Builder withIdField(String ... idField) {
+            this.idField = Arrays.asList(idField);
             return this;
         }
 
@@ -316,14 +360,15 @@ public class RelationshipType {
 
         public RelationshipType build() {
             RelationshipType relationshipType = new RelationshipType();
+            relationshipType.setrType(this.rType);
+            relationshipType.setIdField(idField);
             relationshipType.setName(name);
             relationshipType.setDirectional(directional);
             relationshipType.setDBrName(DBrName);
             relationshipType.setProperties(properties);
             relationshipType.setMetadata(metatada);
             relationshipType.setMandatory(mandatory);
-            relationshipType.ePairs = this.ePairs;
-            relationshipType.rType = this.rType;
+            relationshipType.setePairs(ePairs);
             return relationshipType;
         }
     }

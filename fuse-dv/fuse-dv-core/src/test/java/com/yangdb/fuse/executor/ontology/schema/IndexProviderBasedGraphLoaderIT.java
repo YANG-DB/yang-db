@@ -56,7 +56,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraph.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
+        LoadResponse<String, FuseError> response = graphLoader.load(ontology.getOnt(), graphModel, GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2,response.getResponses().size());
 
         Assert.assertEquals(64,response.getResponses().get(0).getSuccesses().size());
@@ -93,7 +93,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/LogicalDragonsGraphWithNested.json");
         LogicalGraphModel graphModel = mapper.readValue(stream, LogicalGraphModel.class);
-        LoadResponse<String, FuseError> response = graphLoader.load(graphModel, GraphDataLoader.Directive.INSERT);
+        LoadResponse<String, FuseError> response = graphLoader.load(ontology.getOnt(), graphModel, GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(2,response.getResponses().size());
 
         Assert.assertEquals(64,response.getResponses().get(0).getSuccesses().size());

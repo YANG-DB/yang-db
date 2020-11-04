@@ -22,9 +22,12 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
@@ -52,7 +55,7 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extr
  * - load with file
  */
 public class IndexProviderBasedCSVLoader implements CSVDataLoader {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
 
     static {
@@ -61,6 +64,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
 
     private Client client;
     private CSVTransformer transformer;
+    private IndexProviderFactory indexProviderFactory;
     private RawSchema schema;
     private ObjectMapper mapper;
 
@@ -68,9 +72,11 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
     @Inject
     public IndexProviderBasedCSVLoader(Client client,
                                        CSVTransformer transformer,
+                                       IndexProviderFactory indexProvider,
                                        RawSchema schema) {
         this.client = client;
         this.transformer = transformer;
+        this.indexProviderFactory = indexProvider;
         this.schema = schema;
         this.mapper = new ObjectMapper();
 
@@ -153,7 +159,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
                     //log error
                     BulkItemResponse.Failure failure = item.getFailure();
                     DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
-                    //todo - get TechId from request
+                    //todo - get additional information from request
                     upload.failure(new FuseError("commit failed", failure.toString()));
                 }
 
@@ -167,7 +173,8 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {
-                buildIndexRequest(bulk, documentBuilder);
+                if(documentBuilder.isSuccess())
+                    buildIndexRequest(bulk, documentBuilder);
             } catch (FuseError.FuseErrorException e) {
                 upload.failure(e.getError());
             }
@@ -175,7 +182,8 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
         //populate bulk relations document index requests
         for (DocumentBuilder e : context.getRelations()) {
             try {
-                buildIndexRequest(bulk, e);
+                if(e.isSuccess())
+                    buildIndexRequest(bulk, e);
             } catch (FuseError.FuseErrorException err) {
                 upload.failure(err.getError());
             }

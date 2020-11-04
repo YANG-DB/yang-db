@@ -51,7 +51,7 @@ public class KnowledgeSimpleTestSuite implements BaseSuiteMarker {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("KnowledgeSimpleTestSuite - setup");
-        Setup.setup();
+        Setup.setup();//DO NOT REMOVE
     }
 
     @AfterClass

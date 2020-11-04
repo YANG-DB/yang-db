@@ -35,7 +35,7 @@ import graphql.schema.idl.SchemaGenerator;
 
 import java.util.Optional;
 
-public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<String>, Query>  {
+public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<String>, Query> {
 
     private final GraphQLSchemaUtils schemaUtils;
     private OntologyProvider ontologyProvider;

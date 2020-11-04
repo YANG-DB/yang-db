@@ -27,20 +27,20 @@
     </profiles>
 
     <servers>
-        <!--
-                <server>
-                    <id>ossrh</id>
-                    <username>yangdb</username>
-                    <password>a*9***X*h***</password>
-                </server>
-        -->
-        <!--
-                <server>
-                    <id>github</id>
-                    <username>yang-db</username>
-                    <password>1d5b28baf6381e950812611d8c9d7776ad93c913</password>
-                </server>
-        -->
+<!--
+        <server>
+            <id>ossrh</id>
+            <username>yangdb</username>
+            <password>a*9***X*h***</password>
+        </server>
+-->
+<!--
+        <server>
+            <id>github</id>
+            <username>yang-db</username>
+            <password>1d5b28baf6381e950812611d8c9d7776ad93c913</password>
+        </server>
+-->
         <server>
             <id>bintray-yangdbos-yangdb</id>
             <username>yangdb</username>

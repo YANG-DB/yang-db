@@ -16,6 +16,7 @@ import com.yangdb.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.epb.plan.validation.M1PlanValidator;
 import com.yangdb.fuse.epb.utils.PlanMockUtils;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -299,7 +300,7 @@ public class SmartEpbRedundancyTests {
                 new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.element$(query, 4))),
                 new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(
                         new RelPropGroup(5,
-                                new RedundantRelProp(0, NAME.type, "entityA.name", "entityA.name", Constraint.of(ConstraintOp.le, "abc"))))
+                                new RedundantRelProp(0, NAME.type, GlobalConstants.EdgeSchema.SOURCE_NAME, GlobalConstants.EdgeSchema.SOURCE_NAME, Constraint.of(ConstraintOp.le, "abc"))))
                         .build()),
                 new EntityOp(AsgQueryUtil.element$(query, 1)),
                 new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(new EPropGroup(3)).build()),
@@ -329,18 +330,18 @@ public class SmartEpbRedundancyTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityA.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
-                                                        new GraphRedundantPropertySchema.Impl(NAME.name, "entityA.name", NAME.type)
+                                                        new GraphRedundantPropertySchema.Impl(NAME.name, GlobalConstants.EdgeSchema.SOURCE_NAME, NAME.type)
                                                 ) : Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityB.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
-                                                        new GraphRedundantPropertySchema.Impl(NAME.name, "entityB.name", NAME.type)
+                                                        new GraphRedundantPropertySchema.Impl(NAME.name, GlobalConstants.EdgeSchema.DEST_NAME, NAME.type)
                                                 ) : Collections.emptyList())),
                                 Direction.OUT,
                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),

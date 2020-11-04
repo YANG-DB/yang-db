@@ -121,6 +121,7 @@ public abstract class BaseProp extends EBase{
         result = 31 * result + (pType!=null ? pType.hashCode() : 0);
         result = 31 * result + (pTag!=null ? pTag.hashCode() : 0);
         result = 31 * result + (con!=null ? con.hashCode() : 0);
+        result = 31 * result + (proj!=null ? proj.hashCode() : 0);
         result = 31 * result + (f != null ? f.hashCode() : 0);
         return result;
     }
@@ -147,16 +148,26 @@ public abstract class BaseProp extends EBase{
         return con;
     }
 
+    /**
+     * set constraint (projection & constraints are exclusives)
+     * @param con
+     */
     public void setCon(Constraint con) {
         this.con = con;
+        this.proj = null;
     }
 
     public Projection getProj() {
         return proj;
     }
 
+    /**
+     * set projection (projection & constraints are exclusives)
+     * @param proj
+     */
     public void setProj(Projection proj) {
         this.proj = proj;
+        this.con = null;
     }
 
     public String getF() {

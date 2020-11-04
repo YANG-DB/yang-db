@@ -135,23 +135,23 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
         return build;
     }
 
-    public static String print(PlanWithCost<Plan, PlanDetailedCost> planWithCost) {
+    public static String print(PlanWithCost<Plan, PlanDetailedCost> planWithCost,boolean printId) {
         List<String> builder = new LinkedList<>();
         builder.add("cost:" + planWithCost.getCost().getGlobalCost() + "\n");
-        print(new HashMap<>(), builder, planWithCost.getPlan().getOps(), 1);
+        print(new HashMap<>(), builder, planWithCost.getPlan().getOps(), 1,printId);
         return builder.toString();
     }
 
 
-    static <T extends EBase> String print(Map<Integer, Integer> cursorLocations, List<String> builder, List<PlanOp> ops, int level) {
+    static <T extends EBase> String print(Map<Integer, Integer> cursorLocations, List<String> builder, List<PlanOp> ops, int level,boolean printId) {
         builder.add("");
         int currentLine = 0;
         for (PlanOp currentOp : ops) {
             if (currentOp instanceof CompositeAsgEBasePlanOp) {
-                builder.add(print(cursorLocations, new ArrayList<>(), ((CompositeAsgEBasePlanOp<T>) currentOp).getOps(), 0));
+                builder.add(print(cursorLocations, new ArrayList<>(), ((CompositeAsgEBasePlanOp<T>) currentOp).getOps(), 0,printId));
             } else if (currentOp instanceof AsgEBasePlanOp) {
                 AsgEBasePlanOp<T> planOp = (AsgEBasePlanOp<T>) currentOp;
-                String text = QueryDescriptor.getPrefix(isTail(planOp), planOp.getAsgEbase().geteBase()) + shortLabel(planOp, new StringJoiner(":"));
+                String text = QueryDescriptor.getPrefix(isTail(planOp), planOp.getAsgEbase().geteBase()) + shortLabel(planOp, new StringJoiner(":"),printId);
                 if (planOp instanceof GoToEntityOp) {
                     char[] zeros = new char[cursorLocations.get(((GoToEntityOp) planOp).getAsgEbase().geteNum()) - 5];
                     Arrays.fill(zeros, ' ');
@@ -162,9 +162,9 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
                     Arrays.fill(zeros, ' ');
                     builder.add("\n" + String.valueOf(zeros) + text);
                     level++;
-                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getLeftBranch().getOps(), 0));
+                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getLeftBranch().getOps(), 0,printId));
                     level++;
-                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getRightBranch().getOps(), 0));
+                    builder.add("\n\t\t" + print(cursorLocations, new ArrayList<>(), ((EntityJoinOp) planOp).getRightBranch().getOps(), 0,printId));
                     level++;
                 } else if (planOp instanceof EntityNoOp) {
                     char[] zeros = new char[cursorLocations.get(((EntityNoOp) planOp).getAsgEbase().geteNum()) - 5];
@@ -184,19 +184,19 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
         return planOp instanceof EntityNoOp || planOp instanceof GoToEntityOp || planOp instanceof EntityJoinOp;
     }
 
-    private static <T extends EBase> String shortLabel(AsgEBasePlanOp<T> element, StringJoiner joiner) {
+    private static <T extends EBase> String shortLabel(AsgEBasePlanOp<T> element, StringJoiner joiner,boolean printId) {
         if (element instanceof GoToEntityOp) {
             return joiner.add("goTo[" + element.getAsgEbase().geteNum() + "]").toString();
         }
         if (element instanceof EntityJoinOp) {
-            AsgQueryDescriptor.shortLabel(element.getAsgEbase(), joiner);
+            AsgQueryDescriptor.shortLabel(element.getAsgEbase(), joiner, printId);
             joiner.add("join[" + element.getAsgEbase().geteNum() + "]");
             return joiner.toString();
         }
         if (element instanceof EntityNoOp) {
             return joiner.add("Opt[" + element.getAsgEbase().geteNum() + "]").toString();
         } else
-            return AsgQueryDescriptor.shortLabel(element.getAsgEbase(), joiner);
+            return AsgQueryDescriptor.shortLabel(element.getAsgEbase(), joiner, printId);
     }
 
     public static class GraphElement {

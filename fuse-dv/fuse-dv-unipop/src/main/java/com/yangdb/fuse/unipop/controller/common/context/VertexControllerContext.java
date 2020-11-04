@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.controller.common.context;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.ElementType;
@@ -39,6 +41,8 @@ import java.util.stream.StreamSupport;
  * Created by roman.margolis on 13/09/2017.
  */
 public interface VertexControllerContext extends BulkContext, DirectionContext, ElementControllerContext {
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl extends ElementControllerContext.Impl implements VertexControllerContext {
         //region Constructors
         public Impl(

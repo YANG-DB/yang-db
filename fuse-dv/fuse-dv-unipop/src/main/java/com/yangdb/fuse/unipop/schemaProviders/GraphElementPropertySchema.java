@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -75,6 +77,8 @@ public interface GraphElementPropertySchema {
     }
 
     interface ExactIndexingSchema extends IndexingSchema {
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @JsonIgnoreProperties(ignoreUnknown = true)
         class Impl extends IndexingSchema.Impl implements ExactIndexingSchema {
             //region Constructors
             public Impl(String name) {
@@ -87,6 +91,8 @@ public interface GraphElementPropertySchema {
     interface NgramsIndexingSchema extends IndexingSchema {
         int getMaxSize();
 
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @JsonIgnoreProperties(ignoreUnknown = true)
         class Impl extends IndexingSchema.Impl implements NgramsIndexingSchema {
             //region Constructors
             public Impl(String name, int maxSize) {
@@ -108,6 +114,8 @@ public interface GraphElementPropertySchema {
         }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl implements GraphElementPropertySchema {
         //region Constructors
         public Impl(String name) {

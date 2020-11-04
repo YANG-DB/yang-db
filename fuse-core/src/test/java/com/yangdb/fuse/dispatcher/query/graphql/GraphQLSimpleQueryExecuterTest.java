@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPH_QL;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPHQL;
 
 
 public class GraphQLSimpleQueryExecuterTest {
@@ -25,9 +25,9 @@ public class GraphQLSimpleQueryExecuterTest {
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql");
-        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
-        transformer = new GraphQL2QueryTransformer(graphQL2OntologyTransformer, new OntologyProvider() {
+        GraphQLToOntologyTransformer graphQLToOntologyTransformer = new GraphQLToOntologyTransformer();
+        ontology = graphQLToOntologyTransformer.transform(schemaInput,whereInoput);
+        transformer = new GraphQL2QueryTransformer(graphQLToOntologyTransformer, new OntologyProvider() {
             @Override
             public Optional<Ontology> get(String id) {
                 return Optional.of(ontology);
@@ -54,7 +54,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -83,7 +83,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|5}, \n" +
                 "                            └─?[3]:[name<like,jhone>, description<notEmpty,null>], \n" +
@@ -101,7 +101,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3}, \n" +
                 "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
@@ -123,7 +123,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "            }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
@@ -153,7 +153,7 @@ public class GraphQLSimpleQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +

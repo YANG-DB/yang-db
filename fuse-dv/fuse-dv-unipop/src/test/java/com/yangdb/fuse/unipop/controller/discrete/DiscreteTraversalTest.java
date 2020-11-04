@@ -2,6 +2,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -53,7 +54,7 @@ import java.util.*;
 
 import static com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode.getClient;
 import static com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Type.keyword;
-import static com.yangdb.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+import static com.yangdb.fuse.model.GlobalConstants.HasKeys.CONSTRAINT;
 import static com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
 
 /**
@@ -1103,7 +1104,7 @@ public class DiscreteTraversalTest {
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 "hasOutFire",
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.OUT.toString().toLowerCase()))),
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
@@ -1139,7 +1140,7 @@ public class DiscreteTraversalTest {
                                 Stream.of(GraphEdgeSchema.Application.endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasInFire",
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.IN.toString().toLowerCase()))),
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
@@ -1205,7 +1206,7 @@ public class DiscreteTraversalTest {
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"), Collections.emptyList())),
                                 Direction.OUT,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
@@ -1222,7 +1223,7 @@ public class DiscreteTraversalTest {
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"), Collections.emptyList())),
                                 Direction.IN,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
@@ -1290,11 +1291,11 @@ public class DiscreteTraversalTest {
                 fireEvent1.put("type", "FireDual");
                 fireEvent1.put("entityAId", sourceDragonId);
                 fireEvent1.put("entityBId", destDragonId);
-                fireEvent1.put("direction", Direction.OUT.toString().toLowerCase());
+                fireEvent1.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.toString().toLowerCase());
                 fireEvent2.put("type", "FireDual");
                 fireEvent2.put("entityBId", sourceDragonId);
                 fireEvent2.put("entityAId", destDragonId);
-                fireEvent2.put("direction", Direction.IN.toString().toLowerCase());
+                fireEvent2.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN.toString().toLowerCase());
 
                 int duration = dragonStartId * 100 + j;
                 fireEvent1.put("duration", duration);

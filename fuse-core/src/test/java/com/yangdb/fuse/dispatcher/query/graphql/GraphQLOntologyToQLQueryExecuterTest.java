@@ -7,7 +7,6 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryInfo;
 import graphql.GraphQLError;
-import graphql.language.Node;
 import graphql.language.SDLDefinition;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.TypeDefinitionRegistry;
@@ -17,11 +16,10 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPH_QL;
+import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_GRAPHQL;
 
 
 public class GraphQLOntologyToQLQueryExecuterTest {
@@ -32,10 +30,10 @@ public class GraphQLOntologyToQLQueryExecuterTest {
     public static void setUp() throws Exception {
         InputStream schemaInput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/starWars.graphql");
         InputStream whereInoput = Thread.currentThread().getContextClassLoader().getResourceAsStream("graphql/whereSchema.graphql//");
-        GraphQL2OntologyTransformer graphQL2OntologyTransformer = new GraphQL2OntologyTransformer();
-        ontology = graphQL2OntologyTransformer.transform(schemaInput,whereInoput);
+        GraphQLToOntologyTransformer graphQLToOntologyTransformer = new GraphQLToOntologyTransformer();
+        ontology = graphQLToOntologyTransformer.transform(schemaInput,whereInoput);
         //creating the graphQL from the newly created ontology
-        GraphQLSchema qlSchema = graphQL2OntologyTransformer.transform(ontology);
+        GraphQLSchema qlSchema = graphQLToOntologyTransformer.transform(ontology);
         //registry definitions
         TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
         Optional<GraphQLError> error = registry.addAll(qlSchema.getAllTypesAsList().stream()
@@ -83,7 +81,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4}, \n" +
                 "                          └─?[3]:[name<IdentityProjection>], \n" +
@@ -112,7 +110,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
                 "        description\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q1", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|5}, \n" +
                 "                            └─?[3]:[name<like,jhone>, description<notEmpty,null>], \n" +
@@ -130,7 +128,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q2", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3}, \n" +
                 "                        └-> Rel(friends:3)──Typ[Character:4]──Q[5]:{6}, \n" +
@@ -152,7 +150,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
                 "            }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q3", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +
@@ -182,7 +180,7 @@ public class GraphQLOntologyToQLQueryExecuterTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPH_QL,"test"));
+        Query query = transformer.transform(new QueryInfo<>(q,"q4", TYPE_GRAPHQL,"test"));
         String expected = "[└── Start, \n" +
                 "    ──Typ[Human:1]──Q[2]:{3|4|8}, \n" +
                 "                            └─?[3]:[name<IdentityProjection>], \n" +

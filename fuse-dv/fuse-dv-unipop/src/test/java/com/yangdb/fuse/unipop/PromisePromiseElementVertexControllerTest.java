@@ -2,7 +2,7 @@ package com.yangdb.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;

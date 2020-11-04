@@ -45,6 +45,7 @@ import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
  * Created by moti on 3/19/2017.
  */
 public class ElasticEmbeddedNode implements AutoCloseable {
+    public static final String FUSE_TEST_ELASTIC = "fuse.test_elastic";
 
     static {
         //see https://github.com/testcontainers/testcontainers-java/issues/1009 issue with netty & E/S
@@ -66,43 +67,45 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Members
-    private final int httpPort;
-    private final String esWorkingDir;
-    private final int numberOfShards;
+    private static String esWorkingDir;
+    private static int numberOfShards;
     private Node node;
 
-    static int httpTransportPort;
-    static String nodeName;
+    static String nodeName = FUSE_TEST_ELASTIC;
+
+    static int httpPort = 9200;
+    static int httpTransportPort = 9300;
+
     static TransportClient client = null;
     //endregion
 
     //region Constructors
-    public ElasticEmbeddedNode(String clusterName) throws Exception {
+    ElasticEmbeddedNode(String clusterName) throws Exception {
         this("target/es", 9200, 9300, clusterName);
     }
 
-    public ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
+    ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
         this("target/es", 9200, 9300, clusterName, numberOfShards);
     }
 
-    public ElasticEmbeddedNode() throws Exception {
+    ElasticEmbeddedNode() throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic");
     }
 
-    public ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic", configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
         this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1, configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
-        this.esWorkingDir = esWorkingDir;
-        this.httpPort = httpPort;
-        this.numberOfShards = numberOfShards;
+        ElasticEmbeddedNode.esWorkingDir = esWorkingDir;
+        ElasticEmbeddedNode.httpPort = httpPort;
+        ElasticEmbeddedNode.numberOfShards = numberOfShards;
         prepare();
 
         for (ElasticIndexConfigurer configurer : configurers) {
@@ -114,6 +117,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Methods
     public static TransportClient getClient() {
+        return getClient(nodeName,httpTransportPort);
+    }
+
+    //region Methods
+    public static TransportClient getClient(String nodeName) {
         return getClient(nodeName,httpTransportPort);
     }
 

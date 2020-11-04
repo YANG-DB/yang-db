@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.assembly.knowledge.domain.KnowledgeConfigManager;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
@@ -167,6 +168,6 @@ public class KnowledgeAutomationFunctions {
             "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was",
             "born and I will give you a complete account of the system, and expound the actual teachings of the");
     private static List<String> users = Arrays.asList("Tonette Kwon", "Georgiana Vanasse", "Tena Barriere", "Sharilyn Dennis");
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
 
 }

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderIfc;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -70,12 +70,12 @@ public class EntityTransformer implements DataTransformer<DataTransformerContext
     private final ObjectMapper mapper;
 
     @Inject
-    public EntityTransformer(Config config, OntologyProvider ontology, IndexProviderIfc indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
+    public EntityTransformer(Config config, OntologyProvider ontology, IndexProviderFactory indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
         String assembly = config.getString("assembly");
         this.accessor = new Ontology.Accessor(ontology.get(assembly).orElseThrow(
                 () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
-        this.indexProvider = indexProvider.get(assembly).orElseThrow(
-                () -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for assembly", "No Index Provider for assembly" + assembly)));
+        //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
+        this.indexProvider = indexProvider.get(assembly).orElseGet(() ->  IndexProvider.Builder.generate(accessor.get()));
         this.schema = schema;
         this.idGenerator = idGenerator;
         this.client = client;

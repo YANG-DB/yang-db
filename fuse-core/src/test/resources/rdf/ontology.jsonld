@@ -1,0 +1,723 @@
+[
+  {
+    "@id": "_:genid1",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+        "@value": "1"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasHabitat"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid10",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Koala"
+          },
+          {
+            "@id": "_:genid12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:genid12",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#PhD"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasDegree"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid14",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#male"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasGender"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid15",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Student"
+          },
+          {
+            "@id": "_:genid21"
+          },
+          {
+            "@id": "_:genid19"
+          },
+          {
+            "@id": "_:genid17"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:genid17",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#cardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+        "@value": "3"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasChildren"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid19",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#male"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasGender"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#cardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+        "@value": "1"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasGender"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid21",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Female"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasChildren"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid23",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+          },
+          {
+            "@id": "_:genid25"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:genid25",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+        "@value": "1"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasChildren"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid27",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
+        "@value": "true"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#isHardWorking"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid28",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"
+          },
+          {
+            "@id": "_:genid32"
+          },
+          {
+            "@id": "_:genid30"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:genid3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#female"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasGender"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid30",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
+        "@value": "true"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#isHardWorking"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid32",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasHabitat"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#someValuesFrom": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#University"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid4",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasDegree"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#someValuesFrom": [
+      {
+        "@id": "_:genid5"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#oneOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#BA"
+          },
+          {
+            "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#BS"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:genid8",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasHabitat"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#someValuesFrom": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest"
+      }
+    ]
+  },
+  {
+    "@id": "_:genid9",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#hasValue": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
+        "@value": "false"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#isHardWorking"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Ontology"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#seeAlso": [
+      {
+        "@value": "Male"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "_:genid1"
+      },
+      {
+        "@id": "_:genid2"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#versionInfo": [
+      {
+        "@value": "1.1"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#BA",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#BS",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Forest"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Female",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid3"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Forest",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Habitat"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Gender",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#GraduateStudent",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Student"
+      },
+      {
+        "@id": "_:genid4"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Habitat",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Koala",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Marsupials"
+      },
+      {
+        "@id": "_:genid8"
+      },
+      {
+        "@id": "_:genid9"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#KoalaWithPhD",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid10"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#versionInfo": [
+      {
+        "@value": "1.2"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#MA",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Male",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid14"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#MaleStudentWith3Daughters",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid15"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Marsupials",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#disjointWith": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Parent",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid23"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#PhD",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Quokka",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Marsupials"
+      },
+      {
+        "@id": "_:genid27"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Rainforest",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Forest"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Student",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2002/07/owl#equivalentClass": [
+      {
+        "@id": "_:genid28"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#TasmanianDevil",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Marsupials"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#University",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Habitat"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#female",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Gender"
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasChildren",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#domain": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasDegree",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#domain": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Degree"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasGender",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty",
+      "http://www.w3.org/2002/07/owl#FunctionalProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#domain": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Gender"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#hasHabitat",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#domain": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Animal"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Habitat"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#isHardWorking",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty",
+      "http://www.w3.org/2002/07/owl#FunctionalProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#domain": [
+      {
+        "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#boolean"
+      }
+    ]
+  },
+  {
+    "@id": "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#male",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#NamedIndividual",
+      "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Gender"
+    ]
+  }
+]

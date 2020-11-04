@@ -44,7 +44,7 @@ public class SingleEntityIT implements BaseITMarker {
 
         String idField = "id";
 
-        TransportClient client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
+        TransportClient client = ElasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer("person", new Mappings().addMapping("pge",
                 new Mapping().addProperty("type", new Property(keyword))
@@ -73,7 +73,7 @@ public class SingleEntityIT implements BaseITMarker {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        NonRedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+        ElasticEmbeddedNode.getClient().admin().indices()
                 .delete(new DeleteIndexRequest("person", "dragon")).actionGet();
     }
 

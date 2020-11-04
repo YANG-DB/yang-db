@@ -7,6 +7,7 @@ import com.yangdb.fuse.assembly.knowledge.domain.*;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -44,7 +45,7 @@ import static com.yangdb.fuse.model.query.Rel.Direction.L;
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 
 public class UnionQueryDriverTest extends BaseModuleInjectionTest {
-    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static KnowledgeWriterContext ctx;
     static FileBuilder f1, f2;
     static EntityBuilder e1;

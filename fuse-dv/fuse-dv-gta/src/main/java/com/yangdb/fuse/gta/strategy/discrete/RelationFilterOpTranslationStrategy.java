@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.yangdb.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+import static com.yangdb.fuse.model.GlobalConstants.HasKeys.CONSTRAINT;
 
 /**
  * Created by Roman on 09/05/2017.

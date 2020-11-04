@@ -40,13 +40,43 @@ public class KnowledgeGraphInitiator implements GraphInitiator {
     }
 
     @Override
-    public long init() throws IOException {
+    public long init(String ontology) {
         return DataLoaderUtils.init(client,schema);
+    }
+
+    @Override
+    public long init()  {
+        return DataLoaderUtils.init(client,schema);
+    }
+
+    @Override
+    public long drop(String ontology)  {
+        return DataLoaderUtils.drop(client,schema);
     }
 
     @Override
     public long drop() throws IOException {
         return DataLoaderUtils.drop(client,schema);
+    }
+
+    @Override
+    public long createTemplate(String ontology, String schemaProvider) {
+        return 0;
+    }
+
+    @Override
+    public long createTemplate(String ontology) {
+        return 0;
+    }
+
+    @Override
+    public long createIndices(String ontology, String schemaProvider)  {
+        return 0;
+    }
+
+    @Override
+    public long createIndices(String ontology) {
+        return 0;
     }
 
 

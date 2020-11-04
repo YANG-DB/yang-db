@@ -8,6 +8,7 @@ import com.yangdb.fuse.epb.plan.estimation.pattern.estimators.rule.RulesBasedPat
 import com.yangdb.fuse.epb.plan.statistics.RuleBasedStatisticalProvider;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.epb.plan.statistics.StatisticsProvider;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.Direction;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -126,19 +127,19 @@ public interface DfsTestUtils {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityA.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityB.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),
                                                 new GraphRedundantPropertySchema.Impl("gender", "entityB.gender", ont.property$("gender").getType()),
-                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", ont.property$("firstName").getType()),
-                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", ont.property$("type").getType())
+                                                new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, ont.property$("firstName").getType()),
+                                                new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, ont.property$("type").getType())
                                         ))),
                                 org.apache.tinkerpop.gremlin.structure.Direction.OUT,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(GlobalConstants.EdgeSchema.DIRECTION, "out", "in")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(Collections.singletonList("index"))),
                                 Collections.emptyList()))

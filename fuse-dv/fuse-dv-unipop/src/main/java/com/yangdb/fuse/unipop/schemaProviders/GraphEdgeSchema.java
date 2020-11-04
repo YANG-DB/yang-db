@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.schemaProviders;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -58,6 +60,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         Object getInValue();
         Object getOutValue();
 
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @JsonIgnoreProperties(ignoreUnknown = true)
         class Impl implements DirectionSchema {
             //region Constructors
             public Impl(String field, Object outValue, Object inValue) {
@@ -101,6 +105,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         Optional<GraphElementRouting> getRouting();
         Optional<IndexPartitions> getIndexPartitions();
 
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @JsonIgnoreProperties(ignoreUnknown = true)
         class Impl implements End {
             //region Constructors
             public Impl(Iterable<String> idFields,
@@ -178,6 +184,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class Impl extends GraphElementSchema.Impl implements GraphEdgeSchema {
         //region Constructors
         public Impl(String label,

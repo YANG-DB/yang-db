@@ -28,6 +28,7 @@ import com.yangdb.fuse.dispatcher.resource.PageResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.yangdb.fuse.dispatcher.utils.GraphApiUtils;
 import com.yangdb.fuse.dispatcher.validation.QueryValidator;
 import com.yangdb.fuse.model.asgQuery.AsgCompositeQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
@@ -48,7 +49,7 @@ import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.AssignmentUtils;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.transport.*;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
@@ -56,11 +57,11 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
+import static com.yangdb.fuse.dispatcher.utils.GraphApiUtils.findPathQuery;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.parameterized;
@@ -126,7 +127,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHERQL, cypher, ontology,
                     request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
@@ -150,7 +151,27 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runGraphQL(String graphQL, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPHQL, graphQL, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_SPARQL, sparql, ontology,
                     new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
@@ -170,7 +191,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPH_QL, graphQL, ontology,
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_GRAPHQL, graphQL, ontology,
                     request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
@@ -193,7 +214,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> runCypher(String cypher, String ontology) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHER, cypher, ontology,
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHERQL, cypher, ontology,
                     new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())
@@ -209,6 +230,83 @@ public abstract class QueryDriverBase implements QueryDriver {
         }
     }
 
+    @Override
+    public Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query pathQuery = findPathQuery(ontology, sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    pathQuery,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> getVertex(String ontology, String type, String vertexId) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query getVertex = GraphApiUtils.getVertex(ontology,type,vertexId);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    getVertex,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
+    public Optional<Object> getNeighbors(String ontology, String type, String vertexId) {
+        String id = UUID.randomUUID().toString();
+        try {
+            Query getVertex = GraphApiUtils.getNeighbors(ontology,type,vertexId);
+            CreateQueryRequest queryRequest = new CreateQueryRequest(id,
+                    id,
+                    getVertex,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } catch (Throwable e) {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(), "failed building the findPath query request ")));
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
 
     @Override
     public Optional<Object> getNextPageData(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
@@ -275,8 +373,7 @@ public abstract class QueryDriverBase implements QueryDriver {
                     .withInnerQueryResources(getQueryResourceInfos(innerQuery)));
         } catch (Exception err) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(),
-                            err.toString())));
+                    new FuseError(Query.class.getSimpleName(),err)));
         }
     }
 

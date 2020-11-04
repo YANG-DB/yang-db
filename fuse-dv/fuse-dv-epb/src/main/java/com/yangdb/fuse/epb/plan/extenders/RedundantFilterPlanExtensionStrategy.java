@@ -42,6 +42,7 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.quant.QuantType;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
@@ -68,8 +69,8 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
         if(!plan.isPresent()) {
             return Collections.emptyList();
         }
-
-        Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
+        Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt())
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No target Ontology field found ", "No target Ontology found for " + query.getOnt()))));
 
         Plan flatPlan = PlanUtil.flat(plan.get());
 

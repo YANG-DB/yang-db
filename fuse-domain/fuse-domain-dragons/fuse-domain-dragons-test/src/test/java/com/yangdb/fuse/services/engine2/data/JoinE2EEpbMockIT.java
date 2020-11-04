@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -37,6 +38,7 @@ import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.services.engine2.mocks.EpbMockModule;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
@@ -57,17 +59,18 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.yangdb.fuse.model.OntologyTestUtils.*;
+import static com.yangdb.fuse.services.engine2.JoinE2EEpbMockTestSuite.*;
 import static java.util.Collections.singleton;
 
 public class JoinE2EEpbMockIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient(), false);
+        setup(ElasticEmbeddedNode.getClient(), false);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 
@@ -260,14 +263,14 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
                 fireEdge.put("id", FIRE.getName() + counter);
                 fireEdge.put("type", FIRE.getName());
                 fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdge.put("direction", Direction.OUT);
+                fireEdge.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT);
                 fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", FIRE.getName() + counter + 1);
                 fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdgeDual.put("direction", Direction.IN);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN);
                 fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> entityAI = new HashMap<>();
@@ -283,10 +286,10 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
                 entityBJ.put("id", "Dragon_" + j);
                 entityBJ.put("type", DRAGON.name);
 
-                fireEdge.put("entityA", entityAI);
-                fireEdge.put("entityB", entityBJ);
-                fireEdgeDual.put("entityA", entityAJ);
-                fireEdgeDual.put("entityB", entityBI);
+                fireEdge.put(GlobalConstants.EdgeSchema.SOURCE, entityAI);
+                fireEdge.put(GlobalConstants.EdgeSchema.DEST, entityBJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.SOURCE, entityAJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DEST, entityBI);
 
                 fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
 
@@ -301,12 +304,12 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TIMESTAMP.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TEMPERATURE.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.integer))
-                .addProperty("entityA", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-                .addProperty("entityB", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -316,7 +319,7 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testDragonFireDragonX2PathMiddleJoin() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
@@ -365,7 +368,7 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testDragonFireDragonX2PathMiddleJoinSwitchBranches() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
@@ -414,11 +417,11 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testDragonFireDragonX2PathStartJoin() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
-        RedundantRelProp redundantRelProp2 = new RedundantRelProp("entityB.id");
+        RedundantRelProp redundantRelProp2 = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_ID);
         redundantRelProp2.setpType("id");
         redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_4", "[]"));
 
@@ -467,7 +470,7 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testDragonFireDragonX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX3Query();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
@@ -536,11 +539,11 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testJoinRelEntityPlan() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX3Query();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
-        RedundantRelProp redundantRelProp2 = new RedundantRelProp("entityB.id");
+        RedundantRelProp redundantRelProp2 = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_ID);
         redundantRelProp2.setpType("id");
         redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_6", "[]"));
 
@@ -601,11 +604,11 @@ public class JoinE2EEpbMockIT implements BaseITMarker {
     public void testJoinGotoPlan() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonGotoQuery();
 
-        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        RedundantRelProp redundantRelProp = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_TYPE);
         redundantRelProp.setpType("type");
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
-        RedundantRelProp redundantRelProp2 = new RedundantRelProp("entityB.id");
+        RedundantRelProp redundantRelProp2 = new RedundantRelProp(GlobalConstants.EdgeSchema.DEST_ID);
         redundantRelProp2.setpType("id");
         redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_6", "[]"));
 

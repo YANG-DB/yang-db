@@ -43,6 +43,7 @@ import org.unipop.structure.UniGraph;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static com.yangdb.fuse.model.query.Rel.Direction.R;
 import static org.mockito.ArgumentMatchers.any;
@@ -190,9 +191,8 @@ public class M2PlanTraversalTranslatorTest {
                     return  relTypes;
                 }
         );
-        when(ontology.getProperties()).thenAnswer(invocationOnMock -> {
-            return Arrays.asList(new Property("stringValue", "stringValue", "string"));
-        });
+        when(ontology.getProperties()).thenAnswer(invocationOnMock ->
+                new HashSet<>(Arrays.asList(new Property("stringValue", "stringValue", "string"))));
 
         return new Ontology.Accessor(ontology);
     }

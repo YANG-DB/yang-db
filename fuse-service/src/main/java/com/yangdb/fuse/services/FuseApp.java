@@ -44,17 +44,18 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
 import com.yangdb.fuse.logging.StatusReportedJob;
 import com.yangdb.fuse.services.appRegistrars.*;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
 import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
+import org.jooby.handlers.AssetHandler;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.metrics.Metrics;
 import org.jooby.quartz.Quartz;
@@ -96,8 +97,9 @@ public class FuseApp extends Jooby {
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
         // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
-        get("cypher-queries-samples", () -> Results.redirect("/public/assets/samples/cypher-queries.txt"));
-        get("les_miserables-data", () -> Results.redirect("/public/assets/samples/les_miserables-data.json"));
+        get("queryBuilder/sparql", () -> Results.redirect("/public/assets/query/sparql/index.html"));
+        get("queryBuilder/graphql", () -> Results.redirect("/public/assets/query/graphql/index.html"));
+        get("queryBuilder/cypher", () -> Results.redirect("/public/assets/query/cypher/index.html"));
 
         //internal quarts reporting job scheduler
         use(new Quartz().with(StatusReportedJob.class));
@@ -105,6 +107,7 @@ public class FuseApp extends Jooby {
         //'Access-Control-Allow-Origin' header
         use("*", new CorsHandler());
         //expose html assets
+        assets("public/**",new AssetHandler(Paths.get("public")));
         assets("/assets/**");
         assets("public/assets/**");
         assets("public/assets/samples/**");

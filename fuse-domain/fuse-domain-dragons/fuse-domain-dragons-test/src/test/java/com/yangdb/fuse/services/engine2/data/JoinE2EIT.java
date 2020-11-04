@@ -1,6 +1,7 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.PlanAssert;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -31,6 +32,7 @@ import com.yangdb.fuse.services.engine2.JoinE2ETestSuite;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.test.BaseITMarker;
 import com.yangdb.test.data.DragonsOntology;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
@@ -67,12 +69,12 @@ import static java.util.Collections.singletonList;
 public class JoinE2EIT implements BaseITMarker {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2ETestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(ElasticEmbeddedNode.getClient(), true);
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        cleanup(JoinE2ETestSuite.elasticEmbeddedNode.getClient());
+        cleanup(ElasticEmbeddedNode.getClient());
     }
 
 
@@ -300,14 +302,14 @@ public class JoinE2EIT implements BaseITMarker {
                 fireEdge.put("id", FIRE.getName() + counter);
                 fireEdge.put("type", FIRE.getName());
                 fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdge.put("direction", Direction.OUT.name());
+                fireEdge.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.name());
                 fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", FIRE.getName() + counter + 1);
                 fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdgeDual.put("direction", Direction.IN.name());
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.IN.name());
                 fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> entityAI = new HashMap<>();
@@ -323,10 +325,10 @@ public class JoinE2EIT implements BaseITMarker {
                 entityBJ.put("id", "Dragon_" + j);
                 entityBJ.put("type", DragonsOntology.DRAGON.name);
 
-                fireEdge.put("entityA", entityAI);
-                fireEdge.put("entityB", entityBJ);
-                fireEdgeDual.put("entityA", entityAJ);
-                fireEdgeDual.put("entityB", entityBI);
+                fireEdge.put(GlobalConstants.EdgeSchema.SOURCE, entityAI);
+                fireEdge.put(GlobalConstants.EdgeSchema.DEST, entityBJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.SOURCE, entityAJ);
+                fireEdgeDual.put(GlobalConstants.EdgeSchema.DEST, entityBI);
 
                 fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
 
@@ -341,12 +343,12 @@ public class JoinE2EIT implements BaseITMarker {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TIMESTAMP.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty(TEMPERATURE.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.integer))
-                .addProperty("entityA", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-                .addProperty("entityB", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                         .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                         .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -366,11 +368,11 @@ public class JoinE2EIT implements BaseITMarker {
     private static Mappings.Mapping getOriginMapping() {
         return new Mappings.Mapping()
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-            .addProperty("entityA", new Mappings.Mapping.Property()
+                .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
+            .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Mappings.Mapping.Property()
                 .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                 .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-            .addProperty("entityB", new Mappings.Mapping.Property()
+            .addProperty(GlobalConstants.EdgeSchema.DEST, new Mappings.Mapping.Property()
                     .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
                     .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
     }
@@ -382,7 +384,7 @@ public class JoinE2EIT implements BaseITMarker {
             Map<String, Object> originEdgeOut = new HashMap<>();
             originEdgeOut.put("id", ORIGINATED_IN.getName() + counter);
             originEdgeOut.put("type", ORIGINATED_IN.getName());
-            originEdgeOut.put("direction", Direction.OUT.name());
+            originEdgeOut.put(GlobalConstants.EdgeSchema.DIRECTION, Direction.OUT.name());
 
             Map<String, Object> originEdgeIn = new HashMap<>();
             originEdgeIn.put("id", ORIGINATED_IN.getName() + counter+1);
@@ -398,11 +400,11 @@ public class JoinE2EIT implements BaseITMarker {
             kingdomEntity.put("id", "Kingdom_" + i % numKingdoms);
             kingdomEntity.put("type", DragonsOntology.KINGDOM.name);
 
-            originEdgeOut.put("entityA", dragonEntity);
-            originEdgeOut.put("entityB", kingdomEntity);
+            originEdgeOut.put(GlobalConstants.EdgeSchema.SOURCE, dragonEntity);
+            originEdgeOut.put(GlobalConstants.EdgeSchema.DEST, kingdomEntity);
 
-            originEdgeIn.put("entityA", kingdomEntity);
-            originEdgeIn.put("entityB", dragonEntity);
+            originEdgeIn.put(GlobalConstants.EdgeSchema.SOURCE, kingdomEntity);
+            originEdgeIn.put(GlobalConstants.EdgeSchema.DEST, dragonEntity);
 
             originEdges.add(originEdgeOut);
             originEdges.add(originEdgeIn);
@@ -440,7 +442,7 @@ public class JoinE2EIT implements BaseITMarker {
                         new EProp(0, COLOR.type, new IdentityProjection())))),
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
-                        new RedundantRelProp(0, "type", "entityB.type", "entityB.type", Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
+                        new RedundantRelProp(0, "type", GlobalConstants.EdgeSchema.DEST_TYPE, GlobalConstants.EdgeSchema.DEST_TYPE, Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
                 new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                 new EntityFilterOp(new AsgEBase<>(new EPropGroup(102,
                         new EProp(0, NAME.type, new IdentityProjection()),
@@ -605,7 +607,7 @@ public class JoinE2EIT implements BaseITMarker {
                                             new EProp(0, COLOR.type, new IdentityProjection())))),
                                     new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
                                     new RelationFilterOp(new AsgEBase<>(new RelPropGroup(201,
-                                            new RedundantRelProp(0, "type", "entityB.type", "entityB.type", Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
+                                            new RedundantRelProp(0, "type", GlobalConstants.EdgeSchema.DEST_TYPE, GlobalConstants.EdgeSchema.DEST_TYPE, Constraint.of(ConstraintOp.inSet, Collections.singletonList(DragonsOntology.KINGDOM.name)))))),
                                     new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
                                     new EntityFilterOp(new AsgEBase<>(new EPropGroup(301,
                                             new EProp(0, NAME.type, new IdentityProjection()),

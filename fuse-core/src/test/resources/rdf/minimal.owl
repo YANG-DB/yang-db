@@ -1,0 +1,333 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://yangdb.org#"
+     xml:base="http://yangdb.org"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://yangdb.org"/>
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.com/minimal#rawContainsImageOfEntity -->
+
+    <owl:ObjectProperty rdf:about="http://yangdb.com/minimal#rawContainsImageOfEntity">
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:intent>artifactContainsImage</yangdb:intent>
+        <yangdb:intent>artifactContainsImageOfEntity</yangdb:intent>
+        <rdfs:label xml:lang="en">Contains Image of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#entityHasMedia -->
+
+ <owl:ObjectProperty rdf:about="http://yangdb.org/minimal#entityHasMedia">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:intent>entityHasImage</yangdb:intent>
+        <rdfs:label xml:lang="en">Has Media</rdfs:label>
+    </owl:ObjectProperty>
+
+
+    <!-- http://yangdb.org/minimal#hasEntity -->
+
+    <owl:ObjectProperty rdf:about="http://yangdb.org/minimal#hasEntity">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#document"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <yangdb:intent xml:lang="en">artifactHasEntity</yangdb:intent>
+        <rdfs:label xml:lang="en">Has Entity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://yangdb.org/minimal#clockwiseRotation -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#clockwiseRotation">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <yangdb:intent>media.clockwiseRotation</yangdb:intent>
+        <yangdb:userVisible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</yangdb:userVisible>
+        <rdfs:label>Clockwise Rotation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#dateTaken -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#dateTaken">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <yangdb:intent xml:lang="en">media.dateTaken</yangdb:intent>
+        <rdfs:label xml:lang="en">Date Taken</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#deviceMake -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#deviceMake">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <yangdb:intent xml:lang="en">media.deviceMake</yangdb:intent>
+        <rdfs:label xml:lang="en">Device Make</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#deviceModel -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#deviceModel">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <yangdb:intent xml:lang="en">media.deviceModel</yangdb:intent>
+        <rdfs:label xml:lang="en">Device Model</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#duration -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#duration">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <yangdb:intent xml:lang="en">audioDuration</yangdb:intent>
+        <yangdb:intent xml:lang="en">media.duration</yangdb:intent>
+        <yangdb:intent xml:lang="en">videoDuration</yangdb:intent>
+        <rdfs:label xml:lang="en">Duration</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#fileSize -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#fileSize">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <yangdb:intent xml:lang="en">media.fileSize</yangdb:intent>
+        <rdfs:label xml:lang="en">File Size</rdfs:label>
+	<yangdb:displayType>bytes</yangdb:displayType>
+    </owl:DatatypeProperty>
+
+    <!-- http://yangdb.org/minimal#pageCount -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#pageCount">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#document"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <yangdb:intent xml:lang="en">pageCount</yangdb:intent>
+        <rdfs:label xml:lang="en">Page Count</rdfs:label>
+    </owl:DatatypeProperty>
+    
+    <!-- http://yangdb.org/minimal#author -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#author">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#document"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <yangdb:intent xml:lang="en">documentAuthor</yangdb:intent>
+        <rdfs:label xml:lang="en">Author</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <!-- http://yangdb.org/minimal#artifactTitle -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#artifactTitle">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#document"/>
+        <yangdb:textIndexHints>ALL</yangdb:textIndexHints>
+        <yangdb:intent>artifactTitle</yangdb:intent>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>Title</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <!-- http://yangdb.org/minimal#geolocation -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#geolocation">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:range rdf:resource="http://yangdb.org#geolocation"/>
+        <yangdb:intent>geoLocation</yangdb:intent>
+        <yangdb:intent>media.geoLocation</yangdb:intent>
+        <rdfs:label xml:lang="en">Geolocation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#height -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#height">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <yangdb:intent>media.height</yangdb:intent>
+        <rdfs:label xml:lang="en">Height</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#imageHeading -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#imageHeading">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <yangdb:intent>media.imageHeading</yangdb:intent>
+        <rdfs:label xml:lang="en">Image Heading</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#rawMetadata -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#rawMetadata">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <yangdb:intent>media.metadata</yangdb:intent>
+        <rdfs:label xml:lang="en">Metadata</rdfs:label>
+        <yangdb:userVisible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</yangdb:userVisible>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#width -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#width">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <yangdb:intent>media.width</yangdb:intent>
+        <rdfs:label xml:lang="en">Width</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://yangdb.org/minimal#yAxisFlipped -->
+
+    <owl:DatatypeProperty rdf:about="http://yangdb.org/minimal#yAxisFlipped">
+        <rdfs:domain rdf:resource="http://yangdb.org/minimal#raw"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <yangdb:intent>media.yAxisFlipped</yangdb:intent>
+        <yangdb:userVisible rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</yangdb:userVisible>
+        <rdfs:label>Y Axis Flipped</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- http://yangdb.org/minimal#email -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#email">
+        <yangdb:color>rgb(134, 90, 215)</yangdb:color>
+        <yangdb:intent>email</yangdb:intent>
+        <rdfs:label xml:lang="en">Email</rdfs:label>
+    </owl:Class>
+
+    <!-- http://yangdb.org/minimal#phoneNumber -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#phoneNumber">
+        <yangdb:color>rgb(113, 255, 255)</yangdb:color>
+        <yangdb:intent>phoneNumber</yangdb:intent>
+        <rdfs:label xml:lang="en">Phone Number</rdfs:label>
+    </owl:Class>
+
+    <!-- http://yangdb.org/minimal#zipcode -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#zipcode">
+        <yangdb:color>rgb(160, 138, 206)</yangdb:color>
+        <yangdb:intent>zipCode</yangdb:intent>
+        <rdfs:label xml:lang="en">Zip Code</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://yangdb.org/minimal#location"/>
+    </owl:Class>
+
+    <!-- http://yangdb.org/minimal#location -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#location">
+        <yangdb:color>rgb(160, 7, 206)</yangdb:color>
+        <yangdb:intent>location</yangdb:intent>
+        <rdfs:label xml:lang="en">Location</rdfs:label>
+    </owl:Class>
+
+    <!-- http://yangdb.org/minimal#audio -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#audio">
+        <rdfs:subClassOf rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:color xml:lang="en">rgb(149, 138, 218)</yangdb:color>
+        <yangdb:displayType xml:lang="en">audio</yangdb:displayType>
+        <yangdb:intent>audio</yangdb:intent>
+        <rdfs:label xml:lang="en">Audio</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://yangdb.org/minimal#document -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#document">
+        <rdfs:subClassOf rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:color xml:lang="en">rgb(28, 137, 28)</yangdb:color>
+        <yangdb:displayType xml:lang="en">document</yangdb:displayType>
+        <yangdb:intent>document</yangdb:intent>
+        <rdfs:label xml:lang="en">Document</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://yangdb.org/minimal#image -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#image">
+        <rdfs:subClassOf rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:color xml:lang="en">rgb(176, 87, 53)</yangdb:color>
+        <yangdb:displayType xml:lang="en">image</yangdb:displayType>
+        <yangdb:intent>entityImage</yangdb:intent>
+        <yangdb:intent>image</yangdb:intent>
+        <rdfs:label xml:lang="en">Image</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://yangdb.org/minimal#raw -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#raw">
+        <yangdb:color xml:lang="en">rgb(28, 137, 28)</yangdb:color>
+        <yangdb:glyphIconFileName xml:lang="en">raw.png</yangdb:glyphIconFileName>
+        <rdfs:label xml:lang="en">Raw</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://yangdb.org/minimal#video -->
+
+    <owl:Class rdf:about="http://yangdb.org/minimal#video">
+        <rdfs:subClassOf rdf:resource="http://yangdb.org/minimal#raw"/>
+        <yangdb:color xml:lang="en">rgb(149, 138, 218)</yangdb:color>
+        <yangdb:displayType xml:lang="en">video</yangdb:displayType>
+        <yangdb:intent>video</yangdb:intent>
+        <rdfs:label xml:lang="en">Video</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

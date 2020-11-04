@@ -1,4 +1,4 @@
-id,source,source.type,target,target.type,startDate
+id,entityA,entityA.type,entityB,entityB.type,startDate
 REGISTR_H01K02,H01-Dong,Horse,K02-South,Kingdom,12/22/1799
 REGISTR_H02K02,H02-Jersy,Horse,K02-South,Kingdom,2/1/1759
 REGISTR_H03K03,H03-Jojo,Horse,K03-West,Kingdom,31/1/1749

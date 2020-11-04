@@ -30,7 +30,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.PlanOp;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.yangdb.fuse.unipop.controller.promise.GlobalConstants;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;

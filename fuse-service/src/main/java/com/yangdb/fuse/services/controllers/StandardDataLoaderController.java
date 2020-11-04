@@ -60,111 +60,101 @@ public class StandardDataLoaderController implements DataLoaderController {
 
     @Override
     public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.graphDataLoader.load(data, directive)))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(new LoadResponse<String, FuseError>() {
-                            @Override
-                            public List<CommitResponse<String, FuseError>> getResponses() {
-                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                    @Override
-                                    public List<String> getSuccesses() {
-                                        return Collections.emptyList();
-                                    }
+        try {
+            return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                    .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
+                    .compose();
+        } catch (IOException e) {
+            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                    .data(Optional.of(new LoadResponse<String, FuseError>() {
+                        @Override
+                        public List<CommitResponse<String, FuseError>> getResponses() {
+                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                @Override
+                                public List<String> getSuccesses() {
+                                    return Collections.emptyList();
+                                }
 
-                                    @Override
-                                    public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                    }
-                                });
-                            }
+                                @Override
+                                public List<FuseError> getFailures() {
+                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
+                                }
+                            });
+                        }
 
-                            @Override
-                            public LoadResponse response(CommitResponse<String, FuseError> response) {
-                                return this;
-                            }
-                        }))
-                        .compose();
-            }
+                        @Override
+                        public LoadResponse response(CommitResponse<String, FuseError> response) {
+                            return this;
+                        }
+                    }))
+                    .compose();
         }
-
-        return ContentResponse.notFound();
     }
 
     @Override
     public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.csvDataLoader.load(type,label , data, directive)))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(new LoadResponse<String, FuseError>() {
-                            @Override
-                            public List<CommitResponse<String, FuseError>> getResponses() {
-                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                    @Override
-                                    public List<String> getSuccesses() {
-                                        return Collections.emptyList();
-                                    }
+        try {
+            return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                    .data(Optional.of(this.csvDataLoader.load(type,label , data, directive)))
+                    .compose();
+        } catch (IOException e) {
+            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                    .data(Optional.of(new LoadResponse<String, FuseError>() {
+                        @Override
+                        public List<CommitResponse<String, FuseError>> getResponses() {
+                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                @Override
+                                public List<String> getSuccesses() {
+                                    return Collections.emptyList();
+                                }
 
-                                    @Override
-                                    public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                    }
-                                });
-                            }
+                                @Override
+                                public List<FuseError> getFailures() {
+                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
+                                }
+                            });
+                        }
 
-                            @Override
-                            public LoadResponse response(CommitResponse<String, FuseError> response) {
-                                return this;
-                            }
-                        }))
-                        .compose();
-            }
+                        @Override
+                        public LoadResponse response(CommitResponse<String, FuseError> response) {
+                            return this;
+                        }
+                    }))
+                    .compose();
         }
-        return ContentResponse.notFound();
     }
 
     @Override
     public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.csvDataLoader.load(type, label, data, directive)))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(new LoadResponse<String, FuseError>() {
-                            @Override
-                            public List<CommitResponse<String, FuseError>> getResponses() {
-                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                    @Override
-                                    public List<String> getSuccesses() {
-                                        return Collections.emptyList();
-                                    }
+        try {
+            return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                    .data(Optional.of(this.csvDataLoader.load(type, label, data, directive)))
+                    .compose();
+        } catch (IOException e) {
+            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                    .data(Optional.of(new LoadResponse<String, FuseError>() {
+                        @Override
+                        public List<CommitResponse<String, FuseError>> getResponses() {
+                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                @Override
+                                public List<String> getSuccesses() {
+                                    return Collections.emptyList();
+                                }
 
-                                    @Override
-                                    public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                    }
-                                });
-                            }
+                                @Override
+                                public List<FuseError> getFailures() {
+                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
+                                }
+                            });
+                        }
 
-                            @Override
-                            public LoadResponse response(CommitResponse<String, FuseError> response) {
-                                return this;
-                            }
-                        }))
-                        .compose();
-            }
+                        @Override
+                        public LoadResponse response(CommitResponse<String, FuseError> response) {
+                            return this;
+                        }
+                    }))
+                    .compose();
         }
-        return ContentResponse.notFound();
     }
 
     @Override
@@ -177,72 +167,63 @@ public class StandardDataLoaderController implements DataLoaderController {
      *      - commit to repository
      */
     public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                        .data(Optional.of(this.graphDataLoader.load(data, directive)))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(new LoadResponse<String, FuseError>() {
-                            @Override
-                            public List<CommitResponse<String, FuseError>> getResponses() {
-                                return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                    @Override
-                                    public List<String> getSuccesses() {
-                                        return Collections.emptyList();
-                                    }
+        try {
+            return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
+                    .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
+                    .compose();
+        } catch (IOException e) {
+            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
+                    .data(Optional.of(new LoadResponse<String, FuseError>() {
+                        @Override
+                        public List<CommitResponse<String, FuseError>> getResponses() {
+                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
+                                @Override
+                                public List<String> getSuccesses() {
+                                    return Collections.emptyList();
+                                }
 
-                                    @Override
-                                    public List<FuseError> getFailures() {
-                                        return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                    }
-                                });
-                            }
+                                @Override
+                                public List<FuseError> getFailures() {
+                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
+                                }
+                            });
+                        }
 
-                            @Override
-                            public LoadResponse response(CommitResponse<String, FuseError> response) {
-                                return this;
-                            }
-                        }))
-                        .compose();
-            }
+                        @Override
+                        public LoadResponse response(CommitResponse<String, FuseError> response) {
+                            return this;
+                        }
+                    }))
+                    .compose();
         }
-        return ContentResponse.notFound();
     }
 
     @Override
     public ContentResponse<String> init(String ontology) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("indices created:" + this.initiator.init()))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(e.getMessage()))
-                        .compose();
-            }
-        }
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("indices created:" + this.initiator.init(ontology)))
+                .compose();
+    }
 
-        return ContentResponse.notFound();
+    @Override
+    public ContentResponse<String> createMapping(String ontology) {
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontology)))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<String> createIndices(String ontology) {
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("indices created:" + this.initiator.createIndices(ontology)))
+                .compose();
     }
 
     @Override
     public ContentResponse<String> drop(String ontology) {
-        if (ontologyProvider.get(ontology).isPresent()) {
-            try {
-                return Builder.<String>builder(OK, NOT_FOUND)
-                        .data(Optional.of("indices dropped:" + this.initiator.drop()))
-                        .compose();
-            } catch (IOException e) {
-                return Builder.<String>builder(BAD_REQUEST, NOT_FOUND)
-                        .data(Optional.of(e.getMessage()))
-                        .compose();
-            }
-        }
-
-        return ContentResponse.notFound();
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("indices dropped:" + this.initiator.drop(ontology)))
+                .compose();
     }
 //endregion
 

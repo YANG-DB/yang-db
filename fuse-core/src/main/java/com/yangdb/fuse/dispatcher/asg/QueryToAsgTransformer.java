@@ -28,14 +28,12 @@ import com.yangdb.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.query.EBase;
-import com.yangdb.fuse.model.query.ParameterizedQuery;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Start;
+import com.yangdb.fuse.model.query.*;
 import javaslang.collection.Stream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by Roman on 12/15/2017.
@@ -73,6 +71,7 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                 .withOnt(query.getOnt())
                 .withOrigin(query)
                 .withStart(asgEBaseStart)
+                .withProjectedFields(query.getProjectedFields())
                 .withElements(queryAsgElements.values());
 
         if(query instanceof ParameterizedQuery) {

@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,8 @@ package com.yangdb.fuse.services.controllers;
  */
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -36,8 +38,7 @@ import javaslang.collection.Stream;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static org.jooby.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -49,6 +50,7 @@ public class StandardCatalogController implements CatalogController {
                                      GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
         this.schemaProviderFactory = schemaProviderFactory;
+        this.mapper = new ObjectMapper();
     }
     //endregion
 
@@ -84,7 +86,7 @@ public class StandardCatalogController implements CatalogController {
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(this.ontologyProvider.get(id).get());
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of(JsonWriter.objectToJson(createSerializableSchemaProvider(schemaProvider))))
+                .data(Optional.of(createSerializableSchemaProvider(schemaProvider)))
                 .compose();
     }
 
@@ -92,45 +94,52 @@ public class StandardCatalogController implements CatalogController {
     public ContentResponse<List<String>> getSchemas() {
         return Builder.<List<String>>builder(OK, NOT_FOUND)
                 .data(Optional.of(Stream.ofAll(this.ontologyProvider.getAll())
-                        .map(ont -> JsonWriter.objectToJson(createSerializableSchemaProvider(this.schemaProviderFactory.get(ont))))
+                        .map(ont -> createSerializableSchemaProvider(this.schemaProviderFactory.get(ont)))
                         .toJavaList()))
                 .compose();
     }
     //endregion
 
     //region Private Methods
-    private GraphElementSchemaProvider createSerializableSchemaProvider(GraphElementSchemaProvider schemaProvider) {
-        return new GraphElementSchemaProvider.Impl(
+    private String createSerializableSchemaProvider(GraphElementSchemaProvider schemaProvider)  {
+        GraphElementSchemaProvider.Impl value = new GraphElementSchemaProvider.Impl(
                 Stream.ofAll(schemaProvider.getVertexSchemas())
-                    .map(vertexSchema -> (GraphVertexSchema)new GraphVertexSchema.Impl(
-                            vertexSchema.getLabel(),
-                            new GraphElementConstraint.Impl(
-                                    new TraversalToString(vertexSchema.getConstraint().getTraversalConstraint().toString())),
-                            vertexSchema.getRouting(),
-                            vertexSchema.getIndexPartitions(),
-                            vertexSchema.getProperties()))
-                    .toJavaList(),
+                        .map(vertexSchema -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                vertexSchema.getLabel(),
+                                new GraphElementConstraint.Impl(
+                                        new TraversalToString(vertexSchema.getConstraint().getTraversalConstraint().toString())),
+                                vertexSchema.getRouting(),
+                                vertexSchema.getIndexPartitions(),
+                                vertexSchema.getProperties()))
+                        .toJavaList(),
                 Stream.ofAll(schemaProvider.getEdgeSchemas())
-                    .map(edgeSchema -> (GraphEdgeSchema)new GraphEdgeSchema.Impl(
-                            edgeSchema.getLabel(),
-                            new GraphElementConstraint.Impl(
-                                    new TraversalToString(edgeSchema.getConstraint().getTraversalConstraint().toString())),
-                            edgeSchema.getEndA(),
-                            edgeSchema.getEndB(),
-                            edgeSchema.getDirection(),
-                            edgeSchema.getDirectionSchema(),
-                            edgeSchema.getRouting(),
-                            edgeSchema.getIndexPartitions(),
-                            edgeSchema.getProperties(),
-                            edgeSchema.getApplications()))
-                    .toJavaList()
+                        .map(edgeSchema -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                edgeSchema.getLabel(),
+                                new GraphElementConstraint.Impl(
+                                        new TraversalToString(edgeSchema.getConstraint().getTraversalConstraint().toString())),
+                                edgeSchema.getEndA(),
+                                edgeSchema.getEndB(),
+                                edgeSchema.getDirection(),
+                                edgeSchema.getDirectionSchema(),
+                                edgeSchema.getRouting(),
+                                edgeSchema.getIndexPartitions(),
+                                edgeSchema.getProperties(),
+                                edgeSchema.getApplications()))
+                        .toJavaList()
         );
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            return JsonWriter.objectToJson(value);
+        }
     }
     //endregion
 
     //region Fields
     private OntologyProvider ontologyProvider;
     private GraphElementSchemaProviderFactory schemaProviderFactory;
+    private ObjectMapper mapper;
+
     //endregion
 
     public static class TraversalToString implements org.apache.tinkerpop.gremlin.process.traversal.Traversal {

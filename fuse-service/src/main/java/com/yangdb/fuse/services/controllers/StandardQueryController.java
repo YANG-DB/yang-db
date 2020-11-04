@@ -101,6 +101,31 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Object> getVertex(String ontology, String type, String id) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().getVertex(ontology,type,id)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(Optional.of(driver().getNeighbors(ontology,type,id)))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology))
@@ -121,6 +146,13 @@ public class StandardQueryController implements QueryController<QueryController,
     public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().runGraphQL(graphQL,ontology,pageSize,cursorType))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+    @Override
+    public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(driver().runSparql(sparql,ontology,pageSize,cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }

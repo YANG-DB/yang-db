@@ -39,8 +39,8 @@ public class StatTestSuite implements BaseSuiteMarker {
     public static void setup() throws Exception {
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
-        dataClient = elasticEmbeddedNode.getClient();
-        statClient = elasticEmbeddedNode.getClient();
+        dataClient = ElasticEmbeddedNode.getClient();
+        statClient = ElasticEmbeddedNode.getClient();
     }
 
     @AfterClass

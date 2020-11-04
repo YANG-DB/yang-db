@@ -1,6 +1,7 @@
 package com.yangdb.fuse.epb.plan.extenders;
 
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -79,7 +80,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
         //first ePropGroup is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(1) instanceof RedundantRelProp);
         Optional<RelProp> idRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
-                filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.id")).findFirst();
+                filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals(GlobalConstants.EdgeSchema.DEST_ID)).findFirst();
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());
     }
@@ -125,7 +126,7 @@ public class RedundantFilterPlanExtensionStrategyTest {
                 filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.firstName")).findFirst();
         Assert.assertTrue(firstNameRelProp.isPresent());
         Optional<RelProp> typeRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
-                filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.type")).findFirst();
+                filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals(GlobalConstants.EdgeSchema.DEST_TYPE)).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
     }
@@ -167,8 +168,8 @@ public class RedundantFilterPlanExtensionStrategyTest {
                         RelPropGroup.of(10, QuantType.all,
                                 Stream.of(
                                         RelProp.of(0, START_DATE.type, of(eq, new Date(1000))),
-                                        RedundantRelProp.of(0, "entityB.type", "type", of(inSet, Collections.singletonList("Dragon"))),
-                                        RedundantRelProp.of(0, "entityB.name", "name", of(eq, "value1"))),
+                                        RedundantRelProp.of(0, GlobalConstants.EdgeSchema.DEST_TYPE, "type", of(inSet, Collections.singletonList("Dragon"))),
+                                        RedundantRelProp.of(0, GlobalConstants.EdgeSchema.DEST_NAME, "name", of(eq, "value1"))),
                                 Stream.of(RelPropGroup.of(0, QuantType.some,
                                         RelPropGroup.of(0, RedundantRelProp.of(0, "entityB.gender", "gender", of(eq, "male"))),
                                         RelPropGroup.of(0, RedundantRelProp.of(0, "entityB.gender", "gender", of(eq, "female")))))))
@@ -200,17 +201,17 @@ public class RedundantFilterPlanExtensionStrategyTest {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityA.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.SOURCE_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("entityB.id"),
+                                        Collections.singletonList(GlobalConstants.EdgeSchema.DEST_ID),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),
-                                                new GraphRedundantPropertySchema.Impl("name", "entityB.name", ont.property$("name").getType()),
+                                                new GraphRedundantPropertySchema.Impl("name", GlobalConstants.EdgeSchema.DEST_NAME, ont.property$("name").getType()),
                                                 new GraphRedundantPropertySchema.Impl("gender", "entityB.gender", ont.property$("gender").getType()),
-                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", ont.property$("firstName").getType()),
-                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", ont.property$("type").getType())
+                                                new GraphRedundantPropertySchema.Impl("id", GlobalConstants.EdgeSchema.DEST_ID, ont.property$("firstName").getType()),
+                                                new GraphRedundantPropertySchema.Impl("type", GlobalConstants.EdgeSchema.DEST_TYPE, ont.property$("type").getType())
                                         ))),
                                 Direction.OUT,
                                 Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),

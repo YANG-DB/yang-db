@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.51-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,7 @@
     <modules>
         <module>fuse-domain-dragons</module>
         <module>fuse-domain-knowledge</module>
+        <module>fuse-domain-cyber</module>
     </modules>
 
     <properties>

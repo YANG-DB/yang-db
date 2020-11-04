@@ -30,9 +30,11 @@ import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.query.QueryInfo;
 import javaslang.collection.Stream;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by Roman on 12/15/2017.
