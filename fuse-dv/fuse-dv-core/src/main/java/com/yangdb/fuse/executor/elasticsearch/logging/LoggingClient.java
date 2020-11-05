@@ -169,6 +169,11 @@ public class LoggingClient implements Client {
     }
 
     @Override
+    public BulkRequestBuilder prepareBulk(String globalIndex, String globalType) {
+        return null;
+    }
+
+    @Override
     public ActionFuture<GetResponse> get(GetRequest getRequest) {
         return client.get(getRequest);
     }
@@ -220,7 +225,7 @@ public class LoggingClient implements Client {
                     (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
                             ElapsedFrom.now(),
                             ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                            ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                            ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                             ElasticResults.hitsWriter(response.getHits().getHits().length),
                             ElasticResults.shardsWrite(response.getTotalShards()),
                             ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -261,7 +266,7 @@ public class LoggingClient implements Client {
                                     ElapsedFrom.now(),
                                     ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
                                     NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal(),
-                                    ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                                    ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                                     ElasticResults.hitsWriter(response.getHits().getHits().length),
                                     ElasticResults.shardsWrite(response.getTotalShards()),
                                     ElasticResults.scrollIdWriter(response.getScrollId())
@@ -300,7 +305,7 @@ public class LoggingClient implements Client {
                 (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
                         ElapsedFrom.now(),
                         ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                        ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                        ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                         ElasticResults.hitsWriter(response.getHits().getHits().length),
                         ElasticResults.shardsWrite(response.getTotalShards()),
                         ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -332,7 +337,7 @@ public class LoggingClient implements Client {
                     (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                             ElapsedFrom.now(),
                             ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                            ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                            ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                             ElasticResults.hitsWriter(response.getHits().getHits().length),
                             ElasticResults.shardsWrite(response.getTotalShards()),
                             ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -371,7 +376,7 @@ public class LoggingClient implements Client {
                             (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                                     ElapsedFrom.now(),
                                     ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                                    ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                                    ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                                     ElasticResults.hitsWriter(response.getHits().getHits().length),
                                     ElasticResults.shardsWrite(response.getTotalShards()),
                                     ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -412,7 +417,7 @@ public class LoggingClient implements Client {
                 (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                         ElapsedFrom.now(),
                         ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                        ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                        ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                         ElasticResults.hitsWriter(response.getHits().getHits().length),
                         ElasticResults.shardsWrite(response.getTotalShards()),
                         ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -461,29 +466,29 @@ public class LoggingClient implements Client {
         return client.prepareTermVectors(s, s1, s2);
     }
 
-    @Override
-    @Deprecated
-    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
-        return client.termVector(termVectorsRequest);
-    }
-
-    @Override
-    @Deprecated
-    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
-        client.termVector(termVectorsRequest, actionListener);
-    }
-
-    @Override
-    @Deprecated
-    public TermVectorsRequestBuilder prepareTermVector() {
-        return client.prepareTermVector();
-    }
-
-    @Override
-    @Deprecated
-    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
-        return client.prepareTermVector(s, s1, s2);
-    }
+//    @Override
+//    @Deprecated
+//    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
+//        return client.termVector(termVectorsRequest);
+//    }
+//
+//    @Override
+//    @Deprecated
+//    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
+//        client.termVector(termVectorsRequest, actionListener);
+//    }
+//
+//    @Override
+//    @Deprecated
+//    public TermVectorsRequestBuilder prepareTermVector() {
+//        return client.prepareTermVector();
+//    }
+//
+//    @Override
+//    @Deprecated
+//    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
+//        return client.prepareTermVector(s, s1, s2);
+//    }
 
     @Override
     public ActionFuture<MultiTermVectorsResponse> multiTermVectors(MultiTermVectorsRequest multiTermVectorsRequest) {
@@ -556,18 +561,13 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> ActionFuture<Response> execute(Action<Request, Response, RequestBuilder> action, Request request) {
+    public <Request extends ActionRequest, Response extends ActionResponse> ActionFuture<Response> execute(ActionType<Response> action, Request request) {
         return client.execute(action, request);
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> void execute(Action<Request, Response, RequestBuilder> action, Request request, ActionListener<Response> actionListener) {
-        client.execute(action, request, actionListener);
-    }
-
-    @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> RequestBuilder prepareExecute(Action<Request, Response, RequestBuilder> action) {
-        return client.prepareExecute(action);
+    public <Request extends ActionRequest, Response extends ActionResponse> void execute(ActionType<Response> action, Request request, ActionListener<Response> listener) {
+        client.execute(action, request, listener);
     }
 
     @Override

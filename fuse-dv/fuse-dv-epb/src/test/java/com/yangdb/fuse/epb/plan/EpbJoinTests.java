@@ -77,14 +77,14 @@ public class EpbJoinTests {
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
+            GraphEdgeSchema edgeSchema = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
             List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphEdgeSchema edgeSchema = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
+            List indices = invocationOnMock.getArgument(1, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(edgeSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
@@ -94,14 +94,14 @@ public class EpbJoinTests {
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
-            GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
+            GraphVertexSchema vertexSchema = invocationOnMock.getArgument(0, GraphVertexSchema.class);
             List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
-            GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphVertexSchema vertexSchema = invocationOnMock.getArgument(0, GraphVertexSchema.class);
+            List indices = invocationOnMock.getArgument(1, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(vertexSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
@@ -113,8 +113,8 @@ public class EpbJoinTests {
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
-            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphElementSchema elementSchema = invocationOnMock.getArgument(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
@@ -125,8 +125,8 @@ public class EpbJoinTests {
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
-            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphElementSchema elementSchema = invocationOnMock.getArgument(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
@@ -137,15 +137,15 @@ public class EpbJoinTests {
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
-            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphElementSchema elementSchema = invocationOnMock.getArgument(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
                     .get(0);
 
             int card = typeCard.get(constraintLabel);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgument(2, GraphElementPropertySchema.class);
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
 

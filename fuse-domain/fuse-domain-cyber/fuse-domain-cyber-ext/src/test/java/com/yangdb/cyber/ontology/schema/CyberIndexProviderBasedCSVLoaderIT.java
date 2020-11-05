@@ -73,7 +73,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("traces");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(31, resp.getHits().getTotalHits());
+        Assert.assertEquals(31, resp.getHits().getTotalHits().value);
 
     }
 
@@ -103,7 +103,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("behaviors");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(5253, resp.getHits().getTotalHits());
+        Assert.assertEquals(5253, resp.getHits().getTotalHits().value);
 
     }
 
@@ -133,7 +133,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices("tracestobehaviors");
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
-        Assert.assertEquals(2374, resp.getHits().getTotalHits());
+        Assert.assertEquals(2374, resp.getHits().getTotalHits().value);
 
     }
 }

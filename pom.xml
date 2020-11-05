@@ -132,7 +132,9 @@
         <fuse.version>${project.version}</fuse.version>
 
         <!-- jackson -->
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.10.4</jackson.version>
+        <!-- jackson -->
+        <resilience4jVersion>1.6.1</resilience4jVersion>
 
         <!-- com.github.cnsvili.snowflake.version -->
         <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
@@ -172,11 +174,11 @@
         <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
-        <elasticsearch.version>6.5.4</elasticsearch.version>
-        <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
+        <elasticsearch.version>7.9.1</elasticsearch.version>
+        <elasticsearch.client.version>7.9.1</elasticsearch.client.version>
 
         <!-- lucene -->
-        <lucene.version>7.5.0</lucene.version>
+        <lucene.version>8.6.2</lucene.version>
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
@@ -229,8 +231,7 @@
         <junit.version>4.12</junit.version>
         <easymock.version>3.2</easymock.version>
         <rest-assured.version>3.0.1</rest-assured.version>
-        <mockito-all.version>1.10.19</mockito-all.version>
-        <mockito-core.version>2.8.47</mockito-core.version>
+        <mockito-core.version>3.5.0</mockito-core.version>
         <assertj.version>3.6.2</assertj.version>
         <jsonassert.version>1.4.0</jsonassert.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
@@ -366,6 +367,39 @@
             </dependency>
 
             <!-- Property Graph Deployment Assemblies   -->
+
+            <!-- resiliant framework support -->
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-circuitbreaker</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-ratelimiter</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-retry</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-bulkhead</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-cache</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-timelimiter</artifactId>
+                <version>${resilience4jVersion}</version>
+            </dependency>
+
 
             <!-- jmx monitoring    -->
             <dependency>
@@ -845,12 +879,6 @@
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>${easymock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>${mockito-all.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

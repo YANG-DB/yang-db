@@ -39,8 +39,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetadata;
+import org.elasticsearch.cluster.metadata.MappingMetadata;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -49,9 +49,9 @@ import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBui
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.InternalCardinality;
+import org.elasticsearch.search.aggregations.metrics.ExtendedStats;
+import org.elasticsearch.search.aggregations.metrics.ExtendedStatsAggregationBuilder;
 
 import java.util.*;
 
@@ -305,11 +305,11 @@ public class EsUtil {
      */
     public static boolean isIndexExists(Client client, String index) {
 
-        IndexMetaData indexMetaData = client.admin().cluster()
+        IndexMetadata indexMetaData = client.admin().cluster()
                 .state(Requests.clusterStateRequest())
                 .actionGet()
                 .getState()
-                .getMetaData()
+                .getMetadata()
                 .index(index);
 
         return indexMetaData != null;
@@ -328,7 +328,7 @@ public class EsUtil {
                 .setSize(1)
                 .execute().actionGet();
 
-        return response.getHits().getTotalHits() > 0;
+        return response.getHits().getHits().length > 0;
     }
 
     public static boolean isDocExists(Client client, String index, String type, String docId) {
@@ -422,11 +422,11 @@ public class EsUtil {
      * @param index  Index Name
      * @return
      */
-    public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
+    public static ImmutableOpenMap<String, MappingMetadata> getMappingsOfIndex(
             Client client, String index) {
         ClusterStateResponse clusterStateResponse = client.admin().cluster()
                 .prepareState().execute().actionGet();
-        return clusterStateResponse.getState().getMetaData().index(index)
+        return clusterStateResponse.getState().getMetadata().index(index)
                 .getMappings();
     }
 

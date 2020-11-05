@@ -57,7 +57,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     public Map graphElementCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
         aggregation.field("type");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
@@ -92,7 +92,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         builder.setQuery(boolQuery()
                 .should(termQuery("type", "e.value"))
                 .should(termQuery("type", "r.value")));
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
         aggregation.field("fieldId");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()

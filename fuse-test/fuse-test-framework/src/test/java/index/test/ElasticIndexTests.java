@@ -33,7 +33,7 @@ public class ElasticIndexTests {
             indexClient.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();
             SearchResponse searchResponse = indexClient.prepareSearch().execute().actionGet();
             SearchHits hits = searchResponse.getHits();
-            Assert.assertEquals(2,hits.getTotalHits());
+            Assert.assertEquals(2,hits.getHits().length);
         }
     }
 

@@ -35,6 +35,7 @@ public class GlobalElasticEmbeddedNode {
         synchronized (ElasticEmbeddedNode.class) {
             if (instance == null) {
                 instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+                System.out.println("Starting embedded Elasticsearch Node "+nodeName);
             } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
                 close();
                 instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
@@ -51,6 +52,7 @@ public class GlobalElasticEmbeddedNode {
                 try {
                     instance.close();
                     instance = null;
+                    System.out.println("Stopping embedded Elasticsearch Node "+nodeName);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

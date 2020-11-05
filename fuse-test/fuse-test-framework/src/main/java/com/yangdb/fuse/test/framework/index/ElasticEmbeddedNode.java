@@ -35,8 +35,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
 
@@ -54,15 +57,17 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
-        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
+            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins,false);
         }
 
+/*
         @Override
         protected void registerDerivedNodeNameWithLogger(String nodeName) {
             LogConfigurator.loadLog4jPlugins();
             LogConfigurator.setNodeName(nodeName);
         }
+*/
     }
     //endregion
 
@@ -179,9 +184,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("http.port", httpPort)
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
-                .put("http.enabled", "true")
+                .put("http.cors.enabled", "true")
 //                .put("script.auto_reload_enabled", "false")
-                .put("transport.tcp.port", httpTransportPort)
+                .put("transport.port", httpTransportPort)
                 .build();
 
         System.out.println("Setting E/S embedded "+nodeName);
@@ -189,7 +194,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 Netty4Plugin.class,
 //                CommonScriptPlugin.class,
                 CommonAnalysisPlugin.class
-        ));
+        ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();
         System.out.println("Started E/S Embedded");

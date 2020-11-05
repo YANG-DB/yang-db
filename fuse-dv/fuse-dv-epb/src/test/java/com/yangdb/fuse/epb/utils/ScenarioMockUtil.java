@@ -39,8 +39,8 @@ public class ScenarioMockUtil {
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema schema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = (List<String>) invocationOnMock.getArgumentAt(2, List.class);
+            GraphEdgeSchema schema = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
+            List<String> indices = (List<String>) invocationOnMock.getArgument(2, List.class);
 
             String constraintLabel = Stream.ofAll(
                     new TraversalValuesByKeyProvider().getValueByKey(schema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
@@ -51,7 +51,7 @@ public class ScenarioMockUtil {
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
-            GraphVertexSchema vertex = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
+            GraphVertexSchema vertex = invocationOnMock.getArgument(0, GraphVertexSchema.class);
             IndexPartitions indexPartitions = vertex.getIndexPartitions().get();
             return graphStatisticsProvider.getVertexCardinality(
                     vertex,
@@ -59,13 +59,13 @@ public class ScenarioMockUtil {
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
-            GraphVertexSchema graphVertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphVertexSchema graphVertexSchema = invocationOnMock.getArgument(0, GraphVertexSchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
             return getCardinality(graphVertexSchema, indices,nodeScaleFactor);
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema edge = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
+            GraphEdgeSchema edge = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
             IndexPartitions indexPartitions = edge.getIndexPartitions().get();
             return graphStatisticsProvider.getEdgeCardinality(
                     edge,
@@ -73,30 +73,30 @@ public class ScenarioMockUtil {
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema edge = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphEdgeSchema edge = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
             return getCardinality(edge, indices,edgeScaleFactor);
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgument(2, GraphElementPropertySchema.class);
 
                 List<Statistics.HistogramStatistics<String>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<String>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
                 return Statistics.HistogramStatistics.combine(histograms);
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgument(2, GraphElementPropertySchema.class);
 
             List<Statistics.HistogramStatistics<Date>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<Date>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
             return Statistics.HistogramStatistics.combine(histograms);
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            List<String> indices = invocationOnMock.getArgument(1, List.class);
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgument(2, GraphElementPropertySchema.class);
 
             List<Statistics.HistogramStatistics<Long>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<Long>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
             return Statistics.HistogramStatistics.combine(histograms);

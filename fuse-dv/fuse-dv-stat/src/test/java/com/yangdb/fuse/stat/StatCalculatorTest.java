@@ -158,15 +158,15 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE));
 
         //Check that we have documents and they are in the right place
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE, 10).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE, 10).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON, 10).getHits().getHits().length > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON, 10).getHits().getHits().length > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE, 10).getHits().getHits().length > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE, 10).getHits().getHits().length > 0);
 
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE, 10).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE, 10).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE, 10).getHits().getHits().length == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE, 10).getHits().getHits().length == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON, 10).getHits().getHits().length == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON, 10).getHits().getHits().length == 0);
 
     }
 

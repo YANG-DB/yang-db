@@ -9,6 +9,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.lucene.search.TotalHits;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -59,7 +60,7 @@ public class PromisePromiseElementVertexControllerTest {
 
         //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
-        SearchHits hitsMock = new SearchHits(new SearchHit[] {},10,10l );
+        SearchHits hitsMock = new SearchHits(new SearchHit[] {},new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO),10l );
         when(responseMock.getHits()).thenReturn(hitsMock);
 
         Terms.Bucket destBucket = mock(Terms.Bucket.class);
@@ -73,13 +74,13 @@ public class PromisePromiseElementVertexControllerTest {
         Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
         when(sourceBucket.getKeyAsString()).thenReturn("source1");
         when(sourceBucket.getDocCount()).thenReturn(1L);
-        when(sourceBucket.getAggregations()).thenReturn(new InternalAggregations(Collections.singletonList(destLayer)));
+        when(sourceBucket.getAggregations()).thenReturn(new InternalAggregations(Collections.singletonList(destLayer),null));
 
         InternalTerms sourceLayer = mock(InternalTerms.class);
         when(sourceLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.SOURCE);
         when(sourceLayer.getBuckets()).then(invocationOnMock -> Collections.singletonList(sourceBucket));
 
-        Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer));
+        Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer),null     );
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
 

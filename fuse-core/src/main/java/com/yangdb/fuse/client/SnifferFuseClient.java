@@ -303,7 +303,7 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     @Override
-    public QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException {
+    public QueryResultBase getPageData(String pageDataUrl, TypeReference<? extends QueryResultBase> typeReference) throws IOException {
         return selectNode(pageDataUrl).getPageData(pageDataUrl,typeReference);
     }
 

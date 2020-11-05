@@ -312,7 +312,7 @@ public class BaseFuseClient implements FuseClient {
     }
 
     @Override
-    public QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException {
+    public QueryResultBase getPageData(String pageDataUrl, TypeReference<? extends QueryResultBase> typeReference) throws IOException {
         return this.objectMapper.readValue(unwrap(getRequest(pageDataUrl)), typeReference);
     }
 

@@ -88,7 +88,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchResponse response = searchRequest.execute().actionGet();
-        long totalHits = response.getHits().getTotalHits();
+        long totalHits = response.getHits().getTotalHits().value;
         //report count
         String stepName = "Reduce[" + reduceQuery.getStepDescriptor().getDescription().orElse("?") + "]";
         getProfiler().get().incrementCount(stepName,totalHits);
