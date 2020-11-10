@@ -74,13 +74,13 @@ public class PromisePromiseElementVertexControllerTest {
         Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
         when(sourceBucket.getKeyAsString()).thenReturn("source1");
         when(sourceBucket.getDocCount()).thenReturn(1L);
-        when(sourceBucket.getAggregations()).thenReturn(new InternalAggregations(Collections.singletonList(destLayer),null));
+        when(sourceBucket.getAggregations()).thenReturn(new InternalAggregations(Collections.singletonList(destLayer)));
 
         InternalTerms sourceLayer = mock(InternalTerms.class);
         when(sourceLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.SOURCE);
         when(sourceLayer.getBuckets()).then(invocationOnMock -> Collections.singletonList(sourceBucket));
 
-        Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer),null     );
+        Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer)     );
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
 
