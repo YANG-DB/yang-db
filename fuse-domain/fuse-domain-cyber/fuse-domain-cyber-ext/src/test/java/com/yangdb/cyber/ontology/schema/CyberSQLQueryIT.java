@@ -59,6 +59,7 @@ import static com.yangdb.fuse.TestSuiteAPISuite.queryAction;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 import static org.elasticsearch.common.settings.Settings.EMPTY;
 
+@Ignore("Work in progress")
 public class CyberSQLQueryIT implements BaseITMarker {
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();

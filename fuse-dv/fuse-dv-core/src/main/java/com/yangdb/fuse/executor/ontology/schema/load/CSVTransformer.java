@@ -197,11 +197,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param direction
      */
     private void populatePropertyFields(DataTransformerContext context, Map<String, String> node, Relation relation, ObjectNode element, String direction) {
-        node.entrySet()
-                .stream()
-                .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
-                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                .forEach(m -> parseAndSetValue(m.getKey(),element,accessor.property$(m.getKey()).getType(), m.getValue(),sdf));
+        populateRelationFields(node, relation, element);
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
         //populate each pair
@@ -224,7 +220,6 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 break;
         }
     }
-
 
     /**
      * populate edge redundant side - as a json object
@@ -265,12 +260,22 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param element
      */
     private void populateMetadataFields(DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
+        //manage regular metadata properties
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsMetadata(m.getKey()))
+                .filter(m -> !accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
                     .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                             parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+        //manage enums
+        node.entrySet()
+                .stream()
+                .filter(m -> accessor.$entity$(entity.getType()).containsMetadata(m.getKey()))
+                .filter(m -> accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
+                .filter(m -> validateValue("int", m.getValue(), sdf))
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                        parseValue("int", m.getValue(), sdf).toString()));
     }
 
 
@@ -281,14 +286,47 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param element
      */
     private void populatePropertyFields(DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
+        //manage regular properties
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsProperty(m.getKey()))
+                .filter(m -> !accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
                     .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                             parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+        //manage enums
+        node.entrySet()
+                .stream()
+                .filter(m -> accessor.$entity$(entity.getType()).containsProperty(m.getKey()))
+                .filter(m -> accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
+                .filter(m -> validateValue("int", m.getValue(), sdf))
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                        parseValue("int", m.getValue(), sdf).toString()));
     }
 
+    /**
+     * relation fields populator
+     * @param node
+     * @param relation
+     * @param element
+     */
+    private void populateRelationFields(Map<String, String> node, Relation relation, ObjectNode element) {
+        //manage regular properties
+        node.entrySet()
+                .stream()
+                .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
+                .filter(m -> !accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
+                .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
+                .forEach(m -> parseAndSetValue(m.getKey(), element,accessor.property$(m.getKey()).getType(), m.getValue(),sdf));
+
+        //manage enums
+        node.entrySet()
+                .stream()
+                .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
+                .filter(m -> accessor.enumeratedType(accessor.property$(m.getKey()).getType()).isPresent())
+                .filter(m -> validateValue("int", m.getValue(), sdf))
+                .forEach(m -> parseAndSetValue(m.getKey(), element,"int", m.getValue(),sdf));
+    }
 
     /**
      * Csv Graph element Container

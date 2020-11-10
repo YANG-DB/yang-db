@@ -153,6 +153,7 @@ public interface DataLoaderUtils {
                 } catch (NumberFormatException e) {
                     return value.toString();
                 }
+            case "double":
             case "float":
             case "floatValue":
                 try {
@@ -204,6 +205,7 @@ public interface DataLoaderUtils {
                 } catch (NumberFormatException e) {
                     return element.put(field,value.toString());
                 }
+            case "double":
             case "float":
             case "floatValue":
                 try {
@@ -259,6 +261,7 @@ public interface DataLoaderUtils {
                 } catch (NumberFormatException e) {
                     return false;
                 }
+            case "double":
             case "float":
             case "floatValue":
                 try {
