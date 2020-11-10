@@ -96,7 +96,7 @@ public class ElasticIndexProviderMappingFactory {
             } catch (ResourceAlreadyExistsException e) {
                 responses.add(new Tuple2<>(false, e.getIndex().getName()));
             } catch (Throwable t) {
-                throw new FuseError.FuseErrorException("Error Generating Indices for E/S ", t);
+                throw new FuseError.FuseErrorException("Error Generating Indices for E/S [" + name + "]", t);
             }
         });
         return responses;
@@ -297,8 +297,8 @@ public class ElasticIndexProviderMappingFactory {
         EntityType entityType = entity.get();
 
         //generate field id -> only if field id array size > 1
-        if(entityType.getIdField().size()>1) {
-            properties.put(entityType.idFieldName(),Collections.singletonMap("type", "keyword"));
+        if (entityType.getIdField().size() > 1) {
+            properties.put(entityType.idFieldName(), Collections.singletonMap("type", "keyword"));
         }//otherwise that field id is already a part of the regular fields
 
         populateProperty(ent, properties, entityType);
@@ -355,8 +355,8 @@ public class ElasticIndexProviderMappingFactory {
         mapping.put(PROPERTIES, properties);
 
         //generate field id -> only if field id array size > 1
-        if(relationshipType.getIdField().size()>1) {
-           properties.put(relationshipType.idFieldName(),Collections.singletonMap("type", "keyword"));
+        if (relationshipType.getIdField().size() > 1) {
+            properties.put(relationshipType.idFieldName(), Collections.singletonMap("type", "keyword"));
         }//otherwise that field id is already a part of the regular fields
 
 
@@ -539,8 +539,13 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (relation.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.relation$(relation.getType()).idFieldName())
-                    .put("sort.order", "asc");
+            if(!ontology.relation$(relation.getType()).getIdField().isEmpty())
+                builder.put("sort.field", ontology.relation$(relation.getType()).getIdField().get(0)).put("sort.order", "asc");
+            //todo - move to this form
+/*
+            ontology.relation$(relation.getType()).getIdField().forEach(field ->
+                    builder.put("sort.field", field).put("sort.order", "asc"));
+*/
         }
         return builder.build();
     }
@@ -549,8 +554,14 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (entity.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.entity$(entity.getType()).idFieldName())
-                    .put("sort.order", "asc");
+
+            if(!ontology.entity$(entity.getType()).getIdField().isEmpty())
+                builder.put("sort.field", ontology.entity$(entity.getType()).getIdField().get(0)).put("sort.order", "asc");
+            //todo move to this form
+/*
+            ontology.entity$(entity.getType()).getIdField().forEach(field ->
+                    builder.put("sort.field", field).put("sort.order", "asc"));
+*/
         }
         return builder.build();
     }
