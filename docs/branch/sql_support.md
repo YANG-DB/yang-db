@@ -5,7 +5,7 @@ Changes:
     
     upgrade jooby version to 1.6.8
     
-    upgrade Elasticsearch version to 7.3.2
+    upgrade Elasticsearch version to 7.4.2
 
 Fix:
  
