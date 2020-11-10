@@ -40,6 +40,8 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 
+import java.util.Optional;
+
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.concrete;
 
 /**

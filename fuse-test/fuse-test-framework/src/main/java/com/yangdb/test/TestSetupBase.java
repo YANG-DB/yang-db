@@ -23,9 +23,16 @@ package com.yangdb.test;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
 
 public abstract class TestSetupBase {
-    protected ElasticEmbeddedNode instance;
+    protected static ElasticEmbeddedNode instance;
+
+    public void init(Settings setting) throws Exception {
+        instance = GlobalElasticEmbeddedNode.getInstance(setting);
+        loadData(instance.getClient());
+    }
 
     public void init() throws Exception {
         instance = GlobalElasticEmbeddedNode.getInstance();
@@ -34,9 +41,10 @@ public abstract class TestSetupBase {
 
     public void cleanup(){
         cleanData(instance.getClient());
+        GlobalElasticEmbeddedNode.close();
     }
 
-
     protected abstract void loadData(TransportClient client) throws Exception;
+
     protected abstract void cleanData(TransportClient client);
 }

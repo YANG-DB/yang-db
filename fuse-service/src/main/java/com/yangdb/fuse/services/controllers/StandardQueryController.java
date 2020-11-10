@@ -126,6 +126,14 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> runSqlQuery(String query,String ontology, int pageSize, String cursorType) {
+        return Builder.builder(CREATED, SERVER_ERROR )
+                .data(driver().runSql(query,ontology))
+                .successPredicate(objectContentResponse -> true)
+                .compose();
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return Builder.builder(CREATED, SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology))

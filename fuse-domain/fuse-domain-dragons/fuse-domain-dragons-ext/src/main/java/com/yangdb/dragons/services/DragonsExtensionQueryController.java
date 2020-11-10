@@ -71,6 +71,11 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
+    public ContentResponse<Object> runSqlQuery(String query, String ontology, int pageSize, String cursorType) {
+        return controller.runSqlQuery(query,ontology,pageSize,cursorType);
+    }
+
+    @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
         return controller.runCypher(cypher, ontology, pageSize, cursorType);
     }

@@ -67,6 +67,16 @@ public interface QueryController<C,D> extends Controller<C,D> {
     ContentResponse<Object> runV1Query(Query query, int pageSize, String cursorType);
 
     /**
+     * run a stateless SQL query and get immediate graph results (first page only)
+     * type may be volatile or persistent
+     * @param `query
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    ContentResponse<Object> runSqlQuery(String query,String ontology, int pageSize, String cursorType);
+
+    /**
      * run a stateless query and get immediate graph results (first page only)
      * type may be volatile or persistent
      * @param query

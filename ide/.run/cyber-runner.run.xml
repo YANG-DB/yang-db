@@ -2,7 +2,7 @@
   <configuration default="false" name="cyber-runner" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.yangdb.fuse.services.FuseRunner" />
     <module name="fuse-domain-cyber-assembly" />
-    <option name="PROGRAM_PARAMETERS" value="config/application.conf activeProfile config/logback.xml" />
+    <option name="PROGRAM_PARAMETERS" value="config/application.conf activeProfile logConfig/logback.xml" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/distrib/cyber-cyber" />
     <extension name="coverage">
       <pattern>

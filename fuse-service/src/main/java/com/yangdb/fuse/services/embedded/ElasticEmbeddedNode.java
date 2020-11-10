@@ -22,7 +22,6 @@ package com.yangdb.fuse.services.embedded;
 
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
@@ -38,7 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-
+import java.util.HashMap;
 
 
 /**
@@ -49,7 +48,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null, path, () -> nodeName), classpathPlugins,false);
+            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins,false);
         }
 
     }
@@ -164,7 +163,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("http.port", httpPort)
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
-                .put("http.enabled", "true")
+                .put("http.cors.enabled", "true")
 //                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();

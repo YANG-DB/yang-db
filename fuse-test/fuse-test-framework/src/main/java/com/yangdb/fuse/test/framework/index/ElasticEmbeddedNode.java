@@ -22,7 +22,6 @@ package com.yangdb.fuse.test.framework.index;
 
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
@@ -74,7 +73,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region Members
     private static String esWorkingDir;
     private static int numberOfShards;
-    private Node node;
+    public Node node;
 
     static String nodeName = FUSE_TEST_ELASTIC;
 
@@ -86,32 +85,36 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Constructors
     ElasticEmbeddedNode(String clusterName) throws Exception {
-        this("target/es", 9200, 9300, clusterName);
+        this(Settings.EMPTY,"target/es", 9200, 9300, clusterName);
     }
 
-    ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
-        this("target/es", 9200, 9300, clusterName, numberOfShards);
+    ElasticEmbeddedNode(Settings settings,String clusterName, int numberOfShards) throws Exception {
+        this(settings,"target/es", 9200, 9300, clusterName, numberOfShards);
     }
 
     ElasticEmbeddedNode() throws Exception {
-        this("target/es", 9200, 9300, "fuse.test_elastic");
+        this(Settings.EMPTY,"target/es", 9200, 9300, "fuse.test_elastic");
     }
 
-    ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
-        this("target/es", 9200, 9300, "fuse.test_elastic", configurers);
+    ElasticEmbeddedNode(Settings settings,ElasticIndexConfigurer... configurers) throws Exception {
+        this(settings,"target/es", 9200, 9300, "fuse.test_elastic", configurers);
     }
 
-    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
-        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1, configurers);
+    ElasticEmbeddedNode(Settings settings, String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
+        this(settings,esWorkingDir, httpPort, httpTransportPort, nodeName, 1, configurers);
     }
 
-    ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
+    ElasticEmbeddedNode(Settings settings) throws Exception {
+        this(settings,esWorkingDir, httpPort, httpTransportPort, nodeName, 1);
+    }
+
+    ElasticEmbeddedNode(Settings additional, String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
         ElasticEmbeddedNode.esWorkingDir = esWorkingDir;
         ElasticEmbeddedNode.httpPort = httpPort;
         ElasticEmbeddedNode.numberOfShards = numberOfShards;
-        prepare();
+        prepare(additional);
 
         for (ElasticIndexConfigurer configurer : configurers) {
             configurer.configure(getClient(nodeName,httpTransportPort));
@@ -172,22 +175,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         }
     }
 
-    private void prepare() throws Exception {
+    private void prepare(Settings additional) throws Exception {
         this.close();
 
-        Settings settings = Settings.builder()
-                .put("cluster.name", nodeName)
-                .put("node.name", nodeName)
-                .put("path.home", esWorkingDir)
-                .put("path.data", esWorkingDir)
-                .put("path.logs", esWorkingDir)
-                .put("http.port", httpPort)
-                .put("transport.type", "netty4")
-                .put("http.type", "netty4")
-                .put("http.cors.enabled", "true")
-//                .put("script.auto_reload_enabled", "false")
-                .put("transport.port", httpTransportPort)
-                .build();
+        Settings settings = getBuilder(additional);
 
         System.out.println("Setting E/S embedded "+nodeName);
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
@@ -199,6 +190,23 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.node = this.node.start();
         System.out.println("Started E/S Embedded");
 
+    }
+
+    public static Settings getBuilder(Settings additional) {
+        return Settings.builder()
+                .put("cluster.name", nodeName)
+                .put("node.name", nodeName)
+                .put("path.home", esWorkingDir)
+                .put("path.data", esWorkingDir)
+                .put("path.logs", esWorkingDir)
+                .put("http.port", httpPort)
+                .put("transport.type", "netty4")
+                .put("http.type", "netty4")
+                .put("http.cors.enabled", "true")
+//                .put("script.auto_reload_enabled", "false")
+                .put("transport.port", httpTransportPort)
+                .put(additional)
+                .build();
     }
     //endregion
 

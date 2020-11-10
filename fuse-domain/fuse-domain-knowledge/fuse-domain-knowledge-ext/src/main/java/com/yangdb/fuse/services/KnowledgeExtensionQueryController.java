@@ -71,6 +71,12 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
+    public ContentResponse<Object> runSqlQuery(String query, String ontology, int pageSize, String cursorType) {
+        return controller.runSqlQuery(query,ontology,pageSize,cursorType );
+
+    }
+
+    @Override
     public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
         return controller.runGraphQL(graphQL, ontology, pageSize, cursorType);
     }

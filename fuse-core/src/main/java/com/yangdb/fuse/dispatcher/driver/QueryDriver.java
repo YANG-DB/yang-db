@@ -57,6 +57,8 @@ public interface QueryDriver {
 
     Optional<Object> runCypher(String cypher, String ontology);
 
+    Optional<Object> runSql(String query, String ontology);
+
     Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
 
     Optional<Object> runGraphQL(String graphQL, String ontology);

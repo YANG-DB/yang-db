@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.cyber.ontology.schema.CyberIndexProviderBasedCSVLoaderIT;
 import com.yangdb.cyber.ontology.schema.CyberQueryIT;
+import com.yangdb.cyber.ontology.schema.CyberSQLQueryIT;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
@@ -22,7 +23,7 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.Client;
-import org.jooby.Jooby;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -39,14 +40,14 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
-import static com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode.FUSE_TEST_ELASTIC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         CyberIndexProviderBasedCSVLoaderIT.class,
-        CyberQueryIT.class
+        CyberQueryIT.class,
+        CyberSQLQueryIT.class
 })
 public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static final String CYBER = "Cyber";
@@ -68,6 +69,14 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static Client client;
     public static FuseApp app = null;
     public static FuseClient fuseClient = null;
+
+    @AfterClass
+    public static void after() {
+//        Setup.cleanup();
+        if (app != null) {
+            app.stop();
+        }
+    }
 
     public static void setUpInternal() throws Exception {
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/CyberSchema.json");
@@ -128,6 +137,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static void setup() throws Exception {
         setup(true, CYBER);
         setUpInternal();
+        startFuse(true);
     }
 
     public static void setup(boolean embedded) throws Exception {

@@ -102,6 +102,11 @@
             <groupId>com.github.cnsvili</groupId>
             <artifactId>snowflake</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>sql-open-distro</artifactId>
+        </dependency>
         <!-- runtime -->
 
         <!-- tests -->

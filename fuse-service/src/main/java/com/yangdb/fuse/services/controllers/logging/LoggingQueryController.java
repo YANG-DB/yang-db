@@ -200,6 +200,25 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                 }, this.resultHandler());
     }
 
+
+    @Override
+    public ContentResponse<Object> runSqlQuery(String query, String ontology, int pageSize, String cursorType) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                run,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (query != null) {
+                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(query).log();
+                    }
+                    return this.controller.runSqlQuery(query,ontology, pageSize, cursorType);
+                }, this.resultHandler());
+    }
+
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(

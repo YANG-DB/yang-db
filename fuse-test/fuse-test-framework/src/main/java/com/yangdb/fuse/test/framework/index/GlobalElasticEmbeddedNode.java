@@ -20,6 +20,8 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
+import org.elasticsearch.common.settings.Settings;
+
 /**
  * Created by roman.margolis on 01/01/2018.
  */
@@ -31,14 +33,29 @@ public class GlobalElasticEmbeddedNode {
         return getInstance("fuse.test_elastic");
     }
 
-    public static ElasticEmbeddedNode getInstance(String nodeName) throws Exception {
+    public static ElasticEmbeddedNode getInstance(Settings setting) throws Exception {
         synchronized (ElasticEmbeddedNode.class) {
             if (instance == null) {
-                instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(setting,"target/es", 9200, 9300, nodeName);
                 System.out.println("Starting embedded Elasticsearch Node "+nodeName);
             } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
                 close();
-                instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(setting, "target/es",9200, 9300, nodeName);
+            }
+            GlobalElasticEmbeddedNode.nodeName = nodeName;
+            return instance;
+        }
+
+    }
+
+    public static ElasticEmbeddedNode getInstance(String nodeName) throws Exception {
+        synchronized (ElasticEmbeddedNode.class) {
+            if (instance == null) {
+                instance = new ElasticEmbeddedNode(Settings.EMPTY,"target/es", 9200, 9300, nodeName);
+                System.out.println("Starting embedded Elasticsearch Node "+nodeName);
+            } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
+                close();
+                instance = new ElasticEmbeddedNode(Settings.EMPTY,"target/es", 9200, 9300, nodeName);
             }
             GlobalElasticEmbeddedNode.nodeName = nodeName;
             return instance;

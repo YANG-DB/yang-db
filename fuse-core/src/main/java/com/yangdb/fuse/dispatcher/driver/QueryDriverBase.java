@@ -211,6 +211,26 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
+    public Optional<Object> runSql(String query, String ontology) {
+        String id = UUID.randomUUID().toString();
+        try {
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_SQL, query, ontology,
+                    new LogicalGraphCursorRequest(ontology,new CreatePageRequest()));
+            Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
+            if (!resourceInfo.isPresent())
+                return Optional.empty();
+
+            if (resourceInfo.get().getError() != null)
+                return Optional.of(resourceInfo.get().getError());
+
+            return Optional.of(resourceInfo.get());
+        } finally {
+            //remove stateless query
+//            delete(id);
+        }
+    }
+
+    @Override
     public Optional<Object> runCypher(String cypher, String ontology) {
         String id = UUID.randomUUID().toString();
         try {

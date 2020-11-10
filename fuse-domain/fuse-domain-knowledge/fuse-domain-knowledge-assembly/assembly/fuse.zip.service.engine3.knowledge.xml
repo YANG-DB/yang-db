@@ -29,7 +29,7 @@
         </file>
         <file>
             <source>${project.basedir}/resources/logConfig/logback.xml</source>
-            <outputDirectory>./config</outputDirectory>
+            <outputDirectory>./logConfig</outputDirectory>
         </file>
         <file>
             <source>${project.basedir}/resources/scripts/standard/start-fuse-service.sh</source>

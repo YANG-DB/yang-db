@@ -63,6 +63,12 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-geojson</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>sql-open-distro</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
@@ -76,6 +82,7 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
+
         <!-- text searching with multiple keywords -->
         <dependency>
             <groupId>org.ahocorasick</groupId>

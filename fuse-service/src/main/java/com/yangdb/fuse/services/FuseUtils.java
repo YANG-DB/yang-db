@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FuseUtils {
+
     public static final String ELASTICSEARCH_EMBEDDED = "elasticsearch.embedded";
     public static final String ELASTICSEARCH_CLUSTER_NAME = "elasticsearch.cluster_name";
     public static final String ELASTICSEARCH_DELETE_DATA_ON_LOAD = "elasticsearch.delete_data_on_load";
