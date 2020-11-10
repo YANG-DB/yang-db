@@ -21,6 +21,8 @@ package com.yangdb.fuse.executor.elasticsearch;
  */
 
 import com.google.inject.Inject;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.BaseElement;
@@ -63,13 +65,19 @@ public class ElasticIndexProviderMappingFactory {
     private RawSchema schema;
     private IndexProvider indexProvider;
     private Ontology.Accessor ontology;
+    private Config settingConfig = ConfigFactory.empty();
+
 
     @Inject
-    public ElasticIndexProviderMappingFactory(Client client, RawSchema schema, Ontology ontology, IndexProvider indexProvider) {
+    public ElasticIndexProviderMappingFactory(Config config, Client client, RawSchema schema, Ontology ontology, IndexProvider indexProvider) {
         this.client = client;
         this.schema = schema;
         this.indexProvider = indexProvider;
         this.ontology = new Ontology.Accessor(ontology);
+        try {
+            this.settingConfig = config.getConfig("elasticsearch.mappings.settings");
+        } catch (Throwable ignored) {
+        }
     }
 
     public ElasticIndexProviderMappingFactory indexProvider(IndexProvider indexProvider) {
@@ -539,7 +547,7 @@ public class ElasticIndexProviderMappingFactory {
         Settings.Builder builder = getSettings();
         if (relation.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            if(!ontology.relation$(relation.getType()).getIdField().isEmpty())
+            if (!ontology.relation$(relation.getType()).getIdField().isEmpty())
                 builder.put("sort.field", ontology.relation$(relation.getType()).getIdField().get(0)).put("sort.order", "asc");
             //todo - move to this form
 /*
@@ -555,7 +563,7 @@ public class ElasticIndexProviderMappingFactory {
         if (entity.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
 
-            if(!ontology.entity$(entity.getType()).getIdField().isEmpty())
+            if (!ontology.entity$(entity.getType()).getIdField().isEmpty())
                 builder.put("sort.field", ontology.entity$(entity.getType()).getIdField().get(0)).put("sort.order", "asc");
             //todo move to this form
 /*
@@ -567,13 +575,22 @@ public class ElasticIndexProviderMappingFactory {
     }
 
     /**
-     * todo - get the shards & replication params from configuration
-     *
+     * Load the shards & replication params from configuration
      * @return
      */
     private Settings.Builder getSettings() {
-        return Settings.builder()
-                .put("index.number_of_shards", 3)
-                .put("index.number_of_replicas", 1);
+        if (this.settingConfig.isEmpty()) {
+            return Settings.builder()
+                    .put("index.mapping.ignore_malformed", true)
+                    .put("index.number_of_shards", 3)
+                    .put("index.number_of_replicas", 1);
+        } else {
+            Settings.Builder builder = Settings.builder();
+            this.settingConfig.entrySet().forEach(
+                    entry -> builder.put(entry.getKey(), entry.getValue().toString())
+            );
+            return builder;
+
+        }
     }
 }

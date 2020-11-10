@@ -198,7 +198,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
                     .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(IndexRequest.OpType.INDEX)
-                    .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);
+                    .setSource(mapper.writeValueAsBytes(node.getNode()), XContentType.JSON);
             node.getRouting().ifPresent(request::setRouting);
             bulk.add(request);
             return request;

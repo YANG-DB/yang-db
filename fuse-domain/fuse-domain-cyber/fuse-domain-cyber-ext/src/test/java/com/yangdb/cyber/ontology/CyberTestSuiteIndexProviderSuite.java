@@ -24,7 +24,6 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.Client;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.mockito.Mockito;
@@ -70,7 +69,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static FuseApp app = null;
     public static FuseClient fuseClient = null;
 
-    @AfterClass
+//    @AfterClass
     public static void after() {
 //        Setup.cleanup();
         if (app != null) {
@@ -78,7 +77,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
         }
     }
 
-    public static void setUpInternal() throws Exception {
+    public static void loadSchema() throws Exception {
         InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/CyberSchema.json");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Cyber.json");
 
@@ -133,23 +132,23 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
         };
     }
 
-    @BeforeClass
+//    @BeforeClass
     public static void setup() throws Exception {
         setup(true, CYBER);
-        setUpInternal();
+        loadSchema();
         startFuse(true);
     }
 
     public static void setup(boolean embedded) throws Exception {
         init(embedded, CYBER);
         //init elasticsearch provider mapping factory
-        setUpInternal();
+        loadSchema();
     }
 
     public static void setup(boolean embedded, String name) throws Exception {
         init(embedded, name);
         //init elasticsearch provider mapping factory
-        setUpInternal();
+        loadSchema();
     }
 
     private static void init(boolean embedded, String name) throws Exception {

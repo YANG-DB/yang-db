@@ -52,8 +52,7 @@ import java.util.*;
 import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
-import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
-import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.validateValue;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.*;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
     private final Ontology.Accessor accessor;
@@ -186,8 +185,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsMetadata(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> parseAndSetValue(m.getKey(),element,accessor.property$(m.getKey()).getType(), m.getValue(),sdf));
     }
 
 
@@ -203,8 +201,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> parseAndSetValue(m.getKey(),element,accessor.property$(m.getKey()).getType(), m.getValue(),sdf));
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
         //populate each pair

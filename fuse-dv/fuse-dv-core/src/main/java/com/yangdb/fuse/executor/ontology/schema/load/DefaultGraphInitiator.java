@@ -52,6 +52,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
     private final RawSchema schema;
 
     private final String assembly;
+    private Config config;
     private IndexProviderFactory indexProviderFactory;
     private final OntologyProvider ontologyProvider;
     private IndexProvider indexProvider;
@@ -61,6 +62,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
     @Inject
     public DefaultGraphInitiator(Config config, Client client, IndexProviderFactory indexProviderFactory, OntologyProvider ontologyProvider, RawSchema schema) {
         this.assembly = config.getString("assembly");
+        this.config = config;
         this.indexProviderFactory = indexProviderFactory;
         this.ontologyProvider = ontologyProvider;
         this.objectMapper = new ObjectMapper();
@@ -71,7 +73,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
 
         //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
         this.indexProvider = indexProviderFactory.get(assembly).orElseGet(() -> IndexProvider.Builder.generate(ont));
-        this.mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ont, indexProvider);
+        this.mappingFactory = new ElasticIndexProviderMappingFactory(config,client, schema, ont, indexProvider);
 
     }
 
@@ -128,7 +130,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
         //generate E/S mapping factory
-        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, rawSchema, ont, provider);
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(config,client, rawSchema, ont, provider);
         //generate mappings
         return mappingFactory.generateMappings().size();
     }
@@ -161,7 +163,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
         //generate E/S mapping factory
-        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, rawSchema, ont, provider);
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(config,client, rawSchema, ont, provider);
         //create indices
         List<Tuple2<Boolean, String>> indices = mappingFactory.createIndices();
         //refresh cluster
@@ -198,7 +200,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
         //generate E/S mapping factory
-        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, rawSchema, ont, provider);
+        ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(config,client, rawSchema, ont, provider);
         //generate mappings
         List<Tuple2<String, Boolean>> mappingResults = mappingFactory.generateMappings();
         //create indices
