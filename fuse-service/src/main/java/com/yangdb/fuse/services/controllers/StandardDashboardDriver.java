@@ -33,6 +33,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.ValueType;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,10 +55,10 @@ public class StandardDashboardDriver implements DashboardDriver {
 
     @Override
     //todo - fix this to be Ontology depended
-    public Map graphElementCount() {
+    public Map graphElementCount()  {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
         aggregation.field("type");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
@@ -92,7 +93,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         builder.setQuery(boolQuery()
                 .should(termQuery("type", "e.value"))
                 .should(termQuery("type", "r.value")));
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
         aggregation.field("fieldId");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()

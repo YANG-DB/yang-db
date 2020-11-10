@@ -88,7 +88,7 @@ public class ElementControllerCompositTest {
         Map<String, DocumentField> fields = new HashMap<>();
         fields.put("name", new DocumentField("name", Collections.singletonList("myName")));
         fields.put("type", new DocumentField("type", Collections.singletonList("myType")));
-        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields,null)};
+        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields)};
 
         SearchHits searchHits = new SearchHits(tests, new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO), 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);

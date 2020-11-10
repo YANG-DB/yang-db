@@ -39,8 +39,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.metadata.IndexMetadata;
-import org.elasticsearch.cluster.metadata.MappingMetadata;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -305,11 +305,11 @@ public class EsUtil {
      */
     public static boolean isIndexExists(Client client, String index) {
 
-        IndexMetadata indexMetaData = client.admin().cluster()
+        IndexMetaData indexMetaData = client.admin().cluster()
                 .state(Requests.clusterStateRequest())
                 .actionGet()
                 .getState()
-                .getMetadata()
+                .getMetaData()
                 .index(index);
 
         return indexMetaData != null;
@@ -422,11 +422,11 @@ public class EsUtil {
      * @param index  Index Name
      * @return
      */
-    public static ImmutableOpenMap<String, MappingMetadata> getMappingsOfIndex(
+    public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
             Client client, String index) {
         ClusterStateResponse clusterStateResponse = client.admin().cluster()
                 .prepareState().execute().actionGet();
-        return clusterStateResponse.getState().getMetadata().index(index)
+        return clusterStateResponse.getState().getMetaData().index(index)
                 .getMappings();
     }
 

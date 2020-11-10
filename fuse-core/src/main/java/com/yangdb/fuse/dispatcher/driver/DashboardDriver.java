@@ -21,7 +21,6 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 
-
 import java.util.Map;
 
 /**
@@ -29,7 +28,7 @@ import java.util.Map;
  */
 public interface DashboardDriver {
 
-    Map graphElementCount() ;
+    Map graphElementCount();
 
     Map graphElementCreated() ;
 
