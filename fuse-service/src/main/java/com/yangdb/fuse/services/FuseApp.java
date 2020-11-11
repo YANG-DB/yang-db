@@ -121,6 +121,11 @@ public class FuseApp extends Jooby {
 
         //dynamically load AppControllerRegistrar that comply with com.yangdb.fuse.services package and derive from AppControllerRegistrarBase
         additionalRegistrars(this, localUrlSupplier);
+
+        //callbacks
+        onStop(() -> System.out.println("Stopping YangDb app..."));
+        onStart(() -> System.out.println("Starting YangDb app..."));
+        onStarted(() -> System.out.println("YangDB Started on http://localhost:8888/"));
     }
 
     /**

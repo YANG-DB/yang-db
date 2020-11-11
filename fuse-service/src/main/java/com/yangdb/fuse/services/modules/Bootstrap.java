@@ -56,10 +56,13 @@ public class Bootstrap implements Jooby.Module {
             try {
                 Method method = Jooby.Module.class.getMethod("configure", Env.class, Config.class, Binder.class);
                 method.invoke(Class.forName(value).newInstance(), env, conf, binder);
+                System.out.println(" -- Module "+value +" loaded");
             } catch (Exception e) {
                 //todo something usefull here - sbould the app break ???
+                System.out.println("ERROR - Bootstrap loading failed "+e.getMessage());
                 e.printStackTrace();
             }
         });
+        System.out.println("All modules loaded[" + modules.size()+"]");
     }
 }

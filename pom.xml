@@ -217,10 +217,11 @@
         <aviator.version>4.2.0</aviator.version>
 
         <!-- logging -->
-        <slf4j.version>1.7.25</slf4j.version>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <logback.version>1.1.7</logback.version>
-        <log4j.version>2.7</log4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <logback.version>1.2.3</logback.version>
+        <log4j.version>2.11.1</log4j.version>
+        <commons-logging.version>1.2</commons-logging.version>
         <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
         <!-- metrics -->
@@ -587,50 +588,50 @@
             <!-- commons -->
 
             <!-- Netty -->
-<!-- Unremark when moving to E/S 7.9.0
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+            <!-- Unremark when moving to E/S 7.9.0
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-transport</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-resolver</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-resolver</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-codec</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-codec-http</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http2</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-codec-http2</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-common</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
+                        <dependency>
+                            <groupId>io.netty</groupId>
+                            <artifactId>netty-handler</artifactId>
+                            <version>${netty.version}</version>
+                        </dependency>
 
--->
+            -->
             <!-- google -->
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -836,6 +837,11 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
             </dependency>
@@ -843,6 +849,11 @@
                 <groupId>com.internetitem</groupId>
                 <artifactId>logback-elasticsearch-appender</artifactId>
                 <version>${logback-elasticsearch-appender.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>

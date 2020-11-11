@@ -18,6 +18,33 @@
     </properties>
 
     <dependencies>
+        <!-- logging        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.internetitem</groupId>
+            <artifactId>logback-elasticsearch-appender</artifactId>
+        </dependency>
+
+        <!-- fuse dependencies        -->
         <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-asg</artifactId>
@@ -58,7 +85,7 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-stat</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
         </dependency>
@@ -69,18 +96,6 @@
         <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-domain-dragons-ext</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.internetitem</groupId>
-            <artifactId>logback-elasticsearch-appender</artifactId>
         </dependency>
         <!--  jmx monitoring      -->
         <dependency>
