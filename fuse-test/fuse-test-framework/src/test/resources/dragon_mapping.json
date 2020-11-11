@@ -1,13 +1,13 @@
 {
   "mappings":{
     "dragon":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "name":    { "type": "string"  }
       }
     },
     "horse":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "name":    { "type": "string"  },
         "color": {"type" : "string"},
@@ -15,19 +15,19 @@
       }
     },
     "guild":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "name":    { "type": "string"  }
       }
     },
     "kingdom":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "name":    { "type": "string"  }
       }
     },
     "person":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "first_name":    { "type": "string"  },
         "last_name":    { "type": "string"  },
@@ -38,7 +38,7 @@
       }
     },
     "originated_in":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -58,7 +58,7 @@
       }
     },
     "fires_at":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -79,7 +79,7 @@
       }
     },
     "freezes":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -101,7 +101,7 @@
       }
     },
     "registered_in":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -121,7 +121,7 @@
       }
     },
     "knows":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -142,7 +142,7 @@
       }
     },
     "member_of":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -164,7 +164,7 @@
       }
     },
     "parent":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -184,7 +184,7 @@
       }
     },
     "owns":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {
@@ -206,7 +206,7 @@
       }
     },
     "subject_of":{
-      "_all":       { "enabled": false  },
+
       "properties": {
         "entityA": {
           "properties": {

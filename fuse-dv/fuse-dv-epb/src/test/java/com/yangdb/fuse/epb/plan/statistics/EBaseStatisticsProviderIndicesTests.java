@@ -191,8 +191,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
-        Assert.assertEquals(500d, nodeStatistics.getTotal(), 0.1);
-        Assert.assertEquals(10, nodeStatistics.getCardinality(), 0.1);
+        Assert.assertEquals(510d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(15, nodeStatistics.getCardinality(), 0.1);
     }
 
     @Test

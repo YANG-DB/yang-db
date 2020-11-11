@@ -26,6 +26,8 @@ import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
 
 public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
 
+    public static final String INDEX_DEFAULT_SETTINGS = "{\"index.mapping.ignore_malformed\":\"true\",\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}";
+
     @Test
     public void testGenerateNestedMapping() {
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(ConfigFactory.empty(),client, nestedSchema, ontology, nestedProvider);
@@ -42,7 +44,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     GetIndexTemplatesResponse response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("people")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"people");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.mapping.ignore_malformed\":\"true\",\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Person").toString(),"{\"Person\":{\"properties\":{\"profession\":{\"type\":\"nested\",\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"salary\":{\"type\":\"integer\"},\"certification\":{\"type\":\"keyword\"}}},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"deathDate\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"height\":{\"type\":\"integer\"}}}}");
                     break;
                 case "horse":
@@ -51,7 +53,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horses")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horses");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Horse").toString(),"{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "dragon":
@@ -60,7 +62,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragons")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragons");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Dragon").toString(),"{\"Dragon\":{\"properties\":{\"gender\":{\"type\":\"keyword\"},\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
                     break;
                 case "kingdoms":
@@ -69,7 +71,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdoms")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdoms");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Kingdom").toString(),"{\"Kingdom\":{\"properties\":{\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "guilds":
@@ -78,7 +80,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guilds")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guilds");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Guild").toString(),"{\"Guild\":{\"properties\":{\"iconId\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Own":
@@ -86,7 +88,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("own")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"own");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Own").toString(),"{\"Own\":{\"properties\":{\"entityA\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Know":
@@ -94,7 +96,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("know")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"know");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Know").toString(),"{\"Know\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "memberof":
@@ -102,7 +104,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("memberof")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("MemberOf").toString(),"{\"MemberOf\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "originatedin":
@@ -110,7 +112,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("originatedin")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("OriginatedIn").toString(),"{\"OriginatedIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "subjectof":
@@ -118,7 +120,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("subjectof")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("SubjectOf").toString(),"{\"SubjectOf\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "registeredin":
@@ -126,7 +128,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("registeredin")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.mapping.ignore_malformed\":\"true\",\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("RegisteredIn").toString(),"{\"RegisteredIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Fire":
@@ -134,7 +136,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("fire")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Fire").toString(),"{\"Fire\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"entityA\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"temperature\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Freeze":
@@ -142,7 +144,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("freeze")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Freeze").toString(),"{\"Freeze\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"entityA\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"temperature\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 default:
@@ -167,7 +169,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     GetIndexTemplatesResponse response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("people")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"people");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), "{\"index.mapping.ignore_malformed\":\"true\",\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Person").toString(),"{\"Person\":{\"properties\":{\"profession\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"salary\":{\"type\":\"integer\"},\"certification\":{\"type\":\"keyword\"}}},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"deathDate\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"height\":{\"type\":\"integer\"}}}}");
                     break;
                 case "horse":
@@ -176,7 +178,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horses")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horses");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Horse").toString(),"{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "dragon":
@@ -185,7 +187,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragons")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragons");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Dragon").toString(),"{\"Dragon\":{\"properties\":{\"gender\":{\"type\":\"keyword\"},\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
                     break;
                 case "kingdoms":
@@ -194,7 +196,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdoms")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdoms");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Kingdom").toString(),"{\"Kingdom\":{\"properties\":{\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "guilds":
@@ -203,7 +205,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guilds")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guilds");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Guild").toString(),"{\"Guild\":{\"properties\":{\"iconId\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Own":
@@ -211,7 +213,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("own")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"own");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Own").toString(),"{\"Own\":{\"properties\":{\"entityA\":{\"properties\":{\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Know":
@@ -219,7 +221,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("know")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"know");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Know").toString(),"{\"Know\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "memberof":
@@ -227,7 +229,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("memberof")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("MemberOf").toString(),"{\"MemberOf\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "originatedin":
@@ -235,7 +237,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("originatedin")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("OriginatedIn").toString(),"{\"OriginatedIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "subjectof":
@@ -243,7 +245,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("subjectof")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("SubjectOf").toString(),"{\"SubjectOf\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "registeredin":
@@ -251,7 +253,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("registeredin")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("RegisteredIn").toString(),"{\"RegisteredIn\":{\"properties\":{\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Fire":
@@ -259,7 +261,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("fire")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Fire").toString(),"{\"Fire\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"entityA\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"temperature\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "Freeze":
@@ -267,7 +269,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("freeze")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),index.toLowerCase());
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(), INDEX_DEFAULT_SETTINGS);
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Freeze").toString(),"{\"Freeze\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"entityA\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"temperature\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"direction\":{\"type\":\"keyword\"}}}}");
                     break;
                 default:
@@ -292,7 +294,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                     GetIndexTemplatesResponse response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("ontology")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
                     Assert.assertEquals(response.getIndexTemplates().get(0).name(),"ontology");
-                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.mapping.ignore_malformed\":\"true\",\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("ontology").toString(),"{\"ontology\":{\"properties\":{\"date\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"independenceDay\":{\"type\":\"keyword\"},\"gender\":{\"type\":\"keyword\"},\"distance\":{\"type\":\"integer\"},\"color\":{\"type\":\"keyword\"},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"endDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"deathDate\":{\"type\":\"keyword\"},\"temperature\":{\"type\":\"integer\"},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"height\":{\"type\":\"integer\"},\"profession\":{\"type\":\"nested\",\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"salary\":{\"type\":\"integer\"},\"certification\":{\"type\":\"keyword\"}}},\"iconId\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"maxSpeed\":{\"type\":\"integer\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"startDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
                     break;
                 default:

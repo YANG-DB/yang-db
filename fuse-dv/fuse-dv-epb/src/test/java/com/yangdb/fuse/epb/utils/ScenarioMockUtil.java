@@ -47,7 +47,7 @@ public class ScenarioMockUtil {
                     .get(0);
 
             Long globalSelectivity = this.globalSelectivity.getOrDefault(constraintLabel, 10L);
-            return globalSelectivity*indices.size();
+            return globalSelectivity *indices.size();
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {

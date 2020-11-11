@@ -110,7 +110,7 @@ public class SmartEpbShortPathTests {
             return new Statistics.SummaryStatistics(typeCard.get(constraintLabel)*indices.size(), typeCard.get(constraintLabel)*indices.size());
         });
 
-        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgument(0, GraphElementSchema.class);

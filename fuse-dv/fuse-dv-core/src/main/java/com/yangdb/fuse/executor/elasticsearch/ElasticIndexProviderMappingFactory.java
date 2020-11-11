@@ -75,7 +75,7 @@ public class ElasticIndexProviderMappingFactory {
         this.indexProvider = indexProvider;
         this.ontology = new Ontology.Accessor(ontology);
         try {
-            this.settingConfig = config.getConfig("elasticsearch.mappings.settings");
+            this.settingConfig = config.hasPath("elasticsearch.mappings.settings") ? config.getConfig("elasticsearch.mappings.settings") : ConfigFactory.empty();
         } catch (Throwable ignored) {
         }
     }

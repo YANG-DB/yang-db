@@ -3,6 +3,7 @@
   "template": "e*",
   "settings": {
     "index": {
+      "max_ngram_diff": 10,
       "number_of_shards": "5",
       "number_of_replicas": "0",
       "refresh_interval": "1ms",
@@ -61,10 +62,7 @@
   },
   "mappings": {
     "pge": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
+"properties": {
         "type": {
           "type": "keyword"
         },
