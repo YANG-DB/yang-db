@@ -23,7 +23,6 @@
             "type": "custom",
             "tokenizer": "knowledge_ngram_tokenizer",
             "filter": [
-              "standard",
               "knowledge_stopwords",
               "lowercase"
             ]
@@ -32,7 +31,6 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-              "standard",
               "knowledge_stopwords",
               "lowercase"
             ]
