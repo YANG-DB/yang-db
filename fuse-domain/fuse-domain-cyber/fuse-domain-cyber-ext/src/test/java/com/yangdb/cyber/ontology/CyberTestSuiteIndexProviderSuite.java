@@ -24,6 +24,7 @@ import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.Client;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.mockito.Mockito;
@@ -69,9 +70,11 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static FuseApp app = null;
     public static FuseClient fuseClient = null;
 
-//    @AfterClass
+    @AfterClass
     public static void after() {
-//        Setup.cleanup();
+        //close E/S node
+        GlobalElasticEmbeddedNode.close();
+        //close Fuse app
         if (app != null) {
             app.stop();
         }
@@ -132,7 +135,7 @@ public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
         };
     }
 
-//    @BeforeClass
+    @BeforeClass
     public static void setup() throws Exception {
         setup(true, CYBER);
         loadSchema();
