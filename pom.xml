@@ -135,6 +135,9 @@
         <jackson.version>2.10.4</jackson.version>
         <!-- jackson -->
         <resilience4jVersion>1.6.1</resilience4jVersion>
+        <!-- graph algorithms        -->
+        <gs-algo.version>2.0</gs-algo.version>
+        <jgrapht.version>1.5.0</jgrapht.version>
 
         <!-- com.github.cnsvili.snowflake.version -->
         <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
@@ -407,6 +410,22 @@
                 <version>${resilience4jVersion}</version>
             </dependency>
 
+            <!-- graph algo            -->
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>${jgrapht.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graphstream</groupId>
+                <artifactId>gs-algo</artifactId>
+                <version>${gs-algo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graphstream</groupId>
+                <artifactId>gs-core</artifactId>
+                <version>${gs-algo.version}</version>
+            </dependency>
 
             <!-- jmx monitoring    -->
             <dependency>
