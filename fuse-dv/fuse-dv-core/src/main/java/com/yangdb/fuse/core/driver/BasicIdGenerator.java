@@ -37,7 +37,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.VersionType;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
 
 import java.time.Duration;
@@ -45,11 +44,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by roman.margolis on 20/03/2018.

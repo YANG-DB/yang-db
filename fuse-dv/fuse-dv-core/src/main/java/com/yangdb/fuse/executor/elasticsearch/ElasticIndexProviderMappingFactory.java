@@ -224,85 +224,88 @@ public class ElasticIndexProviderMappingFactory {
                             .getPartition();
 
                     Entity entity = indexProvider.getEntity(e.getName()).get();
-                    try {
-                        MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
-                        switch (type) {
-                            case NESTED:
-                                //this is implement in the populateNested() method
-                                break;
-                            case UNIFIED:
-                                //common general index - unifies all entities under the same physical index
-                                entity.getProps().getValues().forEach(v -> {
-                                    String label = e.geteType();
-                                    String unifiedName = entity.getProps().getValues().isEmpty() ? label : entity.getProps().getValues().get(0);
-                                    ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
-
-                                    List<String> patterns = new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")));
-                                    if (Objects.isNull(request.request().patterns())) {
-                                        request.setPatterns(new ArrayList<>(patterns));
-                                    } else {
-                                        request.request().patterns().addAll(patterns);
-                                    }
-                                    //dedup patterns -
-                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
-                                    //no specific index sort order since it contains multiple entity types -
-                                    if (request.request().settings().isEmpty()) {
-                                        request.setSettings(getSettings());
-                                    }
-                                    //create new mapping only when no prior entity set this mapping before
-                                    if (request.request().mappings().isEmpty()) {
-                                        request.addMapping(unifiedName, generateEntityMapping(e, entity, unifiedName));
-                                    } else {
-                                        populateProperty(entity, request.getMappingsProperties(unifiedName), e);
-                                    }
-                                });
-                                break;
-                            case STATIC:
-                                //static index
-                                entity.getProps().getValues().forEach(v -> {
-                                    String label = e.geteType();
-                                    ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, v.toLowerCase());
-                                    request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"))))
-                                            .setSettings(generateSettings(e, entity, label))
-                                            .addMapping(label, generateEntityMapping(e, entity, label));
-
-                                    //dedup patterns -
-                                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
-
-                                    //add response to list of responses
-                                    requests.put(v.toLowerCase(), request);
-                                });
-                                break;
-                            case TIME:
-                                //time partitioned index
-                                ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, e.getName().toLowerCase());
-                                String label = entity.getType();
-                                request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*"))))
-                                        .setSettings(generateSettings(e, entity, label))
-                                        .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
-                                //dedup patterns -
-                                request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
-
-                                //add response to list of responses
-
-                                requests.put(e.getName().toLowerCase(), request);
-                                break;
-                        }
-                    } catch (Throwable typeNotFound) {
-                        //log error
-                    }
+                    mapEntity(client, requests, e, mapping, entity);
                 });
 
         return requests.values();
     }
 
+    private void mapEntity(Client client, Map<String, ESPutIndexTemplateRequestBuilder> requests, EntityType e, String mapping, Entity entity) {
+        try {
+            MappingIndexType type = MappingIndexType.valueOf(mapping.toUpperCase());
+            switch (type) {
+                case NESTED:
+                    //this is implement in the populateNested() method
+                    break;
+                case UNIFIED:
+                    //common general index - unifies all entities under the same physical index
+                    entity.getProps().getValues().forEach(v -> {
+                        String label = e.geteType();
+                        String unifiedName = entity.getProps().getValues().isEmpty() ? label : entity.getProps().getValues().get(0);
+                        ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-    public Map<String, Object> populateMappingIndexFields(Entity ent, Optional<EntityType> entity) {
+                        List<String> patterns = new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")));
+                        if (Objects.isNull(request.request().patterns())) {
+                            request.setPatterns(new ArrayList<>(patterns));
+                        } else {
+                            request.request().patterns().addAll(patterns);
+                        }
+                        //dedup patterns -
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+                        //no specific index sort order since it contains multiple entity types -
+                        if (request.request().settings().isEmpty()) {
+                            request.setSettings(getSettings());
+                        }
+                        //create new mapping only when no prior entity set this mapping before
+                        if (request.request().mappings().isEmpty()) {
+                            request.addMapping(unifiedName, generateEntityMapping(e, entity, unifiedName));
+                        } else {
+                            populateProperty(entity, request.getMappingsProperties(unifiedName), e);
+                        }
+                    });
+                    break;
+                case STATIC:
+                    //static index
+                    entity.getProps().getValues().forEach(v -> {
+                        String label = e.geteType();
+                        ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, v.toLowerCase());
+                        request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"))))
+                                .setSettings(generateSettings(e, entity, label))
+                                .addMapping(label, generateEntityMapping(e, entity, label));
+
+                        //dedup patterns -
+                        request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+
+                        //add response to list of responses
+                        requests.put(v.toLowerCase(), request);
+                    });
+                    break;
+                case TIME:
+                    //time partitioned index
+                    ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, e.getName().toLowerCase());
+                    String label = entity.getType();
+                    request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*"))))
+                            .setSettings(generateSettings(e, entity, label))
+                            .addMapping(label, generateEntityMapping(e, entity, label.toLowerCase()));
+                    //dedup patterns -
+                    request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
+
+                    //add response to list of responses
+
+                    requests.put(e.getName().toLowerCase(), request);
+                    break;
+            }
+        } catch (Throwable typeNotFound) {
+            //log error
+        }
+    }
+
+
+    public Map<String, Object>  populateMappingIndexFields(Entity ent, EntityType entityType) {
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
-        EntityType entityType = entity.get();
 
         //generate field id -> only if field id array size > 1
         if (entityType.getIdField().size() > 1) {
@@ -339,7 +342,7 @@ public class ElasticIndexProviderMappingFactory {
 
         Map<String, Object> jsonMap = new HashMap<>();
         //populate index fields
-        jsonMap.put(label, populateMappingIndexFields(ent, entity));
+        jsonMap.put(label, populateMappingIndexFields(ent, entity.get()));
 
         return jsonMap;
     }
@@ -549,7 +552,7 @@ public class ElasticIndexProviderMappingFactory {
             //assuming id is a mandatory part of metadata/properties
             if (!ontology.relation$(relation.getType()).getIdField().isEmpty())
                 builder.put("sort.field", ontology.relation$(relation.getType()).getIdField().get(0)).put("sort.order", "asc");
-            //todo - move to this form
+            //todo - move to this correct fields indexing
 /*
             ontology.relation$(relation.getType()).getIdField().forEach(field ->
                     builder.put("sort.field", field).put("sort.order", "asc"));
@@ -565,7 +568,7 @@ public class ElasticIndexProviderMappingFactory {
 
             if (!ontology.entity$(entity.getType()).getIdField().isEmpty())
                 builder.put("sort.field", ontology.entity$(entity.getType()).getIdField().get(0)).put("sort.order", "asc");
-            //todo move to this form
+            //todo - move to this correct fields indexing
 /*
             ontology.entity$(entity.getType()).getIdField().forEach(field ->
                     builder.put("sort.field", field).put("sort.order", "asc"));
