@@ -91,8 +91,7 @@ public class FuseApp extends Jooby {
                 .metric("threads", new ThreadStatesGaugeSet())
                 .metric("gc", new GarbageCollectorMetricSet()));
 
-        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
-        }));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
         // swagger support
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
         // elasticsearch bigDesk support (

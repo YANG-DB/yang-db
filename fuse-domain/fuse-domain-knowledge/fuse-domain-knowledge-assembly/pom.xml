@@ -198,7 +198,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Implementation-Build>${version}</Implementation-Build>
+                            <Implementation-Build>${project.version}</Implementation-Build>
                         </manifestEntries>
                     </archive>
                     <descriptors>

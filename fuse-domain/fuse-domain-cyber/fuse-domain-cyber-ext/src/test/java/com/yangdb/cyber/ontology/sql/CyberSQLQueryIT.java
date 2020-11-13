@@ -1,4 +1,4 @@
-package com.yangdb.cyber.ontology.schema;
+package com.yangdb.cyber.ontology.sql;
 
 import com.amazon.opendistroforelasticsearch.sql.common.response.ResponseListener;
 import com.amazon.opendistroforelasticsearch.sql.common.setting.Settings;
@@ -13,25 +13,7 @@ import com.amazon.opendistroforelasticsearch.sql.sql.SQLService;
 import com.amazon.opendistroforelasticsearch.sql.sql.config.SQLServiceConfig;
 import com.amazon.opendistroforelasticsearch.sql.sql.domain.SQLQueryRequest;
 import com.github.sisyphsu.dateparser.DateParser;
-import com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite;
 import com.yangdb.fuse.model.GlobalConstants;
-import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.query.Rel;
-import com.yangdb.fuse.model.query.RelUntyped;
-import com.yangdb.fuse.model.query.Start;
-import com.yangdb.fuse.model.query.entity.ETyped;
-import com.yangdb.fuse.model.query.entity.EUntyped;
-import com.yangdb.fuse.model.query.properties.EProp;
-import com.yangdb.fuse.model.query.properties.constraint.Constraint;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
-import com.yangdb.fuse.model.query.quant.Quant1;
-import com.yangdb.fuse.model.query.quant.QuantType;
-import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
-import com.yangdb.fuse.model.results.Assignment;
-import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.model.results.QueryResultBase;
-import com.yangdb.fuse.model.transport.CreatePageRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.test.BaseITMarker;
@@ -41,22 +23,17 @@ import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.rest.BaseRestHandler;
 import org.json.JSONObject;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.TimeZone;
 
-import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.*;
-import static com.yangdb.fuse.TestSuiteAPISuite.queryAction;
-import static com.yangdb.fuse.client.FuseClientSupport.query;
 import static org.elasticsearch.common.settings.Settings.EMPTY;
 
 @Ignore("Work in progress")
@@ -84,14 +61,6 @@ public class CyberSQLQueryIT implements BaseITMarker {
                 return EMPTY;
             }
         });
-    }
-
-    @AfterClass
-    public static void after() {
-//        Setup.cleanup();
-        if (app != null) {
-            app.stop();
-        }
     }
 
 
@@ -168,7 +137,7 @@ public class CyberSQLQueryIT implements BaseITMarker {
                     if (Key.QUERY_SIZE_LIMIT.equals(key)) {
                         return 200;
                     }
-                    if (Settings.Key.PPL_QUERY_MEMORY_LIMIT.equals(key)) {
+                    if (Key.PPL_QUERY_MEMORY_LIMIT.equals(key)) {
                         return new ByteSizeValue(1, ByteSizeUnit.GB);
                     }
                     return EMPTY;

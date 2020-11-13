@@ -77,7 +77,7 @@ public class ClientProvider implements Provider<Client> {
     //endregion
 
     //region Fields
-    private boolean createMock;
+    private boolean createMock = false;
     private ElasticGraphConfiguration configuration;
     //endregion
 }

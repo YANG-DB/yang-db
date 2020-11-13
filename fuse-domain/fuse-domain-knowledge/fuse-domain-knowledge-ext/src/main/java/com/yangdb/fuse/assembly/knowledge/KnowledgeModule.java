@@ -48,10 +48,6 @@ public class KnowledgeModule extends ModuleBase {
     //region ModuleBase Implementation
     @Override
     protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
-        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
-
         Multibinder<CompositeCursorFactory.Binding> bindingMultibinder = Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class);
         //KnowledgeGraphHierarchyCursor
         bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(

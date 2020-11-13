@@ -20,6 +20,7 @@ package com.yangdb.fuse.core.driver;
  * #L%
  */
 
+import com.amazon.opendistroforelasticsearch.sql.legacy.executor.Format;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
@@ -31,6 +32,7 @@ import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.validation.QueryValidator;
+import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -51,6 +53,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Constructors
     @Inject
     public StandardQueryDriver(
+            FuseSqlService sqlService,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
             QueryTransformer<Query, AsgQuery> queryTransformer,
@@ -61,6 +64,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         super(cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
+        this.sqlService = sqlService;
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
     }
@@ -94,6 +98,13 @@ public class StandardQueryDriver extends QueryDriverBase {
     }
     //endregion
 
+    @Override
+    public Optional<Object> runSql(String query, String ontology) {
+        sqlService.query(ontology,query, Format.CSV.getFormatName());
+        return Optional.empty();
+    }
+
+    private final FuseSqlService sqlService;
     //region Fields
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;

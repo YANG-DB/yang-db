@@ -29,6 +29,7 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.model.ontology.mapping.MappingOntologies;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import org.jooby.Env;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,6 +48,7 @@ public class CoreDispatcherModule extends ModuleBase {
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AppUrlSupplier.class).toInstance(getAppUrlSupplier(conf));
         binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
+        binder.bind(IndexProviderFactory.class).toInstance(getIndexProvider(conf));
         binder.bind(OntologyMappingProvider.class).toInstance(getOntologyMappingProvider(conf));
         binder.bind(OntologyTransformerProvider.class).toInstance(getTransformerProvider(conf));
     }
@@ -60,6 +62,22 @@ public class CoreDispatcherModule extends ModuleBase {
         }
 
         return new DefaultAppUrlSupplier(baseUrl);
+    }
+
+    /**
+     * index provider schema registry loader
+     * @param conf
+     * @return
+     * @throws Throwable
+     */
+    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable{
+        try {
+            return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
+        } catch (ConfigException e) {
+            return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

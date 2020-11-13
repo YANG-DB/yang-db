@@ -25,7 +25,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphQLCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.yangdb.fuse.services.dispatcher.driver.MockDriver;
-import com.yangdb.fuse.services.engine2.data.schema.InitialTestDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.VoidDataLoader;
 import com.yangdb.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import org.elasticsearch.client.Client;
@@ -48,7 +48,7 @@ public class DriverTestModule extends ModuleBase {
                 .toInstance(ontology -> new OntologySchemaProvider(ontology, new M2DragonsPhysicalSchemaProvider()));
         binder.bind(Client.class).toInstance(new MockClient());
 
-        InitialTestDataLoader loader = new InitialTestDataLoader(null, null);
+        VoidDataLoader loader = new VoidDataLoader(null, null);
         binder.bind(GraphDataLoader.class).toInstance(loader);
         binder.bind(CSVDataLoader.class).toInstance(loader);
         binder.bind(GraphInitiator.class).toInstance(new VoidGraphInitiator());

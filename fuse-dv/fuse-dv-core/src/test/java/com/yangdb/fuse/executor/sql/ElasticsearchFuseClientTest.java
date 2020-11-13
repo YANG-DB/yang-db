@@ -1,4 +1,4 @@
-package com.yangdb.fuse.sql;
+package com.yangdb.fuse.executor.sql;
 
 import com.amazon.opendistroforelasticsearch.sql.elasticsearch.mapping.IndexMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema;
@@ -13,7 +14,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.test.BaseITMarker;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +22,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +31,7 @@ import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.ge
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class ElasticsearchFuseClientTest {
+public class ElasticsearchFuseClientTest implements BaseITMarker {
     ObjectMapper mapper = new ObjectMapper();
     IndexProvider provider;
     Ontology ontology;
@@ -54,7 +54,7 @@ public class ElasticsearchFuseClientTest {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/DragonsIndexProviderNested.conf");
+        InputStream providerStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("indexProvider/DragonsIndexProviderNested.conf");
         InputStream ontologyStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
 
 
@@ -74,7 +74,7 @@ public class ElasticsearchFuseClientTest {
 
     @Test
     public void getIndexMappings() {
-        ElasticsearchFuseClient client = new ElasticsearchFuseClient(ontology, schema, provider, providerMappingFactory);
+        ElasticsearchFuseClient client = new ElasticsearchFuseClient(Mockito.mock(Client.class),ontology, schema, provider, providerMappingFactory);
         Map<String, IndexMapping> mappings = client.getIndexMappings("Person");
         Assert.assertNotNull(mappings.get("people"));
         Assert.assertEquals(mappings.get("people").size(),10);

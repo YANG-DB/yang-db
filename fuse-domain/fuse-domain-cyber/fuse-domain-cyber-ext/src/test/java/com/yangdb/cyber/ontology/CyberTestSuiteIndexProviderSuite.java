@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.cyber.ontology.schema.CyberIndexProviderBasedCSVLoaderIT;
 import com.yangdb.cyber.ontology.schema.CyberQueryIT;
-import com.yangdb.cyber.ontology.schema.CyberSQLQueryIT;
 import com.yangdb.fuse.client.BaseFuseClient;
 import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
@@ -46,8 +45,7 @@ import static org.mockito.Mockito.when;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         CyberIndexProviderBasedCSVLoaderIT.class,
-        CyberQueryIT.class,
-        CyberSQLQueryIT.class
+        CyberQueryIT.class
 })
 public class CyberTestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static final String CYBER = "Cyber";

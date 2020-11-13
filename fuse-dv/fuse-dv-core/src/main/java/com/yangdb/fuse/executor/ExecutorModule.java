@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,25 @@ package com.yangdb.fuse.executor;
  * #L%
  */
 
+import com.amazon.opendistroforelasticsearch.sql.common.setting.Settings;
+import com.amazon.opendistroforelasticsearch.sql.elasticsearch.client.ElasticsearchClient;
+import com.amazon.opendistroforelasticsearch.sql.elasticsearch.executor.ElasticsearchExecutionEngine;
+import com.amazon.opendistroforelasticsearch.sql.elasticsearch.executor.protector.ExecutionProtector;
+import com.amazon.opendistroforelasticsearch.sql.elasticsearch.executor.protector.NoopExecutionProtector;
+import com.amazon.opendistroforelasticsearch.sql.executor.ExecutionEngine;
+import com.amazon.opendistroforelasticsearch.sql.expression.DSL;
+import com.amazon.opendistroforelasticsearch.sql.expression.config.ExpressionConfig;
+import com.amazon.opendistroforelasticsearch.sql.expression.function.BuiltinFunctionRepository;
+import com.amazon.opendistroforelasticsearch.sql.sql.SQLService;
+import com.amazon.opendistroforelasticsearch.sql.storage.StorageEngine;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
+import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.core.driver.StandardCursorDriver;
 import com.yangdb.fuse.core.driver.StandardPageDriver;
 import com.yangdb.fuse.core.driver.StandardQueryDriver;
@@ -33,6 +46,7 @@ import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
+import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
@@ -49,14 +63,22 @@ import com.yangdb.fuse.executor.ontology.OntologyGraphElementSchemaProviderFacto
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
+import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
+import com.yangdb.fuse.executor.sql.ElasticsearchFuseClient;
+import com.yangdb.fuse.executor.sql.FuseSqlService;
+import com.yangdb.fuse.executor.sql.FuseStorageEngine;
+import com.yangdb.fuse.executor.sql.LoggingElasticsearchFuseClient;
+import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.ByteSizeUnit;
+import org.elasticsearch.common.unit.ByteSizeValue;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
@@ -66,6 +88,7 @@ import org.unipop.configuration.UniGraphConfiguration;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
+import static org.elasticsearch.common.settings.Settings.EMPTY;
 
 /**
  * Created by lior.perry on 22/02/2017.
@@ -76,6 +99,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        bindIdGenerator(env, conf, binder);
         bindGraphWriters(env, conf, binder);
         bindResourceManager(env, conf, binder);
         bindGraphInitiator(env, conf, binder);
@@ -86,12 +110,76 @@ public class ExecutorModule extends ModuleBase {
         bindRawSchema(env, conf, binder);
         bindSchemaProviderFactory(env, conf, binder);
         bindUniGraphProvider(env, conf, binder);
+        bindSqlExecutor(env,conf,binder);
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(StandardPageDriver.class).in(RequestScoped.class);
 
         binder.bind(SearchOrderProviderFactory.class).to(getSearchOrderProvider(conf));
+
+    }
+
+    private void bindSqlExecutor(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(ElasticsearchClient.class)
+                        .annotatedWith(named(LoggingElasticsearchFuseClient.clientParam))
+                        .to(ElasticsearchFuseClient.class);
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingElasticsearchFuseClient.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(LoggingElasticsearchFuseClient.class));
+                this.bind(ElasticsearchClient.class)
+                        .to(LoggingElasticsearchFuseClient.class);
+
+                this.expose(ElasticsearchClient.class);
+            }
+        });
+
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                ExpressionConfig expressionConfig = new ExpressionConfig();
+
+                binder.bind(Settings.class)
+                        .toInstance(new Settings() {
+                            @Override
+                            public Object getSettingValue(Key key) {
+                                if (Key.QUERY_SIZE_LIMIT.equals(key)) {
+                                    return 200;
+                                }
+                                if (Settings.Key.PPL_QUERY_MEMORY_LIMIT.equals(key)) {
+                                    return new ByteSizeValue(1, ByteSizeUnit.GB);
+                                }
+                                return EMPTY;
+                            }
+                        });
+
+                binder.bind(ExecutionProtector.class)
+                        .toInstance(new NoopExecutionProtector());
+                binder.bind(BuiltinFunctionRepository.class)
+                        .toInstance(expressionConfig.functionRepository());
+                binder.bind(DSL.class)
+                        .toInstance(expressionConfig.dsl(expressionConfig.functionRepository()));
+                binder.bind(StorageEngine.class)
+                        .to(FuseStorageEngine.class);
+                binder.bind(ExecutionEngine.class)
+                        .to(ElasticsearchExecutionEngine.class);
+                binder.bind(SQLService.class);
+                binder.bind(FuseSqlService.class);
+
+            }
+        });
+
+    }
+
+    private void bindIdGenerator(Env env, Config conf, Binder binder) {
+        String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
+        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
+        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {
+        }).to(BasicIdGenerator.class).asEagerSingleton();
+        binder.bind(EntityTransformer.class);
     }
 
     //endregion
@@ -147,6 +235,7 @@ public class ExecutorModule extends ModuleBase {
             }
         });
     }
+
     protected void bindCSVDataLoader(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
@@ -230,15 +319,16 @@ public class ExecutorModule extends ModuleBase {
             @Override
             protected void configure() {
                 boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
+                this.bindConstant()
+                        .annotatedWith(named(ClientProvider.createMockParameter))
+                        .to(createMock);
+
                 ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
                 this.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
 
                 ClientProvider provider = new ClientProvider(createMock, elasticGraphConfiguration);
                 Client client = provider.get();
 
-                this.bindConstant()
-                        .annotatedWith(named(ClientProvider.createMockParameter))
-                        .to(createMock);
 
                 this.bind(Client.class)
                         .annotatedWith(named(LoggingClient.clientParameter))
@@ -248,6 +338,8 @@ public class ExecutorModule extends ModuleBase {
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingClient.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(LoggingClient.class));
+
+                // ToDo - remove timeout scope for E/S client execution due to the toolkit provided by new E/S API
                 this.bind(Client.class)
                         .to(TimeoutClientAdvisor.class)
                         .in(RequestScoped.class);

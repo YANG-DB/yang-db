@@ -4,43 +4,24 @@
     {
       "eType": "Person",
       "name": "Person",
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "firstName",
         "lastName",
         "gender",
         "birthDate",
         "deathDate",
         "height",
-        "name",
-        "profession"
-      ]
-    },
-    {
-      "eType": "Profession",
-      "name": "Profession",
-      "metadata": [
-        "id",
-        "type"
-      ],
-      "properties": [
-        "name",
-        "experience",
-        "certification",
-        "salary"
+        "name"
       ]
     },
     {
       "eType": "Horse",
       "name": "Horse",
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "name",
         "weight",
         "maxSpeed",
@@ -50,11 +31,9 @@
     {
       "eType": "Dragon",
       "name": "Dragon",
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "name",
         "birthDate",
         "power",
@@ -65,11 +44,9 @@
     {
       "eType": "Kingdom",
       "name": "Kingdom",
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "name",
         "king",
         "queen",
@@ -80,11 +57,9 @@
     {
       "eType": "Guild",
       "name": "Guild",
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "name",
         "description",
         "iconId",
@@ -108,11 +83,9 @@
           "eTypeB": "Horse"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate",
         "endDate"
       ]
@@ -127,11 +100,9 @@
           "eTypeB": "Person"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate"
       ]
     },
@@ -145,11 +116,9 @@
           "eTypeB": "Guild"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate",
         "endDate"
       ]
@@ -164,11 +133,9 @@
           "eTypeB": "Dragon"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "date",
         "temperature"
       ]
@@ -183,13 +150,11 @@
           "eTypeB": "Dragon"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
-        "date",
-        "temperature"
+        "id",
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -200,21 +165,11 @@
         {
           "eTypeA": "Dragon",
           "eTypeB": "Kingdom"
-        },
-        {
-          "eTypeA": "Horse",
-          "eTypeB": "Kingdom"
-        },
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Kingdom"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate"
       ]
     },
@@ -228,25 +183,11 @@
           "eTypeB": "Kingdom"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate"
       ]
-    },
-    {
-      "rType": "HasProfession",
-      "name": "HasProfession",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": "Person",
-          "eTypeB": "Profession"
-        }
-      ],
-      "metadata": [ "id" ]
     },
     {
       "rType": "RegisteredIn",
@@ -258,15 +199,17 @@
           "eTypeB": "Kingdom"
         },
         {
+          "eTypeA": "Dragon",
+          "eTypeB": "Guild"
+        },
+        {
           "eTypeA": "Horse",
-          "eTypeB": "Kingdom"
+          "eTypeB": "Guild"
         }
       ],
-      "metadata": [
-        "id",
-        "type"
-      ],
+      "metadata": [],
       "properties": [
+        "id",
         "startDate"
       ]
     }
@@ -280,17 +223,17 @@
     {
       "pType": "firstName",
       "name": "firstName",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "lastName",
       "name": "lastName",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "gender",
       "name": "gender",
-      "type": "string"
+      "type": "TYPE_Gender"
     },
     {
       "pType": "birthDate",
@@ -305,7 +248,7 @@
     {
       "pType": "name",
       "name": "name",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "height",
@@ -335,7 +278,7 @@
     {
       "pType": "description",
       "name": "description",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "iconId",
@@ -350,12 +293,12 @@
     {
       "pType": "king",
       "name": "king",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "queen",
       "name": "queen",
-      "type": "text"
+      "type": "string"
     },
     {
       "pType": "independenceDay",
@@ -370,7 +313,7 @@
     {
       "pType": "color",
       "name": "color",
-      "type": "string"
+      "type": "TYPE_Color"
     },
     {
       "pType": "date",
@@ -408,29 +351,49 @@
       "type": "string"
     },
     {
-      "pType": "certification",
-      "name": "certification",
-      "type": "string"
-    },
-    {
-      "pType": "experience",
-      "name": "experience",
-      "type": "string"
-    },
-    {
-      "pType": "salary",
-      "name": "salary",
-      "type": "int"
-    },
-    {
       "pType": "type",
       "name": "type",
       "type": "string"
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 0,
+          "name": "MALE"
+        },
+        {
+          "val": 1,
+          "name": "FEMALE"
+        },
+        {
+          "val": 2,
+          "name": "OTHER"
+        }
+      ]
     },
     {
-      "pType": "profession",
-      "name": "profession",
-      "type": "Profession"
+      "eType": "TYPE_Color",
+      "values": [
+        {
+          "val": 0,
+          "name": "RED"
+        },
+        {
+          "val": 1,
+          "name": "BLUE"
+        },
+        {
+          "val": 2,
+          "name": "GREEN"
+        },
+        {
+          "val": 3,
+          "name": "YELLOW"
+        }
+      ]
     }
   ]
 }

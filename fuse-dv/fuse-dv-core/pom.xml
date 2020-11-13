@@ -50,6 +50,11 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-unipop</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>sql-open-distro</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
@@ -82,11 +87,13 @@
         <!-- runtime -->
 
         <!-- test -->
+        <!-- tests    -->
         <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

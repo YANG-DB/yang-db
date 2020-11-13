@@ -40,7 +40,7 @@ import static org.junit.Assume.assumeTrue;
 public class QueryIT implements BaseITMarker {
     @Before
     public void before() throws Exception {
-//        TestSuite.setup();
+//        SqlTestSuite.setup();
         assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 

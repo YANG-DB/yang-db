@@ -1,7 +1,5 @@
 package com.yangdb.fuse;
 
-import com.amazon.opendistroforelasticsearch.sql.elasticsearch.client.ElasticsearchNodeClient;
-import com.amazon.opendistroforelasticsearch.sql.legacy.plugin.RestSQLQueryAction;
 import com.yangdb.test.BaseSuiteMarker;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
@@ -12,8 +10,6 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({})
 public class TestSuiteAPISuite implements BaseSuiteMarker {
-    public static ElasticsearchNodeClient client;
-    public static RestSQLQueryAction queryAction;
 
     public static TestSetupService suite = new TestSetupService() {
         @Override

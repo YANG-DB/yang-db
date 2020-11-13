@@ -44,12 +44,6 @@ import static com.google.inject.name.Names.named;
 public class CyberModule extends ModuleBase {
     @Override
     protected void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
-        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
-        binder.bind(IndexProviderFactory.class).toInstance(getIndexProvider(conf));
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {}).to(BasicIdGenerator.class).asEagerSingleton();
-        binder.bind(EntityTransformer.class);
-
         Multibinder<CompositeCursorFactory.Binding> bindingMultibinder = Multibinder.newSetBinder(binder, CompositeCursorFactory.Binding.class);
         bindingMultibinder.addBinding().toInstance(new CompositeCursorFactory.Binding(
                 LogicalGraphCursorRequest.CursorType,
@@ -61,15 +55,6 @@ public class CyberModule extends ModuleBase {
 
     }
 
-    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable{
-        try {
-            return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
-        } catch (ConfigException e) {
-            return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
 }

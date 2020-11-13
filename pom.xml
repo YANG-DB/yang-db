@@ -170,8 +170,9 @@
         <commons-collections4.version>4.1</commons-collections4.version>
 
         <!-- google -->
-        <google.guava.version>21.0</google.guava.version>
-        <google.guice.version>4.1.0</google.guice.version>
+        <google.guava.version>27.1-jre</google.guava.version>
+        <google.guice.version>4.2.3</google.guice.version>
+
 
         <!-- caffeine -->
         <caffeine.version>2.6.2</caffeine.version>
@@ -651,6 +652,7 @@
                         </dependency>
 
             -->
+
             <!-- google -->
             <dependency>
                 <groupId>com.google.guava</groupId>

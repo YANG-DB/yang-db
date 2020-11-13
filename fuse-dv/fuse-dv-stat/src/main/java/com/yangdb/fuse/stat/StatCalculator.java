@@ -21,7 +21,7 @@ package com.yangdb.fuse.stat;
  */
 
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
-import com.yangdb.fuse.stat.es.client.ClientProvider;
+import com.yangdb.fuse.stat.es.client.StatsClientProvider;
 import com.yangdb.fuse.stat.es.populator.ElasticDataPopulator;
 import com.yangdb.fuse.stat.model.bucket.BucketRange;
 import com.yangdb.fuse.stat.model.configuration.*;
@@ -66,8 +66,8 @@ public class StatCalculator {
         try {
             configuration = new StatConfiguration(args[0]).getInstance();
             logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
-            dataClient = ClientProvider.getDataClient(configuration);
-            statClient = ClientProvider.getStatClient(configuration);
+            dataClient = StatsClientProvider.getDataClient(configuration);
+            statClient = StatsClientProvider.getStatClient(configuration);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

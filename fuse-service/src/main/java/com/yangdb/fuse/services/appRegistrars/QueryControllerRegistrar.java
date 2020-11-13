@@ -121,6 +121,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register sparql API context **/
         sparqlContext(app, appUrlSupplier);
 
+        /**  register sql API context **/
+        sqlContext(app, appUrlSupplier);
+
         /** call a query */
         app.post(appUrlSupplier.queryStoreUrl() + "/call", req -> API.call(app, req, this.getController(app)));
 
@@ -243,6 +246,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", req -> API.runGraphQL(app, req, this.getController(app)));
     }
 
+    private void sqlContext(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** create a cypher query */
+        app.post(appUrlSupplier.queryStoreUrl() + "/sql", req -> API.postSql(app, req, this.getController(app)));
+        /** run a cypher query (support both get/post protocols) */
+        app.get(appUrlSupplier.queryStoreUrl() + "/sql/run", req -> API.runSql(app, req, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/sql/run", req -> API.runSql(app, req, this.getController(app)));
+    }
+
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** validate a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate", req -> API.validateV1(app, req, this.getController(app)));
@@ -272,9 +283,28 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         public static final String CYPHER = "cypher";
         public static final String SPARQL = "sparql";
+        public static final String SQL = "sql";
 
         public static Result postGraphQL(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("postGraphQL").write();
+
+            CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
+            req.set(CreateJsonQueryRequest.class, createQueryRequest);
+            req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
+            final long maxExecTime = createQueryRequest.getCreateCursorRequest() != null
+                    ? createQueryRequest.getCreateCursorRequest().getMaxExecutionTime() : 0;
+            req.set(ExecutionScope.class, new ExecutionScope(Math.max(maxExecTime, TIMEOUT)));
+
+            ContentResponse<QueryResourceInfo> response = createQueryRequest.getCreateCursorRequest() == null ?
+                    controller.create(createQueryRequest) :
+                    controller.createAndFetch(createQueryRequest);
+
+            return Results.with(response, response.status());
+
+        }
+
+        public static Result postSql(Jooby app, final Request req, QueryController controller) throws Exception {
+            Route.of("postSql").write();
 
             CreateJsonQueryRequest createQueryRequest = req.body(CreateJsonQueryRequest.class);
             req.set(CreateJsonQueryRequest.class, createQueryRequest);
@@ -506,6 +536,31 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runGraphQL(query.get(), ontology,
+                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+            );
+
+            return Results.with(response, response.status());
+        }
+
+        public static Result runSql(Jooby app, final Request req, QueryController controller) throws Throwable {
+            Route.of("runSql").write();
+
+            Optional<String> query;
+            if (req.param(SQL).isSet()) {
+                query = Optional.of(req.param(SQL).value());
+            } else {
+                query = Optional.of(req.body(String.class));
+            }
+
+            //verify query value exists
+            query.orElseThrow(
+                    () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
+
+            String ontology = req.param("ontology").value();
+            req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
+
+            ContentResponse<Object> response = controller.runSqlQuery(query.get(), ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
             );

@@ -32,11 +32,9 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -50,7 +48,11 @@ public class DirectoryIndexProvider implements IndexProviderFactory {
 
         File dir = new File(Paths.get(currentDir, dirName).toString());
         if(!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+            URL resource = Thread.currentThread().getContextClassLoader().getResource(dirName);
+            if(Objects.isNull(resource))
+                throw new FuseError.FuseErrorException("No file resource was found for "+dirName+" during creation of IndexProvider factory...",new IllegalStateException("No file resource found ["+dirName+"]"));
+
+            dir = new File(resource.toURI());
         }
         if (dir.exists()) {
             this.map =

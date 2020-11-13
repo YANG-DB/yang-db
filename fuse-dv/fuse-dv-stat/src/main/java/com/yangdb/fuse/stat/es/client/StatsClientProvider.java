@@ -32,9 +32,9 @@ import java.net.UnknownHostException;
 /**
  * Created by benishue on 03-May-17.
  */
-public class ClientProvider {
+public class StatsClientProvider {
 
-    private ClientProvider() {
+    private StatsClientProvider() {
         throw new IllegalAccessError("Utility class");
     }
 

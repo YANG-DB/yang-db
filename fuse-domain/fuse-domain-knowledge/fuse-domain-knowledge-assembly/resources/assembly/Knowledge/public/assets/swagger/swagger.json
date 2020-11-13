@@ -481,6 +481,54 @@
         }
       }
     },
+    "/query/sql/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run sql query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sql",
+            "in": "query",
+            "description": "sql query",
+            "required": true,
+            "type": "string",
+            "default": "select * from Person"
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
     "/query/cypher/run": {
       "get": {
         "tags": [
