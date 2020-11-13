@@ -54,9 +54,9 @@ public class FuseSqlService {
         return service.parse(query);
     }
 
-    public void explain(String ontology, String query) {
+    public ExecutionEngine.ExplainResponse explain(String ontology, String query) {
         PhysicalPlan plan = plan(query);
-        service.explain(plan, createExplainResponseListener());
+        return service.explain(plan);
     }
 
     public PhysicalPlan plan(String sql) {
@@ -68,53 +68,11 @@ public class FuseSqlService {
         return service.analyze(parse(query));
     }
 
-    public void query(String ontology, String query, String format) {
-        service.execute(new SQLQueryRequest(
+    public ExecutionEngine.QueryResponse query(String ontology, String query, String format) {
+        return service.execute(new SQLQueryRequest(
                 new JSONObject().put("query", query),
                 query,
                 FUSE_QUERY_ROUTE,
-                format), createQueryResponseListener());
+                format));
     }
-
-    private ResponseListener<ExecutionEngine.QueryResponse> createQueryResponseListener() {
-        SimpleJsonResponseFormatter formatter = new SimpleJsonResponseFormatter(PRETTY);
-        return new ResponseListener<ExecutionEngine.QueryResponse>() {
-            @Override
-            public void onResponse(ExecutionEngine.QueryResponse response) {
-                writeResponse(RestStatus.OK, formatter.format(new QueryResult(response.getSchema(), response.getResults())));
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-//                LOG.error("Error happened during query handling", e);
-                writeResponse(INTERNAL_SERVER_ERROR, formatter.format(e));
-            }
-        };
-    }
-
-    private void writeResponse(RestStatus status, String format) {
-        //todo write response to channel / memory / index ???
-    }
-
-    private ResponseListener<ExecutionEngine.ExplainResponse> createExplainResponseListener() {
-        return new ResponseListener<ExecutionEngine.ExplainResponse>() {
-            @Override
-            public void onResponse(ExecutionEngine.ExplainResponse response) {
-                writeResponse(RestStatus.OK, new JsonResponseFormatter<ExecutionEngine.ExplainResponse>(PRETTY) {
-                    @Override
-                    protected Object buildJsonObject(ExecutionEngine.ExplainResponse response) {
-                        return response;
-                    }
-                }.format(response));
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-//                LOG.error("Error happened during explain", e);
-                writeResponse(INTERNAL_SERVER_ERROR,
-                        "Failed to explain the query due to error: " + e.getMessage());
-            }
-        };
-    }
-
 }

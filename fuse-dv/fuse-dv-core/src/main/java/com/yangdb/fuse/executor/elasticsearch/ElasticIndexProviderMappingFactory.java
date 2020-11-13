@@ -60,6 +60,7 @@ public class ElasticIndexProviderMappingFactory {
     public static final String NESTED = "nested";
     public static final String CHILD = "child";
     public static final String EMBEDDED = "embedded";
+    public static final String _DOC = "_doc";
 
     private Client client;
     private RawSchema schema;
@@ -341,8 +342,9 @@ public class ElasticIndexProviderMappingFactory {
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + label + " found in ontology"));
 
         Map<String, Object> jsonMap = new HashMap<>();
-        //populate index fields
+        //FIX: populate index fields - since E/S 7.0 types are remove from index
         jsonMap.put(label, populateMappingIndexFields(ent, entity.get()));
+//        jsonMap.put(_DOC, populateMappingIndexFields(ent, entity.get()));
 
         return jsonMap;
     }
@@ -383,7 +385,9 @@ public class ElasticIndexProviderMappingFactory {
         //populate nested documents
         rel.getNested().forEach(nest -> generateNestedRelationMapping(properties, nest));
 
+        //FIX: populate index fields - since E/S 7.0 types are remove from index
         jsonMap.put(label, mapping);
+//        jsonMap.put(_DOC, mapping);
         return jsonMap;
     }
 
@@ -585,6 +589,7 @@ public class ElasticIndexProviderMappingFactory {
         if (this.settingConfig.isEmpty()) {
             return Settings.builder()
                     .put("index.mapping.ignore_malformed", true)
+//                    .put("index.mapping.single_type", true) //FIX - add this in E/S advanced version since 7.8
                     .put("index.number_of_shards", 3)
                     .put("index.number_of_replicas", 1);
         } else {

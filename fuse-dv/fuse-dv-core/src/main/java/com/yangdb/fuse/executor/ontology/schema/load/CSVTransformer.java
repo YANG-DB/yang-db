@@ -151,7 +151,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             String id = String.format("%s.%s", joiner.toString(), direction);
             //put classifiers
             element.put(relType.idFieldName(), id);
-            element.put(ElasticIndexProviderMappingFactory.TYPE, relation.getType());
+            element.put(TYPE, relation.getType());
             element.put(DIRECTION, direction);
 
             //populate fields

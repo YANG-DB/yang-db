@@ -195,7 +195,8 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
             String index = resolveIndex(node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
-                    .setType(node.getType())
+                    //FIX: populate index fields - since E/S 7.0 types are remove from index
+//                    .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(mapper.writeValueAsBytes(node.getNode()), XContentType.JSON);
