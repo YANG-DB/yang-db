@@ -124,6 +124,7 @@ public class ExecutorModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
+                //todo - move to singletone ?
                 this.bind(ElasticsearchClient.class)
                         .annotatedWith(named(LoggingElasticsearchFuseClient.clientParam))
                         .to(ElasticsearchFuseClient.class);

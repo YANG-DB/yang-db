@@ -24,6 +24,9 @@ import com.amazon.opendistroforelasticsearch.sql.elasticsearch.client.Elasticsea
 import com.amazon.opendistroforelasticsearch.sql.elasticsearch.mapping.IndexMapping;
 import com.amazon.opendistroforelasticsearch.sql.elasticsearch.request.ElasticsearchRequest;
 import com.amazon.opendistroforelasticsearch.sql.elasticsearch.response.ElasticsearchResponse;
+import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
 import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -56,12 +59,19 @@ public class ElasticsearchFuseClient implements ElasticsearchClient {
     private ElasticIndexProviderMappingFactory mappingFactory;
 
     @Inject
-    public ElasticsearchFuseClient(Client client, Ontology ontology, RawSchema schema, IndexProvider indexProvider, ElasticIndexProviderMappingFactory mappingFactory) {
-        this.client = client;
+    public ElasticsearchFuseClient(Config config, Client client, OntologyProvider provider, RawSchema schema, IndexProviderFactory indexProviderFactory) {
+        String assembly = config.getString("assembly");
+        Ontology ontology = provider.get(assembly)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for Id ", "No Ontology present for id[" + assembly +"]")));
+
         this.provider = new Ontology.Accessor(ontology);
         this.schema = schema;
-        this.indexProvider = indexProvider;
-        this.mappingFactory = mappingFactory;
+
+        this.indexProvider = indexProviderFactory.get(assembly)
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for Id ", "No Index Provider present for id[" + assembly +"]")));
+
+        this.mappingFactory = new ElasticIndexProviderMappingFactory(config, client,schema,ontology,indexProvider);
+        this.client = client;
     }
 
     @Override

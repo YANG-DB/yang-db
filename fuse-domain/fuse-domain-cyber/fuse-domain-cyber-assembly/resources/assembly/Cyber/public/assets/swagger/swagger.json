@@ -508,7 +508,7 @@
             "description": "sql query",
             "required": true,
             "type": "string",
-            "default": "select * from Person"
+            "default": "select * from traces"
           },
           {
             "name": "ontology",

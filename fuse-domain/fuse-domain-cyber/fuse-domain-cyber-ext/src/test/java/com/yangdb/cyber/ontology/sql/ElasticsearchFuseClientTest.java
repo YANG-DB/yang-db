@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,7 +41,6 @@ public class ElasticsearchFuseClientTest implements BaseITMarker {
     Config config;
     OntologyProvider ontologyProvider;
     IndexProviderFactory providerIfc;
-    ElasticIndexProviderMappingFactory providerMappingFactory;
 
 
 
@@ -70,12 +70,11 @@ public class ElasticsearchFuseClientTest implements BaseITMarker {
         when(schema.getPartitions(any())).thenAnswer(invocation -> StreamSupport.stream(schema.getPartition(invocation.getArgument(0))
                 .getPartitions().spliterator(), false).collect(Collectors.toList()));
 
-        providerMappingFactory = new ElasticIndexProviderMappingFactory(ConfigFactory.empty(), Mockito.mock(Client.class), schema, ontology, provider);
     }
 
     @Test
     public void getIndexMappings() {
-        ElasticsearchFuseClient client = new ElasticsearchFuseClient(Mockito.mock(Client.class),ontology, schema, provider, providerMappingFactory);
+        ElasticsearchFuseClient client = new ElasticsearchFuseClient(ConfigFactory.parseMap(Collections.singletonMap("assembly","Dragons")),Mockito.mock(Client.class),ontologyProvider, schema, providerIfc);
         Map<String, IndexMapping> mappings = client.getIndexMappings("Person");
         Assert.assertNotNull(mappings.get("people"));
         Assert.assertEquals(mappings.get("people").size(),9);
