@@ -100,8 +100,7 @@ public class StandardQueryDriver extends QueryDriverBase {
 
     @Override
     public Optional<Object> runSql(String query, String ontology) {
-        sqlService.query(ontology,query, Format.CSV.getFormatName());
-        return Optional.empty();
+        return Optional.of(sqlService.query(ontology,query, Format.JSON.getFormatName()));
     }
 
     private final FuseSqlService sqlService;
