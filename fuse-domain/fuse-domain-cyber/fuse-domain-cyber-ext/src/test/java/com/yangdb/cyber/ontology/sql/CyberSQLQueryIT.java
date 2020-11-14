@@ -44,9 +44,9 @@ public class CyberSQLQueryIT implements BaseITMarker {
             "SELECT a.* \n" +
             " FROM traces trc\n" +
             " JOIN tracestobehaviors trb ON trc.id=trb.trace_id;";
-    public static final String Q4 = "SELECT network_id FROM behaviors GROUP BY network_id ";
-    public static final String Q5 = "SELECT count(network_id) FROM behaviors  ";
-    public static final String Q6 = "SELECT DISTINCT network_id FROM behaviors  ";
+    public static final String Q4 = "SELECT * FROM behaviors GROUP BY type_id ";
+    public static final String Q5 = "SELECT type_id,count(type_id) FROM behaviors group by type_id";
+    public static final String Q6 = "SELECT DISTINCT type_id FROM behaviors  ";
 
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();
