@@ -20,7 +20,10 @@ package com.yangdb.fuse.core.driver;
  * #L%
  */
 
+import com.amazon.opendistroforelasticsearch.sql.executor.ExecutionEngine;
 import com.amazon.opendistroforelasticsearch.sql.legacy.executor.Format;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
@@ -41,6 +44,7 @@ import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import org.jooq.JSON;
 
 import java.util.Optional;
 
@@ -100,7 +104,12 @@ public class StandardQueryDriver extends QueryDriverBase {
 
     @Override
     public Optional<Object> runSql(String query, String ontology) {
-        return Optional.of(sqlService.query(ontology,query, Format.JSON.getFormatName()));
+        ExecutionEngine.QueryResponse response = sqlService.query(ontology, query, Format.JSON.getFormatName());
+        ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("schema",response.getSchema().toString());
+        ArrayNode results = objectNode.putArray("results");
+        response.getResults().forEach(result->results.add(result.toString()));
+        return Optional.of(objectNode);
     }
 
     private final FuseSqlService sqlService;

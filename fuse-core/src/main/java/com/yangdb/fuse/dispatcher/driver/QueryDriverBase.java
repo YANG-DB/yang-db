@@ -20,6 +20,7 @@ package com.yangdb.fuse.dispatcher.driver;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -871,6 +872,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     protected abstract AsgQuery rewrite(AsgQuery asgQuery);
     //endregion
 
+    protected ObjectMapper mapper = new ObjectMapper();
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;

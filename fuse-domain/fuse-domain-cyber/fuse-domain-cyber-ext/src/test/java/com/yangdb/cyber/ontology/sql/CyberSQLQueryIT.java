@@ -38,6 +38,16 @@ import static org.elasticsearch.common.settings.Settings.EMPTY;
 
 @Ignore("Work in progress")
 public class CyberSQLQueryIT implements BaseITMarker {
+    public static final String Q1 = "SELECT * FROM traces";
+    public static final String Q2 = "SELECT * FROM behaviors";
+    public static final String Q3 =
+            "SELECT a.* \n" +
+            " FROM traces trc\n" +
+            " JOIN tracestobehaviors trb ON trc.id=trb.trace_id;";
+    public static final String Q4 = "SELECT network_id FROM behaviors GROUP BY network_id ";
+    public static final String Q5 = "SELECT count(network_id) FROM behaviors  ";
+    public static final String Q6 = "SELECT DISTINCT network_id FROM behaviors  ";
+
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();
     static private RestSQLQueryAction queryAction;
