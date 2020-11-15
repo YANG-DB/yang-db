@@ -46,6 +46,7 @@ public class HomeAppRegistrar implements AppRegistrar{
                             "<ul>\n" +
                             "<li>Resource Url: <a href=\"/fuse\">Fuse</a></li>\n" +
                             "<li>Swagger API: <a href=\"/swagger\">Swagger</a></li>\n" +
+                            "<li>Redocly API: <a href=\"/redocly/redocly\">Redocly</a></li>\n" +
                             "<li><hr></li>"+
                             "<li>Graphql-Queries builder: <a href=\"queryBuilder/graphql\">graphql-query builder</a></li>\n" +
                             "<li>Sparql-Queries builder: <a href=\"queryBuilder/sparql\">sparql-query builder</a></li>\n" +

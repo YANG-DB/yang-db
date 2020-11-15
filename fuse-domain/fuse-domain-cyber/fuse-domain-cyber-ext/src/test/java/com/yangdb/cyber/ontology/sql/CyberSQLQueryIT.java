@@ -47,6 +47,13 @@ public class CyberSQLQueryIT implements BaseITMarker {
     public static final String Q4 = "SELECT * FROM behaviors GROUP BY type_id ";
     public static final String Q5 = "SELECT type_id,count(type_id) FROM behaviors group by type_id";
     public static final String Q6 = "SELECT DISTINCT type_id FROM behaviors  ";
+    public static final String Q7 = "SELECT trc.trace_id, trc.distinct_alerting_behavior_count\n" +
+            " FROM traces trc\n" +
+            "WHERE trc.account_number IN (\n" +
+            "  SELECT a2.account_number\n" +
+            "  FROM tracestobehaviors trb \n" +
+            "  WHERE a2.balance > 10000\n" +
+            ")";
 
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();

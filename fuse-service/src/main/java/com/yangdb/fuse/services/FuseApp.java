@@ -94,6 +94,7 @@ public class FuseApp extends Jooby {
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
         // swagger support
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        get("redocly/redocly", () -> Results.redirect("/public/assets/redocly/redocly.html"));
         // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
         get("queryBuilder/sparql", () -> Results.redirect("/public/assets/query/sparql/index.html"));
