@@ -24,12 +24,9 @@ import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.query.Query;
-import com.yangdb.fuse.model.results.AssignmentCount;
+import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +35,6 @@ import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingInt;
 
 public class CountTraversalCursor extends PathsTraversalCursor {
     public static class Factory implements CursorFactory {
@@ -78,7 +74,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
                 });
             });
         }
-        builder.withAssignment(new AssignmentCount(labelsCount));
+        builder.withAssignment(new Assignment(labelsCount));
         return builder.build();
     }
 }
