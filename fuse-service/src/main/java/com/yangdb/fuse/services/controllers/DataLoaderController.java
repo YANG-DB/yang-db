@@ -33,14 +33,44 @@ import java.io.File;
  */
 public interface DataLoaderController {
 
-    ContentResponse<String> init(String ontology);
-    ContentResponse<String> createMapping(String ontology);
-    ContentResponse<String> createIndices(String ontology);
-    ContentResponse<String> drop(String ontology);
 
-    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive);
-    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive);
+    /**
+     *
+     * @param ontologyName
+     * @param data
+     * @param directive
+     * @return
+     */
+    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, LogicalGraphModel data, GraphDataLoader.Directive directive);
 
-    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive);
-    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive);
+    /**
+     *
+     * @param ontologyName
+     * @param data
+     * @param directive
+     * @return
+     */
+    ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, File data, GraphDataLoader.Directive directive);
+
+    /**
+     *
+     * @param ontologyName
+     * @param type
+     * @param label
+     * @param data
+     * @param directive
+     * @return
+     */
+    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, String data, GraphDataLoader.Directive directive);
+
+    /**
+     *
+     * @param ontologyName
+     * @param type
+     * @param label
+     * @param data
+     * @param directive
+     * @return
+     */
+    ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, File data, GraphDataLoader.Directive directive);
 }

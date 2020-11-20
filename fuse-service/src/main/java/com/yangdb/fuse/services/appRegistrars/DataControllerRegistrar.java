@@ -43,6 +43,8 @@ package com.yangdb.fuse.services.appRegistrars;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.yangdb.fuse.model.schema.IndexProvider;
+import com.yangdb.fuse.services.controllers.DataController;
 import com.yangdb.fuse.services.controllers.DataLoaderController;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -50,10 +52,10 @@ import org.jooby.Upload;
 
 import java.io.File;
 
-public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<DataLoaderController> {
+public class DataControllerRegistrar extends AppControllerRegistrarBase<DataController> {
     //region Constructors
-    public DataLoaderControllerRegistrar() {
-        super(DataLoaderController.class);
+    public DataControllerRegistrar() {
+        super(DataController.class);
     }
     //endregion
 
@@ -64,10 +66,17 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
         app.get("/fuse/load/ontology/:id/mapping",
                 req -> Results.with(this.getController(app)
                         .createMapping(req.param("id").value())));
+        app.post("/fuse/load/ontology/:id/mapping",
+                req -> Results.with(this.getController(app)
+                        .createMapping(req.param("id").value(),req.body(IndexProvider.class))));
+
         // create indices according to ontology & given indexProvider instructions
         app.get("/fuse/load/ontology/:id/indices",
                 req -> Results.with(this.getController(app)
                         .createIndices(req.param("id").value())));
+        app.post("/fuse/load/ontology/:id/indices",
+                req -> Results.with(this.getController(app)
+                        .createIndices(req.param("id").value(),req.body(IndexProvider.class))));
 
         // Initiate Graph indices
         app.get("/fuse/load/ontology/:id/init",

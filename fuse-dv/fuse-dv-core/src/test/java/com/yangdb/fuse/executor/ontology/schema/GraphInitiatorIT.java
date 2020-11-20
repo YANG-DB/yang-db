@@ -45,7 +45,7 @@ public class GraphInitiatorIT implements BaseITMarker {
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
         GraphInitiator initiator = new DefaultGraphInitiator(config,client,nestedProviderIfc,ontologyProvider,nestedSchema);
-        Assert.assertEquals(13,initiator.createTemplate("Dragons",mapper.writeValueAsString(nestedProvider)));
+        Assert.assertEquals(13,initiator.createTemplate("Dragons",nestedProvider));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class GraphInitiatorIT implements BaseITMarker {
         when(idGeneratorDriver.getNext(anyString(),anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
         GraphInitiator initiator = new DefaultGraphInitiator(config,client,nestedProviderIfc,ontologyProvider,nestedSchema);
-        Assert.assertEquals(13,initiator.createIndices("Dragons",mapper.writeValueAsString(nestedProvider)));
+        Assert.assertEquals(13,initiator.createIndices("Dragons",nestedProvider));
     }
 
     @Test

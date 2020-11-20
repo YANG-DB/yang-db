@@ -97,6 +97,11 @@ public class ThinPath implements Path {
     }
 
     @Override
+    public String toString() {
+        return labels().toString();
+    }
+
+    @Override
     public Path retract(Set<String> set) {
         if (this.objects.isEmpty()) {
             return this;

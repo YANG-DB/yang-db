@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import org.elasticsearch.client.Client;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class KnowledgeGraphInitiator implements GraphInitiator {
     }
 
     @Override
-    public long drop(String ontology)  {
+    public long drop(String ontologyName)  {
         return DataLoaderUtils.drop(client,schema);
     }
 
@@ -60,22 +61,22 @@ public class KnowledgeGraphInitiator implements GraphInitiator {
     }
 
     @Override
-    public long createTemplate(String ontology, String schemaProvider) {
+    public long createTemplate(String ontologyName, IndexProvider indexProvider) {
         return 0;
     }
 
     @Override
-    public long createTemplate(String ontology) {
+    public long createTemplate(String ontologyName) {
         return 0;
     }
 
     @Override
-    public long createIndices(String ontology, String schemaProvider)  {
+    public long createIndices(String ontologyName, IndexProvider indexProvider)  {
         return 0;
     }
 
     @Override
-    public long createIndices(String ontology) {
+    public long createIndices(String ontologyName) {
         return 0;
     }
 

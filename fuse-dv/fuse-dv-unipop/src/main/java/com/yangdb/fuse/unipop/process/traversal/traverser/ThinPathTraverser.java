@@ -32,9 +32,7 @@ import java.util.Set;
  */
 public class ThinPathTraverser<T> extends B_O_S_SE_SL_Traverser<T> {
     //region Constructors
-    protected ThinPathTraverser() {
-
-    }
+    protected ThinPathTraverser() {}
 
     public ThinPathTraverser(T t, Step<T, ?> step, StringOrdinalDictionary stringOrdinalDictionary) {
         super(t, step, 1L);

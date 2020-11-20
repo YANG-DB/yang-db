@@ -20,6 +20,8 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.yangdb.fuse.model.schema.IndexProvider;
+
 import java.io.IOException;
 
 public class VoidGraphInitiator implements GraphInitiator {
@@ -36,7 +38,7 @@ public class VoidGraphInitiator implements GraphInitiator {
 
 
     @Override
-    public long drop(String ontology)  {
+    public long drop(String ontologyName)  {
         return 0;
     }
 
@@ -46,22 +48,22 @@ public class VoidGraphInitiator implements GraphInitiator {
     }
 
     @Override
-    public long createTemplate(String ontology, String schemaProvider) {
+    public long createTemplate(String ontologyName, IndexProvider indexProvider) {
         return 0;
     }
 
     @Override
-    public long createTemplate(String ontology) {
+    public long createTemplate(String ontologyName) {
         return 0;
     }
 
     @Override
-    public long createIndices(String ontology, String schemaProvider)  {
+    public long createIndices(String ontologyName, IndexProvider indexProvider)  {
         return 0;
     }
 
     @Override
-    public long createIndices(String ontology) {
+    public long createIndices(String ontologyName) {
         return 0;
     }
     //endregion
