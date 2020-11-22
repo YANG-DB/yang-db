@@ -398,7 +398,7 @@ public class ServiceModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(DataLoaderController.class)
+                this.bind(DataController.class)
                         .annotatedWith(named(LoggingDataLoaderController.controllerParameter))
                         .to(StandardDataLoaderController.class);
 
@@ -406,10 +406,10 @@ public class ServiceModule extends ModuleBase {
                         .annotatedWith(named(LoggingDataLoaderController.loggerParameter))
                         .toInstance(LoggerFactory.getLogger(StandardDataLoaderController.class));
 
-                this.bind(DataLoaderController.class)
+                this.bind(DataController.class)
                         .to(LoggingDataLoaderController.class);
 
-                this.expose(DataLoaderController.class);
+                this.expose(DataController.class);
             }
         });
     }
