@@ -1,0 +1,50 @@
+schema{
+  query: Query
+}
+
+type Query {
+  person(where: WhereClause): person
+  company(where: WhereClause): company
+  node(id: ID!): Node
+}
+
+interface Node {
+  id: ID!
+}
+
+type company implements Node{
+	id: ID!
+	name: String
+}
+
+type person implements Node{
+	id: ID!
+	name: String
+	location: String
+	birth: date
+}
+
+type date{
+	year: Int
+	month: Int
+	day: Int
+	hour: Int
+	minute: Int
+	second: Int
+}
+
+enum WhereOperator {
+        AND
+        OR
+}
+
+input Constraint {
+        operand: String!
+        operator: String!
+        expression: String
+}
+
+input WhereClause {
+        operator: WhereOperator
+        constraints: [Constraint]
+}
