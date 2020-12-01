@@ -267,7 +267,7 @@ public class EntityFilterOpTranslationStrategyTest {
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
 /*
-        GraphTraversal expectedTraversal = __.start()
+        GraphTermsTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
                         Constraint.by(__.start().and(
