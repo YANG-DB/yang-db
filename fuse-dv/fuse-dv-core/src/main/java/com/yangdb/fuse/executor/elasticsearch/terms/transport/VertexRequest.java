@@ -3,90 +3,106 @@
  * or more contributor license agreements. Licensed under the Elastic License;
  * you may not use this file except in compliance with the Elastic License.
  */
-package com.yangdb.fuse.executor.elasticsearch.graph.model;
+package com.yangdb.fuse.executor.elasticsearch.terms.transport;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreRequest.*;
-import org.elasticsearch.common.io.stream.StreamInput;
-import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.xcontent.ToXContentObject;
-import org.elasticsearch.common.xcontent.XContentBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Step;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreRequest.TermBoost;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A request to identify terms from a choice of field as part of a {@link Hop}.
+ * A request to identify terms from a choice of field as part of a {@link Step}.
  * Optionally, a set of terms can be provided that are used as an exclusion or
  * inclusion list to filter which terms are considered.
  *
  */
-public class VertexRequest implements ToXContentObject {
-    private String fieldName;
-    private int size = DEFAULT_SIZE;
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class VertexRequest {
     public static final int DEFAULT_SIZE = 5;
-    private Map<String, TermBoost> includes;
-    private Set<String> excludes;
     public static final int DEFAULT_MIN_DOC_COUNT = 3;
-    private int minDocCount = DEFAULT_MIN_DOC_COUNT;
     public static final int DEFAULT_SHARD_MIN_DOC_COUNT = 2;
+
+    @JsonProperty("fieldName")
+    private String fieldName;
+    @JsonProperty("size")
+    private int size = DEFAULT_SIZE;
+    @JsonProperty("includes")
+    private Map<String, TermBoost> includes;
+    @JsonProperty("excludes")
+    private Set<String> excludes;
+    @JsonProperty("minDocCount")
+    private int minDocCount = DEFAULT_MIN_DOC_COUNT;
+    @JsonProperty("shardMinDocCount")
     private int shardMinDocCount = DEFAULT_SHARD_MIN_DOC_COUNT;
 
+    @JsonProperty("fieldName")
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    @JsonProperty("fieldName")
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    @JsonProperty("size")
+    public int getSize() {
+        return size;
+    }
+
+    @JsonProperty("size")
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    @JsonProperty("includes")
+    public Map<String, TermBoost> getIncludes() {
+        return includes;
+    }
+
+    @JsonProperty("includes")
+    public void setIncludes(Map<String, TermBoost> includes) {
+        this.includes = includes;
+    }
+
+    @JsonProperty("excludes")
+    public Set<String> getExcludes() {
+        return excludes;
+    }
+
+    @JsonProperty("excludes")
+    public void setExcludes(Set<String> excludes) {
+        this.excludes = excludes;
+    }
+
+    @JsonProperty("minDocCount")
+    public int getMinDocCount() {
+        return minDocCount;
+    }
+
+    @JsonProperty("minDocCount")
+    public void setMinDocCount(int minDocCount) {
+        this.minDocCount = minDocCount;
+    }
+
+    @JsonProperty("shardMinDocCount")
+    public int getShardMinDocCount() {
+        return shardMinDocCount;
+    }
+
+    @JsonProperty("shardMinDocCount")
+    public void setShardMinDocCount(int shardMinDocCount) {
+        this.shardMinDocCount = shardMinDocCount;
+    }
 
     public VertexRequest() {}
-
-    void readFrom(StreamInput in) throws IOException {
-        fieldName = in.readString();
-        size = in.readVInt();
-        minDocCount = in.readVInt();
-        shardMinDocCount = in.readVInt();
-
-        int numIncludes = in.readVInt();
-        if (numIncludes > 0) {
-            includes = new HashMap<>();
-            for (int i = 0; i < numIncludes; i++) {
-                TermBoost tb = new TermBoost();
-                tb.readFrom(in);
-                includes.put(tb.term, tb);
-            }
-        }
-
-        int numExcludes = in.readVInt();
-        if (numExcludes > 0) {
-            excludes = new HashSet<>();
-            for (int i = 0; i < numExcludes; i++) {
-                excludes.add(in.readString());
-            }
-        }
-
-    }
-
-    void writeTo(StreamOutput out) throws IOException {
-        out.writeString(fieldName);
-        out.writeVInt(size);
-        out.writeVInt(minDocCount);
-        out.writeVInt(shardMinDocCount);
-
-        if (includes != null) {
-            out.writeVInt(includes.size());
-            for (TermBoost tb : includes.values()) {
-                tb.writeTo(out);
-            }
-        } else {
-            out.writeVInt(0);
-        }
-
-        if (excludes != null) {
-            out.writeVInt(excludes.size());
-            for (String term : excludes) {
-                out.writeString(term);
-            }
-        } else {
-            out.writeVInt(0);
-        }
-    }
 
     public String fieldName() {
         return fieldName;
@@ -102,7 +118,7 @@ public class VertexRequest implements ToXContentObject {
     }
 
     /**
-     * @param size The maximum number of terms that should be returned from this field as part of this {@link Hop}
+     * @param size The maximum number of terms that should be returned from this field as part of this {@link Step}
      */
     public VertexRequest size(int size) {
         this.size = size;
@@ -133,7 +149,7 @@ public class VertexRequest implements ToXContentObject {
 
     /**
      * Adds a term to the set of allowed values - the boost defines the relative
-     * importance when pursuing connections in subsequent {@link Hop}s. The boost value
+     * importance when pursuing connections in subsequent {@link Step}s. The boost value
      * appears as part of the query.
      * @param term a required term
      * @param boost an optional boost
@@ -194,40 +210,6 @@ public class VertexRequest implements ToXContentObject {
     public VertexRequest shardMinDocCount(int value) {
         shardMinDocCount = value;
         return this;
-    }
-
-    @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject();
-        builder.field("field", fieldName);
-        if (size != DEFAULT_SIZE) {
-            builder.field("size", size);
-        }
-        if (minDocCount != DEFAULT_MIN_DOC_COUNT) {
-            builder.field("min_doc_count", minDocCount);
-        }
-        if (shardMinDocCount != DEFAULT_SHARD_MIN_DOC_COUNT) {
-            builder.field("shard_min_doc_count", shardMinDocCount);
-        }
-        if(includes!=null) {
-            builder.startArray("include");
-            for (TermBoost tb : includes.values()) {
-                builder.startObject();
-                builder.field("term", tb.term);
-                builder.field("boost", tb.boost);
-                builder.endObject();
-            }
-            builder.endArray();
-        }
-        if(excludes!=null) {
-            builder.startArray("exclude");
-            for (String value : excludes) {
-                builder.value(value);
-            }
-            builder.endArray();
-        }
-        builder.endObject();
-        return builder;
     }
 
 }

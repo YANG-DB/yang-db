@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ public interface SchemaController {
     ContentResponse<String> createMapping(String ontologyName);
 
     /**
-     *
+     * create mapping by the given instruction with the index provider strategies
      * @param ontologyName
      * @param indexProvider
      * @return
@@ -51,14 +51,14 @@ public interface SchemaController {
     ContentResponse<String> createMapping(String ontologyName, IndexProvider indexProvider);
 
     /**
-     *
+     * create the indices by the ontology name and index provider with the same name
      * @param ontologyName
      * @return
      */
     ContentResponse<String> createIndices(String ontologyName);
 
     /**
-     *
+     * create the indices by the ontology name and the given index provider with the same name
      * @param ontologyName
      * @param indexProvider
      * @return
@@ -66,7 +66,7 @@ public interface SchemaController {
     ContentResponse<String> createIndices(String ontologyName, IndexProvider indexProvider);
 
     /**
-     *
+     * drop all indices and mapping templates
      * @param ontologyName
      * @return
      */

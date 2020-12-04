@@ -1,9 +1,10 @@
-package com.yangdb.fuse.executor.elasticsearch.graph.actions;
+package com.yangdb.fuse.executor.elasticsearch.terms.actions;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreRequest;
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreResponse;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Hop;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.VertexRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Step;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreResponse;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.VertexRequest;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -16,11 +17,13 @@ import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-import java.util.*;
+import java.util.Optional;
 
-public class GraphTermsTraversal extends GraphUtils {
-    public GraphTermsTraversal(Client client, GraphExploreRequest request) {
-        super(client, request);
+public class AsyncGraphTermsTraversal extends GraphUtils{
+
+
+    public AsyncGraphTermsTraversal(Client client, GraphExploreRequest request, ActionListener<GraphExploreResponse> listener) {
+        super(client, request, listener);
     }
 
     /**
@@ -31,18 +34,32 @@ public class GraphTermsTraversal extends GraphUtils {
     public synchronized Optional<GraphExploreResponse> expand() {
         if (hasTimedOut()) {
             timedOut.set(true);
-            return Optional.of(buildResponse());
+            listener.onResponse(buildResponse());
+            //async return type compromise
+            return Optional.empty();
         }
 
-        GraphUtils.SearchRequestContext context = prepareSearchRequest();
+        SearchRequestContext context = prepareSearchRequest();
         // System.out.println(source);
 //            logger.trace("executing expansion graph search request");
+
         if(context.isComplete())
-            return Optional.of(context.response);
+            return Optional.empty();
 
         //otherwise continue adding new neighbors
-        SearchResponse searchResponse = client.search(context.searchRequest).actionGet();
-        return continueExpandAccordingToResponse(searchResponse,context.lastHop,context.currentHop);
+        client.search(context.searchRequest, new ActionListener<SearchResponse>() {
+            @Override
+            public void onResponse(SearchResponse searchResponse) {
+                continueExpandAccordingToResponse(searchResponse,context.lastStep,context.currentStep);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                listener.onFailure(e);
+            }
+        });
+        //async return compromise
+        return Optional.empty();
     }
 
 
@@ -52,7 +69,7 @@ public class GraphTermsTraversal extends GraphUtils {
      * the related terms. These will be our start points in the graph
      * navigation.
      */
-    public synchronized GraphExploreResponse start() {
+    public synchronized void start() {
         try {
             final SearchRequest searchRequest = buildSearchRequest();
 
@@ -60,10 +77,10 @@ public class GraphTermsTraversal extends GraphUtils {
 
             AggregationBuilder rootSampleAgg = buildSampleAggregation();
 
-            Hop rootHop = request.getHop(0);
+            Step rootStep = request.getStep(0);
 
             // Add any user-supplied criteria to the root query as a should clause
-            rootBool.must(rootHop.guidingQuery());
+            rootBool.must(rootStep.guidingQuery());
 
 
             // If any of the root terms have an "include" restriction then
@@ -71,14 +88,14 @@ public class GraphTermsTraversal extends GraphUtils {
             // mandates that at least one of the potentially many terms of
             // interest must be matched (using a should array)
             BoolQueryBuilder includesContainer = QueryBuilders.boolQuery();
-            addUserDefinedIncludesToQuery(rootHop, includesContainer);
+            addUserDefinedIncludesToQuery(rootStep, includesContainer);
             if (includesContainer.should().size() > 0) {
                 rootBool.must(includesContainer);
             }
 
 
-            for (int i = 0; i < rootHop.getNumberVertexRequests(); i++) {
-                VertexRequest vr = rootHop.getVertexRequest(i);
+            for (int i = 0; i < rootStep.getNumberVertexRequests(); i++) {
+                VertexRequest vr = rootStep.getVertexRequest(i);
                 if (request.useSignificance()) {
                     SignificantTermsAggregationBuilder sigBuilder = AggregationBuilders.significantTerms("field" + i);
                     sigBuilder.field(vr.fieldName()).shardMinDocCount(vr.shardMinDocCount()).minDocCount(vr.minDocCount())
@@ -131,12 +148,20 @@ public class GraphTermsTraversal extends GraphUtils {
             searchRequest.source(source);
             // System.out.println(source);
 //                logger.trace("executing initial graph search request");
-            SearchResponse searchResponse = client.search(searchRequest).actionGet();
-            return startSearchResponse(searchResponse, rootHop).get();
+            client.search(searchRequest, new ActionListener<SearchResponse>() {
+                @Override
+                public void onResponse(SearchResponse searchResponse) {
+                    startSearchResponse(searchResponse, rootStep);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    listener.onFailure(e);
+                }
+            });
         } catch (Exception e) {
 //                logger.error("unable to execute the graph query", e);
-            return buildResponse();
+            listener.onFailure(e);
         }
     }
 }
-

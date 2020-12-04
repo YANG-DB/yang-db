@@ -55,6 +55,9 @@ import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
 import com.yangdb.fuse.executor.elasticsearch.TimeoutClientAdvisor;
+import com.yangdb.fuse.executor.elasticsearch.terms.LoggingTermGraphExploration;
+import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExploration;
+import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExplorationDriver;
 import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.yangdb.fuse.executor.logging.LoggingCursorFactory;
 import com.yangdb.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
@@ -111,12 +114,32 @@ public class ExecutorModule extends ModuleBase {
         bindSchemaProviderFactory(env, conf, binder);
         bindUniGraphProvider(env, conf, binder);
         bindSqlExecutor(env,conf,binder);
+        bindTermExplorer(env,conf,binder);
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
         binder.bind(PageDriver.class).to(StandardPageDriver.class).in(RequestScoped.class);
 
         binder.bind(SearchOrderProviderFactory.class).to(getSearchOrderProvider(conf));
+
+    }
+
+    private void bindTermExplorer(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(TermGraphExploration.class)
+                        .annotatedWith(named(LoggingTermGraphExploration.clientParam))
+                        .to(TermGraphExplorationDriver.class);
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingTermGraphExploration.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(LoggingTermGraphExploration.class));
+                this.bind(TermGraphExploration.class)
+                        .to(LoggingTermGraphExploration.class);
+
+                this.expose(TermGraphExploration.class);
+            }
+        });
 
     }
 

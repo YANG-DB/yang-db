@@ -4046,7 +4046,7 @@
     <rdfs:label xml:lang="de">Stra&#xDF;e</rdfs:label>
     <rdfs:label xml:lang="nl">Straat</rdfs:label>
     <rdfs:label xml:lang="el">&#x39F;&#x3B4;&#x3CC;&#x3C2;</rdfs:label>
-    <rdfs:comment xml:lang="en">A Street is different from a Road in as far as the infrastructure aspect is much less important here. A Street is a social and architectural ensemble much more than the connection between two geographic points.</rdfs:comment>
+    <rdfs:comment xml:lang="en">A Street is different from a Road in as far as the infrastructure aspect is much less important here. A Street is a social and architectural ensemble much more than the edge between two geographic points.</rdfs:comment>
     <rdfs:subClassOf rdf:resource="http://dbpedia.org/ontology/PopulatedPlace"/>
     <prov:wasDerivedFrom rdf:resource="http://mappings.dbpedia.org/index.php/OntologyClass:Street"/>
   </owl:Class>

@@ -3,26 +3,23 @@
  * or more contributor license agreements. Licensed under the Elastic License;
  * you may not use this file except in compliance with the Elastic License.
  */
-package com.yangdb.fuse.executor.elasticsearch.graph.transport;
+package com.yangdb.fuse.executor.elasticsearch.terms.transport;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Hop;
-import org.elasticsearch.action.ActionRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Step;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.IndicesRequest;
 import org.elasticsearch.action.ValidateActions;
 import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.io.stream.StreamInput;
-import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.common.xcontent.ToXContentObject;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.sampler.SamplerAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.significant.SignificantTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,25 +28,42 @@ import java.util.List;
  * Holds the criteria required to guide the exploration of connected terms which
  * can be returned as a graph.
  */
-public class GraphExploreRequest extends ActionRequest implements IndicesRequest.Replaceable, ToXContentObject {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class GraphExploreRequest implements IndicesRequest.Replaceable {
 
-    public static final String NO_HOPS_ERROR_MESSAGE = "Graph explore request must have at least one hop";
-    public static final String NO_VERTICES_ERROR_MESSAGE = "Graph explore hop must have at least one VertexRequest";
-    private String[] indices = Strings.EMPTY_ARRAY;
+    public static final String NO_STEPS_ERROR_MESSAGE = "Graph explore request must have at least one step";
+    public static final String NO_VERTICES_ERROR_MESSAGE = "Graph explore steps must have at least one VertexRequest";
+
+    @JsonProperty("indicesOptions")
     private IndicesOptions indicesOptions = IndicesOptions.fromOptions(false, false, true, false);
+
+    @JsonProperty("indices")
+    private String[] indices = Strings.EMPTY_ARRAY;
+
+    @JsonProperty("routing")
     private String routing;
+
+    @JsonProperty("timeout")
     private TimeValue timeout;
 
+    @JsonProperty("sampleSize")
     private int sampleSize = SamplerAggregationBuilder.DEFAULT_SHARD_SAMPLE_SIZE;
-    private String sampleDiversityField;
-    private int maxDocsPerDiversityValue;
+
+    @JsonProperty("useSignificance")
     private boolean useSignificance = true;
-    private boolean returnDetailedInfo;
+    @JsonProperty("returnDetailedInfo")
+    private boolean returnDetailedInfo = true;
 
-    private List<Hop> hops = new ArrayList<>();
+    @JsonProperty("sampleDiversityField")
+    private String sampleDiversityField;
+    @JsonProperty("maxDocsPerDiversityValue")
+    private int maxDocsPerDiversityValue;
 
-    public GraphExploreRequest() {
-    }
+    @JsonProperty("steps")
+    private List<Step> steps = new ArrayList<>();
+
+    public GraphExploreRequest() {}
 
     /**
      * Constructs a new graph request to run against the provided indices. No
@@ -59,14 +73,13 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
         this.indices = indices;
     }
 
-    @Override
     public ActionRequestValidationException validate() {
         ActionRequestValidationException validationException = null;
-        if (hops.size() == 0) {
-            validationException = ValidateActions.addValidationError(NO_HOPS_ERROR_MESSAGE, validationException);
+        if (steps.size() == 0) {
+            validationException = ValidateActions.addValidationError(NO_STEPS_ERROR_MESSAGE, validationException);
         }
-        for (Hop hop : hops) {
-            validationException = hop.validate(validationException);
+        for (Step step : steps) {
+            validationException = step.validate(validationException);
         }
         return validationException;
     }
@@ -95,32 +108,105 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
         return this;
     }
 
-    public GraphExploreRequest(StreamInput in) throws IOException {
-        super(in);
 
-        indices = in.readStringArray();
-        indicesOptions = IndicesOptions.readIndicesOptions(in);
-//        if (in.getVersion().before(Version.V_8_0_0)) {
-            String[] types = in.readStringArray();
-            assert types.length == 0;
-//        }
-        routing = in.readOptionalString();
-        timeout = in.readOptionalTimeValue();
-        sampleSize = in.readInt();
-        sampleDiversityField = in.readOptionalString();
-        maxDocsPerDiversityValue = in.readInt();
+    @JsonProperty("indices")
+    public String[] getIndices() {
+        return indices;
+    }
 
-        useSignificance = in.readBoolean();
-        returnDetailedInfo = in.readBoolean();
+    @JsonProperty("indices")
+    public void setIndices(String[] indices) {
+        this.indices = indices;
+    }
 
-        int numHops = in.readInt();
-        Hop parentHop = null;
-        for (int i = 0; i < numHops; i++) {
-            Hop hop = new Hop(parentHop);
-            hop.readFrom(in);
-            hops.add(hop);
-            parentHop = hop;
-        }
+    @JsonProperty("indicesOptions")
+    public IndicesOptions getIndicesOptions() {
+        return indicesOptions;
+    }
+
+    @JsonProperty("indicesOptions")
+    public void setIndicesOptions(IndicesOptions indicesOptions) {
+        this.indicesOptions = indicesOptions;
+    }
+
+    @JsonProperty("routing")
+    public String getRouting() {
+        return routing;
+    }
+
+    @JsonProperty("routing")
+    public void setRouting(String routing) {
+        this.routing = routing;
+    }
+
+    @JsonProperty("timeout")
+    public TimeValue getTimeout() {
+        return timeout;
+    }
+
+    @JsonProperty("timeout")
+    public void setTimeout(TimeValue timeout) {
+        this.timeout = timeout;
+    }
+
+    @JsonProperty("sampleSize")
+    public int getSampleSize() {
+        return sampleSize;
+    }
+
+    @JsonProperty("sampleSize")
+    public void setSampleSize(int sampleSize) {
+        this.sampleSize = sampleSize;
+    }
+
+    @JsonProperty("sampleDiversityField")
+    public String getSampleDiversityField() {
+        return sampleDiversityField;
+    }
+
+    @JsonProperty("sampleDiversityField")
+    public void setSampleDiversityField(String sampleDiversityField) {
+        this.sampleDiversityField = sampleDiversityField;
+    }
+
+    @JsonProperty("maxDocsPerDiversityValue")
+    public int getMaxDocsPerDiversityValue() {
+        return maxDocsPerDiversityValue;
+    }
+
+    @JsonProperty("maxDocsPerDiversityValue")
+    public void setMaxDocsPerDiversityValue(int maxDocsPerDiversityValue) {
+        this.maxDocsPerDiversityValue = maxDocsPerDiversityValue;
+    }
+
+    @JsonProperty("useSignificance")
+    public boolean isUseSignificance() {
+        return useSignificance;
+    }
+
+    @JsonProperty("useSignificance")
+    public void setUseSignificance(boolean useSignificance) {
+        this.useSignificance = useSignificance;
+    }
+
+    @JsonProperty("returnDetailedInfo")
+    public boolean isReturnDetailedInfo() {
+        return returnDetailedInfo;
+    }
+
+    @JsonProperty("returnDetailedInfo")
+    public void setReturnDetailedInfo(boolean returnDetailedInfo) {
+        this.returnDetailedInfo = returnDetailedInfo;
+    }
+
+    @JsonProperty("steps")
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    @JsonProperty("steps")
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
     }
 
     public String routing() {
@@ -165,29 +251,6 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
     }
 
     @Override
-    public void writeTo(StreamOutput out) throws IOException {
-        super.writeTo(out);
-        out.writeStringArray(indices);
-        indicesOptions.writeIndicesOptions(out);
-//        if (out.getVersion().before(Version.V_8_0_0)) {
-            out.writeStringArray(Strings.EMPTY_ARRAY);
-//        }
-        out.writeOptionalString(routing);
-        out.writeOptionalTimeValue(timeout);
-
-        out.writeInt(sampleSize);
-        out.writeOptionalString(sampleDiversityField);
-        out.writeInt(maxDocsPerDiversityValue);
-
-        out.writeBoolean(useSignificance);
-        out.writeBoolean(returnDetailedInfo);
-        out.writeInt(hops.size());
-        for (Hop hop : hops) {
-            hop.writeTo(out);
-        }
-    }
-
-    @Override
     public String toString() {
         return "graph explore [" + Arrays.toString(indices) + "]";
     }
@@ -206,11 +269,11 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
      * background frequencies of terms found in the documents
      * </p>
      *
-     * @param maxNumberOfDocsPerHop
+     * @param maxNumberOfDocsPerSteps
      *            shard-level sample size in documents
      */
-    public void sampleSize(int maxNumberOfDocsPerHop) {
-        sampleSize = maxNumberOfDocsPerHop;
+    public void sampleSize(int maxNumberOfDocsPerSteps) {
+        sampleSize = maxNumberOfDocsPerSteps;
     }
 
     public int sampleSize() {
@@ -281,26 +344,26 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
      * @param guidingQuery
      *            optional choice of query which influences which documents are
      *            considered in this stage
-     * @return a {@link Hop} object that holds settings for a stage in the graph
+     * @return a {@link Step} object that holds settings for a stage in the graph
      *         exploration
      */
-    public Hop createNextHop(QueryBuilder guidingQuery) {
-        Hop parent = null;
-        if (hops.size() > 0) {
-            parent = hops.get(hops.size() - 1);
+    public Step createNextStep(QueryBuilder guidingQuery) {
+        Step parent = null;
+        if (steps.size() > 0) {
+            parent = steps.get(steps.size() - 1);
         }
-        Hop newHop = new Hop(parent);
-        newHop.guidingQuery = guidingQuery;
-        hops.add(newHop);
-        return newHop;
+        Step newStep = new Step(parent);
+        newStep.guidingQuery = guidingQuery;
+        steps.add(newStep);
+        return newStep;
     }
 
-    public int getHopNumbers() {
-        return hops.size();
+    public int getStepNumbers() {
+        return steps.size();
     }
 
-    public Hop getHop(int hopNumber) {
-        return hops.get(hopNumber);
+    public Step getStep(int stepNumber) {
+        return steps.get(stepNumber);
     }
 
     public static class TermBoost {
@@ -326,54 +389,5 @@ public class GraphExploreRequest extends ActionRequest implements IndicesRequest
             return boost;
         }
 
-        public void readFrom(StreamInput in) throws IOException {
-            this.term = in.readString();
-            this.boost = in.readFloat();
-        }
-
-        public void writeTo(StreamOutput out) throws IOException {
-            out.writeString(term);
-            out.writeFloat(boost);
-        }
-
     }
-
-    @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.startObject();
-
-        builder.startObject("controls");
-        {
-            if (sampleSize != SamplerAggregationBuilder.DEFAULT_SHARD_SAMPLE_SIZE) {
-                builder.field("sample_size", sampleSize);
-            }
-            if (sampleDiversityField != null) {
-                builder.startObject("sample_diversity");
-                builder.field("field", sampleDiversityField);
-                builder.field("max_docs_per_value", maxDocsPerDiversityValue);
-                builder.endObject();
-            }
-            builder.field("use_significance", useSignificance);
-            if (returnDetailedInfo) {
-                builder.field("return_detailed_stats", returnDetailedInfo);
-            }
-        }
-        builder.endObject();
-
-        for (Hop hop : hops) {
-            if (hop.parentHop != null) {
-                builder.startObject("connections");
-            }
-            hop.toXContent(builder, params);
-        }
-        for (Hop hop : hops) {
-            if (hop.parentHop != null) {
-                builder.endObject();
-            }
-        }
-        builder.endObject();
-
-        return builder;
-    }
-
 }

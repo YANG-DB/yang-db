@@ -27,7 +27,7 @@
     </organization>
 
     <scm>
-        <connection>scm:git:git:https://github.com/YANG-DB/yang-db.git</connection>
+        <edge>scm:git:git:https://github.com/YANG-DB/yang-db.git</edge>
         <url>git clone https://github.com/YANG-DB/yang-db.git</url>
     </scm>
 

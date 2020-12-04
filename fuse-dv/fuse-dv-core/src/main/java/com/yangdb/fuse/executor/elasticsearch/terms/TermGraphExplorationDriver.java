@@ -3,15 +3,16 @@
  * or more contributor license agreements. Licensed under the Elastic License;
  * you may not use this file except in compliance with the Elastic License.
  */
-package com.yangdb.fuse.executor.elasticsearch.graph;
+package com.yangdb.fuse.executor.elasticsearch.terms;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.actions.AsyncGraphTermsTraversal;
-import com.yangdb.fuse.executor.elasticsearch.graph.actions.GraphTermsTraversal;
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreRequest;
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreResponse;
+import com.yangdb.fuse.executor.elasticsearch.terms.actions.AsyncGraphTermsTraversal;
+import com.yangdb.fuse.executor.elasticsearch.terms.actions.GraphTermsTraversal;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreResponse;
 import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.client.node.NodeClient;
-import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.client.Client;
+
+import javax.inject.Inject;
 
 /**
  * Performs a series of elasticsearch queries and aggregations to explore
@@ -20,12 +21,12 @@ import org.elasticsearch.common.inject.Inject;
  * This is a specialized similarity 'terms-graph' which is unstructured graph exploration based only on terms inside index.field
  * no structure / ontological considerations take place here in contrast to the regular ontology based graph query
  */
-public class TermGraphExploration  {
+public class TermGraphExplorationDriver implements TermGraphExploration {
 
-    private final NodeClient client;
+    private final Client client;
 
     @Inject
-    public TermGraphExploration(NodeClient client) {
+    public TermGraphExplorationDriver(Client client) {
         this.client = client;
     }
 
@@ -34,7 +35,8 @@ public class TermGraphExploration  {
      * @param request
      * @param listener
      */
-    public void doExecute( GraphExploreRequest request, ActionListener<GraphExploreResponse> listener) {
+    @Override
+    public void doExecute(GraphExploreRequest request, ActionListener<GraphExploreResponse> listener) {
         new AsyncGraphTermsTraversal(client, request, listener).start();
     }
 
@@ -43,7 +45,8 @@ public class TermGraphExploration  {
      * @param request
      * @return
      */
-    protected GraphExploreResponse execute(GraphExploreRequest request) {
+    @Override
+    public GraphExploreResponse execute(GraphExploreRequest request) {
         return new GraphTermsTraversal(client,request).start();
     }
 

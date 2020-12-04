@@ -1,10 +1,9 @@
-package com.yangdb.fuse.executor.elasticsearch.graph.actions;
+package com.yangdb.fuse.executor.elasticsearch.terms.actions;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreRequest;
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreResponse;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Hop;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.VertexRequest;
-import org.elasticsearch.action.ActionListener;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Step;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreResponse;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.VertexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -17,13 +16,12 @@ import org.elasticsearch.search.aggregations.bucket.terms.IncludeExclude;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-import java.util.Optional;
+import java.util.*;
 
-public class AsyncGraphTermsTraversal extends GraphUtils{
+public class GraphTermsTraversal extends GraphUtils {
 
-
-    public AsyncGraphTermsTraversal(Client client, GraphExploreRequest request, ActionListener<GraphExploreResponse> listener) {
-        super(client, request, listener);
+    public GraphTermsTraversal(Client client, GraphExploreRequest request) {
+        super(client, request);
     }
 
     /**
@@ -34,32 +32,18 @@ public class AsyncGraphTermsTraversal extends GraphUtils{
     public synchronized Optional<GraphExploreResponse> expand() {
         if (hasTimedOut()) {
             timedOut.set(true);
-            listener.onResponse(buildResponse());
-            //async return type compromise
-            return Optional.empty();
+            return Optional.of(buildResponse());
         }
 
-        SearchRequestContext context = prepareSearchRequest();
+        GraphUtils.SearchRequestContext context = prepareSearchRequest();
         // System.out.println(source);
 //            logger.trace("executing expansion graph search request");
-
         if(context.isComplete())
-            return Optional.empty();
+            return Optional.of(context.response);
 
         //otherwise continue adding new neighbors
-        client.search(context.searchRequest, new ActionListener<SearchResponse>() {
-            @Override
-            public void onResponse(SearchResponse searchResponse) {
-                continueExpandAccordingToResponse(searchResponse,context.lastHop,context.currentHop);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                listener.onFailure(e);
-            }
-        });
-        //async return compromise
-        return Optional.empty();
+        SearchResponse searchResponse = client.search(context.searchRequest).actionGet();
+        return continueExpandAccordingToResponse(searchResponse,context.lastStep,context.currentStep);
     }
 
 
@@ -69,7 +53,7 @@ public class AsyncGraphTermsTraversal extends GraphUtils{
      * the related terms. These will be our start points in the graph
      * navigation.
      */
-    public synchronized void start() {
+    public synchronized GraphExploreResponse start() {
         try {
             final SearchRequest searchRequest = buildSearchRequest();
 
@@ -77,10 +61,10 @@ public class AsyncGraphTermsTraversal extends GraphUtils{
 
             AggregationBuilder rootSampleAgg = buildSampleAggregation();
 
-            Hop rootHop = request.getHop(0);
+            Step rootStep = request.getStep(0);
 
             // Add any user-supplied criteria to the root query as a should clause
-            rootBool.must(rootHop.guidingQuery());
+            rootBool.must(rootStep.guidingQuery());
 
 
             // If any of the root terms have an "include" restriction then
@@ -88,14 +72,14 @@ public class AsyncGraphTermsTraversal extends GraphUtils{
             // mandates that at least one of the potentially many terms of
             // interest must be matched (using a should array)
             BoolQueryBuilder includesContainer = QueryBuilders.boolQuery();
-            addUserDefinedIncludesToQuery(rootHop, includesContainer);
+            addUserDefinedIncludesToQuery(rootStep, includesContainer);
             if (includesContainer.should().size() > 0) {
                 rootBool.must(includesContainer);
             }
 
 
-            for (int i = 0; i < rootHop.getNumberVertexRequests(); i++) {
-                VertexRequest vr = rootHop.getVertexRequest(i);
+            for (int i = 0; i < rootStep.getNumberVertexRequests(); i++) {
+                VertexRequest vr = rootStep.getVertexRequest(i);
                 if (request.useSignificance()) {
                     SignificantTermsAggregationBuilder sigBuilder = AggregationBuilders.significantTerms("field" + i);
                     sigBuilder.field(vr.fieldName()).shardMinDocCount(vr.shardMinDocCount()).minDocCount(vr.minDocCount())
@@ -148,20 +132,12 @@ public class AsyncGraphTermsTraversal extends GraphUtils{
             searchRequest.source(source);
             // System.out.println(source);
 //                logger.trace("executing initial graph search request");
-            client.search(searchRequest, new ActionListener<SearchResponse>() {
-                @Override
-                public void onResponse(SearchResponse searchResponse) {
-                    startSearchResponse(searchResponse, rootHop);
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    listener.onFailure(e);
-                }
-            });
+            SearchResponse searchResponse = client.search(searchRequest).actionGet();
+            return startSearchResponse(searchResponse, rootStep).get();
         } catch (Exception e) {
 //                logger.error("unable to execute the graph query", e);
-            listener.onFailure(e);
+            return buildResponse();
         }
     }
 }
+

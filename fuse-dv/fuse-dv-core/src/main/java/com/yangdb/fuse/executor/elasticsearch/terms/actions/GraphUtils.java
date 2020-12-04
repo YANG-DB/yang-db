@@ -1,12 +1,11 @@
-package com.yangdb.fuse.executor.elasticsearch.graph.actions;
+package com.yangdb.fuse.executor.elasticsearch.terms.actions;
 
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreRequest;
-import com.yangdb.fuse.executor.elasticsearch.graph.transport.GraphExploreResponse;
-import com.yangdb.fuse.executor.elasticsearch.graph.TermGraphExploration;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Connection;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Hop;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.Vertex;
-import com.yangdb.fuse.executor.elasticsearch.graph.model.VertexRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Edge;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Step;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreRequest;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreResponse;
+import com.yangdb.fuse.executor.elasticsearch.terms.model.Vertex;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.VertexRequest;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.util.PriorityQueue;
 import org.elasticsearch.ExceptionsHelper;
@@ -44,11 +43,11 @@ public abstract class GraphUtils {
     protected final AtomicBoolean timedOut;
     protected volatile ShardOperationFailedException[] shardFailures;
     protected Map<Vertex.VertexId, Vertex> vertices = new HashMap<>();
-    protected Map<Connection.ConnectionId, Connection> connections = new HashMap<>();
+    protected Map<Edge.EdgeId, Edge> edges = new HashMap<>();
 
     // Each "hop" is recorded here using hopNumber->fieldName->vertices
-    protected Map<Integer, Map<String, Set<Vertex>>> hopFindings = new HashMap<>();
-    protected int currentHopNumber = 0;
+    protected Map<Integer, Map<String, Set<Vertex>>> stepFindings = new HashMap<>();
+    protected int currentStepNumber = 0;
 
     protected GraphUtils(Client client, GraphExploreRequest request) {
         this(client,request,null);
@@ -70,10 +69,10 @@ public abstract class GraphUtils {
         return vertices.get(Vertex.createId(field, term));
     }
 
-    protected Connection addConnection(Vertex from, Vertex to, double weight, long docCount) {
-        Connection connection = new Connection(from, to, weight, docCount);
-        connections.put(connection.getId(), connection);
-        return connection;
+    protected Edge addEdge(Vertex from, Vertex to, double weight, long docCount) {
+        Edge edge = new Edge(from, to, weight, docCount);
+        edges.put(edge.getId(), edge);
+        return edge;
     }
 
     protected Vertex addVertex(String field, String term, double score, int depth, long bg, long fg) {
@@ -82,7 +81,7 @@ public abstract class GraphUtils {
         if (vertex == null) {
             vertex = new Vertex(field, term, score, depth, bg, fg);
             vertices.put(key, vertex);
-            Map<String, Set<Vertex>> currentWave = hopFindings.computeIfAbsent(currentHopNumber, k -> new HashMap<>());
+            Map<String, Set<Vertex>> currentWave = stepFindings.computeIfAbsent(currentStepNumber, k -> new HashMap<>());
             Set<Vertex> verticesForField = currentWave.computeIfAbsent(field, k -> new HashSet<>());
             verticesForField.add(vertex);
         }
@@ -91,7 +90,7 @@ public abstract class GraphUtils {
 
     protected void removeVertex(Vertex vertex) {
         vertices.remove(vertex.getId());
-        hopFindings.get(currentHopNumber).get(vertex.getField()).remove(vertex);
+        stepFindings.get(currentStepNumber).get(vertex.getField()).remove(vertex);
     }
 
     public SearchRequest buildSearchRequest() {
@@ -104,16 +103,16 @@ public abstract class GraphUtils {
     }
 
     protected SearchRequestContext prepareSearchRequest() {
-        Map<String, Set<Vertex>> lastHopFindings = hopFindings.get(currentHopNumber);
-        if ((currentHopNumber >= (request.getHopNumbers() - 1)) || (lastHopFindings == null) || (lastHopFindings.size() == 0)) {
+        Map<String, Set<Vertex>> lastStepFindings = stepFindings.get(currentStepNumber);
+        if ((currentStepNumber >= (request.getStepNumbers() - 1)) || (lastStepFindings == null) || (lastStepFindings.size() == 0)) {
             // Either we gathered no leads from the last hop or we have
             // reached the final hop
             return new SearchRequestContext(buildResponse());
         }
 
-        Hop lastHop = request.getHop(currentHopNumber);
-        currentHopNumber++;
-        Hop currentHop = request.getHop(currentHopNumber);
+        Step lastStep = request.getStep(currentStepNumber);
+        currentStepNumber++;
+        Step currentStep = request.getStep(currentStepNumber);
 
         SearchRequest searchRequest = buildSearchRequest();
 
@@ -122,14 +121,14 @@ public abstract class GraphUtils {
         AggregationBuilder sampleAgg = buildSampleAggregation();
 
         // Add any user-supplied criteria to the root query as a must clause
-        rootBool.must(currentHop.guidingQuery());
+        rootBool.must(currentStep.guidingQuery());
 
         // Build a MUST clause that matches one of either
         // a:) include clauses supplied by the client or
         // b:) vertex terms from the previous hop.
         BoolQueryBuilder sourceTermsOrClause = QueryBuilders.boolQuery();
-        addUserDefinedIncludesToQuery(currentHop, sourceTermsOrClause);
-        addBigOrClause(lastHopFindings, sourceTermsOrClause);
+        addUserDefinedIncludesToQuery(currentStep, sourceTermsOrClause);
+        addBigOrClause(lastStepFindings, sourceTermsOrClause);
 
         rootBool.must(sourceTermsOrClause);
 
@@ -137,7 +136,7 @@ public abstract class GraphUtils {
         //Now build the agg tree that will channel the content ->
         //   base agg is terms agg for terms from last wave (one per field),
         //      under each is a sig_terms agg to find next candidates (again, one per field)...
-        buildAggTree(lastHopFindings, lastHop, currentHop, sampleAgg);
+        buildAggTree(lastStepFindings, lastStep, currentStep, sampleAgg);
 
         // Execute the search
         SearchSourceBuilder source = new SearchSourceBuilder().query(rootBool).aggregation(sampleAgg).size(0);
@@ -145,13 +144,13 @@ public abstract class GraphUtils {
             source.timeout(TimeValue.timeValueMillis(timeRemainingMillis()));
         }
         searchRequest.source(source);
-        return new SearchRequestContext(searchRequest, lastHop, currentHop);
+        return new SearchRequestContext(searchRequest, lastStep, currentStep);
     }
 
-    protected void buildAggTree(Map<String, Set<Vertex>> lastHopFindings, Hop lastHop, Hop currentHop, AggregationBuilder sampleAgg) {
-        for (int fieldNum = 0; fieldNum < lastHop.getNumberVertexRequests(); fieldNum++) {
-            VertexRequest lastVr = lastHop.getVertexRequest(fieldNum);
-            Set<Vertex> lastWaveVerticesForField = lastHopFindings.get(lastVr.fieldName());
+    protected void buildAggTree(Map<String, Set<Vertex>> lastStepFindings, Step lastStep, Step currentStep, AggregationBuilder sampleAgg) {
+        for (int fieldNum = 0; fieldNum < lastStep.getNumberVertexRequests(); fieldNum++) {
+            VertexRequest lastVr = lastStep.getVertexRequest(fieldNum);
+            Set<Vertex> lastWaveVerticesForField = lastStepFindings.get(lastVr.fieldName());
             if (lastWaveVerticesForField == null) {
                 continue;
             }
@@ -170,8 +169,8 @@ public abstract class GraphUtils {
                     .executionHint("map")
                     .size(terms.length);
             sampleAgg.subAggregation(lastWaveTermsAgg);
-            for (int f = 0; f < currentHop.getNumberVertexRequests(); f++) {
-                VertexRequest vr = currentHop.getVertexRequest(f);
+            for (int f = 0; f < currentStep.getNumberVertexRequests(); f++) {
+                VertexRequest vr = currentStep.getVertexRequest(f);
                 int size = vr.size();
                 if (vr.fieldName().equals(lastVr.fieldName())) {
                     //We have the potential for self-loops as we are looking at the same field so add 1 to the requested size
@@ -201,7 +200,7 @@ public abstract class GraphUtils {
                         // significant e.g. in the lastfm example of
                         // plotting a single user's tastes and how that maps
                         // into a network showing only the most interesting
-                        // band connections. So line below commmented out
+                        // band connections. So line below commented out
 
                         // nextWaveSigTerms.size(includes.length);
 
@@ -300,35 +299,35 @@ public abstract class GraphUtils {
 
     protected GraphExploreResponse buildResponse() {
         long took = System.currentTimeMillis() - startTime;
-        return new GraphExploreResponse(took, timedOut.get(), shardFailures, vertices, connections, request.returnDetailedInfo());
+        return new GraphExploreResponse(took, timedOut.get(), shardFailures, vertices, edges, request.returnDetailedInfo());
     }
 
-    public Optional<GraphExploreResponse> startSearchResponse(SearchResponse searchResponse, Hop rootHop) {
+    public Optional<GraphExploreResponse> startSearchResponse(SearchResponse searchResponse, Step rootStep) {
         addShardFailures(searchResponse.getShardFailures());
         Sampler sample = searchResponse.getAggregations().get("sample");
 
         // Determine the total scores for all interesting terms
-        double totalSignalStrength = getInitialTotalSignalStrength(rootHop, sample);
+        double totalSignalStrength = getInitialTotalSignalStrength(rootStep, sample);
 
 
         // Now gather the best matching terms and compute signal weight according to their
         // share of the total signal strength
-        for (int j = 0; j < rootHop.getNumberVertexRequests(); j++) {
-            VertexRequest vr = rootHop.getVertexRequest(j);
+        for (int j = 0; j < rootStep.getNumberVertexRequests(); j++) {
+            VertexRequest vr = rootStep.getVertexRequest(j);
             if (request.useSignificance()) {
                 SignificantTerms significantTerms = sample.getAggregations().get("field" + j);
                 List<? extends SignificantTerms.Bucket> buckets = significantTerms.getBuckets();
                 for (SignificantTerms.Bucket bucket : buckets) {
                     double signalWeight = bucket.getSignificanceScore() / totalSignalStrength;
                     addVertex(vr.fieldName(), bucket.getKeyAsString(), signalWeight,
-                            currentHopNumber, bucket.getSupersetDf(), bucket.getSubsetDf());
+                            currentStepNumber, bucket.getSupersetDf(), bucket.getSubsetDf());
                 }
             } else {
                 Terms terms = sample.getAggregations().get("field" + j);
                 List<? extends Terms.Bucket> buckets = terms.getBuckets();
                 for (Terms.Bucket bucket : buckets) {
                     double signalWeight = bucket.getDocCount() / totalSignalStrength;
-                    addVertex(vr.fieldName(), bucket.getKeyAsString(), signalWeight, currentHopNumber, 0, 0);
+                    addVertex(vr.fieldName(), bucket.getKeyAsString(), signalWeight, currentStepNumber, 0, 0);
                 }
             }
         }
@@ -336,11 +335,11 @@ public abstract class GraphUtils {
         return expand();
     }
 
-    public Optional<GraphExploreResponse> continueExpandAccordingToResponse(SearchResponse searchResponse, Hop lastHop, Hop currentHop) {
+    public Optional<GraphExploreResponse> continueExpandAccordingToResponse(SearchResponse searchResponse, Step lastStep, Step currentStep) {
         // System.out.println(searchResponse);
         addShardFailures(searchResponse.getShardFailures());
 
-        ArrayList<Connection> newConnections = new ArrayList<Connection>();
+        ArrayList<Edge> newEdges = new ArrayList<Edge>();
         ArrayList<Vertex> newVertices = new ArrayList<Vertex>();
         Sampler sample = searchResponse.getAggregations().get("sample");
 
@@ -350,14 +349,14 @@ public abstract class GraphUtils {
         // normalized between zero and one based on
         // what percentage of the total scores its own score
         // provides
-        double totalSignalOutput = getExpandTotalSignalStrength(lastHop, currentHop, sample);
+        double totalSignalOutput = getExpandTotalSignalStrength(lastStep, currentStep, sample);
 
         // Signal output can be zero if we did not encounter any new
         // terms as part of this stage
         if (totalSignalOutput > 0) {
-            addAndScoreNewVertices(lastHop, currentHop, sample, totalSignalOutput, newConnections, newVertices);
+            addAndScoreNewVertices(lastStep, currentStep, sample, totalSignalOutput, newEdges, newVertices);
 
-            trimNewAdditions(currentHop, newConnections, newVertices);
+            trimNewAdditions(currentStep, newEdges, newVertices);
         }
 
         // Potentially run another round of queries to perform next"hop" - will terminate if no new additions
@@ -373,18 +372,18 @@ public abstract class GraphUtils {
     // we can do something server-side here
 
     // Helper method - compute the total signal of all scores in the search results
-    protected double getExpandTotalSignalStrength(Hop lastHop, Hop currentHop, Sampler sample) {
+    protected double getExpandTotalSignalStrength(Step lastStep, Step currentStep, Sampler sample) {
         double totalSignalOutput = 0;
-        for (int j = 0; j < lastHop.getNumberVertexRequests(); j++) {
-            VertexRequest lastVr = lastHop.getVertexRequest(j);
+        for (int j = 0; j < lastStep.getNumberVertexRequests(); j++) {
+            VertexRequest lastVr = lastStep.getVertexRequest(j);
             Terms lastWaveTerms = sample.getAggregations().get("field" + j);
             if (lastWaveTerms == null) {
                 continue;
             }
             List<? extends Terms.Bucket> buckets = lastWaveTerms.getBuckets();
             for (Terms.Bucket lastWaveTerm : buckets) {
-                for (int k = 0; k < currentHop.getNumberVertexRequests(); k++) {
-                    VertexRequest vr = currentHop.getVertexRequest(k);
+                for (int k = 0; k < currentStep.getNumberVertexRequests(); k++) {
+                    VertexRequest vr = currentStep.getVertexRequest(k);
                     if (request.useSignificance()) {
                         // Signal is based on significance score
                         SignificantTerms significantTerms = lastWaveTerm.getAggregations().get("field" + k);
@@ -423,12 +422,12 @@ public abstract class GraphUtils {
 
     // Add new vertices and apportion share of total signal along
     // connections
-    protected void addAndScoreNewVertices(Hop lastHop, Hop currentHop, Sampler sample, double totalSignalOutput,
-                                          ArrayList<Connection> newConnections, ArrayList<Vertex> newVertices) {
+    protected void addAndScoreNewVertices(Step lastStep, Step currentStep, Sampler sample, double totalSignalOutput,
+                                          ArrayList<Edge> newEdges, ArrayList<Vertex> newVertices) {
         // Gather all matching terms into the graph and propagate
         // signals
-        for (int j = 0; j < lastHop.getNumberVertexRequests(); j++) {
-            VertexRequest lastVr = lastHop.getVertexRequest(j);
+        for (int j = 0; j < lastStep.getNumberVertexRequests(); j++) {
+            VertexRequest lastVr = lastStep.getVertexRequest(j);
             Terms lastWaveTerms = sample.getAggregations().get("field" + j);
             if (lastWaveTerms == null) {
                 // There were no terms from the previous phase that needed pursuing
@@ -437,8 +436,8 @@ public abstract class GraphUtils {
             List<? extends Terms.Bucket> buckets = lastWaveTerms.getBuckets();
             for (Terms.Bucket lastWaveTerm : buckets) {
                 Vertex fromVertex = getVertex(lastVr.fieldName(), lastWaveTerm.getKeyAsString());
-                for (int k = 0; k < currentHop.getNumberVertexRequests(); k++) {
-                    VertexRequest vr = currentHop.getVertexRequest(k);
+                for (int k = 0; k < currentStep.getNumberVertexRequests(); k++) {
+                    VertexRequest vr = currentStep.getVertexRequest(k);
                     // As we travel further out into the graph we apply a
                     // decay to the signals being propagated down the various channels.
                     double decay = 0.95d;
@@ -459,7 +458,7 @@ public abstract class GraphUtils {
                                 Vertex toVertex = getVertex(vr.fieldName(), bucket.getKeyAsString());
                                 if (toVertex == null) {
                                     toVertex = addVertex(vr.fieldName(), bucket.getKeyAsString(), signalStrength,
-                                            currentHopNumber, bucket.getSupersetDf(), bucket.getSubsetDf());
+                                            currentStepNumber, bucket.getSupersetDf(), bucket.getSubsetDf());
                                     newVertices.add(toVertex);
                                 } else {
                                     toVertex.setWeight(toVertex.getWeight() + signalStrength);
@@ -469,7 +468,7 @@ public abstract class GraphUtils {
                                     // the best we can do is take the maximum foreground value we have observed
                                     toVertex.setFg(Math.max(toVertex.getFg(), bucket.getSubsetDf()));
                                 }
-                                newConnections.add(addConnection(fromVertex, toVertex, signalStrength, bucket.getDocCount()));
+                                newEdges.add(addEdge(fromVertex, toVertex, signalStrength, bucket.getDocCount()));
                             }
                         }
                     } else {
@@ -483,12 +482,12 @@ public abstract class GraphUtils {
                                 Vertex toVertex = getVertex(vr.fieldName(), bucket.getKeyAsString());
                                 if (toVertex == null) {
                                     toVertex = addVertex(vr.fieldName(), bucket.getKeyAsString(), signalStrength,
-                                            currentHopNumber, 0, 0);
+                                            currentStepNumber, 0, 0);
                                     newVertices.add(toVertex);
                                 } else {
                                     toVertex.setWeight(toVertex.getWeight() + signalStrength);
                                 }
-                                newConnections.add(addConnection(fromVertex, toVertex, signalStrength, bucket.getDocCount()));
+                                newEdges.add(addEdge(fromVertex, toVertex, signalStrength, bucket.getDocCount()));
                             }
                         }
                     }
@@ -504,12 +503,12 @@ public abstract class GraphUtils {
     // weakest weights.
     // A priority queue is used to trim vertices according to the size settings
     // requested for each field.
-    protected void trimNewAdditions(Hop currentHop, ArrayList<Connection> newConnections, ArrayList<Vertex> newVertices) {
+    protected void trimNewAdditions(Step currentStep, ArrayList<Edge> newEdges, ArrayList<Vertex> newVertices) {
         Set<Vertex> evictions = new HashSet<>();
 
-        for (int k = 0; k < currentHop.getNumberVertexRequests(); k++) {
+        for (int k = 0; k < currentStep.getNumberVertexRequests(); k++) {
             // For each of the fields
-            VertexRequest vr = currentHop.getVertexRequest(k);
+            VertexRequest vr = currentStep.getVertexRequest(k);
             if (newVertices.size() <= vr.size()) {
                 // Nothing to trim
                 continue;
@@ -527,24 +526,24 @@ public abstract class GraphUtils {
         }
         // Remove weak new nodes and their dangling connections from the main graph
         if (evictions.size() > 0) {
-            for (Connection connection : newConnections) {
-                if (evictions.contains(connection.getTo())) {
-                    connections.remove(connection.getId());
-                    removeVertex(connection.getTo());
+            for (Edge edge : newEdges) {
+                if (evictions.contains(edge.getTo())) {
+                    edges.remove(edge.getId());
+                    removeVertex(edge.getTo());
                 }
             }
         }
     }
 
-    protected void addBigOrClause(Map<String, Set<Vertex>> lastHopFindings, BoolQueryBuilder sourceTermsOrClause) {
+    protected void addBigOrClause(Map<String, Set<Vertex>> lastStepFindings, BoolQueryBuilder sourceTermsOrClause) {
         int numClauses = sourceTermsOrClause.should().size();
-        for (Map.Entry<String, Set<Vertex>> entry : lastHopFindings.entrySet()) {
+        for (Map.Entry<String, Set<Vertex>> entry : lastStepFindings.entrySet()) {
             numClauses += entry.getValue().size();
         }
         if (numClauses < BooleanQuery.getMaxClauseCount()) {
             // We can afford to build a Boolean OR query with individual
             // boosts for interesting terms
-            for (Map.Entry<String, Set<Vertex>> entry : lastHopFindings.entrySet()) {
+            for (Map.Entry<String, Set<Vertex>> entry : lastStepFindings.entrySet()) {
                 for (Vertex vertex : entry.getValue()) {
                     sourceTermsOrClause.should(
                             QueryBuilders.constantScoreQuery(
@@ -554,7 +553,7 @@ public abstract class GraphUtils {
 
         } else {
             // Too many terms - we need a cheaper form of query to execute this
-            for (Map.Entry<String, Set<Vertex>> entry : lastHopFindings.entrySet()) {
+            for (Map.Entry<String, Set<Vertex>> entry : lastStepFindings.entrySet()) {
                 List<String> perFieldTerms = new ArrayList<>();
                 for (Vertex vertex : entry.getValue()) {
                     perFieldTerms.add(vertex.getTerm());
@@ -564,18 +563,18 @@ public abstract class GraphUtils {
         }
     }
 
-    protected void addUserDefinedIncludesToQuery(Hop hop, BoolQueryBuilder sourceTermsOrClause) {
-        for (int i = 0; i < hop.getNumberVertexRequests(); i++) {
-            VertexRequest vr = hop.getVertexRequest(i);
+    protected void addUserDefinedIncludesToQuery(Step step, BoolQueryBuilder sourceTermsOrClause) {
+        for (int i = 0; i < step.getNumberVertexRequests(); i++) {
+            VertexRequest vr = step.getVertexRequest(i);
             if (vr.hasIncludeClauses()) {
                 addNormalizedBoosts(sourceTermsOrClause, vr);
             }
         }
     }
 
-    protected double getInitialTotalSignalStrength(Hop rootHop, Sampler sample) {
+    protected double getInitialTotalSignalStrength(Step rootStep, Sampler sample) {
         double totalSignalStrength = 0;
-        for (int i = 0; i < rootHop.getNumberVertexRequests(); i++) {
+        for (int i = 0; i < rootStep.getNumberVertexRequests(); i++) {
             if (request.useSignificance()) {
                 // Signal is based on significance score
                 SignificantTerms significantTerms = sample.getAggregations().get("field" + i);
@@ -597,14 +596,14 @@ public abstract class GraphUtils {
 
     public static class SearchRequestContext {
         public SearchRequest searchRequest;
-        public Hop lastHop;
-        public Hop currentHop;
+        public Step lastStep;
+        public Step currentStep;
         public GraphExploreResponse response;
 
-        public SearchRequestContext(SearchRequest searchRequest, Hop lastHop, Hop currentHop) {
+        public SearchRequestContext(SearchRequest searchRequest, Step lastStep, Step currentStep) {
             this.searchRequest = searchRequest;
-            this.lastHop = lastHop;
-            this.currentHop = currentHop;
+            this.lastStep = lastStep;
+            this.currentStep = currentStep;
         }
 
         public SearchRequestContext(GraphExploreResponse response) {

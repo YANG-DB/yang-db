@@ -13,4 +13,6 @@ Developer contribution see https://streampipes.apache.org/docs/docs/dev-guide-in
 Integrate YangDb as a pipe extension - see https://github.com/apache/incubator-streampipes-extensions  
 
 
+####Performance Monitoring
+https://www.baeldung.com/java-flight-recorder-monitoring
 
