@@ -9,9 +9,9 @@ package com.yangdb.fuse.core.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,9 @@ import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.validation.QueryValidator;
+import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExploration;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreResponse;
+import com.yangdb.fuse.executor.elasticsearch.terms.transport.Translator;
 import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
@@ -44,6 +47,7 @@ import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.TermsExplorationRequest;
 import org.jooq.JSON;
 
 import java.util.Optional;
@@ -57,6 +61,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     //region Constructors
     @Inject
     public StandardQueryDriver(
+            TermGraphExploration graphExploration,
             FuseSqlService sqlService,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
@@ -68,6 +73,7 @@ public class StandardQueryDriver extends QueryDriverBase {
             ResourceStore resourceStore,
             AppUrlSupplier urlSupplier) {
         super(cursorDriver, pageDriver, queryTransformer, transformerFactory , queryValidator, resourceStore, urlSupplier);
+        this.graphExploration = graphExploration;
         this.sqlService = sqlService;
         this.queryRewriter = queryRewriter;
         this.planSearcher = planSearcher;
@@ -112,6 +118,13 @@ public class StandardQueryDriver extends QueryDriverBase {
         return Optional.of(objectNode);
     }
 
+    @Override
+    public Optional<Object> termsExplorer(TermsExplorationRequest explorationRequest) {
+        GraphExploreResponse exploreResponse = graphExploration.execute(Translator.translate(explorationRequest));
+        return Optional.of(exploreResponse);
+    }
+
+    private TermGraphExploration graphExploration;
     private final FuseSqlService sqlService;
     //region Fields
     private QueryTransformer<AsgQuery, AsgQuery> queryRewriter;

@@ -104,6 +104,15 @@ public class VertexRequest {
 
     public VertexRequest() {}
 
+    public VertexRequest(String fieldName, int size, Map<String, TermBoost> includes, Set<String> excludes, int minDocCount, int shardMinDocCount) {
+        this.fieldName = fieldName;
+        this.size = size;
+        this.includes = includes;
+        this.excludes = excludes;
+        this.minDocCount = minDocCount;
+        this.shardMinDocCount = shardMinDocCount;
+    }
+
     public String fieldName() {
         return fieldName;
     }

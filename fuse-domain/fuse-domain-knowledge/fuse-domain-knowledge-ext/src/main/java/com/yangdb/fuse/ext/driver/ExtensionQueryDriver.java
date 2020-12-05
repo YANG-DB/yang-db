@@ -33,6 +33,7 @@ import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.validation.QueryValidator;
+import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExploration;
 import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -56,6 +57,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
     //region Constructors
     @Inject
     public ExtensionQueryDriver(
+            TermGraphExploration graphExploration,
             FuseSqlService sqlService,
             CursorDriver cursorDriver,
             PageDriver pageDriver,
@@ -67,7 +69,7 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
             ResourceStore resourceStore,
             BusinessTypesProvider typesProvider,
             AppUrlSupplier urlSupplier) {
-        super(sqlService,cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
+        super(graphExploration,sqlService,cursorDriver, pageDriver, queryTransformer, queryValidator, queryRewriter, transformerFactory, planSearcher, resourceStore, urlSupplier);
         this.typesProvider = typesProvider;
         this.transformer = new AsgClauseTransformer(new JsonQueryTranslator(), typesProvider);
     }

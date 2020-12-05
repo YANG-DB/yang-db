@@ -22,6 +22,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import com.yangdb.fuse.model.transport.TermsExplorationRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.util.ImmutableMetrics;
@@ -76,6 +77,11 @@ public class MockDriver {
 
         @Override
         public Optional<GraphTraversal> traversal(com.yangdb.fuse.model.query.Query query) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Object> termsExplorer(TermsExplorationRequest explorationRequest) {
             return Optional.empty();
         }
 

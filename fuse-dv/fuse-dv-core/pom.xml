@@ -86,11 +86,16 @@
 
         <!-- runtime -->
 
-        <!-- test -->
         <!-- tests    -->
         <dependency>
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-test-framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch.test</groupId>
+            <artifactId>framework</artifactId>
             <scope>test</scope>
         </dependency>
 

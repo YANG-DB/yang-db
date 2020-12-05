@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers.logging;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package com.yangdb.fuse.services.controllers.logging;
  */
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
@@ -35,10 +36,7 @@ import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
-import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.ExecuteStoredQueryRequest;
+import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.services.controllers.QueryController;
 import com.yangdb.fuse.services.suppliers.RequestExternalMetadataSupplier;
@@ -61,6 +59,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     public static final String controllerParameter = "LoggingQueryController.@controller";
     public static final String loggerParameter = "LoggingQueryController.@logger";
     public static final String queryDescriptorParameter = "LoggingQueryController.@queryDescriptor";
+
 
     //region Constructors
     @Inject
@@ -197,6 +196,29 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
                                 ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops), Sequence.incr(), LogType.of(log), createAndFetch)
                                 .log();
                     return this.controller.findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops);
+                }, this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<Object> termsExplorer(TermsExplorationRequest explorationRequest) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                validate,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (explorationRequest != null) {
+                        try {
+                            new LogMessage.Impl(this.logger, debug, "explorationRequest: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                    .with(mapper.writeValueAsString(explorationRequest)).log();
+                        } catch (JsonProcessingException e) {
+                            new LogMessage.Impl(this.logger, debug, "explorationRequest: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                    .with(explorationRequest.toString()).log();
+                        }
+                    }
+                    return this.controller.termsExplorer(explorationRequest);
                 }, this.resultHandler());
     }
 

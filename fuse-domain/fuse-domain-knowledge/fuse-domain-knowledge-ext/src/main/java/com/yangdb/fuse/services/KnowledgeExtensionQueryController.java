@@ -9,9 +9,9 @@ package com.yangdb.fuse.services;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,10 +30,7 @@ import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.StoreResourceInfo;
-import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
-import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import com.yangdb.fuse.model.transport.ExecuteStoredQueryRequest;
+import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -105,6 +102,11 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     @Override
     public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity, String targetId, String relationType, int maxHops) {
         return controller.findPath(ontology,sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
+    }
+
+    @Override
+    public ContentResponse<Object> termsExplorer(TermsExplorationRequest explorationRequest) {
+        return controller.termsExplorer(explorationRequest);
     }
 
     @Override

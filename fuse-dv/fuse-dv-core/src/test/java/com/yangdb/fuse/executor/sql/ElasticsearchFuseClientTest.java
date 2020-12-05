@@ -6,8 +6,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
@@ -64,8 +62,8 @@ public class ElasticsearchFuseClientTest implements BaseITMarker {
 
         schema = Mockito.mock(RawSchema.class);
         when(schema.indices()).thenAnswer(invocation -> IndexProviderRawSchema.indices(schemaProvider));
-        when(schema.getPartition(any())).thenAnswer(invocation -> getIndexPartitions(schemaProvider, invocation.getArgument(0)));
-        when(schema.getPartitions(any())).thenAnswer(invocation -> StreamSupport.stream(schema.getPartition(invocation.getArgument(0))
+        when(schema.getPartition(any())).thenAnswer(invocation -> getIndexPartitions(schemaProvider, invocation.getArguments()[0].toString()));
+        when(schema.getPartitions(any())).thenAnswer(invocation -> StreamSupport.stream(schema.getPartition(invocation.getArguments()[0].toString())
                 .getPartitions().spliterator(), false).collect(Collectors.toList()));
     }
 

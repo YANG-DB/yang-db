@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.hamcrest.core.IsEqual;
 import org.jooby.Env;
 import org.jooby.internal.RequestScope;
 import org.jooby.scope.RequestScoped;
@@ -17,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Matchers.*;
 
 /**
  * Created by lior.perry on 2/19/2018.
@@ -53,10 +55,11 @@ public abstract class BaseModuleInjectionTest {
     protected void init(ModuleBase[] modules) {
         this.modules = Arrays.asList(modules);
         config = Mockito.mock(Config.class);
-        Mockito.when(config.getString(argThat(argument -> argument.equals("application.profile"))))
+
+        Mockito.when(config.getString(argThat(equalTo("application.profile"))))
                 .thenReturn("test");
 
-        Mockito.when(config.getStringList(argThat(argument -> argument.equals("modules.test"))))
+        Mockito.when(config.getStringList(argThat(equalTo("modules.test"))))
                 .thenReturn(Arrays.stream(modules).map(m -> m.getClass().getName()).collect(toList()));
     }
 

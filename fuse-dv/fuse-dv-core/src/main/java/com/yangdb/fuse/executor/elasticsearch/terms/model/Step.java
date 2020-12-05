@@ -12,14 +12,9 @@ import com.yangdb.fuse.executor.elasticsearch.terms.transport.GraphExploreReques
 import com.yangdb.fuse.executor.elasticsearch.terms.transport.VertexRequest;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.ValidateActions;
-import org.elasticsearch.common.io.stream.StreamInput;
-import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.xcontent.ToXContentFragment;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +54,12 @@ public class Step {
 
     public Step(Step parent) {
         this.parentStep = parent;
+    }
+
+    public Step(Step parentStep, List<VertexRequest> vertices, QueryBuilder guidingQuery) {
+        this.parentStep = parentStep;
+        this.vertices = vertices;
+        this.guidingQuery = guidingQuery;
     }
 
     @JsonProperty("vertices")

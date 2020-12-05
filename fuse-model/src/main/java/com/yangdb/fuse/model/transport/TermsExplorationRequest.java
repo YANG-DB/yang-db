@@ -3,7 +3,9 @@ package com.yangdb.fuse.model.transport;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yangdb.fuse.model.query.quant.QuantType;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +45,16 @@ public class TermsExplorationRequest {
         this.indices = indices;
         this.routing = routing;
         this.timeout = timeout;
+    }
+
+    @Override
+    public String toString() {
+        return "TermsExplorationRequest{" +
+                "indices=" + Arrays.toString(indices) +
+                ", routing='" + routing + '\'' +
+                ", timeout=" + timeout +
+                ", steps=" + steps +
+                '}';
     }
 
     @JsonProperty("steps")
@@ -88,6 +100,9 @@ public class TermsExplorationRequest {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Steps {
+        @JsonProperty("initialTerms")
+        private InitialTerms initialTerms;
+
         @JsonProperty("nodes")
         private List<Nodes> nodes;
 
@@ -95,6 +110,16 @@ public class TermsExplorationRequest {
 
         public Steps(List<Nodes> nodes) {
             this.nodes = nodes;
+        }
+
+        @JsonProperty("initialTerms")
+        public InitialTerms getInitialTerms() {
+            return initialTerms;
+        }
+
+        @JsonProperty("initialTerms")
+        public void setInitialTerms(InitialTerms initialTerms) {
+            this.initialTerms = initialTerms;
         }
 
         @JsonProperty("nodes")
@@ -105,6 +130,64 @@ public class TermsExplorationRequest {
         @JsonProperty("nodes")
         public void setNodes(List<Nodes> nodes) {
             this.nodes = nodes;
+        }
+
+        @Override
+        public String toString() {
+            return "Steps{" +
+                    "initialTerms=" + initialTerms +
+                    ", nodes=" + nodes +
+                    '}';
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class InitialTerms {
+        private List<String> terms;
+        private String field;
+        private QuantType quantType;
+
+        public InitialTerms() {
+        }
+
+        public InitialTerms(String field, List<String> terms, QuantType quantType) {
+            this.field = field;
+            this.terms = terms;
+            this.quantType = quantType;
+        }
+
+        public String getField() {
+            return field;
+        }
+
+        public void setField(String field) {
+            this.field = field;
+        }
+
+        public List<String> getTerms() {
+            return terms;
+        }
+
+        public void setTerms(List<String> terms) {
+            this.terms = terms;
+        }
+
+        public QuantType getQuantType() {
+            return quantType;
+        }
+
+        public void setQuantType(QuantType quantType) {
+            this.quantType = quantType;
+        }
+
+        @Override
+        public String toString() {
+            return "InitialTerms{" +
+                    "terms=" + terms +
+                    ", field='" + field + '\'' +
+                    ", quantType=" + quantType +
+                    '}';
         }
     }
 
@@ -184,6 +267,17 @@ public class TermsExplorationRequest {
             this.shardMinDocCount = shardMinDocCount;
         }
 
+        @Override
+        public String toString() {
+            return "Nodes{" +
+                    "fieldName='" + fieldName + '\'' +
+                    ", size=" + size +
+                    ", includes=" + includes +
+                    ", excludes=" + excludes +
+                    ", minDocCount=" + minDocCount +
+                    ", shardMinDocCount=" + shardMinDocCount +
+                    '}';
+        }
     }
 
 }

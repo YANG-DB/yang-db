@@ -28,6 +28,5 @@ log/access.log
 log/todo-backend.log
 fuse-service/dependency-reduced-pom.xml
 
-*.zip
 /distrib/
 /distrib/knowledge-knowledge/
