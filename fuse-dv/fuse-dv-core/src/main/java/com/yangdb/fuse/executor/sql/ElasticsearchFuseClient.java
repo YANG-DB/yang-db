@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.sql;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,8 +67,12 @@ public class ElasticsearchFuseClient implements ElasticsearchClient {
         this.provider = new Ontology.Accessor(ontology);
         this.schema = schema;
 
+        /**
+         * get index provider from directory factory  - in none exist generate one according to given ontology
+         * ignore errors and continue with a default generated one - log this and continue...
+         */
         this.indexProvider = indexProviderFactory.get(assembly)
-                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Index Provider present for Id ", "No Index Provider present for id[" + assembly +"]")));
+                .orElseGet(() -> IndexProvider.Builder.generate(ontology));
 
         this.mappingFactory = new ElasticIndexProviderMappingFactory(config, client,schema,ontology,indexProvider);
         this.client = client;

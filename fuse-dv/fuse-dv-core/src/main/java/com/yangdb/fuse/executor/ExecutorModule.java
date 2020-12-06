@@ -33,12 +33,10 @@ import com.amazon.opendistroforelasticsearch.sql.sql.SQLService;
 import com.amazon.opendistroforelasticsearch.sql.storage.StorageEngine;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.TypeLiteral;
 import com.google.inject.internal.SingletonScope;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
-import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.core.driver.StandardCursorDriver;
 import com.yangdb.fuse.core.driver.StandardPageDriver;
 import com.yangdb.fuse.core.driver.StandardQueryDriver;
@@ -46,7 +44,6 @@ import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.driver.CursorDriver;
-import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
@@ -55,10 +52,10 @@ import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
 import com.yangdb.fuse.executor.elasticsearch.TimeoutClientAdvisor;
+import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.yangdb.fuse.executor.elasticsearch.terms.LoggingTermGraphExploration;
 import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExploration;
 import com.yangdb.fuse.executor.elasticsearch.terms.TermGraphExplorationDriver;
-import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.yangdb.fuse.executor.logging.LoggingCursorFactory;
 import com.yangdb.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -66,7 +63,6 @@ import com.yangdb.fuse.executor.ontology.OntologyGraphElementSchemaProviderFacto
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.resource.PersistantResourceStore;
@@ -74,7 +70,6 @@ import com.yangdb.fuse.executor.sql.ElasticsearchFuseClient;
 import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.executor.sql.FuseStorageEngine;
 import com.yangdb.fuse.executor.sql.LoggingElasticsearchFuseClient;
-import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import javaslang.collection.Stream;
@@ -102,7 +97,6 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        bindIdGenerator(env, conf, binder);
         bindGraphWriters(env, conf, binder);
         bindResourceManager(env, conf, binder);
         bindGraphInitiator(env, conf, binder);
@@ -198,13 +192,6 @@ public class ExecutorModule extends ModuleBase {
 
     }
 
-    private void bindIdGenerator(Env env, Config conf, Binder binder) {
-        String indexName = conf.getString(conf.getString("assembly") + ".idGenerator_indexName");
-        binder.bindConstant().annotatedWith(named(BasicIdGenerator.indexNameParameter)).to(indexName);
-        binder.bind(new TypeLiteral<IdGeneratorDriver<Range>>() {
-        }).to(BasicIdGenerator.class).asEagerSingleton();
-        binder.bind(EntityTransformer.class);
-    }
 
     //endregion
 

@@ -66,22 +66,27 @@ public class CoreDispatcherModule extends ModuleBase {
 
     /**
      * index provider schema registry loader
+     *
      * @param conf
      * @return
      * @throws Throwable
      */
-    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable{
+    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable {
         try {
             return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
-        } catch (ConfigException e) {
-            return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            try {
+                return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
+            } catch (Throwable e1) {
+                //log issues and return a edfault empty index provider factory
+                return new IndexProviderFactory.EmptyIndexProviderFactory();
+            }
         }
     }
 
     /**
      * get ontology provider
+     *
      * @param conf
      * @return
      * @throws ClassNotFoundException
@@ -108,6 +113,7 @@ public class CoreDispatcherModule extends ModuleBase {
 
     /**
      * get ontology mapping provider
+     *
      * @param conf
      * @return
      * @throws ClassNotFoundException

@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,8 +49,13 @@ public class DirectoryIndexProvider implements IndexProviderFactory {
         File dir = new File(Paths.get(currentDir, dirName).toString());
         if(!dir.exists()) {
             URL resource = Thread.currentThread().getContextClassLoader().getResource(dirName);
-            if(Objects.isNull(resource))
-                throw new FuseError.FuseErrorException("No file resource was found for "+dirName+" during creation of IndexProvider factory...",new IllegalStateException("No file resource found ["+dirName+"]"));
+            if(Objects.isNull(resource)) {
+                //ignore errors and continue with an empty - log this and continue...
+/*
+                throw new FuseError.FuseErrorException("No file resource was found for " + dirName + " during creation of IndexProvider factory...",
+                        new IllegalStateException("No file resource found [" + dirName + "]"));
+*/
+            }
 
             dir = new File(resource.toURI());
         }
