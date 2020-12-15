@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.modules;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,6 +67,8 @@ import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.*;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.services.controllers.*;
+import com.yangdb.fuse.services.controllers.languages.cypher.LoggingCypherQLController;
+import com.yangdb.fuse.services.controllers.languages.cypher.StandardCypherQLController;
 import com.yangdb.fuse.services.controllers.languages.graphql.LoggingGraphQLController;
 import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
 import com.yangdb.fuse.services.controllers.languages.sparql.LoggingSparqlController;
@@ -119,6 +121,7 @@ public class ServiceModule extends ModuleBase {
         bindPageController(env, config, binder);
         bindCatalogController(env, config, binder);
         bindGraphQLController(env, config, binder);
+        bindCypherQLController(env, config, binder);
         bindSparqlController(env, config, binder);
         bindSqlController(env, config, binder);
         bindDataLoaderController(env, config, binder);
@@ -346,6 +349,28 @@ public class ServiceModule extends ModuleBase {
 
                 this.expose(SchemaTranslatorController.class)
                         .annotatedWith(named(StandardGraphQLController.transformerName));
+            }
+        });
+    }
+
+    private void bindCypherQLController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(SchemaTranslatorController.class)
+                        .annotatedWith(named(LoggingCypherQLController.controllerParameter))
+                        .to(StandardCypherQLController.class);
+
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingCypherQLController.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(StandardCypherQLController.class));
+
+                this.bind(SchemaTranslatorController.class)
+                        .annotatedWith(named(StandardCypherQLController.transformerName))
+                        .to(LoggingCypherQLController.class);
+
+                this.expose(SchemaTranslatorController.class)
+                        .annotatedWith(named(StandardCypherQLController.transformerName));
             }
         });
     }

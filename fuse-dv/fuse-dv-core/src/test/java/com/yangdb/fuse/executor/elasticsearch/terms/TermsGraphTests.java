@@ -30,7 +30,7 @@ import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.*;
 import static org.hamcrest.Matchers.greaterThan;
 
 
-public class GraphTests extends ESSingleNodeTestCase {
+public class TermsGraphTests extends ESSingleNodeTestCase {
 
     static class DocTemplate {
         int numDocs;
