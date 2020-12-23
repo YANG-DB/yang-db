@@ -22,6 +22,7 @@ package com.yangdb.fuse.services.controllers.languages.csv;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.query.csv.CSV2OntologyTranslator;
 import com.yangdb.fuse.dispatcher.query.graphql.GraphQLToOntologyTransformer;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -42,7 +43,7 @@ public class StandardCSVController implements SchemaTranslatorController {
 
     //region Constructors
     @Inject
-    public StandardCSVController(GraphQLToOntologyTransformer transformer, OntologyProvider provider) {
+    public StandardCSVController(CSV2OntologyTranslator transformer, OntologyProvider provider) {
         this.transformer = transformer;
         this.provider = provider;
     }
@@ -51,9 +52,9 @@ public class StandardCSVController implements SchemaTranslatorController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<Ontology> translate(String ontology, String graphQLSchema) {
+    public ContentResponse<Ontology> translate(String ontology, String csvDocuments) {
         return Builder.<Ontology>builder(OK, NOT_FOUND)
-                .data(Optional.of(this.transformer.transform(ontology, graphQLSchema)))
+                .data(Optional.of(this.transformer.transform(ontology, new String[] {csvDocuments})))
                 .compose();
     }
 
@@ -62,7 +63,8 @@ public class StandardCSVController implements SchemaTranslatorController {
         return Builder.<String>builder(OK, NOT_FOUND)
                 .data(Optional.of(this.transformer.translate(provider.get(ontologyId)
                         .orElseThrow(() -> new FuseError.FuseErrorException(
-                                new FuseError("Ontology Not Found", String.format("Ontology %s is not found in repository", ontologyId)))))))
+                                new FuseError("Ontology Not Found", String.format("Ontology %s is not found in repository", ontologyId)))))
+                        [0]))
                 .compose();
     }
 
@@ -71,7 +73,7 @@ public class StandardCSVController implements SchemaTranslatorController {
     //region Private Methods
 
     //region Fields
-    private GraphQLToOntologyTransformer transformer;
+    private CSV2OntologyTranslator transformer;
     private OntologyProvider provider;
 
     //endregion
