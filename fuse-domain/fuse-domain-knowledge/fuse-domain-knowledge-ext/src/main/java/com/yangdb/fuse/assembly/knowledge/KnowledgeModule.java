@@ -9,9 +9,9 @@ package com.yangdb.fuse.assembly.knowledge;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@ package com.yangdb.fuse.assembly.knowledge;
  */
 
 import com.google.inject.Binder;
-import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
@@ -29,20 +28,15 @@ import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeGraphHierarchyTraversa
 import com.yangdb.fuse.assembly.knowledge.cursor.KnowledgeLogicalGraphCursor;
 import com.yangdb.fuse.assembly.knowledge.parser.FolderBasedTypeProvider;
 import com.yangdb.fuse.assembly.knowledge.parser.model.BusinessTypesProvider;
-import com.yangdb.fuse.core.driver.BasicIdGenerator;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
-import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.ext.driver.ExtensionQueryDriver;
-import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.services.KnowledgeExtensionQueryController;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 
 import java.net.URISyntaxException;
-
-import static com.google.inject.name.Names.named;
 
 public class KnowledgeModule extends ModuleBase {
     //region ModuleBase Implementation
