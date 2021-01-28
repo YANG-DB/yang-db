@@ -1,6 +1,7 @@
 package com.yangdb.fuse.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
@@ -64,7 +65,7 @@ public class QueryTest {
                 .build();
         String queryString = mapper.writeValueAsString(query);
         JSONAssert.assertEquals("{\"ont\":\"Knowledge\",\"name\":\"test\",\"elements\":[{\"type\":\"Start\",\"eNum\":0,\"next\":1},{\"type\":\"ETyped\",\"eNum\":1,\"eTag\":\"P1\",\"next\":2,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":2,\"qType\":\"some\",\"b\":-1,\"next\":[3,4]},{\"type\":\"EPropGroup\",\"eNum\":3,\"props\":[{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"category\",\"proj\":{\"type\":\"Identity\"},\"constraint\":false,\"projection\":true},{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"not empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"},{\"type\":\"Rel\",\"eNum\":4,\"rType\":\"hasOutRelation\",\"dir\":\"R\",\"wrapper\":\"k\",\"next\":5,\"b\":-1,\"eTag\":\"k\",\"typed\":\"hasOutRelation\"},{\"type\":\"ETyped\",\"eNum\":5,\"eTag\":\"P2\",\"next\":6,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":6,\"qType\":\"all\",\"b\":-1,\"next\":[7]},{\"type\":\"EPropGroup\",\"eNum\":7,\"props\":[{\"type\":\"EProp\",\"eNum\":7,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"}]}", queryString, true);
-
+        Assert.assertNotNull(QueryDescriptor.printGraph(query));
     }
 
     @Test
