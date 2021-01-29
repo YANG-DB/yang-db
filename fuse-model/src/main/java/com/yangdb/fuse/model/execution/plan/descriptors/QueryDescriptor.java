@@ -43,12 +43,15 @@ package com.yangdb.fuse.model.execution.plan.descriptors;
  *
  */
 
+import com.yangdb.fuse.model.Below;
+import com.yangdb.fuse.model.Container;
 import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.asgQuery.IQuery;
 import com.yangdb.fuse.model.descriptors.Descriptor;
 import com.yangdb.fuse.model.descriptors.GraphDescriptor;
 import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.entity.*;
+import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
@@ -184,11 +187,11 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
 
     static String printDetailedProp(BaseProp p) {
         if (p instanceof RankingProp) {
-            return "boost:" + ((RankingProp) p).getBoost() +  "Typ:["+p.getpType() + "] ["  + p.getpType() + "[" + p.getCon().getOp() + "," + p.getCon().getExpr() + "]";
+            return "boost:" + ((RankingProp) p).getBoost() + "Typ:[" + p.getpType() + "] [" + p.getpType() + "[" + p.getCon().getOp() + "," + p.getCon().getExpr() + "]";
         } else if (p.getCon() != null) {
-            return "Typ:["+p.getpType() + "] [" + p.getCon().getOp() + "," + p.getCon().getExpr() + "]";
+            return "Typ:[" + p.getpType() + "] [" + p.getCon().getOp() + "," + p.getCon().getExpr() + "]";
         } else if (p.getProj() != null) {
-            return "Typ:["+p.getpType() + "] [" + p.getProj().getClass().getSimpleName() + "]";
+            return "Typ:[" + p.getpType() + "] [" + p.getProj().getClass().getSimpleName() + "]";
         } else {
             return p.getpType();
         }
@@ -318,23 +321,23 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
      * @param root
      * @param element
      */
-    public void dot(Query query, StringBuilder root, EBase element) {
-        List<EBase> path = getPath(query, element.geteNum(), eBase -> QuantBase.class.isAssignableFrom(eBase.getClass()));
+    public static void dot(Query query, StringBuilder root, EBase element) {
+        List<EBase> path = getPath(query, element.geteNum(), eBase -> Container.class.isAssignableFrom(eBase.getClass()));
         path.stream()
-                .filter(e -> QuantBase.class.isAssignableFrom(e.getClass()))
-                .forEach(e -> root.append(printQuant(query, e)));
+                .filter(e -> Container.class.isAssignableFrom(e.getClass()))
+                .forEach(e -> root.append(printQuant(query, (Container) e)));
         //print non quant elements
-        root.append(printElementsDef(query,path));
+        root.append(printElementsDef(query, path));
         root.append(printElements(path));
     }
 
-    public String printProps(Query query, BasePropGroup element) {
+    public static String printProps(Query query, BasePropGroup element) {
         //add subgraph for the entire quant
         StringBuilder prpoBuilder = new StringBuilder();
         prpoBuilder.append(" \n subgraph cluster_Props_" + element.geteNum() + " { \n");
         prpoBuilder.append(" \t color=green; \n");
         prpoBuilder.append(" \t node [shape=component]; \n");
-        prpoBuilder.append(" \t " + element.geteNum() + " [shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
+        prpoBuilder.append(" \t " + element.geteNum() + " [color=green, shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
         // label the prop group type
         prpoBuilder.append(" \t label = \" Props[" + element.geteNum() + "];\"; \n");
         //print the prop group list path itself
@@ -346,11 +349,11 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
 
         //give specific number to each property in the group
         for (int i = 0; i < props.size(); i++) {
-             props.get(i).seteNum(element.geteNum()*100+i);
+            props.get(i).seteNum(element.geteNum() * 100 + i);
         }
 
-        prpoBuilder.append("\n "+ printElementsDef(query, props));
-        prpoBuilder.append("\n " + element.geteNum() + "->"+ printElements(props));
+        prpoBuilder.append("\n " + printElementsDef(query, props));
+        prpoBuilder.append("\n " + element.geteNum() + "->" + printElements(props));
         removeRedundentArrow(prpoBuilder);
 
         prpoBuilder.append("\n } \n");
@@ -364,57 +367,75 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
      * @param element
      * @return
      */
-    public String printQuant(Query query, EBase element) {
-        QuantBase quant = (QuantBase) element;
-        QuantType quantType = quant.getqType();
+    public static String printQuant(Query query, Container element) {
+        QuantType quantType = element.getqType();
+        int id  = ((EBase) element).geteNum();
         //add subgraph for the entire quant
         StringBuilder quantBuilder = new StringBuilder();
-        quantBuilder.append(" \n subgraph cluster_Q_" + element.geteNum() + " { \n");
+        quantBuilder.append(" \n subgraph cluster_Q_" + id   + " { \n");
         quantBuilder.append(" \t color=blue; \n");
         quantBuilder.append(" \t node [style=filled]; \n");
-        quantBuilder.append(" \t " + element.geteNum() + " [shape=folder, label=\"" + quantType + "\"]; \n");
+
+        if(element instanceof QuantBase ) {
+            quantBuilder.append(" \t color=blue; \n");
+            quantBuilder.append(" \t " + id + " [color=blue, shape=folder, label=\"" + quantType + "\"]; \n");
+        } if(element instanceof OptionalComp) {
+            quantBuilder.append(" \t color=yellow; \n");
+            quantBuilder.append(" \t " + id + " [color=yellow, shape=tab, label=\"" + quantType + "\"]; \n");
+        }
+
         // label the quant type
-        quantBuilder.append(" \t label = \" Quant[" + element.geteNum() + "];\"; \n");
+        quantBuilder.append(" \t label = \" "+ element.getClass().getSimpleName()+"[" + id + "];\"; \n");
+
         //print the quant list path itself
         //non inclusive for additional quants inside the path - they will be printed separately
-        quant.getNext().forEach(
-                path -> quantBuilder.append(printPath(query, quant.geteNum(), getPath(query, path, eBase -> QuantBase.class.isAssignableFrom(eBase.getClass()))))
-        );
+        Object next = element.getNext();
+        // next can be either List<Int> or Int
+        if(next instanceof Collection) {
+            ((Collection)next).forEach(
+                    path -> quantBuilder.append(printPath(query, id, getPath(query, (Integer) path, eBase -> Container.class.isAssignableFrom(eBase.getClass()))))
+            );
+        } else {
+            quantBuilder.append(printPath(query, id, getPath(query, (int) next, eBase -> Container.class.isAssignableFrom(eBase.getClass()))));
+        }
         quantBuilder.append("\n } \n");
         return quantBuilder.toString();
     }
 
-    private String printPath(Query query, int id, List<? extends EBase> path) {
+    public static String printPath(Query query, int id, List<? extends EBase> path) {
         StringBuilder builder = new StringBuilder();
-        //print quant container
+        //print container (quant / optional )
         path.stream()
-                .filter(e -> QuantBase.class.isAssignableFrom(e.getClass()))
-                .forEach(e -> builder.append(printQuant(query, e)));
+                .filter(e -> Container.class.isAssignableFrom(e.getClass()))
+                .forEach(e -> builder.append(printQuant(query, (Container) e)));
 
         //print the quant itself
-        builder.append("\n "+ printElementsDef(query,path));
-        builder.append("\n " + id + "->"+ printElements(path));
+        builder.append("\n " + printElementsDef(query, path));
+        builder.append("\n " + id + "->" + printElements(path));
         removeRedundentArrow(builder);
         return builder.toString();
     }
 
-    private String printElementsDef(Query query,List<? extends EBase> path) {
+    public static String printElementsDef(Query query, List<? extends EBase> path) {
         StringBuilder builder = new StringBuilder();
         path.forEach(element -> {
                     //print relationship symbol for the quant
                     if (element instanceof Rel) {
                         //append directed rel
-                        builder.append(element.geteNum() + " [ label=\"" + shortLabel(element,new StringJoiner(""),true ) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
+                        builder.append(element.geteNum() + " [ label=\"" + shortLabel(element, new StringJoiner(""), true) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
                     }//print props symbol
                     else if (element instanceof BaseProp) {
                         builder.append(element.geteNum() + " [ label=\"" + printDetailedProp((BaseProp) element) + "\" ,shape = component]; \n");
                     }//print prop group step
                     else if (element instanceof BasePropGroup) {
-                        builder.append(printProps(query,(EPropGroup) element));
+                        builder.append(printProps(query, (EPropGroup) element));
+                    }//print prop group step
+                    else if (element instanceof Below) {
+                        builder.append(printBelowProps(query, (Below) element));
                     }//print typed steps
                     else if (element instanceof Typed) {
                         // - if typed print the type
-                        builder.append(element.geteNum() + " [ label=\"" + shortLabel(element,new StringJoiner(""),true ) + "\" ,shape = Mrecord]; \n");
+                        builder.append(element.geteNum() + " [ label=\"" + shortLabel(element, new StringJoiner(""), true) + "\" ,shape = Mrecord]; \n");
                     }
                     //todo - print rel-typed patterns
                 }
@@ -422,7 +443,23 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
         return builder.toString();
     }
 
-    private void removeRedundentArrow(StringBuilder builder) {
+    private static String printBelowProps(Query query, Below<Integer> element) {
+        StringBuilder builder = new StringBuilder();
+        //verify below exist
+        if (element.getB() > 0) {
+            EBase below = findByEnum(query, element.getB()).get();
+            //populate prop
+            if (BaseProp.class.isAssignableFrom(below.getClass())) {
+                //todo
+            //populate prop group
+            } else if (BasePropGroup.class.isAssignableFrom(below.getClass())) {
+                //todo
+            }
+        }
+        return builder.toString();
+    }
+
+    public static void removeRedundentArrow(StringBuilder builder) {
         if (builder.toString().endsWith("->"))
             builder.delete(builder.toString().length() - 2, builder.toString().length());
     }
@@ -432,7 +469,7 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
      *
      * @param path
      */
-    private String printElements(List<? extends EBase> path) {
+    public static String printElements(List<? extends EBase> path) {
         StringBuilder builder = new StringBuilder();
 
         path.forEach(element -> {
@@ -449,9 +486,9 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
                     else if (element instanceof BaseProp) {
                         builder.append(element.geteNum() + "->");
                     }
-                    //print quant
-                    else if (element instanceof QuantBase) {
-                        //details of this quant will be covered inside the subgraph
+                    //print containers
+                    else if (element instanceof Container) {
+                        //details of this container will be covered inside the subgraph
                         builder.append(element.geteNum() + "->");
                     }
                     //print group

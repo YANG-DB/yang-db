@@ -1225,7 +1225,8 @@ public class AsgQueryUtil {
 
     public static List<AsgEBase<? extends EBase>> path(
             AsgEBase<? extends EBase> asgEBase,
-            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> elementProvider,
+            Function<AsgEBase<? extends EBase>,
+            Iterable<AsgEBase<? extends EBase>>> elementProvider,
             Predicate<AsgEBase> predicate,
             List<AsgEBase<? extends EBase>> path) {
 
