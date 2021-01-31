@@ -44,7 +44,6 @@ package com.yangdb.fuse.model.execution.plan.descriptors;
  */
 
 import com.yangdb.fuse.model.Container;
-import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;

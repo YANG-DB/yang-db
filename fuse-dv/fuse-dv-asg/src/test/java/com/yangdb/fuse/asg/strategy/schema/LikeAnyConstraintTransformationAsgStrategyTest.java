@@ -2,9 +2,9 @@ package com.yangdb.fuse.asg.strategy.schema;
 
 import com.yangdb.fuse.asg.strategy.AsgStrategy;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -29,9 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.ePropGroup;
-import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.quant1;
-import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.query.quant.QuantType.all;
 
 public class LikeAnyConstraintTransformationAsgStrategyTest {

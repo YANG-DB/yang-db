@@ -9,9 +9,9 @@ package com.yangdb.fuse.epb.plan.extenders;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,11 @@ package com.yangdb.fuse.epb.plan.extenders;
  * #L%
  */
 
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
-import com.yangdb.fuse.model.execution.plan.*;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
+import com.yangdb.fuse.model.execution.plan.Direction;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.yangdb.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
-import static com.yangdb.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorUnmarkedOfType;
 
 /**
  * Created by Roman on 23/04/2017.

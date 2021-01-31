@@ -355,6 +355,7 @@ public class EpbJoinTests {
                 build();
         planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        Assert.assertNotNull(PlanWithCostDescriptor.printGraph(joinPlans));
         Assert.assertEquals(2, joinPlans.size());
         Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
     }
@@ -429,6 +430,7 @@ public class EpbJoinTests {
                 ).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        Assert.assertNotNull(PlanWithCostDescriptor.printGraph(plan));
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
         Assert.assertEquals(joinPlans.stream().map(p -> p.getPlan().toString()).collect(Collectors.toSet()).size(), joinPlans.size());
         Assert.assertEquals(18, joinPlans.size());

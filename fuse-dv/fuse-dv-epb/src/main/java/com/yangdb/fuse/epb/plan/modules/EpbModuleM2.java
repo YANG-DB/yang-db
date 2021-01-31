@@ -9,9 +9,9 @@ package com.yangdb.fuse.epb.plan.modules;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ package com.yangdb.fuse.epb.plan.modules;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.epb.*;
 import com.yangdb.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.yangdb.fuse.epb.plan.estimation.IncrementalEstimationContext;
@@ -45,7 +46,6 @@ import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.typesafe.config.Config;
 import org.jooby.Env;
 
 import static com.google.inject.name.Names.named;

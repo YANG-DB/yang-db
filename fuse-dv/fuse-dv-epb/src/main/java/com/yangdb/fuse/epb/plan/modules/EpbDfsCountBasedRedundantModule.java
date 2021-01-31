@@ -9,9 +9,9 @@ package com.yangdb.fuse.epb.plan.modules;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,12 +25,14 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
 import com.google.inject.TypeLiteral;
+import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.epb.CostEstimator;
 import com.yangdb.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.yangdb.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.yangdb.fuse.dispatcher.epb.PlanTracer;
 import com.yangdb.fuse.epb.plan.estimation.IncrementalEstimationContext;
-import com.yangdb.fuse.epb.plan.estimation.cache.*;
+import com.yangdb.fuse.epb.plan.estimation.cache.CachedCostEstimator;
+import com.yangdb.fuse.epb.plan.estimation.cache.EntityFilterOpDescriptor;
 import com.yangdb.fuse.epb.plan.estimation.cache.EntityOpDescriptor;
 import com.yangdb.fuse.epb.plan.estimation.count.CountCostEstimator;
 import com.yangdb.fuse.epb.plan.estimation.pattern.PredicateCostEstimator;
@@ -43,11 +45,10 @@ import com.yangdb.fuse.model.descriptors.ToStringDescriptor;
 import com.yangdb.fuse.model.execution.plan.PlanOp;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
-import com.yangdb.fuse.model.execution.plan.composite.descriptors.*;
+import com.yangdb.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
-import com.typesafe.config.Config;
 import org.jooby.Env;
 
 import java.time.Duration;

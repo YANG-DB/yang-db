@@ -339,7 +339,7 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
         prpoBuilder.append(" \t node [shape=component]; \n");
         prpoBuilder.append(" \t " + element.geteNum() + " [color=green, shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
         // label the prop group type
-        prpoBuilder.append(" \t label = \" Props[" + element.geteNum() + "];\"; \n");
+        prpoBuilder.append(" \t label = \" Props[" + element.geteNum() + "]\"; \n");
         //print the prop group list path itself
         //non inclusive for additional group inside the path - they will be printed separately
         List<BaseProp> props = (List<BaseProp>) element.getProps()

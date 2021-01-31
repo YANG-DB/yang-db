@@ -9,9 +9,9 @@ package com.yangdb.fuse.epb.plan.extenders;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,13 @@ package com.yangdb.fuse.epb.plan.extenders;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
-import com.yangdb.fuse.dispatcher.utils.PlanUtil;
 import com.yangdb.fuse.dispatcher.epb.PlanExtensionStrategy;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.utils.PlanUtil;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
@@ -35,15 +35,17 @@ import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
-import com.yangdb.fuse.model.query.properties.constraint.Constraint;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.unipop.schemaProviders.*;
+import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.yangdb.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import javaslang.collection.Stream;
 
 import java.util.*;
