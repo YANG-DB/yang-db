@@ -336,8 +336,8 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
         StringBuilder prpoBuilder = new StringBuilder();
         prpoBuilder.append(" \n subgraph cluster_Props_" + element.geteNum() + " { \n");
         prpoBuilder.append(" \t color=green; \n");
-        prpoBuilder.append(" \t node [shape=component]; \n");
-        prpoBuilder.append(" \t " + element.geteNum() + " [color=green, shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
+        prpoBuilder.append(" \t node [fillcolor=khaki3, shape=component]; \n");
+        prpoBuilder.append(" \t " + element.geteNum() + " [fillcolor=green, shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
         // label the prop group type
         prpoBuilder.append(" \t label = \" Props[" + element.geteNum() + "]\"; \n");
         //print the prop group list path itself
@@ -353,7 +353,7 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
         }
 
         prpoBuilder.append("\n " + printElementsDef(query, props));
-        prpoBuilder.append("\n " + element.geteNum() + "->" + printElements(props));
+        props.forEach(p->prpoBuilder.append("\n " + element.geteNum() + "->" + printElements(Collections.singletonList(p))));
         removeRedundentArrow(prpoBuilder);
 
         prpoBuilder.append("\n } \n");
@@ -378,7 +378,7 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
 
         if(element instanceof QuantBase ) {
             quantBuilder.append(" \t color=blue; \n");
-            quantBuilder.append(" \t " + id + " [color=blue, shape=folder, label=\"" + quantType + "\"]; \n");
+            quantBuilder.append(" \t " + id + " [color=lightblue, shape=folder, label=\"" + quantType + "\"]; \n");
         } if(element instanceof OptionalComp) {
             quantBuilder.append(" \t color=yellow; \n");
             quantBuilder.append(" \t " + id + " [color=yellow, shape=tab, label=\"" + quantType + "\"]; \n");
@@ -422,10 +422,10 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
                     //print relationship symbol for the quant
                     if (element instanceof Rel) {
                         //append directed rel
-                        builder.append(element.geteNum() + " [ label=\"" + shortLabel(element, new StringJoiner(""), true) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
+                        builder.append(element.geteNum() + " [ fillcolor=yellow, label=\"" + shortLabel(element, new StringJoiner(""), true) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
                     }//print props symbol
                     else if (element instanceof BaseProp) {
-                        builder.append(element.geteNum() + " [ label=\"" + printDetailedProp((BaseProp) element) + "\" ,shape = component]; \n");
+                        builder.append(element.geteNum() + " [fillcolor=khaki3, label=\"" + printDetailedProp((BaseProp) element) + "\" ,shape = component]; \n");
                     }//print prop group step
                     else if (element instanceof BasePropGroup) {
                         builder.append(printProps(query, (EPropGroup) element));

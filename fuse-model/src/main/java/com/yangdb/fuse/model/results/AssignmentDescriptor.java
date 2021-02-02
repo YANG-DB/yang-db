@@ -105,14 +105,14 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
         String label = rel.getrType();
 
         if (rel.fields().isEmpty()) {
-            sb.append("\n \t " + id + " [color=green, shape=rarrow, label=\"" + label + "\"]; \n");
+            sb.append("\n \t " + id + " [color=green, fillcolor=yellow, shape=rarrow, label=\"" + label + "\"]; \n");
         } else {
             //only print when entity has fields
             sb.append(" \n subgraph cluster_Q_" + id + " { \n");
             sb.append(" \t color=blue; \n");
-            sb.append(" \t " + id + " [color=blue, shape=folder, label=\"" + label + "\"]; \n");
+            sb.append(" \t " + id + " [fillcolor=lightblue, shape=folder, label=\"" + label + "\"]; \n");
             //print def
-            rel.getProperties().forEach(property -> sb.append(" \t " + id + "_" + property.getpType() + " [shape=record, label=\"" + property.getpType() + "|" + property.getValue() + "\"] \n"));
+            rel.getProperties().forEach(property -> sb.append(" \t " + id + "_" + property.getpType() + " [fillcolor=khaki3, shape=record, label=\"" + property.getpType() + "|" + property.getValue() + "\"] \n"));
             //print graph
             sb.append(" \n \t");
             rel.getProperties().forEach(property -> sb.append(id).append("->").append(id + "_" + property.getpType()).append("\n \t"));
@@ -143,7 +143,7 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
         sb.append(" \t color=blue; \n");
         sb.append(" \t " + id + " [style=filled, color=lightblue,  shape=folder, label=\"" + label + "\"]; \n");
         //print def
-        e.getProperties().forEach(property -> sb.append(" \t " + id + "_" + property.getpType() + " [shape=record, label=\"" + property.getpType() + "|" + property.getValue() + "\"] \n"));
+        e.getProperties().forEach(property -> sb.append(" \t " + id + "_" + property.getpType() + " [fillcolor=khaki3, shape=record, label=\"" + property.getpType() + "|" + property.getValue() + "\"] \n"));
         //print graph
         sb.append(" \n \t");
         e.getProperties().forEach(property -> sb.append(id).append("->").append(id + "_" + property.getpType()).append("\n \t"));

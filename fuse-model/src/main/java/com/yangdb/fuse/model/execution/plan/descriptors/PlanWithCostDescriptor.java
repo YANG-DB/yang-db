@@ -314,7 +314,7 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
         } else if (op instanceof RelationOp) {
             //print relationship symbol for the quant
             //append directed rel
-                builder.append(element.geteNum() + " [ label=\"" + AsgQueryDescriptor.shortLabel(asgEbase, new StringJoiner(""), true) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
+                builder.append(element.geteNum() + " [ fillcolor=lightyellow, label=\"" + AsgQueryDescriptor.shortLabel(asgEbase, new StringJoiner(""), true) + "\", shape = " + (((Rel) element).getDir().equals(Rel.Direction.R) ? "rarrow" : "larrow") + "]; \n");
         }//print props group symbol
         else if ((op instanceof RelationFilterOp) || (op instanceof EntityFilterOp)) {
             builder.append(printProps((BasePropGroup) element));
@@ -338,7 +338,7 @@ public class PlanWithCostDescriptor<P, C> implements Descriptor<PlanWithCost<P, 
         StringBuilder prpoBuilder = new StringBuilder();
         prpoBuilder.append(" \n subgraph cluster_Props_" + element.geteNum() + " { \n");
         prpoBuilder.append(" \t color=green; \n");
-        prpoBuilder.append(" \t node [shape=component]; \n");
+        prpoBuilder.append(" \t node [fillcolor=khaki3, shape=component]; \n");
         prpoBuilder.append(" \t " + element.geteNum() + " [color=green, shape=folder, label=\"" + element.getQuantType() + "\"]; \n");
         // label the prop group type
         prpoBuilder.append(" \t label = \" Props[" + element.geteNum() + "];\"; \n");

@@ -309,7 +309,7 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery>, GraphDescriptor
 
         if(element.geteBase() instanceof QuantBase ) {
             quantBuilder.append(" \t color=blue; \n");
-            quantBuilder.append(" \t " + id + " [color=blue, shape=folder, label=\"" + quantType + "\"]; \n");
+            quantBuilder.append(" \t " + id + " [color=lightblue, shape=folder, label=\"" + quantType + "\"]; \n");
         } if(element.geteBase() instanceof OptionalComp) {
             quantBuilder.append(" \t color=yellow; \n");
             quantBuilder.append(" \t " + id + " [color=yellow, shape=tab, label=\"" + quantType + "\"]; \n");
