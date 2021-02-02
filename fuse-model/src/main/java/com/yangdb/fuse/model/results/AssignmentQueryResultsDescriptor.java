@@ -12,7 +12,7 @@ package com.yangdb.fuse.model.results;
  *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +22,14 @@ package com.yangdb.fuse.model.results;
  */
 
 import com.yangdb.fuse.model.descriptors.Descriptor;
-import org.omg.PortableInterceptor.INACTIVE;
+import com.yangdb.fuse.model.descriptors.GraphDescriptor;
 
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-public class AssignmentQueryResultsDescriptor implements Descriptor<AssignmentsQueryResult<Entity,Relationship>> {
+public class AssignmentQueryResultsDescriptor implements Descriptor<AssignmentsQueryResult<Entity,Relationship>>, GraphDescriptor<AssignmentsQueryResult<Entity,Relationship>>
+{
     private static AssignmentQueryResultsDescriptor INSTANCE = new AssignmentQueryResultsDescriptor();
 
     @Override
@@ -48,5 +49,28 @@ public class AssignmentQueryResultsDescriptor implements Descriptor<AssignmentsQ
     }
 
 
+    @Override
+    public String visualize(AssignmentsQueryResult<Entity, Relationship> item) {
+        //todo
+        StringBuilder sb = new StringBuilder();
+        // name
+        sb.append("digraph G { \n");
+        //left to right direction
+        sb.append("\t rankdir=LR; \n");
+        //general node shape
+        sb.append("\t node [shape=Mrecord]; \n");
+        //todo - remove once finished
+        sb.append("TODO");
+        //append start node shape (first node in query elements list)
+//        sb.append("\t start [shape=Mdiamond, color=blue, style=\"rounded\"]; \n");
+
+        //print entities
+//        entities(sb, item.getEntities());
+        //print relations
+        // relations(sb, item.getRelationships());
+        //iterate over the query
+        sb.append("\n\t } \n");
+        return sb.toString();
+    }
 }
 

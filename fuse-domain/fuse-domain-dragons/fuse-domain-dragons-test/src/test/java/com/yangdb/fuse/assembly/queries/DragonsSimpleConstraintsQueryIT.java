@@ -88,6 +88,7 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
             Assert.assertEquals(1,e.getProperties().size());
             Assert.assertEquals("firstName",e.getProperties().iterator().next().getpType());
         });
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
     @Test
@@ -116,8 +117,10 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+        Assignment assignment = (Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
+        Assert.assertEquals(2, assignment.getEntities().size());
+        Assert.assertEquals(1, assignment.getRelationships().size());
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
 
@@ -156,14 +159,16 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(3, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+        Assignment assignment = (Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
+        Assert.assertEquals(3, assignment.getEntities().size());
+        Assert.assertEquals(2, assignment.getRelationships().size());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Know")).count());
+        Assert.assertEquals(1, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
+        Assert.assertEquals(1, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Know")).count());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertEquals(1, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(2, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
 
@@ -193,13 +198,15 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+        Assignment assignment = (Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
+        Assert.assertEquals(2, assignment.getEntities().size());
+        Assert.assertEquals(1, assignment.getRelationships().size());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
+        Assert.assertEquals(1, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertEquals(1, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(1, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
 
@@ -229,13 +236,15 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
 
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+        Assignment assignment = (Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
+        Assert.assertEquals(2, assignment.getEntities().size());
+        Assert.assertEquals(1, assignment.getRelationships().size());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
+        Assert.assertEquals(1, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
 
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertEquals(1, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(1, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
 
@@ -268,15 +277,18 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
                 )).build();
         QueryResultBase pageData = query(fuseClient, fuseResourceInfo, 1000, query);
 
+        Assignment assignment = (Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0);
         Assert.assertEquals(1, ((AssignmentsQueryResult) pageData).getAssignments().size());
-        Assert.assertEquals(5, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().size());
-        Assert.assertEquals(3, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().size());
+        Assert.assertEquals(5, assignment.getEntities().size());
+        Assert.assertEquals(3, assignment.getRelationships().size());
 
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
-        Assert.assertEquals(1, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Know")).count());
+        Assert.assertEquals(2, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Own")).count());
+        Assert.assertEquals(1, assignment.getRelationships().stream().filter(e -> ((Relationship) e).getrType().equals("Know")).count());
 
-        Assert.assertEquals(2, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
-        Assert.assertEquals(3, ((Assignment) ((AssignmentsQueryResult) pageData).getAssignments().get(0)).getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+        Assert.assertEquals(2, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Dragon")).count());
+        Assert.assertEquals(3, assignment.getEntities().stream().filter(e -> ((Entity) e).geteType().equals("Person")).count());
+
+        Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
     }
 }
