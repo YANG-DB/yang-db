@@ -73,7 +73,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         String assembly = config.getString("assembly");
 
         this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(() ->
-                new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly ", "No Ontology present for assembly [" + assembly+"]"))));
+                new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly ", "No Ontology present for assembly [" + assembly + "]"))));
 
         //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
         this.indexProvider = indexProvider.get(assembly).orElseGet(() ->
@@ -94,35 +94,44 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     @Override
     public GraphElementSchemaProvider get(Ontology ontology) {
+        if (indexProvider.getOntology().equals(ontology.getOnt()))
+            return new GraphElementSchemaProvider.Impl(
+                    getVertexSchemas(this.accessor,this.indexProvider),
+                    getEdgeSchemas(this.accessor,this.indexProvider));
+
+        //if the ontology differ from the initial one - generate a provider
+        IndexProvider provider = IndexProvider.Builder.generate(ontology);
+        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
         return new GraphElementSchemaProvider.Impl(
-                getVertexSchemas(),
-                getEdgeSchemas());
+                getVertexSchemas(accessor, provider),
+                getEdgeSchemas(accessor, provider));
+
     }
 
-    private List<GraphEdgeSchema> getEdgeSchemas() {
+    private List<GraphEdgeSchema> getEdgeSchemas(Ontology.Accessor accessor, IndexProvider indexProvider) {
         return indexProvider.getRelations().stream()
-                .flatMap(r -> generateGraphEdgeSchema(r).stream())
+                .flatMap(r -> generateGraphEdgeSchema(accessor,r).stream())
                 .collect(Collectors.toList());
     }
 
-    private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r) {
+    private List<GraphEdgeSchema> generateGraphEdgeSchema(Ontology.Accessor accessor,Relation r) {
         MappingIndexType type = MappingIndexType.valueOf(r.getPartition().toUpperCase());
         switch (type) {
             case UNIFIED:
                 //todo verify correctness
                 return r.getProps().getValues().stream()
-                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
+                        .flatMap(v -> generateGraphEdgeSchema(accessor,r, r.getType(), new StaticIndexPartitions(v)).stream())
                         .collect(Collectors.toList());
             case STATIC:
                 return r.getProps().getValues().stream()
-                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new StaticIndexPartitions(v)).stream())
+                        .flatMap(v -> generateGraphEdgeSchema(accessor,r, r.getType(), new StaticIndexPartitions(v)).stream())
                         .collect(Collectors.toList());
             case NESTED:
                 return r.getProps().getValues().stream()
-                        .flatMap(v -> generateGraphEdgeSchema(r, r.getType(), new NestedIndexPartitions(v)).stream())
+                        .flatMap(v -> generateGraphEdgeSchema(accessor,r, r.getType(), new NestedIndexPartitions(v)).stream())
                         .collect(Collectors.toList());
             case TIME:
-                return generateGraphEdgeSchema(r, r.getType(), new TimeBasedIndexPartitions(r.getProps()));
+                return generateGraphEdgeSchema(accessor,r, r.getType(), new TimeBasedIndexPartitions(r.getProps()));
         }
 
         return Collections.singletonList(new GraphEdgeSchema.Impl(r.getType(),
@@ -130,13 +139,13 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     }
 
 
-    private List<GraphVertexSchema> getVertexSchemas() {
+    private List<GraphVertexSchema> getVertexSchemas(Ontology.Accessor accessor, IndexProvider indexProvider) {
         return indexProvider.getEntities().stream()
-                .flatMap(e -> generateGraphVertexSchema(e).stream())
+                .flatMap(e -> generateGraphVertexSchema(accessor,e).stream())
                 .collect(Collectors.toList());
     }
 
-    private List<GraphVertexSchema> generateGraphVertexSchema(Entity e) {
+    private List<GraphVertexSchema> generateGraphVertexSchema(Ontology.Accessor accessor,Entity e) {
         MappingIndexType type = MappingIndexType.valueOf(e.getPartition().toUpperCase());
         switch (type) {
             case UNIFIED:
@@ -145,28 +154,28 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                         .map(v -> new GraphVertexSchema.Impl(
                                 e.getType(),
                                 new StaticIndexPartitions(v),
-                                getGraphElementPropertySchemas(e.getType())))
+                                getGraphElementPropertySchemas(accessor,e.getType())))
                         .collect(Collectors.toList());
             case NESTED:
                 return e.getProps().getValues().stream()
                         .map(v -> new GraphVertexSchema.Impl(
                                 e.getType(),
                                 new NestedIndexPartitions(v),
-                                getGraphElementPropertySchemas(e.getType())))
+                                getGraphElementPropertySchemas(accessor,e.getType())))
                         .collect(Collectors.toList());
             case STATIC:
                 return e.getProps().getValues().stream()
                         .map(v -> new GraphVertexSchema.Impl(
                                 e.getType(),
                                 new StaticIndexPartitions(v),
-                                getGraphElementPropertySchemas(e.getType())))
+                                getGraphElementPropertySchemas(accessor,e.getType())))
                         .collect(Collectors.toList());
             case TIME:
                 return e.getProps().getValues().stream()
                         .map(v -> new GraphVertexSchema.Impl(
                                 e.getType(),
                                 new TimeBasedIndexPartitions(e.getProps()),
-                                getGraphElementPropertySchemas(e.getType())))
+                                getGraphElementPropertySchemas(accessor,e.getType())))
                         .collect(Collectors.toList());
         }
         //default - when other partition type is declared
@@ -175,23 +184,23 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                 new GraphVertexSchema.Impl(
                         e.getType(),
                         new StaticIndexPartitions(v),
-                        getGraphElementPropertySchemas(e.getType())));
+                        getGraphElementPropertySchemas(accessor,e.getType())));
     }
 
 
-    private Optional<List<EPair>> getEdgeSchemaOntologyPairs(String edge) {
+    private Optional<List<EPair>> getEdgeSchemaOntologyPairs(Ontology.Accessor accessor, String edge) {
         Optional<RelationshipType> relation = accessor.relation(edge);
         return relation.map(RelationshipType::getePairs);
     }
 
-    private List<GraphEdgeSchema> generateGraphEdgeSchema(Relation r, String v, IndexPartitions partitions) {
-        Optional<List<EPair>> pairs = getEdgeSchemaOntologyPairs(v);
+    private List<GraphEdgeSchema> generateGraphEdgeSchema(Ontology.Accessor accessor, Relation r, String v, IndexPartitions partitions) {
+        Optional<List<EPair>> pairs = getEdgeSchemaOntologyPairs(accessor,v);
 
         if (!pairs.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", "No edges pairs are found for given relation name " + v));
 
         List<EPair> pairList = pairs.get();
-        validateSchema(pairList);
+        validateSchema(accessor,pairList);
 
         return concat(
                 pairList.stream().map(p -> constructEdgeSchema(r, v, partitions, p, Direction.OUT)),
@@ -208,11 +217,11 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList(ENTITY_A_ID),
                                 Optional.of(p.geteTypeB()),
-                                getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
+                                getGraphRedundantPropertySchemas(accessor,ENTITY_B, p.geteTypeB(), r))),
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList(ENTITY_B_ID),
                                 Optional.of(p.geteTypeA()),
-                                getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
+                                getGraphRedundantPropertySchemas(accessor,ENTITY_A, p.geteTypeA(), r))),
                         direction,
                         Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
                         Optional.empty(),
@@ -227,11 +236,11 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList(ENTITY_A_ID),
                                 Optional.of(p.geteTypeA()),
-                                getGraphRedundantPropertySchemas(ENTITY_A, p.geteTypeA(), r))),
+                                getGraphRedundantPropertySchemas(accessor,ENTITY_A, p.geteTypeA(), r))),
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList(ENTITY_B_ID),
                                 Optional.of(p.geteTypeB()),
-                                getGraphRedundantPropertySchemas(ENTITY_B, p.geteTypeB(), r))),
+                                getGraphRedundantPropertySchemas(accessor,ENTITY_B, p.geteTypeB(), r))),
                         direction,
                         Optional.of(new GraphEdgeSchema.DirectionSchema.Impl(DIRECTION, OUT, IN)),
                         Optional.empty(),
@@ -245,16 +254,17 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     /**
      * todo  -verify is we need to examine each side of the pair as an Entity type of  both as relationship type
+     *
      * @param pairList
      */
-    private void validateSchema(List<EPair> pairList) {
+    private void validateSchema(Ontology.Accessor accessor,List<EPair> pairList) {
         pairList.forEach(pair -> {
-            if ( !(accessor.$element(pair.geteTypeA()).isPresent()) || !(accessor.$element(pair.geteTypeB()).isPresent()))
+            if (!(accessor.$element(pair.geteTypeA()).isPresent()) || !(accessor.$element(pair.geteTypeB()).isPresent()))
                 throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Pair containing " + pair.toString() + " was not matched against the current ontology"));
         });
     }
 
-    private List<GraphElementPropertySchema> getGraphElementPropertySchemas(String type) {
+    private List<GraphElementPropertySchema> getGraphElementPropertySchemas(Ontology.Accessor accessor,String type) {
         EntityType entityType = accessor.entity$(type);
         List<GraphElementPropertySchema> elementPropertySchemas = new ArrayList<>();
         entityType.getProperties()
@@ -276,20 +286,20 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     }
 
 
-    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(String entitySide, String entityType, Relation rel) {
+    private List<GraphRedundantPropertySchema> getGraphRedundantPropertySchemas(Ontology.Accessor accessor,String entitySide, String entityType, Relation rel) {
         List<GraphRedundantPropertySchema> redundantPropertySchemas = new ArrayList<>();
         //verify ontology
         accessor.$element(entityType)
-                    .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Schema generation exception","No Element in Ontology "+entityType)))
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("Schema generation exception", "No Element in Ontology " + entityType)))
                 .getIdField()
-                  .forEach(field -> {
+                .forEach(field -> {
                     if (!accessor.$element(entityType).get().fields().contains(field))
                         throw new FuseError.FuseErrorException(new FuseError("Schema generation exception", " Element " + entityType + " not containing " + ID + " metadata property "));
-        });
-        validateRedundant(entityType, entitySide, rel.getRedundant());
+                });
+        validateRedundant(accessor,entityType, entitySide, rel.getRedundant());
         redundantPropertySchemas.add(new GraphRedundantPropertySchema.Impl(ID, String.format("%s.%s", entitySide, ID), "string"));
         //add all RedundantProperty according to schema
-        validateRedundant(entityType, entitySide, rel.getRedundant());
+        validateRedundant(accessor,entityType, entitySide, rel.getRedundant());
         rel.getRedundant()
                 .stream()
                 .filter(r -> r.getSide().contains(entitySide))
@@ -299,7 +309,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
         return redundantPropertySchemas;
     }
 
-    private void validateRedundant(String entityType, String entitySide, List<Redundant> redundant) {
+    private void validateRedundant(Ontology.Accessor accessor,String entityType, String entitySide, List<Redundant> redundant) {
         redundant.stream()
                 .filter(r -> r.getSide().contains(entitySide))
                 .forEach(r -> {

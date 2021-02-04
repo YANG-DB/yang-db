@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,17 +37,14 @@ public class CachedGraphElementSchemaProviderFactory implements GraphElementSche
             @Named(schemaProviderFactoryParameter) GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.schemaProviderFactory = schemaProviderFactory;
         this.schemaProviders = new HashMap<>();
-        this.sync = new Object();
     }
     //endregion
 
     //region GraphElementSchemaProviderFactory Implementation
     @Override
-    public GraphElementSchemaProvider get(Ontology ontology) {
-        synchronized (this.sync) {
-            return this.schemaProviders.computeIfAbsent(ontology.getOnt(),
-                    ont -> new GraphElementSchemaProvider.Cached(this.schemaProviderFactory.get(ontology)));
-        }
+    public synchronized GraphElementSchemaProvider get(Ontology ontology) {
+        return this.schemaProviders.computeIfAbsent(ontology.getOnt(),
+                ont -> new GraphElementSchemaProvider.Cached(this.schemaProviderFactory.get(ontology)));
     }
     //endregion
 
@@ -55,6 +52,5 @@ public class CachedGraphElementSchemaProviderFactory implements GraphElementSche
     private GraphElementSchemaProviderFactory schemaProviderFactory;
 
     private Map<String, GraphElementSchemaProvider> schemaProviders;
-    private Object sync;
     //endregion
 }

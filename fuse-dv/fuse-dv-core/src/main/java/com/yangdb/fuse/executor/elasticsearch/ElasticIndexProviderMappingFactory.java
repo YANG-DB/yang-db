@@ -25,10 +25,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.GlobalConstants;
-import com.yangdb.fuse.model.ontology.BaseElement;
-import com.yangdb.fuse.model.ontology.EntityType;
-import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
 import javaslang.Tuple2;
@@ -302,7 +299,7 @@ public class ElasticIndexProviderMappingFactory {
     }
 
 
-    public Map<String, Object>  populateMappingIndexFields(Entity ent, EntityType entityType) {
+    public Map<String, Object> populateMappingIndexFields(Entity ent, EntityType entityType) {
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
         mapping.put(PROPERTIES, properties);
@@ -398,13 +395,11 @@ public class ElasticIndexProviderMappingFactory {
 
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
-        switch (nest.getMapping()) {
-            case EMBEDDED:
-                //no specific mapping here -
-                break;
-            case CHILD:
-                mapping.put(TYPE, NESTED);
-                break;
+        String nestMapping = nest.getMapping();
+        if (EMBEDDED.equalsIgnoreCase(nestMapping)) {
+            //no specific mapping here -
+        } else if (CHILD.equalsIgnoreCase(nestMapping)) {
+            mapping.put(TYPE, NESTED);
         }
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
@@ -428,13 +423,11 @@ public class ElasticIndexProviderMappingFactory {
 
         Map<String, Object> mapping = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
-        switch (nest.getMapping()) {
-            case EMBEDDED:
-                //no specific mapping here -
-                break;
-            case CHILD:
-                mapping.put(TYPE, NESTED);
-                break;
+        String nestMapping = nest.getMapping();
+        if (EMBEDDED.equalsIgnoreCase(nestMapping)) {
+            //no specific mapping here -
+        } else if (CHILD.equalsIgnoreCase(nestMapping)) {
+            mapping.put(TYPE, NESTED);
         }
         mapping.put(PROPERTIES, properties);
         //populate fields & metadata
@@ -453,10 +446,14 @@ public class ElasticIndexProviderMappingFactory {
         HashMap<String, Object> values = new HashMap<>();
         sideProperties.put(PROPERTIES, values);
 
-        //add side ID
-        values.put(ID, parseType(ontology.property$(ID).getType()));
-        //add side TYPE
-        values.put(TYPE, parseType(ontology.property$(TYPE).getType()));
+        //add side ID - or use default mandatory property
+        values.put(ID, parseType(ontology.property(ID)
+                .orElse(new Property(ID, ID, "string"))
+                .getType()));
+        //add side TYPE  - or use default mandatory property
+        values.put(TYPE, parseType(ontology.property(TYPE)
+                .orElse(new Property(TYPE, TYPE, "string"))
+                .getType()));
         indexProvider.getRelation(label).get().getRedundant(side)
                 .forEach(r -> values.put(r.getName(), parseType(ontology.property$(r.getName()).getType())));
     }
@@ -583,6 +580,7 @@ public class ElasticIndexProviderMappingFactory {
 
     /**
      * Load the shards & replication params from configuration
+     *
      * @return
      */
     private Settings.Builder getSettings() {

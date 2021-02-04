@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,9 +22,11 @@ package com.yangdb.fuse.executor.ontology.schema;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions.Partition.Range;
 import javaslang.collection.Stream;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -47,11 +49,18 @@ public class PrefixedRawSchema implements RawSchema {
     }
     //endregion
 
+    @Override
+    public IndexPartitions getPartition(Ontology ontology, String type) {
+        return _getPartition(this.rawSchema.getPartition(ontology,type));
+    }
+
     //region RawSchema Implementation
     @Override
     public IndexPartitions getPartition(String type) {
-        IndexPartitions indexPartitions = this.rawSchema.getPartition(type);
+        return _getPartition(this.rawSchema.getPartition(type));
+    }
 
+    private IndexPartitions.Impl _getPartition(IndexPartitions indexPartitions) {
         if (indexPartitions.getPartitionField().isPresent()) {
             return new IndexPartitions.Impl(
                     indexPartitions.getPartitionField().get(),

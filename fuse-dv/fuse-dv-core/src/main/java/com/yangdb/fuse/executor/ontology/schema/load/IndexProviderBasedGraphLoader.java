@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,10 +23,12 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
+import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
@@ -54,8 +56,8 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extr
 
 /**
  * Loader for Graph Data Model to E/S
- *  - load directly with Json structure
- *  - load with file
+ * - load directly with Json structure
+ * - load with file
  */
 public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, FuseError> {
     private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
@@ -68,14 +70,16 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
 
     private Client client;
     private EntityTransformer transformer;
+    private OntologyProvider ontologyProvider;
     private RawSchema schema;
     private ObjectMapper mapper;
     private IdGeneratorDriver<Range> idGenerator;
 
 
     @Inject
-    public IndexProviderBasedGraphLoader(Client client, EntityTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
+    public IndexProviderBasedGraphLoader(Client client, OntologyProvider ontologyProvider, EntityTransformer transformer, RawSchema schema, IdGeneratorDriver<Range> idGenerator) {
         this.client = client;
+        this.ontologyProvider = ontologyProvider;
         this.schema = schema;
         this.transformer = transformer;
         this.idGenerator = idGenerator;
@@ -88,16 +92,16 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         //todo load correct ontology graph transformer and use it to transform data to the actual schema structure
         BulkRequestBuilder bulk = client.prepareBulk();
         Response upload = new Response("Upload");
-        DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
+        DataTransformerContext<LogicalGraphModel> context = transformer.transform(ontology, root, directive);
         //load bulk requests
-        load(bulk, upload, context);
+        load(ontology, bulk, upload, context);
         //submit bulk request
-        submit(bulk, upload);
+        submit(ontology, bulk, upload);
 
         return new LoadResponseImpl().response(context.getTransformationResponse()).response(upload);
     }
 
-    private void submit(BulkRequestBuilder bulk, Response upload) {
+    private void submit(String ontology, BulkRequestBuilder bulk, Response upload) {
         //bulk index data
         try {
             BulkResponse responses = bulk.get();
@@ -114,16 +118,16 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
                 }
 
             }
-        }catch (Exception err) {
+        } catch (Exception err) {
             upload.failure(new FuseError("commit failed", err.toString()));
         }
     }
 
-    private void load(BulkRequestBuilder bulk, Response upload, DataTransformerContext<LogicalGraphModel> context) {
+    private void load(String ontology, BulkRequestBuilder bulk, Response upload, DataTransformerContext<LogicalGraphModel> context) {
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {
-                buildIndexRequest(bulk, documentBuilder);
+                buildIndexRequest(ontology, bulk, documentBuilder);
             } catch (FuseError.FuseErrorException e) {
                 upload.failure(e.getError());
             }
@@ -131,16 +135,16 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         //populate bulk relations document index requests
         for (DocumentBuilder e : context.getRelations()) {
             try {
-                buildIndexRequest(bulk, e);
+                buildIndexRequest(ontology, bulk, e);
             } catch (FuseError.FuseErrorException err) {
                 upload.failure(err.getError());
             }
         }
     }
 
-    public IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node) {
+    public IndexRequestBuilder buildIndexRequest(String ontology, BulkRequestBuilder bulk, DocumentBuilder node) {
         try {
-            String index = resolveIndex(node);
+            String index = resolveIndex(ontology, node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
                     .setType(node.getType())
@@ -159,13 +163,17 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     /**
      * resolve index name according to schema and in case of range partitioned index - according to the partitioning field value
      *
+     * @param ontology
      * @param node
      * @return
      */
-    private String resolveIndex(DocumentBuilder node) throws ParseException {
+    private String resolveIndex(String ontology, DocumentBuilder node) throws ParseException {
         String nodeType = node.getType();
         Optional<Tuple2<String, String>> field = node.getPartitionField();
-        IndexPartitions partitions = schema.getPartition(nodeType);
+        Ontology onto = ontologyProvider.get(ontology).orElseThrow(()
+                -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + ontology)));
+
+        IndexPartitions partitions = schema.getPartition(onto, nodeType);
         //todo validate the partitioned field is indeed the correct time field
         if ((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
             String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
@@ -191,7 +199,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
             }
 
             String graph = new String(stream.toByteArray());
-            return load(ontology , mapper.readValue(graph, LogicalGraphModel.class), directive);
+            return load(ontology, mapper.readValue(graph, LogicalGraphModel.class), directive);
         }
         String graph = new String(Files.readAllBytes(data.toPath()));
         //read

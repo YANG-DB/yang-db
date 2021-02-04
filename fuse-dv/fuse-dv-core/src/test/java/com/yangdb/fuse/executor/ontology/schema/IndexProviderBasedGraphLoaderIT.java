@@ -50,7 +50,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client, transformer,nestedSchema, idGeneratorDriver);
+        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontologyProvider, transformer,nestedSchema, idGeneratorDriver);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 
@@ -87,7 +87,7 @@ public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client, transformer,nestedSchema, idGeneratorDriver);
+        IndexProviderBasedGraphLoader graphLoader = new IndexProviderBasedGraphLoader(client,ontologyProvider, transformer,nestedSchema, idGeneratorDriver);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 

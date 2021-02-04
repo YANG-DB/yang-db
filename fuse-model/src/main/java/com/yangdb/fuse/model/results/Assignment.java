@@ -147,7 +147,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
         //endregion
 
         //region Public Methods
-        public Builder withEntities(List<E> entities) {
+        public Builder withEntities(Collection<E> entities) {
             entities.forEach(this::withEntity);
             return this;
         }
@@ -180,7 +180,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
             return this;
         }
 
-        public Builder withRelationships(List<R> relationships) {
+        public Builder withRelationships(Collection<R> relationships) {
             this.relationships.addAll(relationships);
             return this;
         }

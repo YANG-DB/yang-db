@@ -290,5 +290,6 @@ public class DragonsSimpleConstraintsQueryIT implements BaseITMarker {
 
         Assert.assertNotNull(AssignmentDescriptor.printGraph(assignment));
 
+
     }
 }

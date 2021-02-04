@@ -23,12 +23,11 @@ package com.yangdb.fuse.model.results;
 import com.yangdb.fuse.model.descriptors.Descriptor;
 import com.yangdb.fuse.model.descriptors.GraphDescriptor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relationship>>, GraphDescriptor<Assignment<Entity, Relationship>> {
+
     @Override
     public String describe(Assignment<Entity, Relationship> item) {
         return patternValue(item);
@@ -69,6 +68,15 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
 
     private static String strip(String value) {
         return value.replace('[', ' ').replace(']', ' ');
+    }
+
+    public static String printGraph(List<Assignment<Entity, Relationship>> assignments) {
+        Set<Entity> entities = assignments.stream().flatMap(assignment -> assignment.getEntities().stream()).collect(Collectors.toSet());
+        Set<Relationship> relationships = assignments.stream().flatMap(assignment -> assignment.getRelationships().stream()).collect(Collectors.toSet());
+        return printGraph(Assignment.Builder.instance()
+                .withEntities(entities)
+                .withRelationships(relationships)
+                .build());
     }
 
     public static String printGraph(Assignment<Entity, Relationship> item) {

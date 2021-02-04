@@ -138,6 +138,8 @@
         <!-- graph algorithms        -->
         <gs-algo.version>2.0</gs-algo.version>
         <jgrapht.version>1.5.0</jgrapht.version>
+        <!-- graphviz svg graph visualization -->
+        <graphviz.version>0.18.0</graphviz.version>
 
         <!-- com.github.cnsvili.snowflake.version -->
         <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
@@ -560,6 +562,12 @@
                 <version>${com.github.cnsvili.snowflake.version}</version>
             </dependency>
             <!-- snowflake ids -->
+
+            <dependency>
+                <groupId>guru.nidi</groupId>
+                <artifactId>graphviz-java</artifactId>
+                <version>${graphviz.version}</version>
+            </dependency>
 
             <!-- jansi -->
             <dependency>

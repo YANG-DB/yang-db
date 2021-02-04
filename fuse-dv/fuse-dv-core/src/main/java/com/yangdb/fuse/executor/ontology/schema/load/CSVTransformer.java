@@ -27,7 +27,6 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
@@ -56,6 +55,8 @@ import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.*;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
     private final Ontology.Accessor accessor;
+    private final IndexProviderFactory indexProviderFactory;
+    private final OntologyProvider ontologyProvider;
     private IndexProvider indexProvider;
     private final RawSchema schema;
     private final IdGeneratorDriver<Range> idGenerator;
@@ -63,13 +64,15 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
     private final ObjectMapper mapper;
 
     @Inject
-    public CSVTransformer(Config config, OntologyProvider ontology, IndexProviderFactory indexProvider, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
+    public CSVTransformer(Config config, OntologyProvider ontologyProvider, IndexProviderFactory indexProviderFactory, RawSchema schema, IdGeneratorDriver<Range> idGenerator, Client client) {
         String assembly = config.getString("assembly");
-        this.accessor = new Ontology.Accessor(ontology.get(assembly).orElseThrow(
+        this.ontologyProvider = ontologyProvider;
+        this.indexProviderFactory = indexProviderFactory;
+        this.accessor = new Ontology.Accessor(ontologyProvider.get(assembly).orElseThrow(
                 () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly))));
 
         //if no index provider found with assembly name - generate default one accoring to ontology and simple Static Index Partitioning strategy
-        this.indexProvider = indexProvider.get(assembly).orElseGet(() -> IndexProvider.Builder.generate(accessor.get()));
+        this.indexProvider = indexProviderFactory.get(assembly).orElseGet(() -> IndexProvider.Builder.generate(accessor.get()));
 
         this.schema = schema;
         this.idGenerator = idGenerator;
@@ -79,7 +82,23 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
     }
 
     @Override
+    public DataTransformerContext transform(String ontology, CsvElement data, GraphDataLoader.Directive directive) {
+        //match requested ontology
+        Ontology onto = ontologyProvider.get(ontology).orElseThrow(
+                () -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + ontology)));
+        //user specifically requested ontology
+        IndexProvider indexProvider = indexProviderFactory.get(onto.getOnt())
+                .orElseGet(() ->  IndexProvider.Builder.generate(onto));
+
+        return _transform(new Ontology.Accessor(onto),indexProvider, data);
+    }
+
+    @Override
     public DataTransformerContext transform(CSVTransformer.CsvElement data, GraphDataLoader.Directive directive) {
+        return _transform(this.accessor, this.indexProvider, data);
+    }
+
+    private DataTransformerContext _transform(Ontology.Accessor accessor, IndexProvider indexProvider, CsvElement data) {
         DataTransformerContext context = new DataTransformerContext(mapper);
         try (CSVParser csvRecords = new CSVParser(data.content(), CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
@@ -89,12 +108,12 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             List<CSVRecord> dataRecords = csvRecords.getRecords();
             if (accessor.entity(data.label()).isPresent()) {
                 EntityType entityType = accessor.entity$(data.label());
-                dataRecords.forEach(r -> context.withEntity(translate(context, entityType, r.toMap())));
+                dataRecords.forEach(r -> context.withEntity(translate(accessor,indexProvider,context, entityType, r.toMap())));
             } else if (accessor.relation(data.label()).isPresent()) {
                 RelationshipType relType = accessor.relation$(data.label());
                 //store both sides
-                dataRecords.forEach(r -> context.withRelation(translate(context, relType, r.toMap(), "in")));
-                dataRecords.forEach(r -> context.withRelation(translate(context, relType, r.toMap(), "out")));
+                dataRecords.forEach(r -> context.withRelation(translate(accessor,indexProvider,context, relType, r.toMap(), "in")));
+                dataRecords.forEach(r -> context.withRelation(translate(accessor,indexProvider,context, relType, r.toMap(), "out")));
             }
         } catch (IOException e) {
             throw new FuseError.FuseErrorException("Error while building graph Element from csv row ", e);
@@ -110,7 +129,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param node
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext context, EntityType entityType, Map<String, String> node) {
+    private DocumentBuilder translate(Ontology.Accessor accessor,IndexProvider indexProvider,DataTransformerContext context, EntityType entityType, Map<String, String> node) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Entity entity = indexProvider.getEntity(entityType.geteType())
@@ -123,8 +142,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             element.put(TYPE, entity.getType());
 
             //populate fields
-            populateMetadataFields(context, node, entity, element);
-            populatePropertyFields(context, node, entity, element);
+            populateMetadataFields(accessor,context, node, entity, element);
+            populatePropertyFields(accessor,context, node, entity, element);
             return new DocumentBuilder(element, joiner.toString(), entity.getType(), Optional.empty());
         } catch (FuseError.FuseErrorException e) {
             return new DocumentBuilder(e.getError());
@@ -139,7 +158,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param node
      * @return
      */
-    private DocumentBuilder translate(DataTransformerContext context, RelationshipType relType, Map<String, String> node, String direction) {
+    private DocumentBuilder translate(Ontology.Accessor accessor,IndexProvider indexProvider,DataTransformerContext context, RelationshipType relType, Map<String, String> node, String direction) {
         try {
             ObjectNode element = mapper.createObjectNode();
             Relation relation = indexProvider.getRelation(relType.getrType())
@@ -155,9 +174,9 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             element.put(DIRECTION, direction);
 
             //populate fields
-            populateMetadataFields(context, node, relation, element);
+            populateMetadataFields(accessor,context, node, relation, element);
 
-            populatePropertyFields(context, node, relation, element, direction);
+            populatePropertyFields(accessor,indexProvider,context, node, relation, element, direction);
 
             //partition field in case of none static partitioning index
             Optional<Tuple2<String, String>> partition = Optional.empty();
@@ -180,7 +199,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param context
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext context, Map<String, String> node, Relation relation, ObjectNode element) {
+    private void populateMetadataFields(Ontology.Accessor accessor,DataTransformerContext context, Map<String, String> node, Relation relation, ObjectNode element) {
         node.entrySet()
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsMetadata(m.getKey()))
@@ -196,8 +215,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param element
      * @param direction
      */
-    private void populatePropertyFields(DataTransformerContext context, Map<String, String> node, Relation relation, ObjectNode element, String direction) {
-        populateRelationFields(node, relation, element);
+    private void populatePropertyFields(Ontology.Accessor accessor,IndexProvider indexProvider,DataTransformerContext context, Map<String, String> node, Relation relation, ObjectNode element, String direction) {
+        populateRelationFields(accessor,node, relation, element);
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
         //populate each pair
@@ -205,17 +224,17 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
             case "out":
                 //for each pair do:
                 relationshipType.getePairs().forEach(pair -> {
-                    element.put(ENTITY_A, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                    element.put(ENTITY_A, populateSide(indexProvider,ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
                     //populate redundant fields B
-                    element.put(ENTITY_B, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
+                    element.put(ENTITY_B, populateSide(indexProvider,ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
                 });
                 break;
             case "in":
                 //for each pair do:
                 relationshipType.getePairs().forEach(pair -> {
-                    element.put(ENTITY_B, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                    element.put(ENTITY_B, populateSide(indexProvider,ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
                     //populate redundant fields B
-                    element.put(ENTITY_A, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
+                    element.put(ENTITY_A, populateSide(indexProvider,ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
                 });
                 break;
         }
@@ -230,7 +249,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param relation
      * @return
      */
-    private ObjectNode populateSide(String side, DataTransformerContext context, String sideId, String sideType, Relation relation, Map<String, String> node) {
+    private ObjectNode populateSide(IndexProvider indexProvider,String side, DataTransformerContext context, String sideId, String sideType, Relation relation, Map<String, String> node) {
         ObjectNode entitySide = mapper.createObjectNode();
 
         //get type (label) of the side node
@@ -259,7 +278,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param context
      * @param element
      */
-    private void populateMetadataFields(DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
+    private void populateMetadataFields(Ontology.Accessor accessor,DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
         //manage regular metadata properties
         node.entrySet()
                 .stream()
@@ -285,7 +304,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param context
      * @param element
      */
-    private void populatePropertyFields(DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
+    private void populatePropertyFields(Ontology.Accessor accessor,DataTransformerContext context, Map<String, String> node, Entity entity, ObjectNode element) {
         //manage regular properties
         node.entrySet()
                 .stream()
@@ -310,7 +329,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
      * @param relation
      * @param element
      */
-    private void populateRelationFields(Map<String, String> node, Relation relation, ObjectNode element) {
+    private void populateRelationFields(Ontology.Accessor accessor,Map<String, String> node, Relation relation, ObjectNode element) {
         //manage regular properties
         node.entrySet()
                 .stream()

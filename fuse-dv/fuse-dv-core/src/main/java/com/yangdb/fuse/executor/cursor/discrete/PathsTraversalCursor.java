@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,6 +43,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.*;
 
+import static com.yangdb.fuse.model.GlobalConstants.RAW;
+import static com.yangdb.fuse.model.GlobalConstants.TYPE;
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
@@ -50,7 +52,6 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
  */
 public class PathsTraversalCursor implements Cursor {
 
-    public static final String RAW = "raw";
 
     //region Factory
     public static class Factory implements CursorFactory {
@@ -102,7 +103,7 @@ public class PathsTraversalCursor implements Cursor {
                     });
         }
 
-        this.typeProperty = this.ont.property$("type");
+        this.typeProperty = this.ont.property(TYPE);
     }
     //endregion
 
@@ -207,7 +208,7 @@ public class PathsTraversalCursor implements Cursor {
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
-                .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
+                .filter(property -> !property.get().getpType().equals(this.typeProperty.orElse(property.get()).getpType()))
                 .map(property -> new Property(property.get().getpType(), RAW, vertexProperty.value()))
                 .toJavaOptional();
     }
@@ -219,7 +220,7 @@ public class PathsTraversalCursor implements Cursor {
     protected Map<String, EEntityBase> eEntityBases;
     protected Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
-    protected com.yangdb.fuse.model.ontology.Property typeProperty;
+    protected Optional<com.yangdb.fuse.model.ontology.Property> typeProperty;
 
     boolean includeEntities;
     boolean includeRelationships;

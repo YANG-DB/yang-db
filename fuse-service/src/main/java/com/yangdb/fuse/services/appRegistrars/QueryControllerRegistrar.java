@@ -58,11 +58,16 @@ import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
+import com.yangdb.fuse.rendering.SVGGraphRenderer;
 import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.*;
+import org.jooby.Response;
 import org.jooby.apitool.ApiTool;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -109,7 +114,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register graph API context **/
         graphApi(app, appUrlSupplier);
 
-      /**  register V1 API context **/
+        /**  register V1 API context **/
         v1Context(app, appUrlSupplier);
 
         /**  register cypher API context **/
@@ -161,13 +166,19 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse response = this.getController(app).getV1(req.param("queryId").value());
             return Results.with(response, response.status());
         });
+
         /** get the query v1 print*/
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/v1/print", req -> API.queryPrint(app, req, this));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/print",
+                req -> API.queryPrint(app, req, this));
+
+        /** get the query v1 print*/
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/visualize",
+                (req,resp) -> API.queryView(app, req,resp, this));
 
 
         /** view the asg query with d3 html*/
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/view",
-                req -> Results.redirect("/public/assets/AsgTreeViewer.html?q=" + req.param("queryId").value()));
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/visualize",
+                (req,resp) -> API.asgView(app, req,resp, this));
 
 
         /** get the asg query */
@@ -208,11 +219,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/graph",
                 req -> API.planGraph(app, req, this));
 
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/view",
-                req -> Results.redirect("/public/assets/PlanTreeViewer.html?q=" + req.param("queryId").value()));
-
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/sankey",
-                req -> Results.redirect("/public/assets/PlanSankeyViewer.html?q=" + req.param("queryId").value()));
+        /** get the query verbose plan */
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/visualize",
+                (req,resp) -> API.planView(app, req,resp, this));
 
         //swagger
         app.use(new ApiTool()
@@ -633,5 +642,66 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(compose, compose.status());
 
         }
+
+        /**
+         * print an SVG representation of the V1 query
+         * @param app
+         * @param req
+         * @param resp
+         * @param registrar
+         * @return
+         * @throws Throwable
+         */
+        public static Object queryView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
+            String queryId = req.param("queryId").value();
+            ContentResponse<Query> response = registrar.getController(app).getV1(queryId);
+            String dotGraph = QueryDescriptor.printGraph(response.getData());
+            File file = SVGGraphRenderer.render(queryId, dotGraph);
+            ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
+                    .data(file)
+                    .compose();
+            return RegistrarsUtils.withImg(req,resp,compose);
+        }
+
+        /**
+          * print an SVG representation of the ASG query
+         * @param app
+         * @param req
+         * @param resp
+         * @param registrar
+         * @return
+         * @throws Throwable
+         */
+        public static Object asgView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
+            String queryId = req.param("queryId").value();
+            ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(queryId);
+            String dotGraph = AsgQueryDescriptor.printGraph(response.getData());
+            File file = SVGGraphRenderer.render(queryId, dotGraph);
+            ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
+                    .data(file)
+                    .compose();
+            return RegistrarsUtils.withImg(req,resp,compose);
+        }
+
+        /**
+         * print an SVG representation of the execution plan
+         * @param app
+         * @param req
+         * @param resp
+         * @param registrar
+         * @return
+         * @throws Throwable
+         */
+        public static Object planView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
+            String queryId = req.param("queryId").value();
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param("queryId").value());
+            String dotGraph = PlanWithCostDescriptor.printGraph(response.getData());
+            File file = SVGGraphRenderer.render(queryId, dotGraph);
+            ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
+                    .data(file)
+                    .compose();
+            return RegistrarsUtils.withImg(req,resp,compose);
+        }
+
     }
 }

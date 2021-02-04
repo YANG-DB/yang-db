@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,7 +46,10 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
+import static com.yangdb.fuse.model.GlobalConstants.TYPE;
+
 public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
+
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -66,7 +69,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
-        this.typeProperty = this.ont.property$("type");
+        this.typeProperty = this.ont.property(TYPE);
 
         this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
                 context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
@@ -201,7 +204,9 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
-                .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
+                .filter(property -> !property.get().getpType().equals(this.typeProperty
+                        .orElse(property.get())
+                        .getpType()))
                 .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
                 .toJavaOptional();
     }
@@ -241,7 +246,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
     private Set<String> distinctIds;
     private Ontology.Accessor ont;
 
-    private com.yangdb.fuse.model.ontology.Property typeProperty;
+    private Optional<com.yangdb.fuse.model.ontology.Property> typeProperty;
 
     private Map<String, EEntityBase> eEntityBases;
     private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;

@@ -39,12 +39,14 @@ import java.util.stream.StreamSupport;
 public class IndexProviderRawSchema implements RawSchema {
 
     private GraphElementSchemaProvider schemaProvider;
+    private GraphElementSchemaProviderFactory schemaProviderFactory;
 
     @Inject
     public IndexProviderRawSchema(Config config, OntologyProvider provider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         String assembly = config.getString("assembly");
         Optional<Ontology> ontology = provider.get(assembly);
         Ontology ont = ontology.orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for assembly", "No Ontology present for assembly" + assembly)));
+        this.schemaProviderFactory = schemaProviderFactory;
         this.schemaProvider = schemaProviderFactory.get(ont);
     }
 
@@ -55,6 +57,11 @@ public class IndexProviderRawSchema implements RawSchema {
 
     public IndexProviderRawSchema(GraphElementSchemaProvider elementSchemaProvider) {
         this.schemaProvider = elementSchemaProvider;
+    }
+
+    @Override
+    public IndexPartitions getPartition(Ontology ontology, String type) {
+        return getIndexPartitions(schemaProviderFactory.get(ontology),type);
     }
 
     @Override

@@ -124,7 +124,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for name",
                         "No Ontology present for name" + ontologyName)));
 
-        IndexProvider provider = indexProviderFactory.get(assembly)
+        IndexProvider provider = indexProviderFactory.get(ontologyName)
                 .orElseGet(() -> IndexProvider.Builder.generate(ont));
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
@@ -156,7 +156,7 @@ public class DefaultGraphInitiator implements GraphInitiator {
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for name",
                         "No Ontology present for name" + ontologyName)));
 
-        IndexProvider provider = indexProviderFactory.get(assembly)
+        IndexProvider provider = indexProviderFactory.get(ontologyName)
                 .orElseGet(() -> IndexProvider.Builder.generate(ont));
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
@@ -193,8 +193,9 @@ public class DefaultGraphInitiator implements GraphInitiator {
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for name",
                         "No Ontology present for name" + ontology)));
 
-        IndexProvider provider = indexProviderFactory.get(assembly)
+        IndexProvider provider = indexProviderFactory.get(ontology)
                 .orElseGet(() -> IndexProvider.Builder.generate(ont));
+
         //generate index raw schema
         IndexProviderRawSchema rawSchema = new IndexProviderRawSchema(ont, new GraphElementSchemaProviderJsonFactory(provider, ont));
         //generate E/S mapping factory

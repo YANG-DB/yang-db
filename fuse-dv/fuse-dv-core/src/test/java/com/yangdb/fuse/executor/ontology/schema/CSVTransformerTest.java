@@ -72,6 +72,11 @@ public class CSVTransformerTest {
 
         schema = new RawSchema() {
             @Override
+            public IndexPartitions getPartition(Ontology ontology, String type) {
+                return getIndexPartitions(schemaProvider, type);
+            }
+
+            @Override
             public IndexPartitions getPartition(String type) {
                 return getIndexPartitions(schemaProvider,type);
             }

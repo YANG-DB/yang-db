@@ -69,6 +69,12 @@ public class KnowledgeCSVTransformer implements DataTransformer<KnowledgeContext
     }
 
     @Override
+    public KnowledgeContext transform(String ontology, CSVTransformer.CsvElement data, GraphDataLoader.Directive directive) {
+        //TODO skip given ontology param -
+        return transform(data,directive);
+    }
+
+    @Override
     public KnowledgeContext transform(CSVTransformer.CsvElement data, GraphDataLoader.Directive directive) {
         KnowledgeContext context = new KnowledgeContext();
         this.writerContext = new KnowledgeWriterContext(context);
