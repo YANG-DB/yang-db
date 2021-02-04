@@ -110,7 +110,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 });
 
         /** get page data by id */
-        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data/visualize",
+        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/visualize",
                 (req,resp) -> API.dataView(app,req,resp,this));
 
 
