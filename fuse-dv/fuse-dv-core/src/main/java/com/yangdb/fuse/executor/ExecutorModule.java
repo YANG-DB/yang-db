@@ -86,6 +86,7 @@ import org.unipop.configuration.UniGraphConfiguration;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
+import static com.yangdb.fuse.executor.utils.ConfigUtils.createElasticGraphConfiguration;
 import static org.elasticsearch.common.settings.Settings.EMPTY;
 
 /**
@@ -436,21 +437,6 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends SearchOrderProviderFactory>) (Class.forName(conf.getString(conf.getString("assembly") + ".search_order_provider")));
     }
 
-    private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
-        ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
-        configuration.setClusterPort(conf.getInt("elasticsearch.port"));
-        configuration.setClusterName(conf.getString("elasticsearch.cluster_name"));
-        configuration.setElasticGraphDefaultSearchSize(conf.getLong("elasticsearch.default_search_size"));
-        configuration.setElasticGraphMaxSearchSize(conf.getLong("elasticsearch.max_search_size"));
-        configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
-        configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
-
-        configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
-                conf.getBoolean("client.transport.ignore_cluster_name"));
-
-        return configuration;
-    }
 
     private UniGraphConfiguration createUniGraphConfiguration(Config conf) {
         UniGraphConfiguration configuration = new UniGraphConfiguration();
@@ -474,13 +460,5 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends CursorFactory>) Class.forName(conf.getString(conf.getString("assembly") + ".cursor_factory"));
     }
 
-    private List<String> getStringList(Config conf, String key) {
-        try {
-            return conf.getStringList(key);
-        } catch (Exception ex) {
-            String strList = conf.getString(key);
-            return Stream.of(strList.split(",")).toJavaList();
-        }
-    }
     //endregion
 }

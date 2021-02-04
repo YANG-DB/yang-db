@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.controller;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,18 @@ package com.yangdb.fuse.unipop.controller;
  * #L%
  */
 
+import com.typesafe.config.ConfigValue;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class ElasticGraphConfiguration extends BaseConfiguration {
+    //E/S cluster props
+    private Map<String, String> clusterProps = new HashMap<>();
+
     //region Constructor
     public ElasticGraphConfiguration() {}
 
@@ -212,9 +220,19 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     public void setElasticGraphAggregationsDefaultTermsExecutonHint(String value) {
         super.setProperty(ELASTIC_GRAPH_AGGREGATIONS_DEFAULT_TERMS_EXECUTON_HINT, value);
     }
+
+    public Map<String, String> getClusterProps() {
+        return clusterProps;
+    }
+
+    public void setClusterProps(Set<Map.Entry<String, ConfigValue>> entrySet) {
+        entrySet.forEach(entry->clusterProps.put("cluster."+entry.getKey(),entry.getValue().unwrapped().toString()));
+    }
+
     //endregion
 
     //region Consts
+    public static final String CLUSTER_PREFIX = "elasticsearch.cluster";
     public static final String CLUSTER_NAME = "elasticsearch.cluster.name";
     public static final String CLUSTER_HOSTS = "elasticsearch.cluster.hosts";
     public static final String CLUSTER_PORT = "elasticsearch.cluster.port";
@@ -242,6 +260,7 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     public static final String ELASTIC_GRAPH_AGGREGATIONS_DEFAULT_TERMS_SIZE = "elastic.graph.aggregations.default_terms_size";
     public static final String ELASTIC_GRAPH_AGGREGATIONS_DEFAULT_TERMS_SHARD_SIZE = "elastic.graph.aggregations.default_terms_shard_size";
     public static final String ELASTIC_GRAPH_AGGREGATIONS_DEFAULT_TERMS_EXECUTON_HINT = "elastic.graph.aggregations.default_terms_execution_hint";
+
     //endregion
 
     public enum ClientType {

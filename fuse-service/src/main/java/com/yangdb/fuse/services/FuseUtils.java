@@ -9,9 +9,9 @@ package com.yangdb.fuse.services;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,18 @@ package com.yangdb.fuse.services;
  * #L%
  */
 
-import com.yangdb.fuse.services.embedded.ElasticEmbeddedNode;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
+import com.yangdb.fuse.services.embedded.ElasticEmbeddedNode;
 import javaslang.Tuple2;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.yangdb.fuse.executor.utils.ConfigUtils.createElasticGraphConfiguration;
 
 public abstract class FuseUtils {
 
@@ -64,11 +66,13 @@ public abstract class FuseUtils {
                 target = config.getString(ELASTICSEARCH_WORKING_DIR);
 
             System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
-            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
+//            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
+            closeables.add(new ElasticEmbeddedNode(createElasticGraphConfiguration(config)));
             return true;
         }
         return false;
     }
+
 
     public static void onStop() {
         System.out.println("Stopping all closeables");
