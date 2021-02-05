@@ -4,6 +4,7 @@ import com.yangdb.fuse.asg.validation.AsgCompositeQueryValidatorStrategy;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgStrategyContext;
+import com.yangdb.fuse.model.execution.plan.descriptors.OntologyDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
@@ -45,6 +46,7 @@ public class AsgCompositeValidationStrategyTest {
 
     @Test
     public void testValidQuery() {
+        Assert.assertNotNull(OntologyDescriptor.printGraph(ontology));
         AsgCompositeQueryValidatorStrategy strategy = new AsgCompositeQueryValidatorStrategy();
         ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
         Assert.assertTrue(validationResult.valid());

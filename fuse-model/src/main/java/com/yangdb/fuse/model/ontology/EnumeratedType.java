@@ -88,7 +88,7 @@ public class EnumeratedType {
 
     @JsonIgnore
     public boolean isOfType(String name) {
-        return eType.equals(name) || eType.equals(TYPE +name);
+        return eType.equalsIgnoreCase(name) || eType.equalsIgnoreCase(TYPE +name);
     }
 
     @JsonIgnore
