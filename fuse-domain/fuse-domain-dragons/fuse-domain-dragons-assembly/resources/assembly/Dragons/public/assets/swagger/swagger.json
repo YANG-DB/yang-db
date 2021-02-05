@@ -159,6 +159,36 @@
         }
       }
     },
+    "/catalog/ontology/{id}/visualize": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Fetch ontology and visualize as SVG graph",
+        "description": "Fetch ontology by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/catalog/schema": {
       "get": {
         "tags": [
@@ -300,6 +330,77 @@
         }
       }
     },
+
+    "/query/graph/api/findPath": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute find Path graph query",
+        "description": "Execute find Path graph query between two concrete vertices",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sourceEntity",
+            "in": "query",
+            "description": "source entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "description": "vertex source Id ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetEntity",
+            "in": "query",
+            "description": "target entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetId",
+            "in": "query",
+            "description": "vertex target Id ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "Relation Type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maxHops",
+            "in": "query",
+            "description": "maximum number of hops",
+            "required": true,
+            "type": "integer"
+          }
+
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          }
+        }
+      }
+    },
+
 
     "/query/graph/api/getVertex": {
       "get": {
