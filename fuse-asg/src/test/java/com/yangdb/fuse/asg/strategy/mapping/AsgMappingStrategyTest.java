@@ -96,6 +96,7 @@ public class AsgMappingStrategyTest extends TestCase {
                         "                                    └─?[..][18], \n" +
                         "                                           └─?[18]:[type<eq,3>]]",
                 AsgQueryDescriptor.print(query));
+        assertNotNull(AsgQueryDescriptor.printGraph(query));
     }
     @Test
     public void testQ4TransformMapping() {

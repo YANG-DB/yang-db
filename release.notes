@@ -14,6 +14,9 @@ Planned Features:
    All public domain entities & API will be translated into graphQL entities & mutations
    Adding specific columns projections according to Query
 **
+- Add a specialized similarity 'terms-graph' which is unstructured graph exploration based only on terms inside index.field
+  no structure / ontological considerations take place here in contrast to the regular ontology based graph query
+**
    Adding the projected columns according to the fields projected in the actual query
    Adding parent type notion to V1 query (ETyped entity, Relation type)
 **

@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.appRegistrars;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.jooby.Response;
 import org.jooby.Result;
 import org.jooby.Results;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -48,6 +49,15 @@ public class RegistrarsUtils {
             writer.close();
             res.download(tempFile);
             tempFile.deleteOnExit();
+        }
+        return Results.with(response, response.status());
+    }
+
+    protected static Result withImg(Request req, Response res, ContentResponse<File> response) throws Throwable {
+        //write content as temp file
+        if (req.accepts("image/svg+xml").isPresent()) {
+            res.download(response.getData());
+            response.getData().deleteOnExit();
         }
         return Results.with(response, response.status());
     }

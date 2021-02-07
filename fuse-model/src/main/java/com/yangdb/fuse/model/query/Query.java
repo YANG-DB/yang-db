@@ -429,5 +429,46 @@ public class Query implements IQuery<EBase> {
                     .withElements(elements)
                     .build();
         }
+
+        public static Iterator<? extends EBase>
+        getElements(Query query,List<Integer> elementIds) {
+             return elementIds.stream()
+                    .map(id->findByEnum(query,id).get())
+                    .collect(Collectors.toList())
+                    .iterator();
+        }
+
+        /**
+         * add the elements which are in the (next) path
+         *  a->b->c->d
+         *  Stop condition stops down traversing
+         * @param query
+         * @param elementId
+         * @param stopCondition
+         * @return
+         */
+        public static List<EBase> getPath(Query query, int elementId, Predicate<EBase> stopCondition) {
+            if(!findByEnum(query,elementId).isPresent())
+                return Collections.emptyList();
+            //the needed path
+            List< EBase> path = new ArrayList<>();
+            //element by id
+            Optional<? extends EBase> byEnum = findByEnum(query, elementId);
+            EBase element = byEnum.get();
+
+            //add element to path
+            path.add(element);
+
+            //verify stop conidtion
+            if(stopCondition.test(element))
+                return path;
+
+            //continue to add the next elements recursively
+            if(element instanceof Next) {
+                path.addAll(getPath(query,((Next<Integer>)element).getNext(),stopCondition));
+            }
+
+            return path;
+        }
     }
 }

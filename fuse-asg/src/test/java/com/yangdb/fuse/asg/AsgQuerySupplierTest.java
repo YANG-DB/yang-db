@@ -41,10 +41,15 @@ public class AsgQuerySupplierTest {
     @Test
     public void queryPrints() throws Exception {
         Assert.assertNotNull(QueryDescriptor.print(q5Obj));
+        Assert.assertNotNull(QueryDescriptor.printGraph(q5Obj));
         Assert.assertNotNull(QueryDescriptor.print(q9Obj));
+        Assert.assertNotNull(QueryDescriptor.printGraph(q9Obj));
         Assert.assertNotNull(QueryDescriptor.print(q11Obj));
+        Assert.assertNotNull(QueryDescriptor.printGraph(q11Obj));
         Assert.assertNotNull(QueryDescriptor.print(q187Obj));
+        Assert.assertNotNull(QueryDescriptor.printGraph(q187Obj));
         Assert.assertNotNull(QueryDescriptor.print(q3_1Obj));
+        Assert.assertNotNull(QueryDescriptor.printGraph(q3_1Obj));
     }
 
     @Test

@@ -9,9 +9,9 @@ package com.yangdb.fuse.client;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.*;
-import com.yangdb.fuse.model.results.*;
+import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
@@ -226,7 +226,7 @@ public interface FuseClient {
 
     Query getQuery(String queryUrl,Class<? extends Query> klass) throws IOException;
 
-    QueryResultBase getPageData(String pageDataUrl, TypeReference typeReference) throws IOException ;
+    QueryResultBase getPageData(String pageDataUrl, TypeReference<? extends QueryResultBase> typeReference) throws IOException ;
 
     QueryResultBase getPageData(String pageDataUrl) throws IOException;
 

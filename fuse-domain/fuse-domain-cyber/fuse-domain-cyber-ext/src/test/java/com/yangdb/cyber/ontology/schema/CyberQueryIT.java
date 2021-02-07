@@ -32,28 +32,10 @@ import java.util.TimeZone;
 import static com.yangdb.cyber.ontology.CyberTestSuiteIndexProviderSuite.*;
 import static com.yangdb.fuse.client.FuseClientSupport.query;
 
-@Ignore("Todo run in seperated mode for new E/S embedded instance under Cyber")
+//@Ignore("Todo run in seperated mode for new E/S embedded instance under Cyber")
 public class CyberQueryIT implements BaseITMarker {
     static private SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     static private DateParser parser = DateParser.newBuilder().build();
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        CyberTestSuiteIndexProviderSuite.setup(true, CYBER);//todo remove remark when running IT tests
-        startFuse(true);
-    }
-
-    @AfterClass
-    public static void after() {
-//        Setup.cleanup();
-        if (app != null) {
-            app.stop();
-        }
-    }
-
-
 
     @Test
     public void testQueryTraces() throws IOException, InterruptedException {

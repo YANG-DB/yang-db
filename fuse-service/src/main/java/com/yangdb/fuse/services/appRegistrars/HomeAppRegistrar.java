@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.appRegistrars;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,6 +46,7 @@ public class HomeAppRegistrar implements AppRegistrar{
                             "<ul>\n" +
                             "<li>Resource Url: <a href=\"/fuse\">Fuse</a></li>\n" +
                             "<li>Swagger API: <a href=\"/swagger\">Swagger</a></li>\n" +
+                            "<li>Redocly API: <a href=\"/redocly/redocly\">Redocly</a></li>\n" +
                             "<li><hr></li>"+
                             "<li>Graphql-Queries builder: <a href=\"queryBuilder/graphql\">graphql-query builder</a></li>\n" +
                             "<li>Sparql-Queries builder: <a href=\"queryBuilder/sparql\">sparql-query builder</a></li>\n" +

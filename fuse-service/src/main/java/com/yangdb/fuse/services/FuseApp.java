@@ -9,9 +9,9 @@ package com.yangdb.fuse.services;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -91,10 +91,10 @@ public class FuseApp extends Jooby {
                 .metric("threads", new ThreadStatesGaugeSet())
                 .metric("gc", new GarbageCollectorMetricSet()));
 
-        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
-        }));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
         // swagger support
         get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        get("redocly/redocly", () -> Results.redirect("/public/assets/redocly/redocly.html"));
         // elasticsearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));
         get("queryBuilder/sparql", () -> Results.redirect("/public/assets/query/sparql/index.html"));
@@ -121,6 +121,11 @@ public class FuseApp extends Jooby {
 
         //dynamically load AppControllerRegistrar that comply with com.yangdb.fuse.services package and derive from AppControllerRegistrarBase
         additionalRegistrars(this, localUrlSupplier);
+
+        //callbacks
+        onStop(() -> System.out.println("Stopping YangDb app..."));
+        onStart(() -> System.out.println("Starting YangDb app..."));
+        onStarted(() -> System.out.println("YangDB Started on http://localhost:8888/"));
     }
 
     /**

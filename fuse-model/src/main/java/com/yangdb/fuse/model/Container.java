@@ -1,10 +1,10 @@
-package com.yangdb.fuse.services.controllers;
+package com.yangdb.fuse.model;
 
 /*-
  * #%L
- * fuse-service
+ * fuse-model
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2021 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,8 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
-import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
-import com.yangdb.fuse.model.transport.ContentResponse;
+import com.yangdb.fuse.model.query.quant.QuantType;
 
-/**
- * Created by Roman on 11/06/2017.
- */
-public interface ApiDescriptionController
-{
-    /**
-     * get general info
-     * @return
-     */
-    ContentResponse<FuseResourceInfo> getInfo();
+public interface Container<T> extends Next<T> {
+    QuantType getqType();
 }

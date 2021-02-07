@@ -172,12 +172,14 @@ public class IndexProvider {
             //generate entities
             provider.entities = ontology.getEntityTypes().stream().map(e ->
                     new Entity(e.getName(), STATIC.name(), PartitionType.INDEX.name(),
-                            new Props(ImmutableList.of(e.getName())), Collections.emptyList(), Collections.emptyMap()))
+                            //E/S indices need to be lower cased
+                            new Props(ImmutableList.of(e.getName().toLowerCase())), Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
             //generate relations
             provider.relations = ontology.getRelationshipTypes().stream().map(e ->
                     new Relation(e.getName(), STATIC.name(), PartitionType.INDEX.name(), false, Collections.emptyList(),
-                            new Props(ImmutableList.of(e.getName())), Collections.emptyList(), Collections.emptyMap()))
+                            //E/S indices need to be lower cased
+                            new Props(ImmutableList.of(e.getName().toLowerCase())), Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
 
             return provider;

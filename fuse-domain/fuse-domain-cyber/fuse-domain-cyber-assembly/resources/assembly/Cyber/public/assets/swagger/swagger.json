@@ -19,7 +19,8 @@
   ],
   "produces": [
     "application/json",
-    "application/xml"
+    "application/xml",
+    "image/*"
   ],
   "paths": {
     "/": {
@@ -154,6 +155,36 @@
         "responses": {
           "200": {
             "description": "Ontology Json"
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}/visualize": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Fetch ontology and visualize as SVG graph",
+        "description": "Fetch ontology by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -370,6 +401,7 @@
         }
       }
     },
+
 
     "/query/graph/api/getVertex": {
       "get": {
@@ -938,6 +970,96 @@
         }
       }
     },
+    "/query/{id}/visualize": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch query and visualize as SVG graph",
+        "description": "Fetch query by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/asg/visualize": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch Asg query and visualize as SVG graph",
+        "description": "Fetch ASG query by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/visualize": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "Fetch Execution Plan and visualize as SVG graph",
+        "description": "Fetch Execution Plan by query id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/query/{id}/cursor/{cursorId}": {
       "get": {
         "tags": [
@@ -1080,10 +1202,50 @@
         }
       }
     },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/visualize": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Page data visualization ",
+        "description": " Page data visualization  ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/query/{id}/cursor/{cursorId}/page/{pageId}/data": {
       "get": {
         "tags": [
-          "page"
+          "data"
         ],
         "summary": "Fetch Page data by id",
         "description": "Fetch Page data by id",
@@ -1668,6 +1830,11 @@
           {
             "pType": "birthDate",
             "name": "birthDate",
+            "type": "date"
+          },
+          {
+            "pType": "startDate",
+            "name": "startDate",
             "type": "date"
           },
           {

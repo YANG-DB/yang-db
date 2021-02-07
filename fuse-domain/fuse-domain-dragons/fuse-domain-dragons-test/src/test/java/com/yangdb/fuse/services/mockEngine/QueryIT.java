@@ -536,7 +536,7 @@ public class QueryIT implements BaseITMarker {
                 .contentType("application/json")
                 .header(new Header("fuse-external-id", "test"))
                 .with().port(8888)
-                .get("/fuse/query/1/v1/print")
+                .get("/fuse/query/1/print")
                 .then()
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {

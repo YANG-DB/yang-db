@@ -9,9 +9,9 @@ package com.yangdb.fuse.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,11 +24,19 @@ package com.yangdb.fuse.model;
  * Created by lior.perry on 19/03/2017.
  */
 public class GlobalConstants {
-    public static String ID = "id";
-    public static String _ALL = "_all";
     public static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
+    public static String ID = "id";
+    public static String _ALL = "_all";
+    public static final String RAW = "raw";
+    public static final String TYPE = "type";
 
+
+    public static class ConfigurationKeys {
+        public static final String ID_GENERATOR_INDEX_NAME = ".idGenerator_indexName";
+        public static final String ID_GENERATOR_INDEX_NAME_DEFUALT_VALUE = ".idgenerator";
+
+    }
     public static class HasKeys {
         public static final String PROMISE = "promise";
         public static final String CONSTRAINT = "constraint";
