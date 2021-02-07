@@ -61,13 +61,11 @@ import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.rendering.SVGGraphRenderer;
 import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.jooby.*;
 import org.jooby.Response;
+import org.jooby.*;
 import org.jooby.apitool.ApiTool;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -169,7 +167,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/print",
-                req -> API.queryPrint(app, req, this));
+                req -> API.printQuery(app, req, this));
 
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/visualize",
@@ -200,7 +198,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the asg query print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/print",
-                req -> API.print(app, req, this));
+                req -> API.printAsg(app, req, this));
 
         /** get the query plan execution */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan", req -> {
@@ -604,7 +602,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         }
 
-        public static Result print(Jooby app, Request req, QueryControllerRegistrar registrar) {
+        public static Result printAsg(Jooby app, Request req, QueryControllerRegistrar registrar) {
             ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(req.param("queryId").value());
             String print = AsgQueryDescriptor.print(response.getData());
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
@@ -633,7 +631,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(compose, compose.status());
         }
 
-        public static Result queryPrint(Jooby app, Request req, QueryControllerRegistrar registrar) {
+        public static Result printQuery(Jooby app, Request req, QueryControllerRegistrar registrar) {
             ContentResponse<Query> response = registrar.getController(app).getV1(req.param("queryId").value());
             String print = QueryDescriptor.print(response.getData());
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
