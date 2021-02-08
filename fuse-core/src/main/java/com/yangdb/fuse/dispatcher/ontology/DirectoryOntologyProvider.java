@@ -21,10 +21,10 @@ package com.yangdb.fuse.dispatcher.ontology;
  */
 
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FilenameUtils;
@@ -32,6 +32,8 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -39,15 +41,18 @@ import java.util.*;
  * Created by roman.margolis on 02/10/2017.
  */
 public class DirectoryOntologyProvider implements OntologyProvider {
+    private final ObjectMapper mapper = new ObjectMapper();
+    private String dirName;
+
     //region Constructors
-    public DirectoryOntologyProvider(String dirName) throws URISyntaxException {
+    public DirectoryOntologyProvider(String dirName) {
+        this.dirName = dirName;
         this.ontologies = new HashMap<>();
         String currentDir = System.getProperty("user.dir");
-        ObjectMapper mapper = new ObjectMapper();
 
         File dir = new File(Paths.get(currentDir, dirName).toString());
-        if(!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+        if (!dir.exists()) {
+            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).getFile());
         }
         if (dir.exists()) {
             this.ontologies =
@@ -78,13 +83,29 @@ public class DirectoryOntologyProvider implements OntologyProvider {
     }
 
     @Override
-    public Ontology add(Ontology ontology) {
-        ontologies.put(ontology.getOnt(),OntologyFinalizer.finalize(ontology));
+    public synchronized Ontology add(Ontology ontology) {
+        ontologies.put(ontology.getOnt(), OntologyFinalizer.finalize(ontology));
+        //store locally
+        String currentDir = System.getProperty("user.dir");
+        File dir = new File(Paths.get(currentDir, dirName).toString());
+        if (!dir.exists()) {
+            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).getFile());
+        }
+
+        if (dir.exists()) {
+            Path path = Paths.get(dir.getAbsolutePath()+"/"+ontology.getOnt()+".json");
+            try {
+                Files.write(path, mapper.writeValueAsBytes(ontology));
+            } catch (IOException e) {
+                throw new FuseError.FuseErrorException("Failed writing file for new Ontology ["+ontology.getOnt()+"] ",e.getCause());
+            }
+        }
+
         return ontology;
     }
     //endregion
 
     //region Fields
-    private Map<String,Ontology> ontologies;
+    private Map<String, Ontology> ontologies;
     //endregion
 }

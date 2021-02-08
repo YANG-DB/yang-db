@@ -34,7 +34,6 @@ import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
