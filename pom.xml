@@ -135,6 +135,8 @@
         <jackson.version>2.10.4</jackson.version>
         <!-- jackson -->
         <resilience4jVersion>1.6.1</resilience4jVersion>
+        <!-- chronicle.map -->
+        <chronicle.map.version>3.20.84</chronicle.map.version>
         <!-- graph algorithms        -->
         <gs-algo.version>2.0</gs-algo.version>
         <jgrapht.version>1.5.0</jgrapht.version>
@@ -411,6 +413,13 @@
                 <groupId>io.github.resilience4j</groupId>
                 <artifactId>resilience4j-timelimiter</artifactId>
                 <version>${resilience4jVersion}</version>
+            </dependency>
+
+            <!-- super-fast, in-memory, non-blocking, key-value store           -->
+            <dependency>
+                <groupId>net.openhft</groupId>
+                <artifactId>chronicle-map</artifactId>
+                <version>${chronicle.map.version}</version>
             </dependency>
 
             <!-- graph algo            -->
