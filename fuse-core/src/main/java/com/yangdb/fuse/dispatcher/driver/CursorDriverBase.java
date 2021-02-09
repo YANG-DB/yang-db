@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,7 +72,7 @@ public abstract class CursorDriverBase implements CursorDriver {
     }
 
     private void createInnerCursor(QueryResource query, CreateCursorRequest cursorRequest) {
-        Iterable<QueryResource> innerQueryResources = query.getInnerQueryResources();
+        Iterable<QueryResource> innerQueryResources = query.getInnerQueryResources().values();
         innerQueryResources.forEach(innerQuery->{
             create(innerQuery.getQueryMetadata().getId(),cursorRequest);
         });
@@ -85,7 +85,7 @@ public abstract class CursorDriverBase implements CursorDriver {
             return Optional.empty();
         }
 
-        Iterable<String> resourceUrls = Stream.ofAll(queryResource.get().getCursorResources())
+        Iterable<String> resourceUrls = Stream.ofAll(queryResource.get().getCursorResources().values())
                 .sortBy(CursorResource::getTimeCreated)
                 .map(CursorResource::getCursorId)
                 .map(cursorId -> this.urlSupplier.resourceUrl(queryId, cursorId))
@@ -127,7 +127,8 @@ public abstract class CursorDriverBase implements CursorDriver {
             return Optional.empty();
         }
         //try delete inner cursors
-        queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
+        queryResource.get().getInnerQueryResources().values()
+                .forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
         //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
         return Optional.of(true);

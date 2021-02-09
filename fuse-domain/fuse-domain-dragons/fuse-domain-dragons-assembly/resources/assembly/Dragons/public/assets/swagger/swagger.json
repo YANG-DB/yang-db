@@ -1913,7 +1913,7 @@
       "example": {
         "id": "1",
         "name": "Q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
       }
     },
@@ -1934,7 +1934,7 @@
       "example": {
         "id": "1",
         "name": "q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n  \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
       }
     },
@@ -1955,7 +1955,7 @@
       "example": {
         "id": "1",
         "name": "Q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "{\n    person {\n        name,\n        knows {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            knows {\n                name,\n                description\n            }\n        }\n    }\n}"
       }
     },
@@ -1980,7 +1980,7 @@
         "id": "1",
         "name": "Q1",
         "query": {
-          "ont": "Knowledge",
+          "ont": "Dragons",
           "elements": [
             {
               "type": "Start",
@@ -1992,7 +1992,7 @@
               "eNum": 1,
               "next": 2,
               "eTag": "A",
-              "eType": "Entity"
+              "eType": "Person"
             },
             {
               "eNum": 2,
@@ -2008,26 +2008,26 @@
               "dir": "R",
               "eNum": 3,
               "next": 4,
-              "rType": "relatedEntity"
+              "rType": "knows"
             },
             {
               "type": "ETyped",
               "eNum": 4,
               "eTag": "B",
-              "eType": "Entity"
+              "eType": "Person"
             },
             {
               "type": "Rel",
               "dir": "R",
               "eNum": 5,
               "next": 6,
-              "rType": "hasEvalue"
+              "rType": "knows"
             },
             {
               "type": "ETyped",
               "eNum": 6,
               "eTag": "Ev",
-              "eType": "Evalue"
+              "eType": "Person"
             }
           ]
         },
@@ -2100,7 +2100,7 @@
         }
       },
       "example": {
-        "ont": "Knowledge",
+        "ont": "Dragons",
         "elements": [
           {
             "type": "Start",

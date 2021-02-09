@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.ontology;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.dispatcher.utils.FileUtils;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -41,19 +42,20 @@ import java.util.*;
  * Created by roman.margolis on 02/10/2017.
  */
 public class DirectoryOntologyProvider implements OntologyProvider {
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private String dirName;
 
     //region Constructors
     public DirectoryOntologyProvider(String dirName) {
         this.dirName = dirName;
         this.ontologies = new HashMap<>();
-        String currentDir = System.getProperty("user.dir");
-
-        File dir = new File(Paths.get(currentDir, dirName).toString());
-        if (!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).getFile());
+        File dir = null;
+        try {
+            dir = FileUtils.getOrCreateFile(dirName, System.getProperty("user.dir"),true);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Failed reading folder for new Ontology Provider ["+dirName + "] ", e.getCause());
         }
+
         if (dir.exists()) {
             this.ontologies =
                     Stream.of(dir.listFiles() == null ? new File[0] : dir.listFiles())
@@ -86,10 +88,11 @@ public class DirectoryOntologyProvider implements OntologyProvider {
     public synchronized Ontology add(Ontology ontology) {
         ontologies.put(ontology.getOnt(), OntologyFinalizer.finalize(ontology));
         //store locally
-        String currentDir = System.getProperty("user.dir");
-        File dir = new File(Paths.get(currentDir, dirName).toString());
-        if (!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).getFile());
+        File dir = null;
+        try {
+            dir = FileUtils.getOrCreateFile(dirName, System.getProperty("user.dir"),true);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Failed reading folder for new Ontology Provider ["+dirName + "] ", e.getCause());
         }
 
         if (dir.exists()) {

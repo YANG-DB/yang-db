@@ -65,14 +65,13 @@ import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
-import com.yangdb.fuse.executor.resource.PersistantResourceStore;
+import com.yangdb.fuse.executor.resource.PersistentResourceStore;
 import com.yangdb.fuse.executor.sql.ElasticsearchFuseClient;
 import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.executor.sql.FuseStorageEngine;
 import com.yangdb.fuse.executor.sql.LoggingElasticsearchFuseClient;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.ByteSizeUnit;
@@ -82,8 +81,6 @@ import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
-
-import java.util.List;
 
 import static com.google.inject.name.Names.named;
 import static com.yangdb.fuse.executor.utils.ConfigUtils.createElasticGraphConfiguration;
@@ -205,7 +202,7 @@ public class ExecutorModule extends ModuleBase {
         // resource store and persist processor
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(ResourceStoreFactory.injectionName))
-                .to(PersistantResourceStore.class)
+                .to(PersistentResourceStore.class)
                 .in(new SingletonScope());
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(LoggingResourceStore.injectionName))

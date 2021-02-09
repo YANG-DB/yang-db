@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.resource.store;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class ResourceStoreFactory implements ResourceStore {
             @Named(injectionName) ResourceStore store) {
         this.stores = new ArrayList<>();
         //default in memory store
-        Arrays.asList(new ResourceStore[]{new InMemoryResourceStore(), store})
+        Arrays.asList(new ResourceStore[]{new PersistentLocalFileResourceStore(), store})
                 .forEach(((ArrayList<ResourceStore>) this.stores)::add);
     }
 
@@ -93,7 +93,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deleteQueryResource(String queryId) {
         if (queryId == null) return false;
-        return stores.stream().filter(store -> store.deleteQueryResource(queryId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deleteQueryResource(queryId));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deleteCursorResource(String queryId, String cursorId) {
         if (queryId == null || cursorId == null) return false;
-        return stores.stream().filter(store -> store.deleteCursorResource(queryId, cursorId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deleteCursorResource(queryId, cursorId));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deletePageResource(String queryId, String cursorId, String pageId) {
         if (queryId == null || cursorId == null || pageId == null) return false;
-        return stores.stream().filter(store -> store.deletePageResource(queryId, cursorId, pageId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deletePageResource(queryId, cursorId, pageId));
     }
 
     @Override

@@ -26,11 +26,32 @@ package com.yangdb.fuse.model;
 public class GlobalConstants {
     public static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
+    public static String ASSEMBLY = "assembly";
     public static String ID = "id";
+
     public static String _ALL = "_all";
     public static final String RAW = "raw";
     public static final String TYPE = "type";
 
+    public static class FileSystemConfigs {
+        public static final String QUERY_STORE_NAME = ".query_store_folder;";
+        public static final String QUERY_STORE_NAME_DEFUALT_VALUE = "query";
+
+        public static final String CURSOR_STORE_NAME = ".cursor_store_folder;";
+        public static final String CURSOR_STORE_NAME_DEFUALT_VALUE = "cursor";
+
+        public static final String PAGE_STORE_NAME = ".page_store_folder;";
+        public static final String PAGE_STORE_NAME_DEFUALT_VALUE = "page";
+
+        public static final String ONTOLOGY_TRANSFORMATION_PROVIDER_NAME = ".ontology_transformation_provider";
+        public static final String ONTOLOGY_TRANSFORMATION_PROVIDER_NAME_DEFUALT_VALUE = "transformProvider";
+
+        public static final String INDEX_PROVIDER_NAME = ".index_provider_dir";
+        public static final String INDEX_PROVIDER_NAME_DEFUALT_VALUE = "indexProvider";
+
+        public static final String ONTOLOGY_PROVIDER_NAME = ".ontology_provider_dir";
+        public static final String ONTOLOGY_PROVIDER_NAME_DEFUALT_VALUE = "ontology";
+    }
 
     public static class ConfigurationKeys {
         public static final String ID_GENERATOR_INDEX_NAME = ".idGenerator_indexName";
