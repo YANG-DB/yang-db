@@ -96,12 +96,7 @@ public abstract class CursorDriverBase implements CursorDriver {
 
     @Override
     public Optional<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-        if (!queryResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId,cursorId);
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }

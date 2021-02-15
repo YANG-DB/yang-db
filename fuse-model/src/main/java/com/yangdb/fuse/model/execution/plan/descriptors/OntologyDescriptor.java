@@ -45,6 +45,7 @@ package com.yangdb.fuse.model.execution.plan.descriptors;
 
 import com.yangdb.fuse.model.descriptors.GraphDescriptor;
 import com.yangdb.fuse.model.ontology.*;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 
 import static com.yangdb.fuse.model.ontology.EnumeratedType.TYPE;
 
@@ -149,7 +150,8 @@ public class OntologyDescriptor implements GraphDescriptor<Ontology> {
     }
 
     private static Property getProp(Ontology.Accessor ontology, String propName) {
-        return ontology.properties().stream().filter(p -> p.getName().equals(propName)).findFirst().get();
+        return ontology.properties().stream().filter(p -> p.getName().equals(propName)).findFirst()
+                .orElseThrow(() -> new FuseError.FuseErrorException("Ontology missing the next property ", "No property found named " + propName));
     }
 
     private static void removeRedundentArrow(StringBuilder builder) {

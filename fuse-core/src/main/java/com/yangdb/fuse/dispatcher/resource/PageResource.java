@@ -21,7 +21,12 @@ package com.yangdb.fuse.dispatcher.resource;
  */
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -29,10 +34,49 @@ import java.util.Date;
  */
 public class PageResource<T> {
 
+    //SE-DE support for an efficient store on disk
+    public static byte[] serialize(ObjectMapper mapper, PageResource resource) {
+        try {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("pageId",resource.pageId);
+            node.put("actualSize",resource.actualSize);
+            node.put("executionTime",resource.executionTime);
+            node.put("timeCreated",resource.timeCreated.getTime());
+            node.put("requestedSize",resource.requestedSize);
+            //lazy fetch data - only on explicit request by client
+            node.put("data", AssignmentsQueryResult.serialize(mapper,(AssignmentsQueryResult)resource.getData()));
+            return node.toString().getBytes();
+        } catch (Throwable e) {
+            throw new FuseError.FuseErrorException("Error serializing resource",e);
+        }
+    }
+
+    public static PageResource deserialize(ObjectMapper mapper,byte[] bytes) {
+        //read - generate new cursor OR renew folder cursor state
+        try {
+            ObjectNode node = (ObjectNode) mapper.readTree(bytes);
+            String pageId = node.get("pageId").asText();
+            int requestedSize = node.get("requestedSize").asInt();
+            long executionTime = node.get("executionTime").asLong();
+            long timeCreated = node.get("timeCreated").asLong();
+            AssignmentsQueryResult data = AssignmentsQueryResult.deserialize(mapper,node.get("data").binaryValue());
+            return new PageResource(pageId,data,requestedSize,timeCreated,executionTime);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Error deserializing resource",e);
+        }
+    }
+
     //region Constructors
+
+    public PageResource() {}
+
     public PageResource(String pageId, T data, int requestedSize, long executionTime) {
+        this(pageId,data,requestedSize,System.currentTimeMillis(),executionTime);
+    }
+
+    public PageResource(String pageId, T data, int requestedSize, long timeCreated, long executionTime) {
         this.pageId = pageId;
-        this.timeCreated = new Date(System.currentTimeMillis());
+        this.timeCreated = new Date(timeCreated);
         this.executionTime = executionTime;
         this.data = data;
         this.requestedSize = requestedSize;
@@ -42,15 +86,13 @@ public class PageResource<T> {
 
     //region Public Methods
     public PageResource<T> withActualSize(int actualSize) {
-        PageResource<T> clone = this.cloneImpl();
-        clone.actualSize = actualSize;
-        return clone;
+        this.actualSize = actualSize;
+        return this;
     }
 
     public PageResource<T> available() {
-        PageResource<T> clone = this.cloneImpl();
-        clone.isAvailable = true;
-        return clone;
+        this.isAvailable = true;
+        return this;
     }
     //endregion
 
@@ -81,16 +123,6 @@ public class PageResource<T> {
 
     public boolean isAvailable() {
         return this.isAvailable;
-    }
-    //endregion
-
-    //region Private Methods
-    private PageResource<T> cloneImpl() {
-        PageResource<T> clone = new PageResource<T>(this.pageId, this.data, this.requestedSize,this.executionTime);
-        clone.timeCreated = this.timeCreated;
-        clone.actualSize = this.actualSize;
-        clone.isAvailable = this.isAvailable;
-        return clone;
     }
     //endregion
 

@@ -1,0 +1,187 @@
+{
+  "ont": "CarsOwners",
+  "directives": [],
+  "entityTypes": [
+    {
+      "idField": [
+        "id"
+      ],
+      "eType": "Person",
+      "name": "Person",
+      "properties": [
+        "id",
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "name",
+        "type"
+      ]
+    },
+    {
+      "idField": [
+        "id"
+      ],
+      "eType": "Car",
+      "name": "Car",
+      "properties": [
+        "id",
+        "type",
+        "creationDate",
+        "price",
+        "seats",
+        "color"
+      ]
+    },
+    {
+      "idField": [
+        "id"
+      ],
+      "eType": "Manufacturer",
+      "name": "Manufacturer",
+      "properties": [
+        "id",
+        "type",
+        "location",
+        "creationDate",
+        "brand"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "idField": [
+        "id"
+      ],
+      "rType": "knows",
+      "name": "knows",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "sideAIdField": "entityA.id",
+          "eTypeB": "Person",
+          "sideBIdField": "entityB.id"
+        }
+      ],
+      "properties": [
+        "id",
+        "startDate"
+      ]
+    },
+    {
+      "idField": [
+        "id"
+      ],
+      "rType": "owns",
+      "name": "owns",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "sideAIdField": "entityA.id",
+          "eTypeB": "Car",
+          "sideBIdField": "entityB.id"
+        }
+      ],
+      "properties": [
+        "id",
+        "startDate"
+      ]
+    },
+    {
+      "idField": [
+        "id"
+      ],
+      "rType": "manufactured",
+      "name": "manufactured",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Car",
+          "sideAIdField": "entityA.id",
+          "eTypeB": "Manufacturer",
+          "sideBIdField": "entityB.id"
+        }
+      ],
+      "properties": [
+        "id",
+        "startDate"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "creationDate",
+      "name": "creationDate",
+      "type": "date"
+    },
+    {
+      "pType": "seats",
+      "name": "seats",
+      "type": "int"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "int"
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "location",
+      "name": "location",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "string"
+    },
+    {
+      "pType": "type",
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "price",
+      "name": "price",
+      "type": "string"
+    },
+    {
+      "pType": "color",
+      "name": "color",
+      "type": "string"
+    },
+    {
+      "pType": "brand",
+      "name": "brand",
+      "type": "string"
+    }
+  ],
+  "enumeratedTypes": [],
+  "compositeTypes": []
+}

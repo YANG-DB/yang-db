@@ -24,6 +24,8 @@ package com.yangdb.fuse.dispatcher.resource;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -31,8 +33,12 @@ import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.planTree.PlanNode;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
+import org.apache.lucene.util.fst.FST;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +49,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by lior.perry on 06/03/2017.
  */
 public class QueryResource {
+    //SE-DE support for an efficient store on disk
+    public static byte[] serialize(ObjectMapper mapper, QueryResource cursorResource) {
+        try {
+            return mapper.writeValueAsBytes(cursorResource);
+        } catch (JsonProcessingException e) {
+            throw new FuseError.FuseErrorException("Error serializing resource",e);
+        }
+    }
+
+    public static QueryResource deserialize(ObjectMapper mapper, byte[] bytes) {
+        try {
+            return mapper.readValue(bytes,QueryResource.class);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Error de-serializing resource",e);
+        }
+    }
+
     //region Constructors
 
     public QueryResource() {}
@@ -57,8 +80,6 @@ public class QueryResource {
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
         this.planNode = planNode;
-        this.cursorResources = new HashMap<>();
-        this.innerQueryResources = new HashMap<>();
         this.executionPlan = executionPlan;
     }
     //endregion
@@ -159,7 +180,7 @@ public class QueryResource {
     private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
     private Optional<PlanNode<Plan>> planNode;
     //in mem state of the cursor & inner queries info
-    private Map<String, CursorResource> cursorResources;
-    private Map<String, QueryResource> innerQueryResources;
+    private Map<String, CursorResource> cursorResources = new HashMap<>();
+    private Map<String, QueryResource> innerQueryResources = new HashMap<>();
     //endregion
 }

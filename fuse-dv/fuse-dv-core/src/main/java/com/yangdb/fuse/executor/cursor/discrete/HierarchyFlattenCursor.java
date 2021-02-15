@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,12 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * #L%
  */
 
+import com.opencsv.CSVWriter;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.transport.cursor.CreateHierarchyFlattenCursorRequest;
-import com.opencsv.CSVWriter;
 import javaslang.collection.Stream;
 import javaslang.control.Option;
 

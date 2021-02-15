@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 
-import static com.yangdb.fuse.executor.cursor.discrete.CalculatedFieldsUtil.findCalculaedFields;
+import static com.yangdb.fuse.executor.cursor.discrete.CalculatedFieldsUtil.findCalculatedFields;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -94,7 +94,7 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
 
         //add calculated fields of existing eTags
         Map<String, List<CalculatedEProp>> calculatedFieldsMap = Stream.ofAll(eTags)
-                .toJavaMap(p -> new Tuple2<>(p, findCalculaedFields(pattern, p)));
+                .toJavaMap(p -> new Tuple2<>(p, findCalculatedFields(pattern, p)));
 
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
@@ -188,8 +188,8 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
 //endregion
 
     //region Fields
-    private Cursor<TraversalCursorContext> cursor;
     private AssignmentsQueryResult<Entity, Relationship> fullGraph;
+    private Cursor<TraversalCursorContext> cursor;
 
     private Set<String> entityIds;
     private Set<String> entityTags;

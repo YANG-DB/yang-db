@@ -21,7 +21,6 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 
-
 import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriter;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
@@ -78,7 +77,7 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }
@@ -112,12 +111,12 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }
 
-        Iterable<String> resourceUrls = Stream.ofAll(cursorResource.get().getPageResources())
+        Iterable<String> resourceUrls = Stream.ofAll(cursorResource.get().getPageResources().values())
                 .sortBy(pageResource -> pageResource.getTimeCreated())
                 .map(pageResource -> pageResource.getPageId())
                 .map(pageId -> this.urlSupplier.resourceUrl(queryId, cursorId, pageId))
@@ -133,12 +132,13 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
+
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
+        Optional<PageResource> pageResource = this.resourceStore.getPageResource(queryId, cursorId,pageId);
         if (!pageResource.isPresent()) {
             return Optional.empty();
         }
@@ -159,12 +159,12 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
+        Optional<PageResource> pageResource = this.resourceStore.getPageResource(queryId, cursorId,pageId);
         if (!pageResource.isPresent()) {
             return Optional.empty();
         }
@@ -179,7 +179,8 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
+
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }
@@ -188,15 +189,15 @@ public abstract class PageDriverBase implements PageDriver {
             try {
                 AssignmentsQueryResult result = (AssignmentsQueryResult) getData(queryId, cursorId, pageId).get();
                 Assignment graph = (Assignment) result.getAssignments().get(0);
-                if(writerStrategy.writer(format).isPresent()) {
+                if (writerStrategy.writer(format).isPresent()) {
                     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    writerStrategy.writer(format).get().writeGraph(stream,graph);
+                    writerStrategy.writer(format).get().writeGraph(stream, graph);
                     return Optional.of(new String(stream.toByteArray()));
                 }
                 return Optional.of(result);
             } catch (IOException e) {
                 return Optional.of(new QueryResourceInfo().error(
-                        new FuseError(Query.class.getSimpleName(),e)));
+                        new FuseError(Query.class.getSimpleName(), e)));
             }
         }
         return Optional.empty();
@@ -214,7 +215,8 @@ public abstract class PageDriverBase implements PageDriver {
         queryResource.get().getInnerQueryResources().values()
                 .forEach(inner -> delete(inner.getQueryMetadata().getId(), cursorId, pageId));
         //delete outer resources
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
+
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }

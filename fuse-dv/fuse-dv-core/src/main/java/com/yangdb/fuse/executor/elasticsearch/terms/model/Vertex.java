@@ -14,9 +14,9 @@ package com.yangdb.fuse.executor.elasticsearch.terms.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,12 +51,14 @@ import java.util.Objects;
 @JsonDeserialize(using = Vertex.Deserializer.class)
 public class Vertex  {
 
-    private final String field;
-    private final String term;
+    private String field;
+    private String term;
     private double weight;
-    private final int depth;
-    private final long bg;
+    private int depth;
+    private long bg;
     private long fg;
+
+    public Vertex() {}
 
     @JsonCreator
     public Vertex(String field, String term, double weight, int depth, long bg, long fg) {
