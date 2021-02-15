@@ -6,6 +6,7 @@
       },
       "id": "Myriel",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Myriel"
       }
@@ -16,6 +17,7 @@
       },
       "id": "Napoleon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Napoleon"
       }
@@ -26,6 +28,7 @@
       },
       "id": "Mlle.Baptistine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mlle.Baptistine"
       }
@@ -36,6 +39,7 @@
       },
       "id": "Mme.Magloire",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Magloire"
       }
@@ -46,6 +50,7 @@
       },
       "id": "CountessdeLo",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "CountessdeLo"
       }
@@ -56,6 +61,7 @@
       },
       "id": "Geborand",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Geborand"
       }
@@ -66,6 +72,7 @@
       },
       "id": "Champtercier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Champtercier"
       }
@@ -76,6 +83,7 @@
       },
       "id": "Cravatte",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Cravatte"
       }
@@ -86,6 +94,7 @@
       },
       "id": "Count",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Count"
       }
@@ -96,6 +105,7 @@
       },
       "id": "OldMan",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "OldMan"
       }

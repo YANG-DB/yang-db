@@ -51,6 +51,7 @@
       },
       "id": "P01_Napoleon",
       "label": "Person",
+"type": "logical",
       "type": "logical",
       "properties": {
         "firstName": "Napoleon",
@@ -86,6 +87,7 @@
       },
       "id": "P02_Mlle.Baptistine",
       "label": "Person",
+"type": "logical",
       "type": "logical",
       "properties": {
         "firstName": "Mlle",
@@ -113,6 +115,7 @@
       },
       "id": "P03_CountessdeLo",
       "label": "Person",
+"type": "logical",
       "type": "logical",
       "properties": {
         "firstName": "CountessdeLo",

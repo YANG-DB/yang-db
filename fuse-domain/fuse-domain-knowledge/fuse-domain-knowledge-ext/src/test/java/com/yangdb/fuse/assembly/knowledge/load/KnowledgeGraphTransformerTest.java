@@ -44,7 +44,8 @@ public class KnowledgeGraphTransformerTest {
      *         "nodes": [
      *             {
      *                 "id": "0",
-     *                 "label": "person",
+     *                 "label": "Person",
+"type": "logical",
      *                 "metadata": {
      *                     "user-defined": "values"
      *                 }
@@ -64,7 +65,8 @@ public class KnowledgeGraphTransformerTest {
      *             },
      *             {
      *                 "id": "10",
-     *                 "label": "person",
+     *                 "label": "Person",
+"type": "logical",
      *                 "metadata": {
      *                     "user-defined": "values"
      *                 }

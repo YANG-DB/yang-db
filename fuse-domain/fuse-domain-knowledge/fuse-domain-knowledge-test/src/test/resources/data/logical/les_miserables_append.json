@@ -6,6 +6,7 @@
       },
       "id": "Myriel",
       "label": "Person",
+"type": "logical",
       "properties": {
         "sex": "female"
       }
@@ -16,6 +17,7 @@
       },
       "id": "Napoleon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Napoleon_1",
         "sex": "male"
@@ -27,6 +29,7 @@
       },
       "id": "Mlle.Baptistine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "sex": "some..."
       }
@@ -37,6 +40,7 @@
       },
       "id": "hezi",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Hezi-markov"
       }
@@ -47,6 +51,7 @@
       },
       "id": "moti",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "moti-moti"
       }
@@ -54,6 +59,7 @@
   ],
   "edges": [
     {
+      "type": "logicalRel",
       "label": "knows",
       "source": "hezi",
       "target": "Champtercier",
@@ -62,6 +68,7 @@
       }
     },
     {
+      "type": "logicalRel",
       "label": "knows",
       "source": "CountessdeLo",
       "target": "moti",
@@ -70,6 +77,7 @@
       }
     },
     {
+      "type": "logicalRel",
       "label": "knows",
       "source": "hezi",
       "target": "moti",

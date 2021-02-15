@@ -65,7 +65,7 @@ public class StoredQueryDriverTest extends BaseModuleInjectionTest {
 
     @BeforeClass
     public static void setupTest() throws Exception {
-//        Setup.setup(); //todo remove remark when running IT tests
+        Setup.setup(); //todo remove remark when running IT tests
     }
 
     public void setupData(Client client, RawSchema schema) throws ParseException, JsonProcessingException {

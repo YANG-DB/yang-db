@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,8 @@ public interface GraphDataLoader<S,F> {
      *             {
      *                 "id": "0",
      *                 "metadata": {
-     *                     "label": "person",
+     *                     "label": "Person",
+"type": "logical",
      *                     "user-defined": "values"
      *                 }
      *                 "properties":{
@@ -58,7 +59,8 @@ public interface GraphDataLoader<S,F> {
      *             },
      *             {
      *                 "id": "10",
- *                     "label": "person",
+ *                     "label": "Person",
+"type": "logical",
      *                 "metadata": {
      *                     "user-defined": "values"
      *                 }
@@ -84,6 +86,7 @@ public interface GraphDataLoader<S,F> {
      *                 "target": "1",
      *                 "metadata": {
      *                     "label": "knows",
+"type": "logicalRel",
      *                     "user-defined": "values"
      *                 },
      *                 "properties":{

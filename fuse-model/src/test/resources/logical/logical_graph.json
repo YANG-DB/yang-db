@@ -2,7 +2,8 @@
     "nodes": [
       {
         "id": "0",
-        "label": "person",
+        "label": "Person",
+"type": "logical",
         "type": "logical",
         "metadata": {
           "user-defined": "values",
@@ -26,7 +27,8 @@
       {
         "type": "logical",
         "id": "10",
-        "label": "person",
+        "label": "Person",
+"type": "logical",
         "metadata": {
           "user-defined": "values",
           "created": "01/10/2018"

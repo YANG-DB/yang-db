@@ -30,7 +30,8 @@ import java.util.*;
  * //example
  * {
  * "id": "0",
- * "label": "person",
+ * "label": "Person",
+"type": "logical",
  * "metadata": {
  * "user-defined": "values"
  * }

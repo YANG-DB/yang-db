@@ -32,7 +32,8 @@ import java.util.List;
  *         "nodes": [
  *             {
  *                 "id": "0",
-*                  "label": "person",
+*                  "label": "Person",
+"type": "logical",
  *                 "metadata": {
  *                     "user-defined": "values"
  *                 }
@@ -52,7 +53,8 @@ import java.util.List;
  *             },
  *             {
  *                 "id": "10",
- *                 "label": "person",
+ *                 "label": "Person",
+"type": "logical",
  *                 "metadata": {
  *                     "user-defined": "values"
  *                 }

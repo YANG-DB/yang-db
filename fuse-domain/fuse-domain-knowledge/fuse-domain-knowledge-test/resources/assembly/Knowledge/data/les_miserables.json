@@ -6,6 +6,7 @@
       },
       "id": "Myriel",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Myriel",
         "age" : 43
@@ -17,6 +18,7 @@
       },
       "id": "Napoleon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Napoleon",
         "age" : 68
@@ -28,6 +30,7 @@
       },
       "id": "Mlle.Baptistine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mlle.Baptistine",
         "age" : 21
@@ -39,6 +42,7 @@
       },
       "id": "Mme.Magloire",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Magloire",
         "age" : 13
@@ -50,6 +54,7 @@
       },
       "id": "CountessdeLo",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "CountessdeLo",
         "age" : 32
@@ -61,6 +66,7 @@
       },
       "id": "Geborand",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Geborand",
         "age" : 73
@@ -72,6 +78,7 @@
       },
       "id": "Champtercier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Champtercier",
         "age" : 51
@@ -83,6 +90,7 @@
       },
       "id": "Cravatte",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Cravatte",
         "age" : 23
@@ -94,6 +102,7 @@
       },
       "id": "Count",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Count",
         "age" : 58
@@ -105,6 +114,7 @@
       },
       "id": "OldMan",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "OldMan",
         "age" : 70
@@ -116,6 +126,7 @@
       },
       "id": "Labarre",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Labarre",
         "age" : 27
@@ -127,6 +138,7 @@
       },
       "id": "Valjean",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Valjean",
         "age" : 25
@@ -138,6 +150,7 @@
       },
       "id": "Marguerite",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Marguerite",
         "age" : 40
@@ -149,6 +162,7 @@
       },
       "id": "Mme.deR",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.deR",
         "age" : 9
@@ -160,6 +174,7 @@
       },
       "id": "Isabeau",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Isabeau",
         "age" : 10
@@ -171,6 +186,7 @@
       },
       "id": "Gervais",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Gervais",
         "age" : 36
@@ -182,6 +198,7 @@
       },
       "id": "Tholomyes",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Tholomyes",
         "age" : 42
@@ -193,6 +210,7 @@
       },
       "id": "Listolier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Listolier",
         "age" : 31
@@ -204,6 +222,7 @@
       },
       "id": "Fameuil",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Fameuil",
         "age" : 30
@@ -215,6 +234,7 @@
       },
       "id": "Blacheville",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Blacheville",
         "age" : 27
@@ -226,6 +246,7 @@
       },
       "id": "Favourite",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Favourite",
         "age" : 20
@@ -237,6 +258,7 @@
       },
       "id": "Dahlia",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Dahlia",
         "age" : 19
@@ -248,6 +270,7 @@
       },
       "id": "Zephine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Zephine",
         "age" : 17
@@ -259,6 +282,7 @@
       },
       "id": "Fantine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Fantine",
         "age" : 16
@@ -270,6 +294,7 @@
       },
       "id": "Mme.Thenardier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Thenardier",
         "age" : 37
@@ -281,6 +306,7 @@
       },
       "id": "Thenardier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Thenardier",
         "age" : 19
@@ -292,6 +318,7 @@
       },
       "id": "Cosette",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Cosette",
         "age" : 24
@@ -303,6 +330,7 @@
       },
       "id": "Javert",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Javert",
         "age" : 31
@@ -314,6 +342,7 @@
       },
       "id": "Fauchelevent",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Fauchelevent",
         "age" : 38
@@ -325,6 +354,7 @@
       },
       "id": "Bamatabois",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Bamatabois",
         "age" : 21
@@ -336,6 +366,7 @@
       },
       "id": "Perpetue",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Perpetue",
         "age" : 29
@@ -347,6 +378,7 @@
       },
       "id": "Simplice",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Simplice",
         "age" : 19
@@ -358,6 +390,7 @@
       },
       "id": "Scaufflaire",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Scaufflaire",
         "age" : 19
@@ -369,6 +402,7 @@
       },
       "id": "Woman1",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Woman1",
         "age" : 20
@@ -380,6 +414,7 @@
       },
       "id": "Judge",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Judge",
         "age" : 39
@@ -391,6 +426,7 @@
       },
       "id": "Champmathieu",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Champmathieu",
         "age" : 45
@@ -402,6 +438,7 @@
       },
       "id": "Brevet",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Brevet",
         "age" : 35
@@ -413,6 +450,7 @@
       },
       "id": "Chenildieu",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Chenildieu",
         "age" : 30
@@ -424,6 +462,7 @@
       },
       "id": "Cochepaille",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Cochepaille",
         "age" : 32
@@ -435,6 +474,7 @@
       },
       "id": "Pontmercy",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Pontmercy",
         "age" : 22
@@ -446,6 +486,7 @@
       },
       "id": "Boulatruelle",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Boulatruelle",
         "age" : 21
@@ -457,6 +498,7 @@
       },
       "id": "Eponine",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Eponine",
         "age" : 20
@@ -468,6 +510,7 @@
       },
       "id": "Anzelma",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Anzelma",
         "age" : 190
@@ -479,6 +522,7 @@
       },
       "id": "Woman2",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Woman2",
         "age" : 18
@@ -490,6 +534,7 @@
       },
       "id": "MotherInnocent",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "MotherInnocent",
         "age" : 28
@@ -501,6 +546,7 @@
       },
       "id": "Gribier",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Gribier",
         "age" : 41
@@ -512,6 +558,7 @@
       },
       "id": "Jondrette",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Jondrette",
         "age" : 45
@@ -523,6 +570,7 @@
       },
       "id": "Mme.Burgon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Burgon",
         "age" : 43
@@ -534,6 +582,7 @@
       },
       "id": "Gavroche",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Gavroche",
         "age" : 23
@@ -545,6 +594,7 @@
       },
       "id": "Gillenormand",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Gillenormand",
         "age" : 23
@@ -556,6 +606,7 @@
       },
       "id": "Magnon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Magnon",
         "age" : 36
@@ -567,6 +618,7 @@
       },
       "id": "Mlle.Gillenormand",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mlle.Gillenormand",
         "age" : 37
@@ -578,6 +630,7 @@
       },
       "id": "Mme.Pontmercy",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Pontmercy",
         "age" : 38
@@ -589,6 +642,7 @@
       },
       "id": "Mlle.Vaubois",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mlle.Vaubois",
         "age" : 28
@@ -600,6 +654,7 @@
       },
       "id": "Lt.Gillenormand",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Lt.Gillenormand",
         "age" : 24
@@ -611,6 +666,7 @@
       },
       "id": "Marius",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Marius",
         "age" : 22
@@ -622,6 +678,7 @@
       },
       "id": "BaronessT",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "BaronessT",
         "age" : 12
@@ -633,6 +690,7 @@
       },
       "id": "Mabeuf",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mabeuf",
         "age" : 11
@@ -644,6 +702,7 @@
       },
       "id": "Enjolras",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Enjolras",
         "age" : 10
@@ -655,6 +714,7 @@
       },
       "id": "Combeferre",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Combeferre",
         "age" : 9
@@ -666,6 +726,7 @@
       },
       "id": "Prouvaire",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Prouvaire",
         "age" : 8
@@ -677,6 +738,7 @@
       },
       "id": "Feuilly",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Feuilly",
         "age" : 7
@@ -688,6 +750,7 @@
       },
       "id": "Courfeyrac",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Courfeyrac",
         "age" : 6
@@ -699,6 +762,7 @@
       },
       "id": "Bahorel",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Bahorel",
         "age" : 18
@@ -710,6 +774,7 @@
       },
       "id": "Bossuet",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Bossuet",
         "age" : 17
@@ -721,6 +786,7 @@
       },
       "id": "Joly",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Joly",
         "age" : 16
@@ -732,6 +798,7 @@
       },
       "id": "Grantaire",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Grantaire",
         "age" : 15
@@ -743,6 +810,7 @@
       },
       "id": "MotherPlutarch",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "MotherPlutarch",
         "age" : 25
@@ -754,6 +822,7 @@
       },
       "id": "Gueulemer",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Gueulemer",
         "age" : 27
@@ -765,6 +834,7 @@
       },
       "id": "Babet",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Babet",
         "age" : 29
@@ -776,6 +846,7 @@
       },
       "id": "Claquesous",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Claquesous",
         "age" : 30
@@ -787,6 +858,7 @@
       },
       "id": "Montparnasse",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Montparnasse",
         "age" : 60
@@ -798,6 +870,7 @@
       },
       "id": "Toussaint",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Toussaint",
         "age" : 68
@@ -809,6 +882,7 @@
       },
       "id": "Child1",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Child1",
         "age" : 8
@@ -820,6 +894,7 @@
       },
       "id": "Child2",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Child2",
         "age" : 8
@@ -831,6 +906,7 @@
       },
       "id": "Brujon",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Brujon",
         "age" : 28
@@ -842,6 +918,7 @@
       },
       "id": "Mme.Hucheloup",
       "label": "Person",
+"type": "logical",
       "properties": {
         "name": "Mme.Hucheloup",
         "age" : 78
@@ -851,6 +928,7 @@
   "edges": [
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Napoleon",
       "target": "Myriel",
       "metadata": {
@@ -859,6 +937,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Mlle.Baptistine",
       "target": "Myriel",
       "metadata": {
@@ -867,6 +946,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Mme.Magloire",
       "target": "Myriel",
       "metadata": {
@@ -875,6 +955,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Mme.Magloire",
       "target": "Mlle.Baptistine",
       "metadata": {
@@ -883,6 +964,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "CountessdeLo",
       "target": "Myriel",
       "metadata": {
@@ -891,6 +973,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Geborand",
       "target": "Myriel",
       "metadata": {
@@ -899,6 +982,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Champtercier",
       "target": "Myriel",
       "metadata": {
@@ -907,6 +991,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Cravatte",
       "target": "Myriel",
       "metadata": {
@@ -915,6 +1000,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Count",
       "target": "Myriel",
       "metadata": {
@@ -923,6 +1009,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "OldMan",
       "target": "Myriel",
       "metadata": {
@@ -931,6 +1018,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Valjean",
       "target": "Labarre",
       "metadata": {
@@ -939,6 +1027,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Valjean",
       "target": "Mme.Magloire",
       "metadata": {
@@ -947,6 +1036,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Valjean",
       "target": "Mlle.Baptistine",
       "metadata": {
@@ -955,6 +1045,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Valjean",
       "target": "Myriel",
       "metadata": {
@@ -963,6 +1054,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Marguerite",
       "target": "Valjean",
       "metadata": {
@@ -971,6 +1063,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Mme.deR",
       "target": "Valjean",
       "metadata": {
@@ -979,6 +1072,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Isabeau",
       "target": "Valjean",
       "metadata": {
@@ -987,6 +1081,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Gervais",
       "target": "Valjean",
       "metadata": {
@@ -995,6 +1090,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Listolier",
       "target": "Tholomyes",
       "metadata": {
@@ -1003,6 +1099,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Fameuil",
       "target": "Tholomyes",
       "metadata": {
@@ -1011,6 +1108,7 @@
     },
     {
       "label": "knows",
+"type": "logicalRel",
       "source": "Fameuil",
       "target": "Listolier",
       "metadata": {
