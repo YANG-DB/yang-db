@@ -11,6 +11,7 @@
           "eTag": [
             "A"
           ],
+          "type": "entity",
           "eType": "Person",
           "properties": [
             {
@@ -37,6 +38,7 @@
       ],
       "relationships": [
         {
+          "type": "relation",
           "rID": "12345678",
           "agg": true,
           "rType": "memberof",

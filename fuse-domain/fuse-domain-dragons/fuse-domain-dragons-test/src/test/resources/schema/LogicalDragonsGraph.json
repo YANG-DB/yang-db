@@ -5,6 +5,7 @@
         "group": 1
       },
       "label": "Dragon",
+      "type": "logical",
       "id": "D01_Myriel",
       "properties": {
         "name": "Myriel",
@@ -19,6 +20,7 @@
         "group": 2
       },
       "label": "Dragon",
+      "type": "logical",
       "id": "D02_Kolbert",
       "properties": {
         "name": "Kolbert",
@@ -33,6 +35,7 @@
         "group": 1
       },
       "label": "Dragon",
+      "type": "logical",
       "id": "D03_Neptun",
       "properties": {
         "name": "Neptun",
@@ -48,6 +51,7 @@
       },
       "id": "P01_Napoleon",
       "label": "Person",
+      "type": "logical",
       "properties": {
         "firstName": "Napoleon",
         "lastName": "Bonaparte",
@@ -64,6 +68,7 @@
       },
       "id": "P02_Mlle.Baptistine",
       "label": "Person",
+      "type": "logical",
       "properties": {
         "firstName": "Mlle",
         "lastName": "Baptistine",
@@ -80,6 +85,7 @@
       },
       "id": "P03_CountessdeLo",
       "label": "Person",
+      "type": "logical",
       "properties": {
         "firstName": "CountessdeLo",
         "lastName": "Buffeled",
@@ -96,6 +102,7 @@
       },
       "id": "H01-Dong",
       "label": "Horse",
+      "type": "logical",
       "properties": {
         "name": "Dong",
         "weight": 235,
@@ -109,6 +116,7 @@
       },
       "id": "H02-Jersy",
       "label": "Horse",
+      "type": "logical",
       "properties": {
         "name": "Jersy",
         "weight": 195,
@@ -122,6 +130,7 @@
       },
       "id": "H03-Jojo",
       "label": "Horse",
+      "type": "logical",
       "properties": {
         "name": "Jojo",
         "weight": 305,
@@ -135,6 +144,7 @@
       },
       "id": "K01-North",
       "label": "Kingdom",
+      "type": "logical",
       "properties": {
         "name": "North",
         "king": "George",
@@ -148,6 +158,7 @@
       },
       "id": "K02-South",
       "label": "Kingdom",
+      "type": "logical",
       "properties": {
         "name": "South",
         "king": "Jimmy",
@@ -162,6 +173,7 @@
       },
       "id": "K03-West",
       "label": "Kingdom",
+      "type": "logical",
       "properties": {
         "name": "West",
         "queen": "Naomi",
@@ -174,12 +186,13 @@
         "group": 1
       },
       "id": "K04-East",
+      "type": "logical",
       "label": "Kingdom",
       "properties": {
         "name": "East",
         "king": "Banji",
         "queen": "Jespa",
-        "independenceDay" : "21/5/850",
+        "independenceDay": "21/5/850",
         "funds": 50000
       }
     },
@@ -189,6 +202,7 @@
       },
       "id": "G01-masons",
       "label": "Guild",
+      "type": "logical",
       "properties": {
         "name": "masons",
         "description": "There were several types of guilds, including the two main categories of merchant guilds and craft guilds[4] but also the frith guild and religious guild.[5] Guilds arose beginning in the High Middle Ages as craftsmen united to protect their common interests. In the German city of Augsburg craft guilds are mentioned in the Towncharter of 1156.[6]",
@@ -201,6 +215,7 @@
       },
       "id": "G02-merchant",
       "label": "Guild",
+      "type": "logical",
       "properties": {
         "name": "merchant",
         "description": "The continental system of guilds and merchants arrived in England after the Norman Conquest, with incorporated societies of merchants in each town or city holding exclusive rights of doing business there. In many cases they became the governing body of a town. For example, London's Guildhall became the seat of the Court of Common Council of the City of London Corporation, the world’s oldest continuously elected local government,[7] whose members to this day must be Freemen of the City.[8] The Freedom of the City, effective from the Middle Ages until 1835, gave the right to trade, and was only bestowed upon members of a Guild or Livery.[9]",
@@ -213,6 +228,7 @@
       },
       "id": "G03-craft",
       "label": "Guild",
+      "type": "logical",
       "properties": {
         "name": "craft",
         "description": "\nIn England, specifically in the City of London Corporation, more than 110 guilds,[16] referred to as livery companies, survive today,[17] with the oldest more than a thousand years old.[citation needed] Other groups, such as the Worshipful Company of Tax Advisers, have been formed far more recently. Membership in a livery company is expected for individuals participating in the governance of The City, as the Lord Mayor and the Remembrancer.\n\n\nThe Syndics of the Drapers' Guild by Rembrandt, 1662.\nThe guild system reached a mature state in Germany circa 1300 and held on in German cities into the 19th century, with some special privileges for certain occupations remaining today. In the 15th century, Hamburg had 100 guilds, Cologne 80, and Lübeck 70.[18] The latest guilds to develop in Western Europe were the gremios of Spain: e.g., Valencia (1332) or Toledo (1426).\n\nNot all city economies were controlled by guilds; some cities were \"free.\" Where guilds were in control, they shaped labor, production and trade; they had strong controls over instructional capital, and the modern concepts of a lifetime progression of apprentice to craftsman, and then from journeyman eventually to widely recognized master and grandmaster began to emerge. In order to become a master, a journeyman would have to go on a three-year voyage called journeyman years. The practice of the journeyman years still exists in Germany and France.",
@@ -226,6 +242,7 @@
       "source": "P01_Napoleon",
       "target": "D03_Neptun",
       "label": "Own",
+      "type": "logicalRel",
       "metadata": {
         "value": 1
       },
@@ -236,6 +253,7 @@
     },
     {
       "id": "OWN_P02D01",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "D01_Myriel",
       "label": "Own",
@@ -250,6 +268,7 @@
     },
     {
       "id": "OWN_P02D02",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "D02_Kolbert",
       "label": "Own",
@@ -263,6 +282,7 @@
     },
     {
       "id": "OWN_P02H03",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "H03-Jojo",
       "label": "Own",
@@ -276,6 +296,7 @@
     },
     {
       "id": "KNOW_P01P02",
+      "type": "logicalRel",
       "source": "P01_Napoleon",
       "target": "P02_Mlle.Baptistine",
       "label": "Know",
@@ -289,6 +310,7 @@
     },
     {
       "id": "KNOW_P02P03",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "P03_CountessdeLo",
       "label": "Know",
@@ -302,6 +324,7 @@
     },
     {
       "id": "KNOW_P03P01",
+      "type": "logicalRel",
       "source": "P03_CountessdeLo",
       "target": "P01_Napoleon",
       "label": "Know",
@@ -315,6 +338,7 @@
     },
     {
       "id": "MEMB_P03G01",
+      "type": "logicalRel",
       "source": "P03_CountessdeLo",
       "target": "G01-masons",
       "label": "MemberOf",
@@ -329,6 +353,7 @@
     },
     {
       "id": "MEMB_P03G03",
+      "type": "logicalRel",
       "source": "P03_CountessdeLo",
       "target": "G03-craft",
       "label": "MemberOf",
@@ -341,6 +366,7 @@
     },
     {
       "id": "MEMB_P02G02",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "G02-merchant",
       "label": "MemberOf",
@@ -355,6 +381,7 @@
     },
     {
       "id": "FIRE_D02D01",
+      "type": "logicalRel",
       "source": "D02_Kolbert",
       "target": "D01_Myriel",
       "label": "Fire",
@@ -369,6 +396,7 @@
     },
     {
       "id": "FIRE_D02D03",
+      "type": "logicalRel",
       "source": "D02_Kolbert",
       "target": "D03_Neptun",
       "label": "Fire",
@@ -383,6 +411,7 @@
     },
     {
       "id": "FREEZ_D01D03",
+      "type": "logicalRel",
       "source": "D01_Myriel",
       "target": "D03_Neptun",
       "label": "Freeze",
@@ -397,6 +426,7 @@
     },
     {
       "id": "ORIGIN_D01K01",
+      "type": "logicalRel",
       "source": "D01_Myriel",
       "target": "K01-North",
       "label": "OriginatedIn",
@@ -410,6 +440,7 @@
     },
     {
       "id": "SUBJECT_P01K01",
+      "type": "logicalRel",
       "source": "P01_Napoleon",
       "target": "K01-North",
       "label": "SubjectOf",
@@ -423,6 +454,7 @@
     },
     {
       "id": "SUBJECT_P02K02",
+      "type": "logicalRel",
       "source": "P02_Mlle.Baptistine",
       "target": "K02-South",
       "label": "SubjectOf",
@@ -436,6 +468,7 @@
     },
     {
       "id": "SUBJECT_P03K02",
+      "type": "logicalRel",
       "source": "P03_CountessdeLo",
       "target": "K02-South",
       "label": "SubjectOf",
@@ -449,6 +482,7 @@
     },
     {
       "id": "REGISTR_H01K02",
+      "type": "logicalRel",
       "source": "H01-Dong",
       "target": "K02-South",
       "label": "RegisteredIn",
@@ -462,6 +496,7 @@
     },
     {
       "id": "REGISTR_H02K02",
+      "type": "logicalRel",
       "source": "H02-Jersy",
       "target": "K02-South",
       "label": "RegisteredIn",
@@ -475,6 +510,7 @@
     },
     {
       "id": "REGISTR_H03K03",
+      "type": "logicalRel",
       "source": "H03-Jojo",
       "target": "K03-West",
       "label": "RegisteredIn",
@@ -488,6 +524,7 @@
     },
     {
       "id": "REGISTR_H03K04",
+      "type": "logicalRel",
       "source": "H03-Jojo",
       "target": "K04-East",
       "label": "RegisteredIn",
@@ -501,6 +538,7 @@
     },
     {
       "id": "REGISTR_G01K04",
+      "type": "logicalRel",
       "source": "G01-masons",
       "target": "K03-West",
       "label": "RegisteredIn",
@@ -514,6 +552,7 @@
     },
     {
       "id": "REGISTR_G02K03",
+      "type": "logicalRel",
       "source": "G01-masons",
       "target": "K03-West",
       "label": "RegisteredIn",
@@ -527,6 +566,7 @@
     },
     {
       "id": "REGISTR_G03K01",
+      "type": "logicalRel",
       "source": "G03-craft",
       "target": "K01-North",
       "label": "RegisteredIn",
