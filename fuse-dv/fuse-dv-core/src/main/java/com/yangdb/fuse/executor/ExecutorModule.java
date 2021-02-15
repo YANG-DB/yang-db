@@ -47,6 +47,7 @@ import com.yangdb.fuse.dispatcher.driver.CursorDriver;
 import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.driver.QueryDriver;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
+import com.yangdb.fuse.dispatcher.resource.store.InMemoryResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.LoggingResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStoreFactory;
@@ -76,6 +77,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
+import org.jetbrains.annotations.NotNull;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
@@ -198,11 +200,11 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(GraphWriterStrategy.class).toInstance(new GraphWriterStrategy());
     }
 
-    protected void bindResourceManager(Env env, Config conf, Binder binder) {
+    protected void bindResourceManager(Env env, Config conf, Binder binder) throws ClassNotFoundException {
         // resource store and persist processor
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(ResourceStoreFactory.injectionName))
-                .to(PersistentResourceStore.class)
+                .to(getResourceStoreClass(conf))
                 .in(new SingletonScope());
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(LoggingResourceStore.injectionName))
@@ -412,6 +414,14 @@ public class ExecutorModule extends ModuleBase {
                 }
             }
         });
+    }
+
+    @NotNull
+    private Class<? extends ResourceStore> getResourceStoreClass(Config conf) throws ClassNotFoundException {
+        if(conf.hasPath(conf.getString("assembly") + ".resource_store")) {
+            return (Class<? extends ResourceStore>) Class.forName(conf.getString(conf.getString("assembly") + ".resource_store"));
+        }
+        return InMemoryResourceStore.class;
     }
 
     private Class<? extends RawSchema> getRawElasticSchemaClass(Config conf) throws ClassNotFoundException {

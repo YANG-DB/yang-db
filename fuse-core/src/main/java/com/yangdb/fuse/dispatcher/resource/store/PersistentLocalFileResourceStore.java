@@ -89,7 +89,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
     private Optional<QueryResource> loadFromStorage(File queryDir) {
         Option<File> queryFile = Stream.of(queryDir.listFiles() == null ? new File[0] : queryDir.listFiles())
                 .find(file -> FilenameUtils.getBaseName(file.getName()).equals(QUERY_INFO + queryDir.getName()));
-        if (queryFile.isDefined()) {
+        if (Files.exists(queryFile.get().toPath())) {
             try {
 //                BufferedReader reader = Files.newBufferedReader(queryFile.get().toPath());
                 return Optional.of(QueryResource.deserialize(mapper,Files.readAllBytes(queryFile.get().toPath())));

@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package com.yangdb.fuse.model.asgQuery;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,8 +59,7 @@ import java.util.stream.Collectors;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends EBase>>>{
-
+public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends EBase>>> {
 
 
     //region Builder
@@ -85,7 +84,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
             if (this.next == null) {
                 this.next = new ArrayList<>();
             }
-            if(next!=null)
+            if (next != null)
                 this.next.add(next);
             return this;
         }
@@ -97,7 +96,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
         public Builder<T> withB(AsgEBase<? extends EBase> b) {
             this.b = new ArrayList<>();
-            if(b!=null) {
+            if (b != null) {
                 this.b.add(b);
             }
             return this;
@@ -113,7 +112,8 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     //endregion
 
     //region Constructors
-    public AsgEBase() {}
+    public AsgEBase() {
+    }
 
     public AsgEBase(T eBase,
                     List<AsgEBase<? extends EBase>> next,
@@ -161,7 +161,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     public AsgEBase<? extends EBase> addNext(List<AsgEBase<? extends EBase>> nodes) {
         this.next.addAll(nodes);
-        nodes.stream().forEach(e->e.setParent(new ArrayList<>(Arrays.asList(this))));
+        nodes.stream().forEach(e -> e.setParent(new ArrayList<>(Arrays.asList(this))));
         return this;
     }
 
@@ -172,8 +172,10 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
 
     @Override
     public void setNext(List<AsgEBase<? extends EBase>> next) {
-        this.next = next;
-        next.stream().forEach(e->e.setParent(new ArrayList<>(Arrays.asList(this))));
+        if (next != null) {
+            this.next = next;
+            next.stream().forEach(e -> e.setParent(new ArrayList<>(Arrays.asList(this))));
+        }
     }
 
     public List<AsgEBase<? extends EBase>> getB() {
@@ -203,7 +205,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     }
 
     public int geteNum() {
-        if(this.eBase!=null)
+        if (this.eBase != null)
             return this.eBase.geteNum();
         return -1;
     }
@@ -223,7 +225,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
         asgEBase.addToParents(this);
     }
 
-    public void addNextChild(List<AsgEBase<? extends EBase> >elements) {
+    public void addNextChild(List<AsgEBase<? extends EBase>> elements) {
         elements.forEach(this::addNextChild);
     }
 
@@ -286,7 +288,7 @@ public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends E
     public String toString() {
         //some 'non-educated-developers' recklessly create AsgEBasePlanOp (during tests) without giving them appropriate AsgEbase
         // therefore NPE - why ????
-        if(eBase!=null)
+        if (eBase != null)
             return "Asg(" + this.eBase.toString() + ")";
         return "";
     }

@@ -21,7 +21,6 @@ package com.yangdb.fuse.dispatcher.resource.store;
  */
 
 
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -38,15 +37,13 @@ import java.util.stream.Collectors;
 
 public class ResourceStoreFactory implements ResourceStore {
     public static final String injectionName = "ResourceStoreFactory.persistant";
-    private Collection<ResourceStore> stores;
+    private Collection<ResourceStore> stores = new ArrayList<>();
 
     @Inject
     public ResourceStoreFactory(
             @Named(injectionName) ResourceStore store) {
-        this.stores = new ArrayList<>();
-        //default in memory store
-        Arrays.asList(new ResourceStore[]{new PersistentLocalFileResourceStore(), store})
-                .forEach(((ArrayList<ResourceStore>) this.stores)::add);
+        //add external store
+        this.stores.add(store);
     }
 
     @Override

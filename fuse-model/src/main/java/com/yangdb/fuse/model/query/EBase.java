@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.query;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package com.yangdb.fuse.model.query;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -81,6 +81,8 @@ import com.yangdb.fuse.model.query.quant.Quant1;
         @JsonSubTypes.Type(name = "TypedEndPattern", value = TypedEndPattern.class),
         @JsonSubTypes.Type(name = "UnTypedEndPattern", value = UnTypedEndPattern.class),
         @JsonSubTypes.Type(name = "RelProp", value = RelProp.class),
+        @JsonSubTypes.Type(name = "RedundantRelProp", value = RedundantRelProp.class),
+        @JsonSubTypes.Type(name = "RedundantSelectionRelProp", value = RedundantSelectionRelProp.class),
         @JsonSubTypes.Type(name = "RelPropGroup", value = RelPropGroup.class),
         @JsonSubTypes.Type(name = "Agg", value = Agg.class),
         @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),

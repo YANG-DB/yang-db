@@ -507,6 +507,7 @@
     },
     {
       "id": "REGISTR_H02K02",
+      "type": "logicalRel",
       "source": "H02-Jersy",
       "target": "K02-South",
       "label": "RegisteredIn",

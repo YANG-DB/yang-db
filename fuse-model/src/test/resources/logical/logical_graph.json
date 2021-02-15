@@ -3,6 +3,7 @@
       {
         "id": "0",
         "label": "person",
+        "type": "logical",
         "metadata": {
           "user-defined": "values",
           "context": "generic",
@@ -23,6 +24,7 @@
         }
       },
       {
+        "type": "logical",
         "id": "10",
         "label": "person",
         "metadata": {
@@ -46,6 +48,7 @@
     ],
     "edges": [
       {
+        "type": "logicalRel",
         "id": 100,
         "source": "0",
         "target": "1",
@@ -60,6 +63,7 @@
         }
       },
       {
+        "type": "logicalRel",
         "id": 101,
         "source": "0",
         "target": "1",

@@ -9,9 +9,9 @@ package com.yangdb.fuse.model.execution.plan.costs;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package com.yangdb.fuse.model.execution.plan.costs;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,10 +48,13 @@ package com.yangdb.fuse.model.execution.plan.costs;
  */
 public class DetailedCost extends DoubleCost {
 
-    public final double lambdaNode;
-    public final double lambdaEdge;
-    public final double R;
-    public final double N2;
+    public  double lambdaNode;
+    public  double lambdaEdge;
+    public  double R;
+    public  double N2;
+
+    public DetailedCost() {
+    }
 
     public DetailedCost(double cost, double lambdaNode , double lambdaEdge , double R, double N2) {
         super(cost);
