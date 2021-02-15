@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ package com.yangdb.fuse.services.controllers;
 
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.DashboardDriver;
-import com.yangdb.fuse.executor.resource.PersistantNodeStatusResource;
+import com.yangdb.fuse.executor.resource.PersistentESNodeStatusResource;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -33,7 +33,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.ValueType;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,7 +103,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     @Override
     public Map cursorCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
-        builder.setIndices(PersistantNodeStatusResource.SYSTEM);
+        builder.setIndices(PersistentESNodeStatusResource.SYSTEM);
         builder.setQuery(matchAllQuery());
         SearchResponse response = builder.get();
         return Arrays.stream(response.getHits().getHits()).collect(Collectors.toMap(SearchHit::getId, SearchHit::getSourceAsMap));

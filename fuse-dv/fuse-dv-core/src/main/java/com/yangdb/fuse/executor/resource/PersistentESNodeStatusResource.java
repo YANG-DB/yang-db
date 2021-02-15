@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.resource;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ import java.util.Map;
 import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-public class PersistantNodeStatusResource implements NodeStatusResource {
+public class PersistentESNodeStatusResource implements NodeStatusResource {
 
     public static final String SYSTEM = "fuse_node_info";
     public static final String ID = "id";
@@ -52,15 +52,15 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
     public static final String UPDATE_TIME = "updateTime";
     public static final String RESOURCE = "resource";
 
-    public static final String nodeName = "PersistantNodeStatusResource.@nodeName";
+    public static final String nodeName = "PersistentESNodeStatusResource.@nodeName";
 
     private String name;
     private Client client;
     private MetricRegistry registry;
 
     @Inject
-    public PersistantNodeStatusResource(@Named(globalClient) Client client,
-                                        MetricRegistry registry) throws UnknownHostException {
+    public PersistentESNodeStatusResource(@Named(globalClient) Client client,
+                                          MetricRegistry registry) throws UnknownHostException {
 
         this.name = InetAddress.getLocalHost().getHostAddress();
         this.client = client;

@@ -32,7 +32,6 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -92,7 +91,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
         if (Files.exists(queryFile.get().toPath())) {
             try {
 //                BufferedReader reader = Files.newBufferedReader(queryFile.get().toPath());
-                return Optional.of(QueryResource.deserialize(mapper,Files.readAllBytes(queryFile.get().toPath())));
+                return Optional.of(QueryResource.deserialize(mapper, Files.readAllBytes(queryFile.get().toPath())));
             } catch (IOException e) {
                 return Optional.empty();
             }
@@ -119,16 +118,16 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
     @Override
     public Optional<CursorResource> getCursorResource(String queryId, String cursorId) {
         Optional<CursorResource> resource = super.getCursorResource(queryId, cursorId);
-        if(!resource.isPresent()) {
+        if (!resource.isPresent()) {
             try {
                 File cursorDir = getCursorDir(queryId, cursorId);
                 //store cursor data file
-                Path path = Paths.get(cursorDir.getAbsolutePath() + "/" + CURSOR_INFO + cursorId  + ".json");
+                Path path = Paths.get(cursorDir.getAbsolutePath() + "/" + CURSOR_INFO + cursorId + ".json");
                 try {
-                    if(Files.exists(path)) {
+                    if (Files.exists(path)) {
                         CursorResource cursorResource = CursorResource.deserialize(mapper, Files.readAllBytes(path));
                         //add from storage to memory
-                        super.getQueryResource(queryId).get().addCursorResource(cursorId,cursorResource);
+                        super.getQueryResource(queryId).get().addCursorResource(cursorId, cursorResource);
                         resource = Optional.of(cursorResource);
                     }
                 } catch (IOException e) {
@@ -145,16 +144,16 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
     @Override
     public Optional<PageResource> getPageResource(String queryId, String cursorId, String pageId) {
         Optional<PageResource> pageResource = super.getPageResource(queryId, cursorId, pageId);
-        if(!pageResource.isPresent()) {
+        if (!pageResource.isPresent()) {
             try {
                 File pageDir = getPageDir(queryId, cursorId);
                 //store cursor data file
-                Path path = Paths.get(pageDir.getAbsolutePath() + "/" + PAGE_INFO + pageId  + ".json");
+                Path path = Paths.get(pageDir.getAbsolutePath() + "/" + PAGE_INFO + pageId + ".json");
                 try {
-                    if(Files.exists(path)) {
+                    if (Files.exists(path)) {
                         PageResource page = PageResource.deserialize(mapper, Files.readAllBytes(path));
                         //add from storage to memory
-                        super.getQueryResource(queryId).get().getCursorResource(cursorId).get().addPageResource(pageId,page);
+                        super.getQueryResource(queryId).get().getCursorResource(cursorId).get().addPageResource(pageId, page);
                         pageResource = Optional.of(page);
                     }
                 } catch (IOException e) {
@@ -186,7 +185,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
                 //store query resource into a file
                 Path path = Paths.get(queryDir.getAbsolutePath() + "/" + QUERY_INFO + id + ".json");
                 try {
-                    Files.write(path, QueryResource.serialize(mapper,queryResource));
+                    Files.write(path, QueryResource.serialize(mapper, queryResource));
                 } catch (IOException e) {
                     throw new FuseError.FuseErrorException("Failed writing file for new query resource [" + QUERY_INFO + id + "] ", e.getCause());
                 }
@@ -228,7 +227,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
             File cursorFileLocation = getCursorDir(queryId, cursorResource.getCursorId());
             Path path = Paths.get(cursorFileLocation.getAbsolutePath() + "/" + CURSOR_INFO + cursorResource.getCursorId() + ".json");
             try {
-                Files.write(path, CursorResource.serialize(mapper,cursorResource));
+                Files.write(path, CursorResource.serialize(mapper, cursorResource));
             } catch (IOException e) {
                 throw new FuseError.FuseErrorException("Failed writing file for new CursorResource Info [" + CURSOR_INFO + cursorResource.getCursorId() + "] ", e.getCause());
             }
@@ -265,7 +264,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
                 throw new FuseError.FuseErrorException("a cursor folder doesnt exists with this specific query name [" + queryId + "]", new IllegalArgumentException());
             }
             //create folder named page
-            File pageDir = getPageDir(queryId,cursorId);
+            File pageDir = getPageDir(queryId, cursorId);
             boolean exists = Stream.of(pageDir.listFiles() == null ? new File[0] : pageDir.listFiles())
                     .exists(file -> FilenameUtils.getBaseName(file.getName()).equals(pageResource.getPageId()));
             //a page already exists with this specific name
@@ -275,7 +274,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
             //store page data file
             try {
                 Path path = Paths.get(pageDir.getAbsolutePath() + "/" + PAGE_INFO + pageResource.getPageId() + ".json");
-                Files.write(path, PageResource.serialize(mapper,pageResource));
+                Files.write(path, PageResource.serialize(mapper, pageResource));
             } catch (IOException e) {
                 throw new FuseError.FuseErrorException("Failed writing file for new PageResource Info [" + PAGE_INFO + pageResource.getPageId() + "] ", e.getCause());
             }
@@ -298,7 +297,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
         return type.equals(_stored);
     }
 
-//    utility functions
+    //    utility functions
 //    -----------------------------------------------------------------------------------------------------------------------------------------
     private File getQueryDir() throws IOException {
         return FileUtils.getOrCreateFile(GlobalConstants.FileSystemConfigs.QUERY_STORE_NAME_DEFUALT_VALUE, System.getProperty("user.dir"), true);
@@ -309,22 +308,20 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
     }
 
     private File getCursorDir(String queryId) throws IOException {
-        return FileUtils.getOrCreateFile( GlobalConstants.FileSystemConfigs.CURSOR_STORE_NAME_DEFUALT_VALUE, getQueryDir(queryId).getAbsolutePath(), true);
+        return FileUtils.getOrCreateFile(GlobalConstants.FileSystemConfigs.CURSOR_STORE_NAME_DEFUALT_VALUE, getQueryDir(queryId).getAbsolutePath(), true);
     }
 
-    private File getCursorDir(String queryId,String cursorId) throws IOException {
-        return FileUtils.getOrCreateFile( GlobalConstants.FileSystemConfigs.CURSOR_STORE_NAME_DEFUALT_VALUE+ "/" + cursorId, getQueryDir(queryId).getAbsolutePath(), true);
+    private File getCursorDir(String queryId, String cursorId) throws IOException {
+        return FileUtils.getOrCreateFile(GlobalConstants.FileSystemConfigs.CURSOR_STORE_NAME_DEFUALT_VALUE + "/" + cursorId, getQueryDir(queryId).getAbsolutePath(), true);
     }
 
-    private File getPageDir(String queryId,String cursorId) throws IOException {
-        return FileUtils.getOrCreateFile( GlobalConstants.FileSystemConfigs.PAGE_STORE_NAME_DEFUALT_VALUE , getCursorDir(queryId,cursorId).getAbsolutePath(), true);
+    private File getPageDir(String queryId, String cursorId) throws IOException {
+        return FileUtils.getOrCreateFile(GlobalConstants.FileSystemConfigs.PAGE_STORE_NAME_DEFUALT_VALUE, getCursorDir(queryId, cursorId).getAbsolutePath(), true);
     }
 
-    private File getPageDir(String queryId,String cursorId, String pageId) throws IOException {
-        return FileUtils.getOrCreateFile( GlobalConstants.FileSystemConfigs.PAGE_STORE_NAME_DEFUALT_VALUE + "/" + pageId, getCursorDir(queryId,cursorId).getAbsolutePath(), true);
+    private File getPageDir(String queryId, String cursorId, String pageId) throws IOException {
+        return FileUtils.getOrCreateFile(GlobalConstants.FileSystemConfigs.PAGE_STORE_NAME_DEFUALT_VALUE + "/" + pageId, getCursorDir(queryId, cursorId).getAbsolutePath(), true);
     }
-
-
 
 
 }

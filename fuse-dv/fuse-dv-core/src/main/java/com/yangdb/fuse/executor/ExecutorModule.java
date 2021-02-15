@@ -66,7 +66,6 @@ import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
-import com.yangdb.fuse.executor.resource.PersistentResourceStore;
 import com.yangdb.fuse.executor.sql.ElasticsearchFuseClient;
 import com.yangdb.fuse.executor.sql.FuseSqlService;
 import com.yangdb.fuse.executor.sql.FuseStorageEngine;

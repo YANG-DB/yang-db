@@ -57,7 +57,7 @@ import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.Storage
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
-public class PersistentResourceStore implements ResourceStore {
+public class PersistentESResourceStore implements ResourceStore {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static final String SYSTEM = "fuse_system";
@@ -73,7 +73,7 @@ public class PersistentResourceStore implements ResourceStore {
     private Client client;
 
     @Inject
-    public PersistentResourceStore(Provider<Client> client,  Set<CompositeCursorFactory.Binding> cursorBindings) {
+    public PersistentESResourceStore(Provider<Client> client, Set<CompositeCursorFactory.Binding> cursorBindings) {
         this.client = client.get();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
