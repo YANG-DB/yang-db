@@ -45,57 +45,7 @@
         </developer>
     </developers>
 
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jacoco</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
-    <modules>
-        <module>unipop-core</module>
-        <module>fuse-model</module>
-        <module>fuse-test</module>
-        <module>fuse-asg</module>
-        <module>fuse-core</module>
-        <module>fuse-dv</module>
-        <module>fuse-service</module>
-        <module>fuse-domain</module>
-        <module>fuse-geojson</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -151,7 +101,7 @@
         <owlapi.version>4.0.2</owlapi.version>
 
         <!-- rdf4j -->
-        <rdf4j.version>3.3.1</rdf4j.version>
+        <rdf4j.version>3.6.0</rdf4j.version>
 
         <!-- cypher -->
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
@@ -1040,20 +990,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven-pgp-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
                     <executions>
@@ -1079,6 +1015,9 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <additionalOptions>-Xdoclint:none</additionalOptions>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1290,11 +1229,11 @@
 
     <reporting>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <version>${maven-javadoc-plugin.version}</version>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
@@ -1323,4 +1262,103 @@
             </plugin>
         </plugins>
     </reporting>
+
+
+    <profiles>
+        <!-- DO NOT CHANGE THE *ORDER* IN WHICH THESE PROFILES ARE DEFINED! -->
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>github</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub YANG-DB Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/YANG-DB/yang-db</url>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>dragons-assembly</id>
+            <modules>
+                <module>fuse-domain/fuse-domain-dragons</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>dragons-sys-test</id>
+            <modules>
+                <module>fuse-domain/fuse-domain-dragons/fuse-domain-dragons-test</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>knowledge-assembly</id>
+            <modules>
+                <module>fuse-domain/fuse-domain-knowledge</module>
+            </modules>
+        </profile>
+      <profile>
+            <id>knowledge-sys-test</id>
+            <modules>
+                <module>fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-test</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>core</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>unipop-core</module>
+                <module>fuse-model</module>
+                <module>fuse-test</module>
+                <module>fuse-asg</module>
+                <module>fuse-core</module>
+                <module>fuse-dv</module>
+                <module>fuse-service</module>
+                <module>fuse-geojson</module>
+            </modules>
+        </profile>
+
+    </profiles>
 </project>

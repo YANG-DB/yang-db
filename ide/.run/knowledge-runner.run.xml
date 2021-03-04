@@ -3,7 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="com.yangdb.fuse.services.FuseRunner" />
     <module name="fuse-domain-knowledge-assembly" />
     <option name="PROGRAM_PARAMETERS" value="config/application.conf activeProfile config/logback.xml" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/distrib/knowledge-knowledge" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/distrib/knowledge" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.yangdb.fuse.services.*" />

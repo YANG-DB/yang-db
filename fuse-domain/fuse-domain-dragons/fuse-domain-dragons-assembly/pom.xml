@@ -14,7 +14,7 @@
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-        <assembly>dragon-dragon</assembly>
+        <assembly>dragon</assembly>
     </properties>
 
     <dependencies>
@@ -188,6 +188,8 @@
                         <descriptor>assembly/fuse.zip.service.engine3.dragons.graph.xml</descriptor>
                     </descriptors>
                     <outputDirectory>${distr.dir}/</outputDirectory>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>

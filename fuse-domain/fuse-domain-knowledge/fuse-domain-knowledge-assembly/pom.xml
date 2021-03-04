@@ -13,7 +13,7 @@
     <artifactId>fuse-domain-knowledge-assembly</artifactId>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
-        <assembly>knowledge-knowledge</assembly>
+        <assembly>knowledge</assembly>
     </properties>
 
     <dependencies>
@@ -191,6 +191,8 @@
                         <descriptor>assembly/fuse.zip.service.engine3.knowledge.xml</descriptor>
                     </descriptors>
                     <outputDirectory>${distr.dir}/</outputDirectory>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>

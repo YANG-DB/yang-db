@@ -13,7 +13,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>fuse-domain-dragons-test</module>
+
+<!--
+    TESTS MOVED TO DRAGONS-IT-MAVEN PROFILE
+     <module>fuse-domain-dragons-test</module>
+ -->
         <module>fuse-domain-dragons-datagen</module>
         <module>fuse-domain-dragons-ext</module>
         <module>fuse-domain-dragons-assembly</module>
