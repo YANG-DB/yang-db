@@ -70,5 +70,36 @@ is needed to be queries in correlation
 
 ##  Proposed integration Steps and content
 
+Our goals in this section will be to concentrate upon the next objectives:
+ - **Gradually** - enable the release of this API with gradual increase of functionality
+ - **Simplicity** - allow clear and simple use cases and API that will make sense and be reasonable to work with
+   for none experts graph users
+ - **Maintainability** - emphasize a clean code collaboration that is easy to reason about with and collaborates with
+   the existing open distro code standards and conventions.
 
 
+#### Initial requirements
+
+###### Open Distro
+
+The open distro project is based on the next conepts and components:
+ - An elasticsearch Plugin
+    - Elasticsearch 7.10.2
+ - Gradle
+ - JDK >= 14
+
+###### Open Distro Dependencies
+ 
+The next dependencies are the de-facto used standard in the (sql) open distro project
+
+ - Guava
+ - Lombok
+ - ANTLR
+ - Spring
+ - Jackson
+
+_Additional dependencies exist regarding the logging and testing infrastructure._
+
+ 
+
+### Building Blocks
