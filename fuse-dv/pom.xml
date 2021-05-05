@@ -14,10 +14,11 @@
     </properties>
     <modules>
         <module>fuse-dv-core</module>
+        <module>fuse-dv-lang</module>
+        <module>fuse-dv-asg</module>
         <module>fuse-dv-gta</module>
         <module>fuse-dv-epb</module>
         <module>fuse-dv-unipop</module>
         <module>fuse-dv-stat</module>
-        <module>fuse-dv-asg</module>
     </modules>
 </project>
