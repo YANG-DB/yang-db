@@ -43,8 +43,17 @@ public class PgqlOntologyParserTest extends TestCase {
             Ontology ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY);
             Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-            Assert.assertEquals(accessor.$entity$("Person"), EntityType.Builder.get()
-                    .withEType("Person").withProperty("name").build());
+            Assert.assertEquals(accessor.$entity$("PERSON"), EntityType.Builder.get()
+                    .withEType("PERSON").withName("PERSON").withProperty("NAME").build());
+            Assert.assertEquals(accessor.$entity$("COMPANY"), EntityType.Builder.get()
+                    .withEType("COMPANY").withName("COMPANY").withProperty("NAME").build());
+            Assert.assertEquals(accessor.$entity$("ACCOUNT"), EntityType.Builder.get()
+                    .withEType("ACCOUNT").withName("ACCOUNT").withProperty("NUMBER").build());
+
+            Assert.assertEquals(accessor.property$("PERSON.NAME"),new Property("PERSON.NAME","PERSON.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
+            Assert.assertEquals(accessor.property$("COMPANY.NAME"),new Property("COMPANY.NAME","COMPANY.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
+            Assert.assertEquals(accessor.property$("ACCOUNT.NUMBER"),new Property("ACCOUNT.NUMBER","ACCOUNT.NUMBER", Ontology.OntologyPrimitiveType.STRING.name()));
+
             Assert.assertEquals(accessor.$relation$("Transactions"), RelationshipType.Builder.get()
                     .withDBrName("Transactions")
                     .withEPair(EPair.EPairBuilder.anEPair()
