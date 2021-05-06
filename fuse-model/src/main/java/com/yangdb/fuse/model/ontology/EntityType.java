@@ -47,6 +47,7 @@ package com.yangdb.fuse.model.ontology;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yangdb.fuse.model.GlobalConstants;
 
 import java.util.*;
@@ -87,6 +88,16 @@ public class EntityType implements BaseElement {
 
     public void setMetadata(List<String> metadata) {
         this.metadata = metadata;
+    }
+
+    @JsonProperty("DBrName")
+    public String getDBrName() {
+        return DBrName;
+    }
+
+    @JsonProperty("DBrName")
+    public void setDBrName(String DBrName) {
+        this.DBrName = DBrName;
     }
 
     public String geteType() {
@@ -183,6 +194,7 @@ public class EntityType implements BaseElement {
     private List<String> idField = singletonList(GlobalConstants.ID);
     private String eType;
     private String name;
+    private String DBrName;
     private List<String> mandatory = new ArrayList<>();
     private List<String> properties = new ArrayList<>();
     private List<String> metadata = new ArrayList<>();
@@ -215,6 +227,7 @@ public class EntityType implements BaseElement {
         private List<String> idField = new ArrayList<>();
         private String eType;
         private String name;
+        private String DBrName;
         private List<String> mandatory = new ArrayList<>();
         private List<String> properties = new ArrayList<>();
         private List<String> metadata = new ArrayList<>();
@@ -280,6 +293,12 @@ public class EntityType implements BaseElement {
         }
 
         @JsonIgnore
+        public Builder withDBrName(String DBrName) {
+            this.DBrName = DBrName;
+            return this;
+        }
+
+        @JsonIgnore
         public Builder withMetadata(List<String> metadata) {
             this.metadata = metadata;
             return this;
@@ -301,6 +320,7 @@ public class EntityType implements BaseElement {
             entityType.setParentType(parentType);
             entityType.eType = this.eType;
             entityType.idField = this.idField;
+            entityType.DBrName = this.DBrName;
             return entityType;
         }
     }

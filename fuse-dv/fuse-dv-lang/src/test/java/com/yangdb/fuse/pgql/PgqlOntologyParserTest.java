@@ -35,35 +35,52 @@ public class PgqlOntologyParserTest extends TestCase {
             "  )";
 
     @Test
-    public void testTransform() {
-        try (Pgql pgql = new Pgql()) {
-            //parse DDL graph query
-            PgqlResult result3 = pgql.parse(DDL_QUERY);
-            System.out.println(result3.getPgqlStatement());
-            Ontology ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY);
-            Ontology.Accessor accessor = new Ontology.Accessor(ontology);
+    public void testTransformVertices() {
+        Ontology ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY);
+        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
 
-            Assert.assertEquals(accessor.$entity$("PERSON"), EntityType.Builder.get()
-                    .withEType("PERSON").withName("PERSON").withProperty("NAME").build());
-            Assert.assertEquals(accessor.$entity$("COMPANY"), EntityType.Builder.get()
-                    .withEType("COMPANY").withName("COMPANY").withProperty("NAME").build());
-            Assert.assertEquals(accessor.$entity$("ACCOUNT"), EntityType.Builder.get()
-                    .withEType("ACCOUNT").withName("ACCOUNT").withProperty("NUMBER").build());
+        Assert.assertEquals(accessor.$entity$("PERSON"), EntityType.Builder.get()
+                .withEType("PERSON").withName("PERSON").withProperty("NAME").build());
+        Assert.assertEquals(accessor.$entity$("COMPANY"), EntityType.Builder.get()
+                .withEType("COMPANY").withName("COMPANY").withProperty("NAME").build());
+        Assert.assertEquals(accessor.$entity$("ACCOUNT"), EntityType.Builder.get()
+                .withEType("ACCOUNT").withName("ACCOUNT").withProperty("NUMBER").build());
 
-            Assert.assertEquals(accessor.property$("PERSON.NAME"),new Property("PERSON.NAME","PERSON.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
-            Assert.assertEquals(accessor.property$("COMPANY.NAME"),new Property("COMPANY.NAME","COMPANY.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
-            Assert.assertEquals(accessor.property$("ACCOUNT.NUMBER"),new Property("ACCOUNT.NUMBER","ACCOUNT.NUMBER", Ontology.OntologyPrimitiveType.STRING.name()));
+        Assert.assertEquals(accessor.property$("PERSON.NAME"), new Property("PERSON.NAME", "PERSON.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
+        Assert.assertEquals(accessor.property$("COMPANY.NAME"), new Property("COMPANY.NAME", "COMPANY.NAME", Ontology.OntologyPrimitiveType.STRING.name()));
+        Assert.assertEquals(accessor.property$("ACCOUNT.NUMBER"), new Property("ACCOUNT.NUMBER", "ACCOUNT.NUMBER", Ontology.OntologyPrimitiveType.STRING.name()));
 
-            Assert.assertEquals(accessor.$relation$("Transactions"), RelationshipType.Builder.get()
-                    .withDBrName("Transactions")
-                    .withEPair(EPair.EPairBuilder.anEPair()
-                            .with("Accounts","Accounts")
-                            .withSideAIdField("from_account")
-                            .withSideBIdField("to_account"))
-                    .withProperty("amount").build());
-        } catch (PgqlException e) {
-            Assert.fail(e.getMessage());
-        }
+    }
 
+
+    @Test
+    public void testTransformEdges() {
+        Ontology ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY);
+        Ontology.Accessor accessor = new Ontology.Accessor(ontology);
+
+        Assert.assertEquals(accessor.$relation$("TRANSACTIONS"),
+                RelationshipType.Builder.get()
+                        .withDBrName("TRANSACTIONS")
+                        .withName("TRANSACTION")
+                        .withRType("TRANSACTIONS")
+                        .withProperty("AMOUNT")
+                        .withEPair(EPair.EPairBuilder.anEPair()
+                                .with("ACCOUNT", "ACCOUNT")
+                                .withETypeAIdField("FROM_ACCOUNT")
+                                .withETypeBIdField("TO_ACCOUNT")
+                                .build())
+                        .build());
+
+        Assert.assertEquals(accessor.$relation$("WORKSFOR"),
+                RelationshipType.Builder.get()
+                        .withDBrName("PERSONS")
+                        .withName("WORKSFOR")
+                        .withRType("WORKSFOR")
+                        .withEPair(EPair.EPairBuilder.anEPair()
+                                .with("PERSON", "COMPANY")
+                                .withETypeAIdField("ID")
+                                .withETypeBIdField(null)
+                                .build())
+                        .build());
     }
 }

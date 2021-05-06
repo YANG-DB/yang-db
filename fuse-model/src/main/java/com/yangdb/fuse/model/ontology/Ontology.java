@@ -242,6 +242,10 @@ public class Ontology {
             return this.entityTypes.stream().filter(et -> et.geteType().equals(entityType)).findAny();
         }
 
+        public Optional<EntityType> getEntityTypeByTableName(String dbName) {
+            return this.entityTypes.stream().filter(et -> et.getDBrName().equals(dbName)).findAny();
+        }
+
         public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
             this.relationshipTypes = relationshipTypes;
             return this;

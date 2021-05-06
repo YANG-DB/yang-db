@@ -66,11 +66,14 @@ import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.SOURCE_ID;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EPair {
-    public EPair() {
-    }
+    public EPair() {}
 
     public EPair(String eTypeA, String eTypeB) {
         this(String.format("%s->%s",eTypeA,eTypeB),eTypeA,eTypeB);
+    }
+
+    public EPair(String eTypeA, String sideAIdField, String eTypeB, String sideBIdField) {
+        this(String.format("%s->%s",eTypeA,eTypeB),eTypeA,sideAIdField,eTypeB,sideBIdField);
     }
 
     public EPair(String name, String eTypeA, String eTypeB) {
@@ -86,6 +89,7 @@ public class EPair {
         this.eTypeB = eTypeB;
         this.sideBIdField = sideBIdField;
     }
+
 
 
     public String getName() {
@@ -173,6 +177,8 @@ public class EPair {
     //endregion
 
     public static final class EPairBuilder {
+        private String sideBIdField = DEST_ID;
+        private String sideAIdField = SOURCE_ID;
         private String name;
         private String eTypeA;
         private String eTypeB;
@@ -184,8 +190,10 @@ public class EPair {
             return new EPairBuilder();
         }
 
-        public EPair with(String eTypeA, String eTypeB) {
-            return new EPair(eTypeA, eTypeB);
+        public EPairBuilder with(String eTypeA, String eTypeB) {
+            withETypeA(eTypeA);
+            withETypeB(eTypeB);
+            return this;
         }
 
         public EPairBuilder withName(String name) {
@@ -197,16 +205,25 @@ public class EPair {
             return this;
         }
 
+        public EPairBuilder withETypeAIdField(String idField) {
+            this.sideAIdField = idField;
+            return this;
+        }
+
+        public EPairBuilder withETypeBIdField(String idField) {
+            this.sideBIdField = idField;
+            return this;
+        }
+
         public EPairBuilder withETypeB(String eTypeB) {
             this.eTypeB = eTypeB;
             return this;
         }
 
         public EPair build() {
-            if(name!=null)
-                return new EPair(name,eTypeA,eTypeB);
+            if(name!=null) return new EPair(name,eTypeA,sideAIdField,eTypeB,sideBIdField);
 
-            return new EPair(eTypeA,eTypeB);
+            return new EPair(eTypeA,sideAIdField,eTypeB,sideBIdField);
         }
 
 

@@ -1,6 +1,7 @@
 package com.yangdb.fuse.pgql;
 
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerIfc;
+import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
@@ -8,10 +9,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import oracle.pgql.lang.Pgql;
 import oracle.pgql.lang.PgqlException;
 import oracle.pgql.lang.PgqlResult;
-import oracle.pgql.lang.ddl.propertygraph.CreatePropertyGraph;
-import oracle.pgql.lang.ddl.propertygraph.EdgeTable;
-import oracle.pgql.lang.ddl.propertygraph.Property;
-import oracle.pgql.lang.ddl.propertygraph.VertexTable;
+import oracle.pgql.lang.ddl.propertygraph.*;
 import oracle.pgql.lang.ir.PgqlStatement;
 import oracle.pgql.lang.ir.QueryExpression;
 import oracle.pgql.lang.ir.SchemaQualifiedName;
@@ -64,10 +62,10 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
      * @param table
      */
     private void transform(Ontology.OntologyBuilder builder, VertexTable table) {
-        EntityType.Builder vertexBuilder = EntityType.Builder.get();
         table.getLabels().forEach(label -> {
-            builder.addEntityType(vertexBuilder
+            builder.addEntityType(EntityType.Builder.get()
                     .withEType(label.getName())
+                    .withDBrName(table.getTableName().getName())
                     .withName(label.getName())
                     .withIdField(getField(table))
                     .withProperties(label.getProperties().stream().map(Property::getPropertyName).collect(Collectors.toList()))
@@ -84,18 +82,20 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
 
     /**
      * translate PK fields into list of strings  - if non exist we use default "id" field as pk
+     *
      * @param table
      * @return
      */
-    private String[] getField(VertexTable table) {
-        if(table.getKey()==null)
-            return new String[] {DEFAULT_ID_PK};
+    private String[] getField(ElementTable table) {
+        if (table.getKey() == null)
+            return new String[]{DEFAULT_ID_PK};
         //collect pk columns
         return table.getKey().getColumnNames().toArray(new String[0]);
     }
 
     /**
      * translate PGQL type to our own primitive ontology type
+     *
      * @param p
      * @return
      */
@@ -132,7 +132,44 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
      * @param table
      */
     private void transform(Ontology.OntologyBuilder builder, EdgeTable table) {
+        table.getLabels().forEach(edge -> {
+            builder.addRelationshipType(RelationshipType.Builder.get()
+                    .withDBrName(table.getTableName().getName())
+                    .withRType(table.getTableAlias())//type would be associated with the table alias
+                    .withName(edge.getName())//name would be associated with the label
+                    .withIdField(getField(table))
+                    .withProperties(edge.getProperties().stream().map(Property::getPropertyName).collect(Collectors.toList()))
+                    .withEPair(buildEpair(builder, table))
+                    .build());
 
+
+            //add label related properties to ontology
+            builder.addProperties(edge.getProperties().stream()
+                    .map(p -> new com.yangdb.fuse.model.ontology.Property(
+                            format("%s.%s", edge.getName(), p.getPropertyName()),
+                            format("%s.%s", edge.getName(), p.getPropertyName()),
+                            getType(p.getValueExpression().getExpType())))
+                    .collect(Collectors.toList()));
+        });
+    }
+
+    private EPair buildEpair(Ontology.OntologyBuilder builder, EdgeTable table) {
+        return EPair.EPairBuilder.anEPair()
+                //create EPair for both sides of the relation
+                .withETypeAIdField(table.getEdgeSourceKey() != null ? String.join(",", table.getEdgeSourceKey().getColumnNames()) : null)
+                .withETypeBIdField(table.getEdgeDestinationKey() != null ? String.join(",", table.getEdgeDestinationKey().getColumnNames()) : null)
+                //set the label names for the source / dest vertices
+                .with(builder.getEntityTypeByTableName(table.getSourceVertexTable().getTableName().getName())
+                                .orElseThrow(() -> new FuseError.FuseErrorException(
+                                        new FuseError("Ontology creation transformation error ",
+                                                "No Element in Ontology named " + table.getSourceVertexTable().getTableName().getName())))
+                                .geteType(),
+                        builder.getEntityTypeByTableName(table.getDestinationVertexTable().getTableName().getName())
+                                .orElseThrow(() -> new FuseError.FuseErrorException(
+                                        new FuseError("Ontology creation transformation error ",
+                                                "No Element in Ontology named " + table.getDestinationVertexTable().getTableName().getName())))
+                                .geteType())
+                .build();
 
     }
 
