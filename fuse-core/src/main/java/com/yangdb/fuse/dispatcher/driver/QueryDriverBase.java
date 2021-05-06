@@ -20,6 +20,7 @@ package com.yangdb.fuse.dispatcher.driver;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
@@ -725,7 +726,7 @@ public abstract class QueryDriverBase implements QueryDriver {
 
         //composite query info
         QueryResource resource = queryResource.get();
-        final List<QueryResourceInfo> collect = Stream.ofAll(resource.getInnerQueryResources())
+        final List<QueryResourceInfo> collect = Stream.ofAll(resource.getInnerQueryResources().values())
                 .map(qr ->
                         new QueryResourceInfo(
                                 qr.getQueryMetadata().getType(),
@@ -800,7 +801,8 @@ public abstract class QueryDriverBase implements QueryDriver {
         if (!resource.isPresent())
             return Optional.of(Boolean.FALSE);
         //composite query delete
-        resource.get().getInnerQueryResources().forEach(inner -> delete(inner.getQueryMetadata().getId()));
+        resource.get().getInnerQueryResources().values()
+                .forEach(inner -> delete(inner.getQueryMetadata().getId()));
         return Optional.of(resourceStore.deleteQueryResource(queryId));
     }
 
@@ -842,7 +844,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     private Optional<NamedParameter> extractQueryProjectedParams(QueryResource queryResource, ParameterizedConstraint con) {
         QueryNamedParameter namedParameter = (QueryNamedParameter) con.getParameter();
         String query = namedParameter.getQuery();
-        Option<QueryResource> innerQuery = Stream.ofAll(queryResource.getInnerQueryResources())
+        Option<QueryResource> innerQuery = Stream.ofAll(queryResource.getInnerQueryResources().values())
                 .find(p -> p.getQuery().getName().contains(query));
 
         if (!innerQuery.isEmpty()) {
@@ -864,6 +866,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     protected abstract AsgQuery rewrite(AsgQuery asgQuery);
     //endregion
 
+    protected ObjectMapper mapper = new ObjectMapper();
     //region Fields
     private final CursorDriver cursorDriver;
     private final PageDriver pageDriver;

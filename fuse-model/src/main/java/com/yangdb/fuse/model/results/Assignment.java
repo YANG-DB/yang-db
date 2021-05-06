@@ -26,19 +26,19 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.collection.Stream;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
 
-@JsonSubTypes({
-        @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Assignment<E extends Vertex,R extends Edge> {
@@ -46,42 +46,84 @@ public class Assignment<E extends Vertex,R extends Edge> {
     public Assignment() {
         this.entities = Collections.emptyList();
         this.relationships = Collections.emptyList();
+        this.labelsCount =  new HashMap<>();
+    }
+
+    public Assignment(Map<String, AtomicLong> labelsCount) {
+        this.labelsCount = labelsCount;
+        this.entities = Collections.emptyList();
+        this.relationships = Collections.emptyList();
     }
     //endregion
 
     //region Properties
-    public List<R> getRelationships ()
-    {
+    @JsonProperty("relationships")
+    public List<R> getRelationships() {
         return relationships;
     }
 
-    public void setRelationships (List<R> relationships)
-    {
+    @JsonProperty("relationships")
+    public void setRelationships(List<R> relationships) {
         this.relationships = relationships;
     }
 
-    public List<E> getEntities ()
-    {
+    @JsonProperty("entities")
+    public List<E> getEntities() {
         return entities;
     }
 
-    public void setEntities (List<E> entities)
-    {
+    @JsonProperty("entities")
+    public void setEntities(List<E> entities) {
         this.entities = entities;
     }
+
+    @JsonProperty("labelsCount")
+    public Map<String, AtomicLong> getLabelsCount() {
+        return labelsCount;
+    }
+
+    @JsonProperty("labelsCount")
+    public void setLabelsCount(Map<String, AtomicLong> labelsCount) {
+        this.labelsCount = labelsCount;
+    }
+
     //endregion
 
     //region Override Methods
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
     //endregion
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Assignment<?, ?> that = (Assignment<?, ?>) o;
+        return getEntities().stream()
+                .sorted().collect(Collectors.toList())
+                .equals(that.getEntities().stream()
+                        .sorted().collect(Collectors.toList())) &&
+                getRelationships().stream()
+                        .sorted().collect(Collectors.toList())
+                        .equals(that.getRelationships().stream()
+                                .sorted().collect(Collectors.toList()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEntities().stream()
+                        .sorted().collect(Collectors.toList()),
+                getRelationships().stream()
+                        .sorted().collect(Collectors.toList()));
+    }
+
     //region Fields
     private List<E> entities;
     private List<R> relationships;
+    private Map<String, AtomicLong> labelsCount;
+
     //endregion
 
     public static final class Builder<E extends Vertex,R extends Edge> {
@@ -93,6 +135,8 @@ public class Assignment<E extends Vertex,R extends Edge> {
             //entities = new HashMap<>();
             entities = new HashMap<>();
             relationships = new ArrayList<>();
+            labelsCount = new HashMap<>();
+
         }
         //endregion
 
@@ -103,7 +147,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
         //endregion
 
         //region Public Methods
-        public Builder withEntities(List<E> entities) {
+        public Builder withEntities(Collection<E> entities) {
             entities.forEach(this::withEntity);
             return this;
         }
@@ -136,8 +180,13 @@ public class Assignment<E extends Vertex,R extends Edge> {
             return this;
         }
 
-        public Builder withRelationships(List<R> relationships) {
+        public Builder withRelationships(Collection<R> relationships) {
             this.relationships.addAll(relationships);
+            return this;
+        }
+
+        public Builder withLabelsCount(Map<String, AtomicLong> labelsCount) {
+            this.labelsCount.putAll(labelsCount);
             return this;
         }
 
@@ -155,6 +204,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(E::label).toJavaList());
             assignment.setRelationships(this.relationships);
+            assignment.setLabelsCount(this.labelsCount);
             return assignment;
         }
         //endregion
@@ -162,6 +212,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
         //region Fields
         private Map<String, E> entities;
         private List<R> relationships;
+        private Map<String, AtomicLong> labelsCount;
 
         //endregion
     }

@@ -20,8 +20,21 @@ package com.yangdb.fuse.model.logical;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.yangdb.fuse.model.results.Relationship;
+
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = "relation", value = Relationship.class),
+        @JsonSubTypes.Type(name = "logicalRel", value = LogicalEdge.class)
+})
 public interface Edge  {
     String id();
 

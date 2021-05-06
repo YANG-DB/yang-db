@@ -54,10 +54,17 @@ public class DoubleCost implements Cost {
     //endregion
 
     //region Constructors
+
+    public DoubleCost() {}
+
     public DoubleCost(double cost) {
         this.cost = cost;
     }
     //endregion
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 
     //region Properties
     public double getCost() {

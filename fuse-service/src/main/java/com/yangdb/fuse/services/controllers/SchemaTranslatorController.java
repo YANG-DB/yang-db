@@ -28,10 +28,10 @@ public interface SchemaTranslatorController {
      * translate the graphQL schema to Ontology schema
      *
      * @param ontology
-     * @param graphqlschema
+     * @param schema
      * @return
      */
-    ContentResponse<Ontology> translate(String ontology, String graphqlschema);
+    ContentResponse<Ontology> translate(String ontology, String schema);
 
     /**
      * transform the ontology schema to a graphQL schema

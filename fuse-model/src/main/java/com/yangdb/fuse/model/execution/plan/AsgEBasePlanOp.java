@@ -43,13 +43,21 @@ package com.yangdb.fuse.model.execution.plan;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
+import com.yangdb.fuse.model.execution.plan.composite.Plan;
+import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.query.EBase;
 
 /**
  * Created by Roman on 30/04/2017.
  */
-public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOp implements AsgEBaseContainer<T> {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AsgEBasePlanOp<T extends EBase> extends PlanOp implements AsgEBaseContainer<T> {
     //region Constructors
     public AsgEBasePlanOp(AsgEBase<T> asgEBase) {
         this.asgEbase = asgEBase;

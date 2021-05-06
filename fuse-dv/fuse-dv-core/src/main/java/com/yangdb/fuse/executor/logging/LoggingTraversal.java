@@ -23,14 +23,12 @@ package com.yangdb.fuse.executor.logging;
 import com.yangdb.fuse.dispatcher.logging.*;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.slf4j.Logger;
-import org.unipop.process.Profiler;
 
 import java.util.List;
 
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.trace;
 import static com.yangdb.fuse.dispatcher.logging.LogType.*;
-import static org.unipop.process.Profiler.PROFILER;
 
 /**
  * Created by roman.margolis on 07/01/2018.

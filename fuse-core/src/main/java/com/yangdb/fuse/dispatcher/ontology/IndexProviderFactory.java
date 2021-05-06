@@ -25,6 +25,8 @@ package com.yangdb.fuse.dispatcher.ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -36,4 +38,26 @@ public interface IndexProviderFactory {
     Collection<IndexProvider> getAll();
 
     IndexProvider add(IndexProvider provider);
+
+    /**
+     * default empty index provider factory
+     */
+    class EmptyIndexProviderFactory implements IndexProviderFactory {
+        private Map<String,IndexProvider> indexProviderMap = new HashMap<>();
+
+        @Override
+        public Optional<IndexProvider> get(String id) {
+            return Optional.ofNullable(indexProviderMap.get(id));
+        }
+
+        @Override
+        public Collection<IndexProvider> getAll() {
+            return indexProviderMap.values();
+        }
+
+        @Override
+        public IndexProvider add(IndexProvider provider) {
+            return indexProviderMap.put(provider.getOntology(),provider);
+        }
+    }
 }

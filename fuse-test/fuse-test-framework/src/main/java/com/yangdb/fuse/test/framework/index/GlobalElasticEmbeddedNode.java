@@ -20,6 +20,8 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
+import org.elasticsearch.common.settings.Settings;
+
 /**
  * Created by roman.margolis on 01/01/2018.
  */
@@ -31,10 +33,29 @@ public class GlobalElasticEmbeddedNode {
         return getInstance("fuse.test_elastic");
     }
 
+/*
+   //todo - merge with branch 7_4_2 support to enable
+   public static ElasticEmbeddedNode getInstance(Settings setting) throws Exception {
+        synchronized (ElasticEmbeddedNode.class) {
+            if (instance == null) {
+                instance = new ElasticEmbeddedNode(setting,"target/es", 9200, 9300, nodeName);
+                System.out.println("Starting embedded Elasticsearch Node "+nodeName);
+            } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
+                close();
+                instance = new ElasticEmbeddedNode(setting, "target/es",9200, 9300, nodeName);
+            }
+            GlobalElasticEmbeddedNode.nodeName = nodeName;
+            return instance;
+        }
+
+    }
+    */
+
     public static ElasticEmbeddedNode getInstance(String nodeName) throws Exception {
         synchronized (ElasticEmbeddedNode.class) {
             if (instance == null) {
                 instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
+                System.out.println("Starting embedded Elasticsearch Node "+nodeName);
             } else if(!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
                 close();
                 instance = new ElasticEmbeddedNode("target/es", 9200, 9300, nodeName);
@@ -51,6 +72,7 @@ public class GlobalElasticEmbeddedNode {
                 try {
                     instance.close();
                     instance = null;
+                    System.out.println("Stopping embedded Elasticsearch Node "+nodeName);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

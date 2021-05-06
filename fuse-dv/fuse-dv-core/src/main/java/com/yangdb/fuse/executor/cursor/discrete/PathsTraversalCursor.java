@@ -43,6 +43,8 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.*;
 
+import static com.yangdb.fuse.model.GlobalConstants.RAW;
+import static com.yangdb.fuse.model.GlobalConstants.TYPE;
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 
 /**
@@ -50,7 +52,6 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
  */
 public class PathsTraversalCursor implements Cursor {
 
-    public static final String RAW = "raw";
 
     //region Factory
     public static class Factory implements CursorFactory {
@@ -102,7 +103,7 @@ public class PathsTraversalCursor implements Cursor {
                     });
         }
 
-        this.typeProperty = this.ont.property$("type");
+        this.typeProperty = this.ont.property(TYPE);
     }
     //endregion
 
@@ -207,7 +208,7 @@ public class PathsTraversalCursor implements Cursor {
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
-                .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
+                .filter(property -> !property.get().getpType().equals(this.typeProperty.orElse(property.get()).getpType()))
                 .map(property -> new Property(property.get().getpType(), RAW, vertexProperty.value()))
                 .toJavaOptional();
     }
@@ -219,7 +220,7 @@ public class PathsTraversalCursor implements Cursor {
     protected Map<String, EEntityBase> eEntityBases;
     protected Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
-    protected com.yangdb.fuse.model.ontology.Property typeProperty;
+    protected Optional<com.yangdb.fuse.model.ontology.Property> typeProperty;
 
     boolean includeEntities;
     boolean includeRelationships;

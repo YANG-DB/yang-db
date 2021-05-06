@@ -96,7 +96,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
      * @return
      */
     public LoadResponse<String, FuseError> load(String ontology, LogicalGraphModel root, Directive directive) throws JsonProcessingException {
-        final KnowledgeContext context = transformer.transform(root, directive);
+        final KnowledgeContext context = transformer.transform(ontology,root, directive);
         List<String> success = new ArrayList<>();
         success.add(ENTITIES + ":" +context.getEntities().size());
         success.add(RELATIONS + ":" +context.getRelations().size());

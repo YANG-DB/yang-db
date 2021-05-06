@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.sisyphsu.dateparser.DateParser;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -152,6 +153,7 @@ public interface DataLoaderUtils {
                 } catch (NumberFormatException e) {
                     return value.toString();
                 }
+            case "double":
             case "float":
             case "floatValue":
                 try {
@@ -177,6 +179,59 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
         return value;
+    }
+
+    static ObjectNode parseAndSetValue(String field,ObjectNode element, String explicitType, Object value, DateFormat sdf) {
+        switch (explicitType) {
+            case "text":
+            case "string":
+            case "stringValue":
+                return element.put(field,value.toString());
+            case "int":
+            case "intValue":
+                try {
+                    return element.put(field,Integer.valueOf(value.toString()));
+                } catch (NumberFormatException e) {
+                    try {
+                        return element.put(field,Long.valueOf(value.toString()));
+                    } catch (NumberFormatException e1) {
+                        return element.put(field,value.toString());
+                    }
+                }
+            case "long":
+            case "longValue":
+                try {
+                    return element.put(field,Long.valueOf(value.toString()));
+                } catch (NumberFormatException e) {
+                    return element.put(field,value.toString());
+                }
+            case "double":
+            case "float":
+            case "floatValue":
+                try {
+                    return element.put(field,Float.valueOf(value.toString()));
+                } catch (NumberFormatException e) {
+                    return element.put(field,value.toString());
+                }
+            case "date":
+            case "dateValue":
+                try {
+                    return element.put(field,sdf.format(sdf.parse(value.toString())));
+                } catch (ParseException e) {
+                    try {
+                        return element.put(field,sdf.format(new Date(value.toString())));
+                    } catch (Throwable e1) {
+                        return element.put(field,sdf.format(parser.parseDate(value.toString())));
+                    }
+                }
+            case "geo":
+            case "geoValue":
+                element.putArray(field)
+                        .insert(0,parseDouble(value.toString().split("[,]")[1]))
+                        .insert(1,parseDouble(value.toString().split("[,]")[0]));
+                return element;
+        }
+        return element.put(field,value.toString());
     }
 
     static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
@@ -206,6 +261,7 @@ public interface DataLoaderUtils {
                 } catch (NumberFormatException e) {
                     return false;
                 }
+            case "double":
             case "float":
             case "floatValue":
                 try {

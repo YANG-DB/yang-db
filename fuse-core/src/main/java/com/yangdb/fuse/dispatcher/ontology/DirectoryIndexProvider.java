@@ -23,6 +23,7 @@ package com.yangdb.fuse.dispatcher.ontology;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.dispatcher.utils.FileUtils;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import javaslang.Tuple2;
@@ -32,25 +33,29 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 02/10/2017.
  */
 public class DirectoryIndexProvider implements IndexProviderFactory {
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private String dirName;
+
+
     //region Constructors
     public DirectoryIndexProvider(String dirName) throws URISyntaxException {
+        this.dirName = dirName;
         this.map = new HashMap<>();
-        String currentDir = System.getProperty("user.dir");
-        ObjectMapper mapper = new ObjectMapper();
-
-        File dir = new File(Paths.get(currentDir, dirName).toString());
-        if(!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+        File dir = null;
+        try {
+            dir = FileUtils.getOrCreateFile(dirName, System.getProperty("user.dir"),true);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Failed reading folder for new Ontology Index Provider ["+dirName + "] ", e.getCause());
         }
         if (dir.exists()) {
             this.map =
@@ -81,6 +86,22 @@ public class DirectoryIndexProvider implements IndexProviderFactory {
     @Override
     public IndexProvider add(IndexProvider indexProvider) {
         map.put(indexProvider.getOntology(),indexProvider);
+        File dir = null;
+        try {
+            dir = FileUtils.getOrCreateFile(dirName, System.getProperty("user.dir"),true);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Failed reading folder for new Ontology Index Provider ["+dirName + "] ", e.getCause());
+        }
+
+        if (dir.exists()) {
+            Path path = Paths.get(dir.getAbsolutePath()+"/"+indexProvider.getOntology()+"_indxProvider.conf");
+            try {
+                Files.write(path, mapper.writeValueAsBytes(indexProvider));
+            } catch (IOException e) {
+                throw new FuseError.FuseErrorException("Failed writing file for new Index Provider for Ontology ["+indexProvider.getOntology()+"_indxProvider] ",e.getCause());
+            }
+        }
+
         return indexProvider;
     }
     //endregion

@@ -47,10 +47,13 @@ package com.yangdb.fuse.model.transport.cursor;
  * Created by lior.perry on 07/03/2017.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 
-public abstract class CreateCursorRequest {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CreateCursorRequest {
 
     //default max execution time
     public static final int DEFAULT_EXECUTION_TIME = 10 * 60 * 1000;

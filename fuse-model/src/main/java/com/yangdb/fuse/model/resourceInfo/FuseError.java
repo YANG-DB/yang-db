@@ -103,6 +103,11 @@ public class FuseError {
             this.error = error;
         }
 
+        public FuseErrorException(String error,String description) {
+            super();
+            this.error = new FuseError(error,description);
+        }
+
         public FuseErrorException(FuseError error) {
             super();
             this.error = error;

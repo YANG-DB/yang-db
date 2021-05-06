@@ -9,12 +9,11 @@ import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.utils.MockSchemaUtils;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
-import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -27,12 +26,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -68,42 +63,7 @@ public class CSVTransformerTest {
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
-        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(config, providerIfc, ontologyProvider).get(ontology);
-
-        schema = new RawSchema() {
-            @Override
-            public IndexPartitions getPartition(String type) {
-                return getIndexPartitions(schemaProvider,type);
-            }
-
-            @Override
-            public String getIdPrefix(String type) {
-                return "";
-            }
-
-            @Override
-            public String getIdFormat(String type) {
-                return "";
-            }
-
-            @Override
-            public String getIndexPrefix(String type) {
-                return "";
-            }
-
-            @Override
-            public List<IndexPartitions.Partition> getPartitions(String type) {
-                return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
-                        .collect(Collectors.toList());
-
-            }
-
-            @Override
-            public Iterable<String> indices() {
-                return IndexProviderRawSchema.indices(schemaProvider);
-            }
-
-        };
+        schema = MockSchemaUtils.createSchema(new GraphElementSchemaProviderJsonFactory(config, providerIfc, ontologyProvider).get(ontology));
     }
 
     @Test
@@ -112,7 +72,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Dragons.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -138,7 +98,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Persons.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -164,7 +124,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Guilds.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -190,7 +150,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Kingdom.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -216,7 +176,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Horses.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -242,7 +202,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Fire.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -268,7 +228,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Freeze.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -294,7 +254,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Knows.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -320,7 +280,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/MemberOf.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -346,7 +306,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/Owns.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -372,7 +332,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/RegisteredIn.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override
@@ -398,7 +358,7 @@ public class CSVTransformerTest {
         when(idGeneratorDriver.getNext(anyString(), anyInt()))
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, idGeneratorDriver);
         BufferedReader reader = Files.newBufferedReader(Paths.get(Thread.currentThread().getContextClassLoader().getResource("schema/csv/SubjectOf.csv").getPath()));
         DataTransformerContext<Object> transform = transformer.transform(new CSVTransformer.CsvElement() {
             @Override

@@ -20,6 +20,7 @@ package com.yangdb.fuse.executor.ontology.schema;
  * #L%
  */
 
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.List;
  * each index has id formatting
  */
 public interface RawSchema extends IndicesProvider {
+
+    IndexPartitions getPartition(Ontology ontology,String type);
 
     IndexPartitions getPartition(String type);
 

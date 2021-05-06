@@ -23,7 +23,9 @@ package com.yangdb.fuse.dispatcher.ontology;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.dispatcher.utils.FileUtils;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FilenameUtils;
@@ -38,16 +40,20 @@ import java.util.*;
  * Created by roman.margolis on 02/10/2017.
  */
 public class DirectoryOntologyTransformerProvider implements OntologyTransformerProvider {
-    //region Constructors
-    public DirectoryOntologyTransformerProvider(String dirName) throws URISyntaxException {
-        this.transformations = new HashMap<>();
-        String currentDir = System.getProperty("user.dir");
-        ObjectMapper mapper = new ObjectMapper();
+    private final static ObjectMapper mapper = new ObjectMapper();
+    private String dirName;
 
-        File dir = new File(Paths.get(currentDir, dirName).toString());
-        if (!dir.exists()) {
-            dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).toURI());
+    //region Constructors
+    public DirectoryOntologyTransformerProvider(String dirName) {
+        this.dirName = dirName;
+        this.transformations = new HashMap<>();
+        File dir = null;
+        try {
+            dir = FileUtils.getOrCreateFile(dirName, System.getProperty("user.dir"),true);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Failed reading folder for new Ontology ["+dirName + "] ", e.getCause());
         }
+
         if (dir.exists()) {
             this.transformations =
                     Stream.of(Objects.requireNonNull(dir.listFiles() == null ? new File[0] : dir.listFiles()))

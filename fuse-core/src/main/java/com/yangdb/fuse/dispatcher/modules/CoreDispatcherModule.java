@@ -47,6 +47,7 @@ public class CoreDispatcherModule extends ModuleBase {
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AppUrlSupplier.class).toInstance(getAppUrlSupplier(conf));
         binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
+        binder.bind(IndexProviderFactory.class).toInstance(getIndexProvider(conf));
         binder.bind(OntologyMappingProvider.class).toInstance(getOntologyMappingProvider(conf));
         binder.bind(OntologyTransformerProvider.class).toInstance(getTransformerProvider(conf));
     }
@@ -60,6 +61,26 @@ public class CoreDispatcherModule extends ModuleBase {
         }
 
         return new DefaultAppUrlSupplier(baseUrl);
+    }
+
+    /**
+     * index provider schema registry loader
+     *
+     * @param conf
+     * @return
+     * @throws Throwable
+     */
+    private IndexProviderFactory getIndexProvider(Config conf) throws Throwable {
+        try {
+            return new DirectoryIndexProvider(conf.getString("fuse.index_provider_dir"));
+        } catch (Throwable e) {
+            try {
+                return (IndexProviderFactory) Class.forName(conf.getString("fuse.index_provider")).getConstructor().newInstance();
+            } catch (Throwable e1) {
+                //log issues and return a edfault empty index provider factory
+                return new IndexProviderFactory.EmptyIndexProviderFactory();
+            }
+        }
     }
 
     /**
@@ -112,14 +133,14 @@ public class CoreDispatcherModule extends ModuleBase {
                 throw new FuseError.FuseErrorException(new FuseError("No appropriate config value for { ontology_provider_dir | ontology_mapping_provider } found ",
                         "No appropriate config value for { ontology_provider_dir | ontology_mapping_provider } found "));
 */
+
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
         //no ontology mapping provider was found
     }
 
-    private OntologyTransformerProvider getTransformerProvider(Config conf) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private OntologyTransformerProvider getTransformerProvider(Config conf) throws
+            ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try {
             return new DirectoryOntologyTransformerProvider(conf.getString("fuse.ontology_provider_dir"));
         } catch (ConfigException e) {
@@ -128,8 +149,6 @@ public class CoreDispatcherModule extends ModuleBase {
             } catch (ConfigException.Missing missing) {
                 return new VoidOntologyTransformerProvider();
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
         //no ontology provider was found
     }

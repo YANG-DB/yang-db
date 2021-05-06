@@ -58,6 +58,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class PersistantResourceStore implements ResourceStore {
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static final String SYSTEM = "fuse_system";
     public static final String ID = "id";
@@ -70,12 +71,10 @@ public class PersistantResourceStore implements ResourceStore {
     public static final String TYPE = "type";
     public static final String RESOURCE = "resource";
     private Client client;
-    private ObjectMapper mapper;
 
     @Inject
-    public PersistantResourceStore(Provider<Client> client,ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
+    public PersistantResourceStore(Provider<Client> client, Set<CompositeCursorFactory.Binding> cursorBindings) {
         this.client = client.get();
-        this.mapper = mapper;
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CreateCursorRequest.class, new CreateCursorRequestDeserializer(cursorBindings));
         mapper.registerModules(module);

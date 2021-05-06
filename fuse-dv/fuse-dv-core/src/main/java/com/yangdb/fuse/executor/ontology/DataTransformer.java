@@ -28,6 +28,7 @@ import java.util.TimeZone;
 
 public interface DataTransformer<T,G> {
     T transform(G data, GraphDataLoader.Directive directive);
+    T transform(String ontology, G data, GraphDataLoader.Directive directive);
 
     class Utils {
         public static final String INDEX = "Index";

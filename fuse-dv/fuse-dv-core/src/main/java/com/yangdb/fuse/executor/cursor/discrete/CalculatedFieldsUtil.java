@@ -41,7 +41,7 @@ public class CalculatedFieldsUtil {
      * @param eTag
      * @return
      */
-    public static List<CalculatedEProp> findCalculaedFields(AsgQuery query, String eTag) {
+    public static List<CalculatedEProp> findCalculatedFields(AsgQuery query, String eTag) {
         final List<AsgEBase<EPropGroup>> groups = AsgQueryUtil.nextDescendants(AsgQueryUtil.getByTag(query.getStart(), eTag).get(), EPropGroup.class);
         if (groups.isEmpty())
             return Collections.emptyList();

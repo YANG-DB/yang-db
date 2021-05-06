@@ -100,7 +100,7 @@ public abstract class PageDriverBase implements PageDriver {
     }
 
     private void createInnerPage(QueryResource queryResource, String cursorId, int pageSize) {
-        queryResource.getInnerQueryResources().forEach(inner -> {
+        queryResource.getInnerQueryResources().values().forEach(inner -> {
             create(inner.getQueryMetadata().getId(), cursorId, pageSize);
         });
     }
@@ -117,7 +117,7 @@ public abstract class PageDriverBase implements PageDriver {
             return Optional.empty();
         }
 
-        Iterable<String> resourceUrls = Stream.ofAll(cursorResource.get().getPageResources())
+        Iterable<String> resourceUrls = Stream.ofAll(cursorResource.get().getPageResources().values())
                 .sortBy(pageResource -> pageResource.getTimeCreated())
                 .map(pageResource -> pageResource.getPageId())
                 .map(pageId -> this.urlSupplier.resourceUrl(queryId, cursorId, pageId))
@@ -211,9 +211,11 @@ public abstract class PageDriverBase implements PageDriver {
         }
 
         //delete inner query pages
-        queryResource.get().getInnerQueryResources().forEach(inner -> delete(inner.getQueryMetadata().getId(), cursorId, pageId));
+        queryResource.get().getInnerQueryResources().values()
+                .forEach(inner -> delete(inner.getQueryMetadata().getId(), cursorId, pageId));
         //delete outer resources
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(queryId, cursorId);
+
         if (!cursorResource.isPresent()) {
             return Optional.empty();
         }

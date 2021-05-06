@@ -54,7 +54,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver);
 
         Assert.assertEquals(11, indices.length);
 
@@ -84,7 +84,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver);
 
         Assert.assertEquals(11, indices.length);
 
@@ -114,7 +114,7 @@ public class CyberIndexProviderBasedCSVLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0, 1000));
 
         String[] indices = StreamSupport.stream(schema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerFactory, schema, idGeneratorDriver);
 
         Assert.assertEquals(11, indices.length);
 

@@ -46,11 +46,16 @@ package com.yangdb.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,6 +67,24 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends QueryResultBase {
+
+    public static byte[] serialize(ObjectMapper mapper, AssignmentsQueryResult data) {
+        try {
+            return mapper.writeValueAsString(data).getBytes();
+        } catch (JsonProcessingException e) {
+            throw new FuseError.FuseErrorException("Error serializing resource",e);
+        }
+    }
+
+    public static AssignmentsQueryResult deserialize(ObjectMapper mapper, byte[] bytes) {
+        try {
+            return mapper.readValue(bytes, AssignmentsQueryResult.class);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Error deserializing resource",e);
+
+        }
+    }
+
     //region Constructors
     public AssignmentsQueryResult() {
         this.assignments = Collections.emptyList();
@@ -70,6 +93,7 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
     public AssignmentsQueryResult(List<Assignment<E,R>> assignments) {
         this.assignments = assignments;
     }
+
     //endregion
 
     //region Properties

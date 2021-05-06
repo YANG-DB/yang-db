@@ -43,6 +43,8 @@ package com.yangdb.fuse.model.query;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.StorageType;
@@ -55,6 +57,8 @@ import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryTy
 /**
  * Created by lior.perry on 21/02/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class QueryMetadata {
 
     public interface QueryMetadataAble {
@@ -66,6 +70,9 @@ public final class QueryMetadata {
     }
 
     //region Properties
+
+    public QueryMetadata() {}
+
     public QueryMetadata(StorageType storageType, String id, String name, boolean searchPlan , long creationTime, long ttl) {
         this(concrete, storageType, id, name, searchPlan, creationTime, ttl);
     }

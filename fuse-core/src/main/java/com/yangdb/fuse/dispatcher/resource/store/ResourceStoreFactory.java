@@ -38,15 +38,13 @@ import java.util.stream.Collectors;
 
 public class ResourceStoreFactory implements ResourceStore {
     public static final String injectionName = "ResourceStoreFactory.persistant";
-    private Collection<ResourceStore> stores;
+    private Collection<ResourceStore> stores = new ArrayList<>();
 
     @Inject
     public ResourceStoreFactory(
             @Named(injectionName) ResourceStore store) {
-        this.stores = new ArrayList<>();
-        //default in memory store
-        Arrays.asList(new ResourceStore[]{new InMemoryResourceStore(), store})
-                .forEach(((ArrayList<ResourceStore>) this.stores)::add);
+        //add external store
+        this.stores.add(store);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deleteQueryResource(String queryId) {
         if (queryId == null) return false;
-        return stores.stream().filter(store -> store.deleteQueryResource(queryId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deleteQueryResource(queryId));
     }
 
     @Override
@@ -107,7 +105,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deleteCursorResource(String queryId, String cursorId) {
         if (queryId == null || cursorId == null) return false;
-        return stores.stream().filter(store -> store.deleteCursorResource(queryId, cursorId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deleteCursorResource(queryId, cursorId));
     }
 
     @Override
@@ -121,7 +119,7 @@ public class ResourceStoreFactory implements ResourceStore {
     @Override
     public boolean deletePageResource(String queryId, String cursorId, String pageId) {
         if (queryId == null || cursorId == null || pageId == null) return false;
-        return stores.stream().filter(store -> store.deletePageResource(queryId, cursorId, pageId)).findFirst().isPresent();
+        return stores.stream().anyMatch(store -> store.deletePageResource(queryId, cursorId, pageId));
     }
 
     @Override

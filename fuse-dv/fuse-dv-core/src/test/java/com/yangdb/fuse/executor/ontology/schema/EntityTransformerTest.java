@@ -9,6 +9,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
 import com.yangdb.fuse.executor.ontology.schema.load.EntityTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
+import com.yangdb.fuse.executor.utils.MockSchemaUtils;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
@@ -65,42 +66,7 @@ public class EntityTransformerTest {
         provider = mapper.readValue(providerStream, IndexProvider.class);
         ontology = mapper.readValue(ontologyStream, Ontology.class);
 
-        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProviderJsonFactory(config, providerIfc, ontologyProvider).get(ontology);
-
-        schema = new RawSchema() {
-            @Override
-            public IndexPartitions getPartition(String type) {
-                return getIndexPartitions(schemaProvider,type);
-            }
-
-            @Override
-            public String getIdPrefix(String type) {
-                return "";
-            }
-
-            @Override
-            public String getIdFormat(String type) {
-                return "";
-            }
-
-            @Override
-            public String getIndexPrefix(String type) {
-                return "";
-            }
-
-            @Override
-            public List<IndexPartitions.Partition> getPartitions(String type) {
-                return StreamSupport.stream(getPartition(type).getPartitions().spliterator(), false)
-                        .collect(Collectors.toList());
-
-            }
-
-            @Override
-            public Iterable<String> indices() {
-                return IndexProviderRawSchema.indices(schemaProvider);
-            }
-
-        };
+        schema = MockSchemaUtils.createSchema(new GraphElementSchemaProviderJsonFactory(config, providerIfc, ontologyProvider).get(ontology));
     }
 
 

@@ -6,7 +6,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      - "elasticsearchHosts=10.6.91.1"
+      - "elasticsearchHosts=127.0.0.1"
       - "elasticsearchClusterName=${ELASTICSEARCH_CLUSTER_NAME}"
     networks:
       - network

@@ -28,6 +28,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 
@@ -42,7 +43,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardDataLoaderController implements DataLoaderController {
+public class StandardDataLoaderController implements DataController {
     //region Constructors
     @Inject
     public StandardDataLoaderController(OntologyProvider ontologyProvider,
@@ -59,10 +60,10 @@ public class StandardDataLoaderController implements DataLoaderController {
     //region CatalogController Implementation
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         try {
             return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                    .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
+                    .data(Optional.of(this.graphDataLoader.load(ontologyName, data, directive)))
                     .compose();
         } catch (IOException e) {
             return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -92,7 +93,7 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, String data, GraphDataLoader.Directive directive) {
         try {
             return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
                     .data(Optional.of(this.csvDataLoader.load(type,label , data, directive)))
@@ -125,7 +126,7 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, File data, GraphDataLoader.Directive directive) {
         try {
             return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
                     .data(Optional.of(this.csvDataLoader.load(type, label, data, directive)))
@@ -166,10 +167,10 @@ public class StandardDataLoaderController implements DataLoaderController {
      *      - convert into bulk set
      *      - commit to repository
      */
-    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, File data, GraphDataLoader.Directive directive) {
         try {
             return Builder.<LoadResponse<String, FuseError>>builder(OK, NOT_FOUND)
-                    .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
+                    .data(Optional.of(this.graphDataLoader.load(ontologyName, data, directive)))
                     .compose();
         } catch (IOException e) {
             return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
@@ -206,23 +207,37 @@ public class StandardDataLoaderController implements DataLoaderController {
     }
 
     @Override
-    public ContentResponse<String> createMapping(String ontology) {
+    public ContentResponse<String> createMapping(String ontologyName) {
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontology)))
+                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontologyName)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<String> createIndices(String ontology) {
+    public ContentResponse<String> createMapping(String ontologyName, IndexProvider indexProvider) {
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of("indices created:" + this.initiator.createIndices(ontology)))
+                .data(Optional.of("mapping created:" + this.initiator.createTemplate(ontologyName,indexProvider)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<String> drop(String ontology) {
+    public ContentResponse<String> createIndices(String ontologyName, IndexProvider indexProvider) {
         return Builder.<String>builder(OK, NOT_FOUND)
-                .data(Optional.of("indices dropped:" + this.initiator.drop(ontology)))
+                .data(Optional.of("indices created:" + this.initiator.createIndices(ontologyName,indexProvider)))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<String> createIndices(String ontologyName) {
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("indices created:" + this.initiator.createIndices(ontologyName)))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<String> drop(String ontologyName) {
+        return Builder.<String>builder(OK, NOT_FOUND)
+                .data(Optional.of("indices dropped:" + this.initiator.drop(ontologyName)))
                 .compose();
     }
 //endregion

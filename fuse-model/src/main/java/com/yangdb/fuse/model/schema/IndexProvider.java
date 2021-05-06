@@ -132,24 +132,24 @@ public class IndexProvider {
     public Optional<Entity> getEntity(String label) {
         Optional<Entity> nest = getEntities().stream().filter(e -> !e.getNested().isEmpty())
                 .flatMap(e -> e.getNested().stream())
-                .filter(nested -> nested.getType().equals(label))
+                .filter(nested -> nested.getType().equalsIgnoreCase(label))
                 .findAny();
         if (nest.isPresent())
             return nest;
 
-        return getEntities().stream().filter(e -> e.getType().equals(label)).findAny();
+        return getEntities().stream().filter(e -> e.getType().equalsIgnoreCase(label)).findAny();
     }
 
     @JsonIgnore
     public Optional<Relation> getRelation(String label) {
         Optional<Relation> nest = getRelations().stream().filter(e -> !e.getNested().isEmpty())
                 .flatMap(e -> e.getNested().stream())
-                .filter(nested -> nested.getType().equals(label))
+                .filter(nested -> nested.getType().equalsIgnoreCase(label))
                 .findAny();
         if (nest.isPresent())
             return nest;
 
-        return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();
+        return getRelations().stream().filter(e -> e.getType().equalsIgnoreCase(label)).findAny();
     }
 
     public static class Builder {

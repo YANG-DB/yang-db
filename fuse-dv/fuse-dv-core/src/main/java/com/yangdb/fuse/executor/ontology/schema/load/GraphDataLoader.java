@@ -39,7 +39,8 @@ public interface GraphDataLoader<S,F> {
      *             {
      *                 "id": "0",
      *                 "metadata": {
-     *                     "label": "person",
+     *                     "label": "Person",
+                            "type": "logical",
      *                     "user-defined": "values"
      *                 }
      *                 "properties":{
@@ -58,7 +59,8 @@ public interface GraphDataLoader<S,F> {
      *             },
      *             {
      *                 "id": "10",
- *                     "label": "person",
+ *                     "label": "Person",
+"type": "logical",
      *                 "metadata": {
      *                     "user-defined": "values"
      *                 }
@@ -84,6 +86,7 @@ public interface GraphDataLoader<S,F> {
      *                 "target": "1",
      *                 "metadata": {
      *                     "label": "knows",
+                            "type": "logicalRel",
      *                     "user-defined": "values"
      *                 },
      *                 "properties":{

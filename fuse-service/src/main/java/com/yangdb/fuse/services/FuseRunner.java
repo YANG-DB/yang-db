@@ -32,6 +32,9 @@ import java.io.File;
  */
 public class FuseRunner {
     public static void main(final String[] args) throws Exception {
+        //Debug level log verbose printing parameters - USE ON EMERGENCY ONLY
+//        System.setProperty("log4j2.debug","true");
+
         System.out.println("Args:");
         Stream.of(args).forEach(System.out::println);
 

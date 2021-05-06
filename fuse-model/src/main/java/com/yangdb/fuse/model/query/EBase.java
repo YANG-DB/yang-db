@@ -81,6 +81,8 @@ import com.yangdb.fuse.model.query.quant.Quant1;
         @JsonSubTypes.Type(name = "TypedEndPattern", value = TypedEndPattern.class),
         @JsonSubTypes.Type(name = "UnTypedEndPattern", value = UnTypedEndPattern.class),
         @JsonSubTypes.Type(name = "RelProp", value = RelProp.class),
+        @JsonSubTypes.Type(name = "RedundantRelProp", value = RedundantRelProp.class),
+        @JsonSubTypes.Type(name = "RedundantSelectionRelProp", value = RedundantSelectionRelProp.class),
         @JsonSubTypes.Type(name = "RelPropGroup", value = RelPropGroup.class),
         @JsonSubTypes.Type(name = "Agg", value = Agg.class),
         @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),

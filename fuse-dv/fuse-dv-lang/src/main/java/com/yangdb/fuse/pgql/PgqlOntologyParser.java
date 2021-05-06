@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 import static com.yangdb.fuse.model.ontology.Ontology.OntologyPrimitiveType.*;
 import static java.lang.String.format;
 
+/**
+ * translates the PGQL DDL statement into the logical (high level) ontology schema
+ */
 public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontology> {
 
     public static final String DEFAULT_ID_PK = "id";
@@ -31,8 +34,7 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
         Ontology.OntologyBuilder builder = Ontology.OntologyBuilder.anOntology().withOnt(ontologyName);
         try (Pgql pgql = new Pgql()) {
             //parse DDL graph query
-            PgqlResult statement = pgql.parse(query);
-            PgqlStatement pgqlStatement = statement.getPgqlStatement();
+            PgqlStatement pgqlStatement = pgql.parse(query).getPgqlStatement();
             StatementType type = pgqlStatement.getStatementType();
             if (!type.equals(StatementType.CREATE_PROPERTY_GRAPH)) {
                 throw new FuseError.FuseErrorException("Pgql Ontology DDL query was not found ",

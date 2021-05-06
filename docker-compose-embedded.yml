@@ -1,17 +1,6 @@
 version: '3.3'
 
 services:
-  fuse:
-    image: yangdb/yang.db:latest
-    ports:
-      - 8888:8888
-    environment:
-      - "elasticsearchHosts=localhost"
-      - "elasticsearchClusterName=Knowledge"
-    volumes:
-      - fuse-data:/usr/share/fuse
-    networks:
-      - network
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
     environment:
@@ -30,31 +19,36 @@ services:
         published: 9300
         protocol: tcp
         mode: host
-    deploy:
-      endpoint_mode: dnsrr
-      mode: 'global'
-  elasticsearch_exporter:
-    image: justwatch/elasticsearch_exporter:1.1.0
-    command:
-      - '--es.uri=http://fuse:9200'
-    restart: always
-    ports:
-      - "127.0.0.1:9114:9114"
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
     volumes:
-      - grafana-data:/usr/share/grafana
+      - esdata1:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.5.4
+    links:
+      - es
+    depends_on:
+      - es
     ports:
-      - 3000:3000
+      - 5601:5601
     networks:
       - network
-    user: "0"
+  fuse:
+    image: yangdb/yang.db:latest
+    depends_on:
+      - es
+    ports:
+      - 8888:8888
+    environment:
+      - "elasticsearchHosts=localhost"
+      - "elasticsearchClusterName=${ELASTICSEARCH_CLUSTER_NAME}"
+    volumes:
+      - fuse-data:/usr/share/fuse
+    networks:
+      - network
 
 volumes:
   fuse-data:
     driver: local
-  grafana-data:
+  esdata1:
     driver: local
 
 networks:

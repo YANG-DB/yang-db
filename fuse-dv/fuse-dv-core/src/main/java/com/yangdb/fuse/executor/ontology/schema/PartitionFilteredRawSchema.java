@@ -23,9 +23,11 @@ package com.yangdb.fuse.executor.ontology.schema;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -45,11 +47,18 @@ public class PartitionFilteredRawSchema implements RawSchema {
     }
     //endregion
 
+    @Override
+    public IndexPartitions getPartition(Ontology ontology, String type) {
+        return _getPartition(this.rawSchema.getPartition(ontology,type));
+    }
+
     //region RawSchema Implementation
     @Override
     public IndexPartitions getPartition(String type) {
-        IndexPartitions indexPartitions = this.rawSchema.getPartition(type);
+        return _getPartition(this.rawSchema.getPartition(type));
+    }
 
+    private IndexPartitions.Impl _getPartition(IndexPartitions indexPartitions) {
         if (indexPartitions.getPartitionField().isPresent()) {
             return new IndexPartitions.Impl(
                     indexPartitions.getPartitionField().get(),

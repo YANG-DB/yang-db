@@ -33,7 +33,7 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 
-import static com.yangdb.fuse.executor.cursor.discrete.CalculatedFieldsUtil.findCalculaedFields;
+import static com.yangdb.fuse.executor.cursor.discrete.CalculatedFieldsUtil.findCalculatedFields;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -94,7 +94,7 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
 
         //add calculated fields of existing eTags
         Map<String, List<CalculatedEProp>> calculatedFieldsMap = Stream.ofAll(eTags)
-                .toJavaMap(p -> new Tuple2<>(p, findCalculaedFields(pattern, p)));
+                .toJavaMap(p -> new Tuple2<>(p, findCalculatedFields(pattern, p)));
 
         Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())

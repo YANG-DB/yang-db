@@ -43,6 +43,8 @@ package com.yangdb.fuse.model.execution.plan;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.descriptors.ToStringDescriptor;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
@@ -54,6 +56,8 @@ import java.util.Collections;
  * Created by Roman on 20/04/2017.
  */
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PlanWithCost<P, C> implements IPlan {
     public static EmptyPlanWithCost EMPTY_PLAN =  new EmptyPlanWithCost();
 
@@ -78,6 +82,10 @@ public class PlanWithCost<P, C> implements IPlan {
     }
 
     //region Constructors
+
+
+    public PlanWithCost() {}
+
     public PlanWithCost(P plan, C cost) {
         this.plan = plan;
         this.cost = cost;

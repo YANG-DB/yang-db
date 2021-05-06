@@ -50,6 +50,9 @@ import java.util.Stack;
  */
 public class CountEstimatesCost implements Cost, Cloneable {
     //region Constructors
+
+    public CountEstimatesCost() {}
+
     public CountEstimatesCost(double cost, double countEstimate) {
         this.cost = cost;
         this.countEstimates = new Stack<>();

@@ -2217,6 +2217,7 @@
             },
             "id": "Myriel",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Myriel",
               "age": 43
@@ -2228,6 +2229,7 @@
             },
             "id": "Napoleon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Napoleon",
               "age": 68
@@ -2239,6 +2241,7 @@
             },
             "id": "Mlle.Baptistine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Baptistine",
               "age": 21
@@ -2250,6 +2253,7 @@
             },
             "id": "Mme.Magloire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Magloire",
               "age": 13
@@ -2261,6 +2265,7 @@
             },
             "id": "CountessdeLo",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "CountessdeLo",
               "age": 32
@@ -2272,6 +2277,7 @@
             },
             "id": "Geborand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Geborand",
               "age": 73
@@ -2283,6 +2289,7 @@
             },
             "id": "Champtercier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Champtercier",
               "age": 51
@@ -2294,6 +2301,7 @@
             },
             "id": "Cravatte",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cravatte",
               "age": 23
@@ -2305,6 +2313,7 @@
             },
             "id": "Count",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Count",
               "age": 58
@@ -2316,6 +2325,7 @@
             },
             "id": "OldMan",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "OldMan",
               "age": 70
@@ -2327,6 +2337,7 @@
             },
             "id": "Labarre",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Labarre",
               "age": 27
@@ -2338,6 +2349,7 @@
             },
             "id": "Valjean",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Valjean",
               "age": 25
@@ -2349,6 +2361,7 @@
             },
             "id": "Marguerite",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Marguerite",
               "age": 40
@@ -2360,6 +2373,7 @@
             },
             "id": "Mme.deR",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.deR",
               "age": 9
@@ -2371,6 +2385,7 @@
             },
             "id": "Isabeau",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Isabeau",
               "age": 10
@@ -2382,6 +2397,7 @@
             },
             "id": "Gervais",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gervais",
               "age": 36
@@ -2393,6 +2409,7 @@
             },
             "id": "Tholomyes",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Tholomyes",
               "age": 42
@@ -2404,6 +2421,7 @@
             },
             "id": "Listolier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Listolier",
               "age": 31
@@ -2415,6 +2433,7 @@
             },
             "id": "Fameuil",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fameuil",
               "age": 30
@@ -2426,6 +2445,7 @@
             },
             "id": "Blacheville",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Blacheville",
               "age": 27
@@ -2437,6 +2457,7 @@
             },
             "id": "Favourite",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Favourite",
               "age": 20
@@ -2448,6 +2469,7 @@
             },
             "id": "Dahlia",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Dahlia",
               "age": 19
@@ -2459,6 +2481,7 @@
             },
             "id": "Zephine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Zephine",
               "age": 17
@@ -2470,6 +2493,7 @@
             },
             "id": "Fantine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fantine",
               "age": 16
@@ -2481,6 +2505,7 @@
             },
             "id": "Mme.Thenardier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Thenardier",
               "age": 37
@@ -2492,6 +2517,7 @@
             },
             "id": "Thenardier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Thenardier",
               "age": 19
@@ -2503,6 +2529,7 @@
             },
             "id": "Cosette",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cosette",
               "age": 24
@@ -2514,6 +2541,7 @@
             },
             "id": "Javert",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Javert",
               "age": 31
@@ -2525,6 +2553,7 @@
             },
             "id": "Fauchelevent",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fauchelevent",
               "age": 38
@@ -2536,6 +2565,7 @@
             },
             "id": "Bamatabois",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bamatabois",
               "age": 21
@@ -2547,6 +2577,7 @@
             },
             "id": "Perpetue",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Perpetue",
               "age": 29
@@ -2558,6 +2589,7 @@
             },
             "id": "Simplice",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Simplice",
               "age": 19
@@ -2569,6 +2601,7 @@
             },
             "id": "Scaufflaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Scaufflaire",
               "age": 19
@@ -2580,6 +2613,7 @@
             },
             "id": "Woman1",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Woman1",
               "age": 20
@@ -2591,6 +2625,7 @@
             },
             "id": "Judge",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Judge",
               "age": 39
@@ -2602,6 +2637,7 @@
             },
             "id": "Champmathieu",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Champmathieu",
               "age": 45
@@ -2613,6 +2649,7 @@
             },
             "id": "Brevet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Brevet",
               "age": 35
@@ -2624,6 +2661,7 @@
             },
             "id": "Chenildieu",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Chenildieu",
               "age": 30
@@ -2635,6 +2673,7 @@
             },
             "id": "Cochepaille",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cochepaille",
               "age": 32
@@ -2646,6 +2685,7 @@
             },
             "id": "Pontmercy",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Pontmercy",
               "age": 22
@@ -2657,6 +2697,7 @@
             },
             "id": "Boulatruelle",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Boulatruelle",
               "age": 21
@@ -2668,6 +2709,7 @@
             },
             "id": "Eponine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Eponine",
               "age": 20
@@ -2679,6 +2721,7 @@
             },
             "id": "Anzelma",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Anzelma",
               "age": 190
@@ -2690,6 +2733,7 @@
             },
             "id": "Woman2",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Woman2",
               "age": 18
@@ -2701,6 +2745,7 @@
             },
             "id": "MotherInnocent",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "MotherInnocent",
               "age": 28
@@ -2712,6 +2757,7 @@
             },
             "id": "Gribier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gribier",
               "age": 41
@@ -2723,6 +2769,7 @@
             },
             "id": "Jondrette",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Jondrette",
               "age": 45
@@ -2734,6 +2781,7 @@
             },
             "id": "Mme.Burgon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Burgon",
               "age": 43
@@ -2745,6 +2793,7 @@
             },
             "id": "Gavroche",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gavroche",
               "age": 23
@@ -2756,6 +2805,7 @@
             },
             "id": "Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gillenormand",
               "age": 23
@@ -2767,6 +2817,7 @@
             },
             "id": "Magnon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Magnon",
               "age": 36
@@ -2778,6 +2829,7 @@
             },
             "id": "Mlle.Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Gillenormand",
               "age": 37
@@ -2789,6 +2841,7 @@
             },
             "id": "Mme.Pontmercy",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Pontmercy",
               "age": 38
@@ -2800,6 +2853,7 @@
             },
             "id": "Mlle.Vaubois",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Vaubois",
               "age": 28
@@ -2811,6 +2865,7 @@
             },
             "id": "Lt.Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Lt.Gillenormand",
               "age": 24
@@ -2822,6 +2877,7 @@
             },
             "id": "Marius",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Marius",
               "age": 22
@@ -2833,6 +2889,7 @@
             },
             "id": "BaronessT",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "BaronessT",
               "age": 12
@@ -2844,6 +2901,7 @@
             },
             "id": "Mabeuf",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mabeuf",
               "age": 11
@@ -2855,6 +2913,7 @@
             },
             "id": "Enjolras",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Enjolras",
               "age": 10
@@ -2866,6 +2925,7 @@
             },
             "id": "Combeferre",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Combeferre",
               "age": 9
@@ -2877,6 +2937,7 @@
             },
             "id": "Prouvaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Prouvaire",
               "age": 8
@@ -2888,6 +2949,7 @@
             },
             "id": "Feuilly",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Feuilly",
               "age": 7
@@ -2899,6 +2961,7 @@
             },
             "id": "Courfeyrac",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Courfeyrac",
               "age": 6
@@ -2910,6 +2973,7 @@
             },
             "id": "Bahorel",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bahorel",
               "age": 18
@@ -2921,6 +2985,7 @@
             },
             "id": "Bossuet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bossuet",
               "age": 17
@@ -2932,6 +2997,7 @@
             },
             "id": "Joly",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Joly",
               "age": 16
@@ -2943,6 +3009,7 @@
             },
             "id": "Grantaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Grantaire",
               "age": 15
@@ -2954,6 +3021,7 @@
             },
             "id": "MotherPlutarch",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "MotherPlutarch",
               "age": 25
@@ -2965,6 +3033,7 @@
             },
             "id": "Gueulemer",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gueulemer",
               "age": 27
@@ -2976,6 +3045,7 @@
             },
             "id": "Babet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Babet",
               "age": 29
@@ -2987,6 +3057,7 @@
             },
             "id": "Claquesous",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Claquesous",
               "age": 30
@@ -2998,6 +3069,7 @@
             },
             "id": "Montparnasse",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Montparnasse",
               "age": 60
@@ -3009,6 +3081,7 @@
             },
             "id": "Toussaint",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Toussaint",
               "age": 68
@@ -3020,6 +3093,7 @@
             },
             "id": "Child1",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Child1",
               "age": 8
@@ -3031,6 +3105,7 @@
             },
             "id": "Child2",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Child2",
               "age": 8
@@ -3042,6 +3117,7 @@
             },
             "id": "Brujon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Brujon",
               "age": 28
@@ -3053,6 +3129,7 @@
             },
             "id": "Mme.Hucheloup",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Hucheloup",
               "age": 78
@@ -3061,6 +3138,7 @@
         ],
         "edges": [
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Napoleon",
             "target": "Myriel",
@@ -3069,6 +3147,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mlle.Baptistine",
             "target": "Myriel",
@@ -3077,6 +3156,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Magloire",
             "target": "Myriel",
@@ -3085,6 +3165,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Magloire",
             "target": "Mlle.Baptistine",
@@ -3093,6 +3174,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "CountessdeLo",
             "target": "Myriel",
@@ -3101,6 +3183,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Geborand",
             "target": "Myriel",
@@ -3109,6 +3192,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Champtercier",
             "target": "Myriel",
@@ -3117,6 +3201,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cravatte",
             "target": "Myriel",
@@ -3125,6 +3210,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Count",
             "target": "Myriel",
@@ -3133,6 +3219,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "OldMan",
             "target": "Myriel",
@@ -3141,6 +3228,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Valjean",
             "target": "Labarre",
@@ -3149,6 +3237,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Valjean",
             "target": "Mme.Magloire",
@@ -3157,6 +3246,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Valjean",
             "target": "Mlle.Baptistine",
@@ -3165,6 +3255,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Valjean",
             "target": "Myriel",
@@ -3173,6 +3264,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marguerite",
             "target": "Valjean",
@@ -3181,6 +3273,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.deR",
             "target": "Valjean",
@@ -3189,6 +3282,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Isabeau",
             "target": "Valjean",
@@ -3197,6 +3291,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gervais",
             "target": "Valjean",
@@ -3205,6 +3300,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Listolier",
             "target": "Tholomyes",
@@ -3213,6 +3309,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fameuil",
             "target": "Tholomyes",
@@ -3221,6 +3318,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fameuil",
             "target": "Listolier",
@@ -3229,6 +3327,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Blacheville",
             "target": "Tholomyes",
@@ -3237,6 +3336,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Blacheville",
             "target": "Listolier",
@@ -3245,6 +3345,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Blacheville",
             "target": "Fameuil",
@@ -3253,6 +3354,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Favourite",
             "target": "Tholomyes",
@@ -3261,6 +3363,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Favourite",
             "target": "Listolier",
@@ -3269,6 +3372,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Favourite",
             "target": "Fameuil",
@@ -3277,6 +3381,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Favourite",
             "target": "Blacheville",
@@ -3285,6 +3390,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Dahlia",
             "target": "Tholomyes",
@@ -3293,6 +3399,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Dahlia",
             "target": "Listolier",
@@ -3301,6 +3408,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Dahlia",
             "target": "Fameuil",
@@ -3309,6 +3417,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Dahlia",
             "target": "Blacheville",
@@ -3317,6 +3426,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Dahlia",
             "target": "Favourite",
@@ -3325,6 +3435,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Tholomyes",
@@ -3333,6 +3444,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Listolier",
@@ -3341,6 +3453,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Fameuil",
@@ -3349,6 +3462,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Blacheville",
@@ -3357,6 +3471,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Favourite",
@@ -3365,6 +3480,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Zephine",
             "target": "Dahlia",
@@ -3373,6 +3489,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Tholomyes",
@@ -3381,6 +3498,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Listolier",
@@ -3389,6 +3507,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Fameuil",
@@ -3397,6 +3516,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Blacheville",
@@ -3405,6 +3525,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Favourite",
@@ -3413,6 +3534,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Dahlia",
@@ -3421,6 +3543,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Zephine",
@@ -3429,6 +3552,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Marguerite",
@@ -3437,6 +3561,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fantine",
             "target": "Valjean",
@@ -3445,6 +3570,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Thenardier",
             "target": "Fantine",
@@ -3453,6 +3579,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Thenardier",
             "target": "Valjean",
@@ -3461,6 +3588,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Thenardier",
             "target": "Mme.Thenardier",
@@ -3469,6 +3597,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Thenardier",
             "target": "Fantine",
@@ -3477,6 +3606,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Thenardier",
             "target": "Valjean",
@@ -3485,6 +3615,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cosette",
             "target": "Mme.Thenardier",
@@ -3493,6 +3624,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cosette",
             "target": "Valjean",
@@ -3501,6 +3633,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cosette",
             "target": "Tholomyes",
@@ -3509,6 +3642,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cosette",
             "target": "Thenardier",
@@ -3517,6 +3651,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Javert",
             "target": "Valjean",
@@ -3525,6 +3660,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Javert",
             "target": "Fantine",
@@ -3533,6 +3669,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Javert",
             "target": "Thenardier",
@@ -3541,6 +3678,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Javert",
             "target": "Mme.Thenardier",
@@ -3549,6 +3687,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Javert",
             "target": "Cosette",
@@ -3557,6 +3696,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fauchelevent",
             "target": "Valjean",
@@ -3565,6 +3705,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Fauchelevent",
             "target": "Javert",
@@ -3573,6 +3714,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bamatabois",
             "target": "Fantine",
@@ -3581,6 +3723,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bamatabois",
             "target": "Javert",
@@ -3589,6 +3732,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bamatabois",
             "target": "Valjean",
@@ -3597,6 +3741,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Perpetue",
             "target": "Fantine",
@@ -3605,6 +3750,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Simplice",
             "target": "Perpetue",
@@ -3613,6 +3759,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Simplice",
             "target": "Valjean",
@@ -3621,6 +3768,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Simplice",
             "target": "Fantine",
@@ -3629,6 +3777,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Simplice",
             "target": "Javert",
@@ -3637,6 +3786,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Scaufflaire",
             "target": "Valjean",
@@ -3645,6 +3795,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Woman1",
             "target": "Valjean",
@@ -3653,6 +3804,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Woman1",
             "target": "Javert",
@@ -3661,6 +3813,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Judge",
             "target": "Valjean",
@@ -3669,6 +3822,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Judge",
             "target": "Bamatabois",
@@ -3677,6 +3831,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Champmathieu",
             "target": "Valjean",
@@ -3685,6 +3840,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Champmathieu",
             "target": "Judge",
@@ -3693,6 +3849,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Champmathieu",
             "target": "Bamatabois",
@@ -3701,6 +3858,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brevet",
             "target": "Judge",
@@ -3709,6 +3867,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brevet",
             "target": "Champmathieu",
@@ -3717,6 +3876,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brevet",
             "target": "Valjean",
@@ -3725,6 +3885,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brevet",
             "target": "Bamatabois",
@@ -3733,6 +3894,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Chenildieu",
             "target": "Judge",
@@ -3741,6 +3903,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Chenildieu",
             "target": "Champmathieu",
@@ -3749,6 +3912,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Chenildieu",
             "target": "Brevet",
@@ -3757,6 +3921,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Chenildieu",
             "target": "Valjean",
@@ -3765,6 +3930,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Chenildieu",
             "target": "Bamatabois",
@@ -3773,6 +3939,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Judge",
@@ -3781,6 +3948,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Champmathieu",
@@ -3789,6 +3957,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Brevet",
@@ -3797,6 +3966,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Chenildieu",
@@ -3805,6 +3975,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Valjean",
@@ -3813,6 +3984,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Cochepaille",
             "target": "Bamatabois",
@@ -3821,6 +3993,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Pontmercy",
             "target": "Thenardier",
@@ -3829,6 +4002,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Boulatruelle",
             "target": "Thenardier",
@@ -3837,6 +4011,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Eponine",
             "target": "Mme.Thenardier",
@@ -3845,6 +4020,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Eponine",
             "target": "Thenardier",
@@ -3853,6 +4029,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Anzelma",
             "target": "Eponine",
@@ -3861,6 +4038,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Anzelma",
             "target": "Thenardier",
@@ -3869,6 +4047,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Anzelma",
             "target": "Mme.Thenardier",
@@ -3877,6 +4056,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Woman2",
             "target": "Valjean",
@@ -3885,6 +4065,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Woman2",
             "target": "Cosette",
@@ -3893,6 +4074,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Woman2",
             "target": "Javert",
@@ -3901,6 +4083,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "MotherInnocent",
             "target": "Fauchelevent",
@@ -3909,6 +4092,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "MotherInnocent",
             "target": "Valjean",
@@ -3917,6 +4101,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gribier",
             "target": "Fauchelevent",
@@ -3925,6 +4110,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Burgon",
             "target": "Jondrette",
@@ -3933,6 +4119,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gavroche",
             "target": "Mme.Burgon",
@@ -3941,6 +4128,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gavroche",
             "target": "Thenardier",
@@ -3949,6 +4137,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gavroche",
             "target": "Javert",
@@ -3957,6 +4146,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gavroche",
             "target": "Valjean",
@@ -3965,6 +4155,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gillenormand",
             "target": "Cosette",
@@ -3973,6 +4164,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gillenormand",
             "target": "Valjean",
@@ -3981,6 +4173,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Magnon",
             "target": "Gillenormand",
@@ -3989,6 +4182,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Magnon",
             "target": "Mme.Thenardier",
@@ -3997,6 +4191,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mlle.Gillenormand",
             "target": "Gillenormand",
@@ -4005,6 +4200,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mlle.Gillenormand",
             "target": "Cosette",
@@ -4013,6 +4209,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mlle.Gillenormand",
             "target": "Valjean",
@@ -4021,6 +4218,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Pontmercy",
             "target": "Mlle.Gillenormand",
@@ -4029,6 +4227,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Pontmercy",
             "target": "Pontmercy",
@@ -4037,6 +4236,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mlle.Vaubois",
             "target": "Mlle.Gillenormand",
@@ -4045,6 +4245,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Lt.Gillenormand",
             "target": "Mlle.Gillenormand",
@@ -4053,6 +4254,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Lt.Gillenormand",
             "target": "Gillenormand",
@@ -4061,6 +4263,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Lt.Gillenormand",
             "target": "Cosette",
@@ -4069,6 +4272,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Mlle.Gillenormand",
@@ -4077,6 +4281,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Gillenormand",
@@ -4085,6 +4290,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Pontmercy",
@@ -4093,6 +4299,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Lt.Gillenormand",
@@ -4101,6 +4308,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Cosette",
@@ -4109,6 +4317,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Valjean",
@@ -4117,6 +4326,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Tholomyes",
@@ -4125,6 +4335,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Thenardier",
@@ -4133,6 +4344,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Eponine",
@@ -4141,6 +4353,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Marius",
             "target": "Gavroche",
@@ -4149,6 +4362,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "BaronessT",
             "target": "Gillenormand",
@@ -4157,6 +4371,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "BaronessT",
             "target": "Marius",
@@ -4165,6 +4380,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mabeuf",
             "target": "Marius",
@@ -4173,6 +4389,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mabeuf",
             "target": "Eponine",
@@ -4181,6 +4398,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mabeuf",
             "target": "Gavroche",
@@ -4189,6 +4407,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Enjolras",
             "target": "Marius",
@@ -4197,6 +4416,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Enjolras",
             "target": "Gavroche",
@@ -4205,6 +4425,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Enjolras",
             "target": "Javert",
@@ -4213,6 +4434,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Enjolras",
             "target": "Mabeuf",
@@ -4221,6 +4443,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Enjolras",
             "target": "Valjean",
@@ -4229,6 +4452,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Combeferre",
             "target": "Enjolras",
@@ -4237,6 +4461,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Combeferre",
             "target": "Marius",
@@ -4245,6 +4470,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Combeferre",
             "target": "Gavroche",
@@ -4253,6 +4479,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Combeferre",
             "target": "Mabeuf",
@@ -4261,6 +4488,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Prouvaire",
             "target": "Gavroche",
@@ -4269,6 +4497,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Prouvaire",
             "target": "Enjolras",
@@ -4277,6 +4506,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Prouvaire",
             "target": "Combeferre",
@@ -4285,6 +4515,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Gavroche",
@@ -4293,6 +4524,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Enjolras",
@@ -4301,6 +4533,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Prouvaire",
@@ -4309,6 +4542,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Combeferre",
@@ -4317,6 +4551,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Mabeuf",
@@ -4325,6 +4560,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Feuilly",
             "target": "Marius",
@@ -4333,6 +4569,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Marius",
@@ -4341,6 +4578,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Enjolras",
@@ -4349,6 +4587,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Combeferre",
@@ -4357,6 +4596,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Gavroche",
@@ -4365,6 +4605,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Mabeuf",
@@ -4373,6 +4614,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Eponine",
@@ -4381,6 +4623,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Feuilly",
@@ -4389,6 +4632,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Courfeyrac",
             "target": "Prouvaire",
@@ -4397,6 +4641,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Combeferre",
@@ -4405,6 +4650,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Gavroche",
@@ -4413,6 +4659,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Courfeyrac",
@@ -4421,6 +4668,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Mabeuf",
@@ -4429,6 +4677,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Enjolras",
@@ -4437,6 +4686,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Feuilly",
@@ -4445,6 +4695,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Prouvaire",
@@ -4453,6 +4704,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bahorel",
             "target": "Marius",
@@ -4461,6 +4713,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Marius",
@@ -4469,6 +4722,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Courfeyrac",
@@ -4477,6 +4731,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Gavroche",
@@ -4485,6 +4740,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Bahorel",
@@ -4493,6 +4749,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Enjolras",
@@ -4501,6 +4758,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Feuilly",
@@ -4509,6 +4767,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Prouvaire",
@@ -4517,6 +4776,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Combeferre",
@@ -4525,6 +4785,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Mabeuf",
@@ -4533,6 +4794,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Bossuet",
             "target": "Valjean",
@@ -4541,6 +4803,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Bahorel",
@@ -4549,6 +4812,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Bossuet",
@@ -4557,6 +4821,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Gavroche",
@@ -4565,6 +4830,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Courfeyrac",
@@ -4573,6 +4839,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Enjolras",
@@ -4581,6 +4848,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Feuilly",
@@ -4589,6 +4857,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Prouvaire",
@@ -4597,6 +4866,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Combeferre",
@@ -4605,6 +4875,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Mabeuf",
@@ -4613,6 +4884,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Joly",
             "target": "Marius",
@@ -4621,6 +4893,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Bossuet",
@@ -4629,6 +4902,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Enjolras",
@@ -4637,6 +4911,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Combeferre",
@@ -4645,6 +4920,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Courfeyrac",
@@ -4653,6 +4929,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Joly",
@@ -4661,6 +4938,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Gavroche",
@@ -4669,6 +4947,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Bahorel",
@@ -4677,6 +4956,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Feuilly",
@@ -4685,6 +4965,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Grantaire",
             "target": "Prouvaire",
@@ -4693,6 +4974,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "MotherPlutarch",
             "target": "Mabeuf",
@@ -4701,6 +4983,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Thenardier",
@@ -4709,6 +4992,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Valjean",
@@ -4717,6 +5001,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Mme.Thenardier",
@@ -4725,6 +5010,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Javert",
@@ -4733,6 +5019,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Gavroche",
@@ -4741,6 +5028,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Gueulemer",
             "target": "Eponine",
@@ -4749,6 +5037,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Thenardier",
@@ -4757,6 +5046,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Gueulemer",
@@ -4765,6 +5055,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Valjean",
@@ -4773,6 +5064,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Mme.Thenardier",
@@ -4781,6 +5073,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Javert",
@@ -4789,6 +5082,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Gavroche",
@@ -4797,6 +5091,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Babet",
             "target": "Eponine",
@@ -4805,6 +5100,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Thenardier",
@@ -4813,6 +5109,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Babet",
@@ -4821,6 +5118,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Gueulemer",
@@ -4829,6 +5127,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Valjean",
@@ -4837,6 +5136,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Mme.Thenardier",
@@ -4845,6 +5145,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Javert",
@@ -4853,6 +5154,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Eponine",
@@ -4861,6 +5163,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Claquesous",
             "target": "Enjolras",
@@ -4869,6 +5172,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Javert",
@@ -4877,6 +5181,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Babet",
@@ -4885,6 +5190,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Gueulemer",
@@ -4893,6 +5199,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Claquesous",
@@ -4901,6 +5208,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Valjean",
@@ -4909,6 +5217,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Gavroche",
@@ -4917,6 +5226,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Eponine",
@@ -4925,6 +5235,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Montparnasse",
             "target": "Thenardier",
@@ -4933,6 +5244,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Toussaint",
             "target": "Cosette",
@@ -4941,6 +5253,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Toussaint",
             "target": "Javert",
@@ -4949,6 +5262,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Toussaint",
             "target": "Valjean",
@@ -4957,6 +5271,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Child1",
             "target": "Gavroche",
@@ -4965,6 +5280,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Child2",
             "target": "Gavroche",
@@ -4973,6 +5289,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Child2",
             "target": "Child1",
@@ -4981,6 +5298,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Babet",
@@ -4989,6 +5307,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Gueulemer",
@@ -4997,6 +5316,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Thenardier",
@@ -5005,6 +5325,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Gavroche",
@@ -5013,6 +5334,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Eponine",
@@ -5021,6 +5343,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Claquesous",
@@ -5029,6 +5352,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Brujon",
             "target": "Montparnasse",
@@ -5037,6 +5361,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Bossuet",
@@ -5045,6 +5370,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Joly",
@@ -5053,6 +5379,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Grantaire",
@@ -5061,6 +5388,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Bahorel",
@@ -5069,6 +5397,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Courfeyrac",
@@ -5077,6 +5406,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Gavroche",
@@ -5085,6 +5415,7 @@
             }
           },
           {
+            "type": "logicalRel",
             "label": "knows",
             "source": "Mme.Hucheloup",
             "target": "Enjolras",

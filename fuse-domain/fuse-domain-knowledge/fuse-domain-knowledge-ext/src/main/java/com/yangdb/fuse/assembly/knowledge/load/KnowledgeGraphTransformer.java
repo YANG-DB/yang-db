@@ -60,6 +60,12 @@ public class KnowledgeGraphTransformer implements DataTransformer<KnowledgeConte
     }
 
     @Override
+    public KnowledgeContext transform(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
+        //TODO skip given ontology param -
+        return transform(data,directive);
+    }
+
+    @Override
     public KnowledgeContext transform(LogicalGraphModel graph, GraphDataLoader.Directive directive) {
         KnowledgeContext context = new KnowledgeContext();
         this.writerContext = new KnowledgeWriterContext(context);

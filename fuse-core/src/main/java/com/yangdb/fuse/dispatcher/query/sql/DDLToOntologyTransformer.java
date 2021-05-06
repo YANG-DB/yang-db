@@ -42,7 +42,7 @@ import static org.jooq.impl.ConstraintStatement.primaryKey;
 import static org.jooq.impl.DSL.using;
 
 /**
- * convert DDL (SQL Definition Language) structure into V1 ontology
+ * convert DDL (SQL Definition Language) statement into logical ontology
  */
 public class DDLToOntologyTransformer implements OntologyTransformerIfc<List<String>, Ontology> {
     public static final String RELATIONSHIPS = "ddl.schema.relationships";

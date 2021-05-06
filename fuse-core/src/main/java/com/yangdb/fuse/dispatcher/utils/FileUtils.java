@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.utils;
+package com.yangdb.fuse.dispatcher.utils;
 
 /*-
  * #%L
@@ -36,6 +36,26 @@ import java.util.zip.ZipFile;
 
 public abstract class FileUtils {
     private static final String suffix = ".splitPart";
+
+    /**
+     * get or create file
+     * @param dirName
+     * @param currentDir
+     * @return
+     */
+    public static File getOrCreateFile(String dirName, String currentDir, boolean directory) throws IOException {
+        File dir = new File(Paths.get(currentDir, dirName).toString());
+        if(!dir.exists()) {
+            if(Thread.currentThread().getContextClassLoader().getResource(dirName)!=null) {
+                dir = new File(Thread.currentThread().getContextClassLoader().getResource(dirName).getFile());
+            } else if(directory){
+                dir.mkdirs();
+            } else {
+                dir.createNewFile();
+            }
+        }
+        return dir;
+    }
 
     /**
      * unzip compressed file

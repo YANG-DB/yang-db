@@ -118,7 +118,7 @@ public class StandardCursorDriver extends CursorDriverBase {
                 cursorRequest,
                 traversal.path());
         if (hasInnerQuery(queryResource.getAsgQuery())) {
-            List<QueryResource> queryResources = Stream.ofAll(queryResource.getInnerQueryResources()).toJavaList();
+            List<QueryResource> queryResources = Stream.ofAll(queryResource.getInnerQueryResources().values()).toJavaList();
             //first level (hierarchy) inner queries
             return new CompositeTraversalCursorContext(
                     new TraversalCursorContext(

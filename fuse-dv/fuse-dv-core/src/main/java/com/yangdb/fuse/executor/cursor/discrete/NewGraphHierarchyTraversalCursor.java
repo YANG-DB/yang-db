@@ -46,6 +46,8 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
+import static com.yangdb.fuse.model.GlobalConstants.TYPE;
+
 public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
     //region Factory
     public static class Factory implements CursorFactory {
@@ -66,7 +68,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
-        this.typeProperty = this.ont.property$("type");
+        this.typeProperty = this.ont.property(TYPE);
 
         this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
                 context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.entities);
@@ -201,7 +203,9 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
-                .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
+                .filter(property -> !property.get().getpType().equals(this.typeProperty
+                        .orElse(property.get())
+                        .getpType()))
                 .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
                 .toJavaOptional();
     }
@@ -241,7 +245,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
     private Set<String> distinctIds;
     private Ontology.Accessor ont;
 
-    private com.yangdb.fuse.model.ontology.Property typeProperty;
+    private Optional<com.yangdb.fuse.model.ontology.Property> typeProperty;
 
     private Map<String, EEntityBase> eEntityBases;
     private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;

@@ -9,9 +9,9 @@ package com.yangdb.fuse.test.framework.index;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins, false);
         }
 
         @Override
@@ -109,7 +109,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         prepare();
 
         for (ElasticIndexConfigurer configurer : configurers) {
-            configurer.configure(getClient(nodeName,httpTransportPort));
+            configurer.configure(getClient(nodeName, httpTransportPort));
         }
     }
 
@@ -117,18 +117,18 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Methods
     public static TransportClient getClient() {
-        return getClient(nodeName,httpTransportPort);
+        return getClient(nodeName, httpTransportPort);
     }
 
     //region Methods
     public static TransportClient getClient(String nodeName) {
-        return getClient(nodeName,httpTransportPort);
+        return getClient(nodeName, httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+    public static TransportClient getClient(String nodeName, int httpTransportPort) {
         if (client == null) {
             try {
-                System.out.println("Setting client "+nodeName);
+                System.out.println("Setting client " + nodeName);
                 Settings settings = Settings.builder()
                         .put("cluster.name", nodeName)
                         .put("node.name", nodeName)
@@ -178,13 +178,15 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("path.logs", esWorkingDir)
                 .put("http.port", httpPort)
                 .put("transport.type", "netty4")
-                .put("http.type", "netty4")
+                .put("transport.host", "127.0.0.1")
                 .put("http.enabled", "true")
+                .put("http.type", "netty4")
+                .put("http.host", "0.0.0.0")
 //                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();
 
-        System.out.println("Setting E/S embedded "+nodeName);
+        System.out.println("Setting E/S embedded " + nodeName);
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
                 Netty4Plugin.class,
 //                CommonScriptPlugin.class,

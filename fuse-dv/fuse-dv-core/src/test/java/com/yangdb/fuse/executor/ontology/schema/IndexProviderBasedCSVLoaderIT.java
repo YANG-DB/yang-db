@@ -74,7 +74,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         String[] indices = StreamSupport.stream(nestedSchema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver);
 
         Assert.assertEquals(19,indices.length);
 
@@ -103,7 +103,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
                 .thenAnswer(invocationOnMock -> new Range(0,1000));
 
         String[] indices = StreamSupport.stream(nestedSchema.indices().spliterator(), false).map(String::toLowerCase).collect(Collectors.toSet()).toArray(new String[]{});
-        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver, client);
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider,nestedProviderIfc, nestedSchema, idGeneratorDriver);
 
         Assert.assertEquals(19,indices.length);
 

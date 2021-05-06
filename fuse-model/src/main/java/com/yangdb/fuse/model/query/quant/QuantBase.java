@@ -46,7 +46,6 @@ package com.yangdb.fuse.model.query.quant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.Container;
-import com.yangdb.fuse.model.Next;
 import com.yangdb.fuse.model.query.EBase;
 
 import java.util.List;

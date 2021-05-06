@@ -22,6 +22,7 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.typesafe.config.Config;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 
@@ -160,6 +161,12 @@ public class KnowledgeRawSchemaShort implements RawSchema {
         return "e";
     }
 
+
+    @Override
+    public IndexPartitions getPartition(Ontology ontology, String type) {
+        //todo - implement according to given ontology
+        return getPartition(type);
+    }
 
     @Override
     public IndexPartitions getPartition(String type) {

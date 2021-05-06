@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingInt;
 
 public class CountTraversalCursor extends PathsTraversalCursor {
     public static class Factory implements CursorFactory {

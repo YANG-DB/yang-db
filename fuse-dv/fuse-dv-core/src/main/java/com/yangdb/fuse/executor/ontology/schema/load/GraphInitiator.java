@@ -20,6 +20,8 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.yangdb.fuse.model.schema.IndexProvider;
+
 import java.io.IOException;
 
 public interface GraphInitiator {
@@ -48,9 +50,9 @@ public interface GraphInitiator {
      *
      * @return
      * @throws IOException
-     * @param ontology
+     * @param ontologyName
      */
-    long drop(String ontology) ;
+    long drop(String ontologyName) ;
 
     /**
      * drop the vertices and edges indices to schema
@@ -63,34 +65,34 @@ public interface GraphInitiator {
     /**
      * generate the elasticsearch index template according to ontology and index schema provider json instructions
      *
-     * @param ontology
-     * @param schemaProvider
+     * @param ontologyName
+     * @param indexProvider
      * @return
      */
-    long createTemplate(String ontology, String schemaProvider) ;
+    long createTemplate(String ontologyName, IndexProvider indexProvider) ;
 
     /**
      * generate the elasticsearch index template according to ontology and index schema provider json instructions
      *
-     * @param ontology
+     * @param ontologyName
      * @return
      */
-    long createTemplate(String ontology) ;
+    long createTemplate(String ontologyName) ;
 
     /**
      * create indices according to ontology and index schema provider json instructions
-     * @param ontology
-     * @param schemaProvider
+     * @param ontologyName
+     * @param indexProvider
      * @return
      * @throws IOException
      */
-    long createIndices(String ontology, String schemaProvider) ;
+    long createIndices(String ontologyName, IndexProvider indexProvider) ;
 
    /**
      * create indices according to ontology and index schema provider json instructions
-     * @param ontology
+     * @param ontologyName
      * @return
      * @throws IOException
      */
-    long createIndices(String ontology) ;
+    long createIndices(String ontologyName) ;
 }

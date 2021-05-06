@@ -451,7 +451,7 @@ public class QueryDescriptor implements Descriptor<Query>, GraphDescriptor<Query
             //populate prop
             if (BaseProp.class.isAssignableFrom(below.getClass())) {
                 //todo
-                //populate prop group
+            //populate prop group
             } else if (BasePropGroup.class.isAssignableFrom(below.getClass())) {
                 //todo
             }

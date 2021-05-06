@@ -48,10 +48,13 @@ package com.yangdb.fuse.model.execution.plan.costs;
  */
 public class DetailedCost extends DoubleCost {
 
-    public final double lambdaNode;
-    public final double lambdaEdge;
-    public final double R;
-    public final double N2;
+    public  double lambdaNode;
+    public  double lambdaEdge;
+    public  double R;
+    public  double N2;
+
+    public DetailedCost() {
+    }
 
     public DetailedCost(double cost, double lambdaNode , double lambdaEdge , double R, double N2) {
         super(cost);

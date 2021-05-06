@@ -40,6 +40,9 @@ import static com.yangdb.fuse.model.schema.MappingIndexType.UNIFIED;
 import static org.jooq.impl.ConstraintStatement.foreignKey;
 import static org.jooq.impl.DSL.using;
 
+/**
+ * translates the SQL DDL statement into an index provider low level schema used to generate the E/S mapping & indices
+ */
 public class DDLToIndexProviderTranslator implements IndexProviderTranslator<List<String>> {
     public static final String CREATE_RELATION_BY_FK = "create.relation.byFK";
     private Parser parser;

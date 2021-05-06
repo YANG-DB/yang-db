@@ -22,21 +22,71 @@ package com.yangdb.fuse.dispatcher.resource;
 
 
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
+import com.yangdb.fuse.model.profile.QueryProfileStepInfoData;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import org.apache.tinkerpop.gremlin.process.traversal.util.Metrics;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by lior.perry on 06/03/2017.
  */
 public class CursorResource {
+    //SE-DE support for an efficient store on disk
+    public static byte[] serialize(ObjectMapper mapper, CursorResource cursorResource) {
+        try {
+            ObjectNode node = mapper.createObjectNode();
+            node.put("cursorId",cursorResource.cursorId);
+            node.put("cursorRequest",mapper.writeValueAsString(cursorResource.cursorRequest));
+            node.put("timeCreated",mapper.writeValueAsString(cursorResource.timeCreated));
+            node.put("profileInfo",mapper.writeValueAsString(cursorResource.profileInfo.infoData()));
+            //cursor is not persisted yet - since we are using lazy data fetch and still need to persist the cursor's state
+            return node.toString().getBytes();
+        } catch (JsonProcessingException e) {
+            throw new FuseError.FuseErrorException("Error serializing resource",e);
+        }
+    }
+
+    public static CursorResource deserialize(ObjectMapper mapper,byte[] bytes) {
+        //read - generate new cursor OR renew folder cursor state
+        try {
+            ObjectNode node = (ObjectNode) mapper.readTree(bytes);
+            String cursorId = node.get("cursorId").asText();
+            CreateCursorRequest cursorRequest = mapper.readValue(node.get("cursorId").toString(),CreateCursorRequest.class);
+            List<QueryProfileStepInfoData> queryProfileStepInfoDataSteps = mapper.readValue(node.get("profileInfo").textValue(),
+                    new TypeReference<List<QueryProfileStepInfoData>>() {});
+            return new CursorResource(cursorId, null, new QueryProfileInfo() {
+                @Override
+                public Metrics measurements() {
+                    return null;
+                }
+
+                @Override
+                public List<QueryProfileStepInfoData> infoData() {
+                    return queryProfileStepInfoDataSteps;
+                }
+            }, cursorRequest);
+        } catch (IOException e) {
+            throw new FuseError.FuseErrorException("Error deserializing resource",e);
+        }
+    }
+
     //region Constructors
+
+    public CursorResource() {}
+
     public CursorResource(String cursorId, Cursor cursor, QueryProfileInfo profileInfo, CreateCursorRequest cursorRequest) {
         this.cursorId = cursorId;
         this.profileInfo = profileInfo;
@@ -57,8 +107,9 @@ public class CursorResource {
         return this.timeCreated;
     }
 
-    public Iterable<PageResource> getPageResources() {
-        return this.pageResources.values();
+    @JsonAnyGetter
+    public Map<String, PageResource> getPageResources() {
+        return this.pageResources;
     }
 
     public Optional<PageResource> getPageResource(String pageId) {
@@ -99,13 +150,17 @@ public class CursorResource {
     //endregion
 
     //region Fields
+    private AtomicInteger pageSequence = new AtomicInteger();
+
     private String cursorId;
-    private QueryProfileInfo profileInfo;
-    private CreateCursorRequest cursorRequest;
-    private Cursor cursor;
     private Date timeCreated;
 
+    private CreateCursorRequest cursorRequest;
     private Map<String, PageResource> pageResources;
-    private AtomicInteger pageSequence = new AtomicInteger();
+
+    //in mem state of the cursor & profile info
+    private volatile Cursor cursor;
+    private volatile QueryProfileInfo profileInfo;
+
     //endregion
 }

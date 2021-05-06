@@ -90,6 +90,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
         nestedSchema = new RawSchema() {
             @Override
+            public IndexPartitions getPartition(Ontology ontology, String type) {
+                return getIndexPartitions(nestedSchemaProvider,type);
+            }
+
+            @Override
             public IndexPartitions getPartition(String type) {
                 return getIndexPartitions(nestedSchemaProvider,type);
             }
@@ -123,6 +128,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
 
         embeddedSchema = new RawSchema() {
             @Override
+            public IndexPartitions getPartition(Ontology ontology, String type) {
+                return getIndexPartitions(nestedSchemaProvider,type);
+            }
+
+            @Override
             public IndexPartitions getPartition(String type) {
                 return getIndexPartitions(embeddedSchemaProvider,type);
             }
@@ -155,6 +165,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         };
 
         singleIndexSchema = new RawSchema() {
+            @Override
+            public IndexPartitions getPartition(Ontology ontology, String type) {
+                return getIndexPartitions(nestedSchemaProvider,type);
+            }
+
             @Override
             public IndexPartitions getPartition(String type) {
                 return getIndexPartitions(singleIndexSchemaProvider,type);

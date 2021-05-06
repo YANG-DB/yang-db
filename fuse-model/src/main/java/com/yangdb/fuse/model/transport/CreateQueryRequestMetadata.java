@@ -28,6 +28,7 @@ public interface CreateQueryRequestMetadata<T> {
     String TYPE_CYPHERQL = "cypher";
     String TYPE_GRAPHQL = "graphQL";
     String TYPE_SPARQL = "sparkQL";
+    String TYPE_SQL = "sql";
 
     boolean isSearchPlan();
 
@@ -66,7 +67,25 @@ public interface CreateQueryRequestMetadata<T> {
     PlanTraceOptions getPlanTraceOptions();
 
     enum QueryLanguage {
-        v1,cypher,sparql,graphql
+        v1(TYPE_V1QL),
+        cypher(TYPE_CYPHERQL),
+        sparql(TYPE_SPARQL),
+        graphql(TYPE_GRAPHQL),
+        sql(TYPE_SQL);
+
+        private String name;
+
+        QueryLanguage(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        QueryLanguage of(String name) {
+            return QueryLanguage.valueOf(name);
+        }
     }
 
     enum StorageType {
@@ -77,8 +96,6 @@ public interface CreateQueryRequestMetadata<T> {
     enum QueryType {
         concrete,
         parameterized
-
-
     }
 }
 

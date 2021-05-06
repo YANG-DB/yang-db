@@ -23,13 +23,15 @@ package com.yangdb.fuse.services.controllers.logging;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.yangdb.fuse.dispatcher.logging.*;
+import com.yangdb.fuse.dispatcher.logging.LoggingSyncMethodDecorator;
+import com.yangdb.fuse.dispatcher.logging.MethodName;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import com.yangdb.fuse.services.controllers.DataLoaderController;
+import com.yangdb.fuse.services.controllers.DataController;
 import com.yangdb.fuse.services.suppliers.RequestExternalMetadataSupplier;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
@@ -38,20 +40,20 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.codahale.metrics.MetricRegistry.name;
-import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.*;
+import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.info;
+import static com.yangdb.fuse.dispatcher.logging.LogMessage.Level.trace;
 
 /**
  * Created by roman.margolis on 14/12/2017.
  */
-public class LoggingDataLoaderController extends LoggingControllerBase<DataLoaderController> implements DataLoaderController {
+public class LoggingDataLoaderController extends LoggingControllerBase<DataController> implements DataController {
     public static final String controllerParameter = "LoggingDataLoaderController.@controller";
     public static final String loggerParameter = "LoggingDataLoaderController.@logger";
 
     //region Constructors
     @Inject
     public LoggingDataLoaderController(
-            @Named(controllerParameter) DataLoaderController controller,
+            @Named(controllerParameter) DataController controller,
             @Named(loggerParameter) Logger logger,
             RequestIdSupplier requestIdSupplier,
             RequestExternalMetadataSupplier requestExternalMetadataSupplier,
@@ -62,7 +64,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
 
     //region CatalogController Implementation
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, LogicalGraphModel data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, LogicalGraphModel data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -70,11 +72,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadGraph(ontology, data,directive ), this.resultHandler());
+                .decorate(() -> this.controller.loadGraph(ontologyName, data, directive), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, String data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, String data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -82,11 +84,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadCsv(ontology,type, label, data, directive), this.resultHandler());
+                .decorate(() -> this.controller.loadCsv(ontologyName, type, label, data, directive), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontology, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadGraph(String ontologyName, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -94,11 +96,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadGraph(ontology, data,directive ), this.resultHandler());
+                .decorate(() -> this.controller.loadGraph(ontologyName, data, directive), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontology, String type, String label, File data, GraphDataLoader.Directive directive) {
+    public ContentResponse<LoadResponse<String, FuseError>> loadCsv(String ontologyName, String type, String label, File data, GraphDataLoader.Directive directive) {
         return new LoggingSyncMethodDecorator<ContentResponse<LoadResponse<String, FuseError>>>(
                 this.logger,
                 this.metricRegistry,
@@ -106,11 +108,11 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.loadCsv(ontology,type,label , data, directive), this.resultHandler());
+                .decorate(() -> this.controller.loadCsv(ontologyName, type, label, data, directive), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<String> init(String ontology ) {
+    public ContentResponse<String> init(String ontology) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -120,8 +122,9 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 Arrays.asList(info, trace))
                 .decorate(() -> this.controller.init(ontology), this.resultHandler());
     }
+
     @Override
-    public ContentResponse<String> createMapping(String ontology) {
+    public ContentResponse<String> createMapping(String ontologyName, IndexProvider indexProvider) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -129,22 +132,47 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.createMapping(ontology), this.resultHandler());
-    }
-    @Override
-    public ContentResponse<String> createIndices(String ontology) {
-        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
-                this.logger,
-                this.metricRegistry,
-                init,
-                this.primerMdcWriter(),
-                Collections.singletonList(trace),
-                Arrays.asList(info, trace))
-                .decorate(() -> this.controller.createIndices(ontology), this.resultHandler());
+                .decorate(() -> this.controller.createMapping(ontologyName, indexProvider), this.resultHandler());
     }
 
     @Override
-    public ContentResponse<String> drop(String ontology ) {
+    public ContentResponse<String> createMapping(String ontologyName) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                init,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.createMapping(ontologyName), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<String> createIndices(String ontologyName) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                init,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.createIndices(ontologyName), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<String> createIndices(String ontologyName, IndexProvider indexProvider) {
+        return new LoggingSyncMethodDecorator<ContentResponse<String>>(
+                this.logger,
+                this.metricRegistry,
+                init,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.createIndices(ontologyName, indexProvider), this.resultHandler());
+    }
+
+    @Override
+    public ContentResponse<String> drop(String ontologyName) {
         return new LoggingSyncMethodDecorator<ContentResponse<String>>(
                 this.logger,
                 this.metricRegistry,
@@ -152,7 +180,7 @@ public class LoggingDataLoaderController extends LoggingControllerBase<DataLoade
                 this.primerMdcWriter(),
                 Collections.singletonList(trace),
                 Arrays.asList(info, trace))
-                .decorate(() -> this.controller.drop(ontology), this.resultHandler());
+                .decorate(() -> this.controller.drop(ontologyName), this.resultHandler());
     }
     //endregion
 

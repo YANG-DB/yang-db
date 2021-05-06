@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.ontology.schema;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -49,6 +50,12 @@ public class CachedRawSchema implements RawSchema {
         this.idFormats = Collections.synchronizedMap(new HashMap<>());
     }
     //endregion
+
+    @Override
+    public IndexPartitions getPartition(Ontology ontology, String type) {
+        return this.indexPartitions.computeIfAbsent(type,
+                t -> this.rawSchema.getPartition(ontology,t));
+    }
 
     //region RawSchema Implementation
     @Override

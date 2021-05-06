@@ -51,6 +51,10 @@ import java.util.Stack;
  * Created by mordechaic on 11/14/2017.
  */
 public class JoinCost extends CountEstimatesCost {
+
+    public JoinCost() {
+    }
+
     public JoinCost(double cost, double countEstimate, PlanDetailedCost leftBranchCost, PlanDetailedCost rightBranchCost) {
         super(cost, countEstimate);
         this.leftBranchCost = leftBranchCost;
