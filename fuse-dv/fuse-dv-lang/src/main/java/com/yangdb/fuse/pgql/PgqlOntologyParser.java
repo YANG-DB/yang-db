@@ -68,13 +68,14 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
                     .withDBrName(table.getTableName().getName())
                     .withName(label.getName())
                     .withIdField(getField(table))
-                    .withProperties(label.getProperties().stream().map(Property::getPropertyName).collect(Collectors.toList()))
+                    .withProperties(label.getProperties().stream()
+                            .map(p->format("%s_%s", label.getName(), p.getPropertyName())).collect(Collectors.toList()))
                     .build());
             //add label related properties to ontology
             builder.addProperties(label.getProperties().stream()
                     .map(p -> new com.yangdb.fuse.model.ontology.Property(
-                            format("%s.%s", label.getName(), p.getPropertyName()),
-                            format("%s.%s", label.getName(), p.getPropertyName()),
+                            format("%s_%s", label.getName(), p.getPropertyName()),
+                            format("%s_%s", label.getName(), p.getPropertyName()),
                             getType(p.getValueExpression().getExpType())))
                     .collect(Collectors.toList()));
         });
@@ -138,7 +139,8 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
                     .withRType(table.getTableAlias())//type would be associated with the table alias
                     .withName(edge.getName())//name would be associated with the label
                     .withIdField(getField(table))
-                    .withProperties(edge.getProperties().stream().map(Property::getPropertyName).collect(Collectors.toList()))
+                    .withProperties(edge.getProperties().stream()
+                            .map(p->format("%s_%s", edge.getName(), p.getPropertyName())).collect(Collectors.toList()))
                     .withEPair(buildEpair(builder, table))
                     .build());
 
@@ -146,8 +148,8 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
             //add label related properties to ontology
             builder.addProperties(edge.getProperties().stream()
                     .map(p -> new com.yangdb.fuse.model.ontology.Property(
-                            format("%s.%s", edge.getName(), p.getPropertyName()),
-                            format("%s.%s", edge.getName(), p.getPropertyName()),
+                            format("%s_%s", edge.getName(), p.getPropertyName()),
+                            format("%s_%s", edge.getName(), p.getPropertyName()),
                             getType(p.getValueExpression().getExpType())))
                     .collect(Collectors.toList()));
         });
