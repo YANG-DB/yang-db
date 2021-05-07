@@ -2,7 +2,7 @@
   <configuration default="false" name="dragons-runner" type="Application" factoryName="Application">
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.yangdb.fuse.services.FuseRunner" />
-    <module name="fuse-domain-knowledge-assembly" />
+    <module name="fuse-domain-dragons-assembly" />
     <option name="PROGRAM_PARAMETERS" value="config/application.conf activeProfile config/logback.xml" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/distrib/dragon" />
     <extension name="coverage">
