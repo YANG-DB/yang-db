@@ -167,6 +167,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
                 .put("http.enabled", "true")
+//                .put("xpack.security.enabled","false")
 //                .put("script.auto_reload_enabled", "false")
                 .put("transport.tcp.port", httpTransportPort)
                 .build();

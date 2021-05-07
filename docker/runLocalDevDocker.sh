@@ -6,7 +6,7 @@ echo "Starting elasticsearch clusterName:$clusterName"
 
 docker network create elastic
 docker pull docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-docker run -d --name elasticsearch --net elastic -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+docker run -d --name elasticsearch --net elastic -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "cluster.name=$clusterName" -e "ES_JAVA_OPTS=-Xms13g -Xmx13g" docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 echo " elasticsearch started"
 
 echo " Starting Kibana"
@@ -18,5 +18,5 @@ echo " Starting Yang-DB"
 echo "docker run --network host  -it  yangdb/yang.db:${clusterName}"
 
 #run docker locally with port exposed - option 1
-docker run  -d --network host  -it  yangdb/yang.db:${clusterName}
+docker run  -d --net elastic  -it  yangdb/yang.db:${clusterName}
 echo " Yang-DB started"

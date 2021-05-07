@@ -71,7 +71,8 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
                     .map(Optional::get)
                     .toJavaList();
         } catch (Throwable throwable) {
-            throw new FuseError.FuseErrorException("Failed loading files store for Query resource info ", throwable.getCause());
+            throw new FuseError.FuseErrorException("Failed loading files store for Query resource info ",
+                    throwable.getCause() !=null ? throwable.getCause() : throwable);
         }
     }
 
@@ -88,7 +89,7 @@ public class PersistentLocalFileResourceStore extends InMemoryResourceStore {
     private Optional<QueryResource> loadFromStorage(File queryDir) {
         Option<File> queryFile = Stream.of(queryDir.listFiles() == null ? new File[0] : queryDir.listFiles())
                 .find(file -> FilenameUtils.getBaseName(file.getName()).equals(QUERY_INFO + queryDir.getName()));
-        if (Files.exists(queryFile.get().toPath())) {
+        if (!queryFile.isEmpty() && Files.exists(queryFile.get().toPath())) {
             try {
 //                BufferedReader reader = Files.newBufferedReader(queryFile.get().toPath());
                 return Optional.of(QueryResource.deserialize(mapper, Files.readAllBytes(queryFile.get().toPath())));

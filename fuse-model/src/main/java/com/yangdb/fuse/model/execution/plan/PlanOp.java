@@ -51,9 +51,7 @@ import com.yangdb.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
 import com.yangdb.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.composite.UnionOp;
-import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
-import com.yangdb.fuse.model.execution.plan.entity.EntityGroupByOp;
-import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
+import com.yangdb.fuse.model.execution.plan.entity.*;
 import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationGroupingOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
@@ -77,6 +75,9 @@ import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
         @JsonSubTypes.Type(name = "CompositeAsgEBasePlanOp", value = CompositeAsgEBasePlanOp.class),
         @JsonSubTypes.Type(name = "RelationOp", value = RelationOp.class),
         @JsonSubTypes.Type(name = "EntityOp", value = EntityOp.class),
+        @JsonSubTypes.Type(name = "EntityNoOp", value = EntityNoOp.class),
+        @JsonSubTypes.Type(name = "EntityJoinOp", value = EntityJoinOp.class),
+        @JsonSubTypes.Type(name = "GoToEntityOp", value = GoToEntityOp.class),
         @JsonSubTypes.Type(name = "EntityGroupByOp", value = EntityGroupByOp.class),
         @JsonSubTypes.Type(name = "RelationGroupingOp", value = RelationGroupingOp.class),
         @JsonSubTypes.Type(name = "UnionOp", value = UnionOp.class),

@@ -58,11 +58,12 @@ public class FuseError {
     public FuseError(String errorCode, Throwable e) {
         this.errorCode = errorCode;
         StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        //todo check is in debug mode
-        e.printStackTrace();
-        this.errorDescription = e.getMessage()!=null ? e.getMessage() : sw.toString();
-
+        if(e!=null) {
+            e.printStackTrace(new PrintWriter(sw));
+            //todo check is in debug mode
+            e.printStackTrace();
+            this.errorDescription = e.getMessage() != null ? e.getMessage() : sw.toString();
+        }
     }
 
     public FuseError(String errorCode, String errorDescription) {
