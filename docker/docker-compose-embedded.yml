@@ -1,13 +1,13 @@
 version: '3.3'
 
 services:
-  es:
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
     environment:
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "discovery.type=single-node"
-      - "network.publish_host=127.0.0.1"
-      - "cluster.name=${ELASTICSEARCH_CLUSTER_NAME}"
+      - "network.publish_host=http://elasticsearch:9200"
+      - "cluster.name=Dragons"
     networks:
       - network
     ports:
@@ -24,9 +24,9 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:6.5.4
     links:
-      - es
+      - elasticsearch
     depends_on:
-      - es
+      - elasticsearch
     ports:
       - 5601:5601
     networks:
@@ -34,7 +34,7 @@ services:
   fuse:
     image: yangdb/yang.db:latest
     depends_on:
-      - es
+      - elasticsearch
     ports:
       - 8888:8888
     environment:
