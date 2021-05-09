@@ -3,9 +3,7 @@ package com.yangdb.fuse.asg.strategy.mapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyMappingProvider;
-import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
-import com.yangdb.fuse.dispatcher.utils.GraphApiUtils;
-import com.yangdb.fuse.model.asgQuery.AsgEBase;
+import com.yangdb.fuse.dispatcher.ontology.InMemoryOntologyProvider;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
@@ -47,7 +45,7 @@ public class AsgMappingStrategyTest extends TestCase {
         MappingOntologies mapping = mapper.readValue(mappingSource, MappingOntologies.class);
 
         asgTransformer = new QueryToAsgTransformer();
-        strategy = new AsgMappingStrategy(new SimpleOntologyProvider(ontology, schema), new SimpleOntologyMappingProvider(mapping));
+        strategy = new AsgMappingStrategy(new InMemoryOntologyProvider(ontology, schema), new SimpleOntologyMappingProvider(mapping));
     }
 
     @Test

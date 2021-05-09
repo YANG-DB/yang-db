@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.schema;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.collect.ImmutableList;
+import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 
 import java.util.*;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.yangdb.fuse.model.schema.MappingIndexType.STATIC;
+import static com.yangdb.fuse.model.schema.MappingIndexType.UNIFIED;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -132,24 +134,36 @@ public class IndexProvider {
     public Optional<Entity> getEntity(String label) {
         Optional<Entity> nest = getEntities().stream().filter(e -> !e.getNested().isEmpty())
                 .flatMap(e -> e.getNested().stream())
-                .filter(nested -> nested.getType().equalsIgnoreCase(label))
+                .filter(nested -> nested.getType().equals(label))
                 .findAny();
         if (nest.isPresent())
             return nest;
 
-        return getEntities().stream().filter(e -> e.getType().equalsIgnoreCase(label)).findAny();
+        return getEntities().stream().filter(e -> e.getType().equals(label)).findAny();
+    }
+
+    @JsonIgnore
+    public Optional<Entity> getEntityByProp(String prop) {
+        Optional<Entity> nest = getEntities().stream().filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream())
+                .filter(nested -> nested.getProps().getValues().contains(prop))
+                .findAny();
+        if (nest.isPresent())
+            return nest;
+
+        return getEntities().stream().filter(e -> e.getProps().getValues().contains(prop)).findAny();
     }
 
     @JsonIgnore
     public Optional<Relation> getRelation(String label) {
         Optional<Relation> nest = getRelations().stream().filter(e -> !e.getNested().isEmpty())
                 .flatMap(e -> e.getNested().stream())
-                .filter(nested -> nested.getType().equalsIgnoreCase(label))
+                .filter(nested -> nested.getType().equals(label))
                 .findAny();
         if (nest.isPresent())
             return nest;
 
-        return getRelations().stream().filter(e -> e.getType().equalsIgnoreCase(label)).findAny();
+        return getRelations().stream().filter(e -> e.getType().equals(label)).findAny();
     }
 
     public static class Builder {
@@ -173,16 +187,29 @@ public class IndexProvider {
             provider.entities = ontology.getEntityTypes().stream().map(e ->
                     new Entity(e.getName(), STATIC.name(), PartitionType.INDEX.name(),
                             //E/S indices need to be lower cased
-                            new Props(ImmutableList.of(e.getName().toLowerCase())), Collections.emptyList(), Collections.emptyMap()))
-                    .collect(Collectors.toList());
-            //generate relations
-            provider.relations = ontology.getRelationshipTypes().stream().map(e ->
-                    new Relation(e.getName(), STATIC.name(), PartitionType.INDEX.name(), false, Collections.emptyList(),
-                            //E/S indices need to be lower cased
-                            new Props(ImmutableList.of(e.getName().toLowerCase())), Collections.emptyList(), Collections.emptyMap()))
+                            new Props(ImmutableList.of(getSchemaName(e.getDBrName(), e.getName()))),
+                            Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
 
+            //generate relations
+            provider.relations = ontology.getRelationshipTypes().stream().map(e -> {
+                // verify if relationship exists with same DB name as index we need to create a UNIFIED type mapping
+                if (provider.getEntityByProp(getSchemaName(e.getDBrName(), e.getName())).isPresent()) {
+                    //update type to UNIFIED
+                    provider.getEntityByProp(getSchemaName(e.getDBrName(), e.getName())).get()
+                            .setPartition(UNIFIED.name());
+                    //add fields
+                }
+                return new Relation(e.getName(), STATIC.name(), PartitionType.INDEX.name(), false, Collections.emptyList(),
+                        //E/S indices need to be lower cased
+                        new Props(ImmutableList.of(getSchemaName(e.getDBrName(), e.getName()))),
+                        Collections.emptyList(), Collections.emptyMap());
+            }).collect(Collectors.toList());
             return provider;
+        }
+
+        private static String getSchemaName(String dBrName, String name) {
+            return dBrName != null ? dBrName.toLowerCase() : name.toLowerCase();
         }
     }
 }

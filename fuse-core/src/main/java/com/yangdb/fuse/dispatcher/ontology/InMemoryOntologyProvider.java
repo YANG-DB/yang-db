@@ -21,6 +21,7 @@ package com.yangdb.fuse.dispatcher.ontology;
  */
 
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.OntologyFinalizer;
 
@@ -33,21 +34,15 @@ import static com.yangdb.fuse.model.Utils.readJsonFile;
 /**
  * Created by lior.perry on 3/16/2017.
  */
-public class SimpleOntologyProvider implements OntologyProvider {
-    public static final String DRAGONS = "Dragons";
-    public static final String ONTOLOGY = "ontology";
+public class InMemoryOntologyProvider implements OntologyProvider {
+    public static final String ONTOLOGY = GlobalConstants.ONTOLOGY;
 
     private Map<String, Ontology> ontologyMap;
 
-    public SimpleOntologyProvider(Ontology... ontology) throws IOException {
+    public InMemoryOntologyProvider(Ontology... ontology) throws IOException {
         ontologyMap = new HashMap<>();
         Arrays.asList(ontology).forEach(ont ->
                 ontologyMap.put(ont.getOnt(), ont));
-    }
-
-    public SimpleOntologyProvider() throws IOException {
-        ontologyMap = new HashMap<>();
-        ontologyMap.put(DRAGONS, asObject(readJsonFile(ONTOLOGY + "/" + DRAGONS + ".json"), Ontology.class));
     }
 
     @Override
@@ -62,7 +57,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     @Override
     public Ontology add(Ontology ontology) {
-        ontologyMap.put(ontology.getOnt(), ontology);
+        ontologyMap.put(ontology.getOnt(), OntologyFinalizer.finalize(ontology));
         return ontology;
     }
 }

@@ -6,7 +6,21 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class PgqlOntologyParserTest extends TestCase {
+public class PgqlDDLOntologyParserTest extends TestCase {
+    public static final String DDL_QUERY_SELF = "CREATE PROPERTY GRAPH hr_simplified\n" +
+            "  VERTEX TABLES (\n" +
+            "    employees LABEL employee\n" +
+            "      PROPERTIES ARE ALL COLUMNS EXCEPT ( job_id, manager_id, department_id ),\n" +
+            "    departments LABEL department\n" +
+            "      PROPERTIES ( department_id, department_name )\n" +
+            "  )\n" +
+            "  EDGE TABLES (\n" +
+            "    employees AS works_for\n" +
+            "      SOURCE KEY ( employee_id ) REFERENCES employees\n" +
+            "      DESTINATION employees\n" +
+            "      NO PROPERTIES\n" +
+            "  )";
+
     public static final String DDL_QUERY = "CREATE PROPERTY GRAPH financial_transactions\n" +
             "  VERTEX TABLES (\n" +
             "    Persons LABEL Person PROPERTIES ( name ),\n" +

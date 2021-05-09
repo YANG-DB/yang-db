@@ -167,6 +167,7 @@ public class ElasticIndexProviderMappingFactory {
                         if (request.request().mappings().isEmpty()) {
                             request.addMapping(unifiedName, generateRelationMapping(r, relation, unifiedName));
                         } else {
+                            //todo if mapping exists already and (*unified) mapping is related to an entity - a relation mapping must be added
                             populateProperty(relation, request.getMappingsProperties(unifiedName), r);
                         }
                     });
@@ -561,9 +562,9 @@ public class ElasticIndexProviderMappingFactory {
 
     private Settings builder(Entity entity) {
         Settings.Builder builder = getSettings();
+        //nested entity is not supported with sorting feature in E/S
         if (entity.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-
             if (!ontology.entity$(entity.getType()).getIdField().isEmpty())
                 builder.put("sort.field", ontology.entity$(entity.getType()).getIdField().get(0)).put("sort.order", "asc");
             //todo - move to this correct fields indexing
