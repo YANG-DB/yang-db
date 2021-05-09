@@ -37,7 +37,7 @@ import static com.yangdb.fuse.model.Utils.readJsonFile;
 public class InMemoryOntologyProvider implements OntologyProvider {
     public static final String ONTOLOGY = GlobalConstants.ONTOLOGY;
 
-    private Map<String, Ontology> ontologyMap;
+    protected Map<String, Ontology> ontologyMap;
 
     public InMemoryOntologyProvider(Ontology... ontology) throws IOException {
         ontologyMap = new HashMap<>();
