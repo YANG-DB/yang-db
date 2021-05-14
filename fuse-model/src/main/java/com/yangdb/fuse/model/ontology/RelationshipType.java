@@ -198,8 +198,8 @@ public class RelationshipType implements BaseElement {
     }
 
     @JsonIgnore
-    public RelationshipType withEPairs(EPair... pairs) {
-        this.setePairs(Arrays.asList(pairs));
+    public RelationshipType withEPairs(List<EPair> pairs) {
+        this.setePairs(pairs);
         return this;
     }
 
@@ -227,6 +227,11 @@ public class RelationshipType implements BaseElement {
         return Objects.hash(idField,rType, name, directional, mandatory, ePairs, properties, metadata);
     }
 
+    //shallow hash used to compare relationships by direct fields only
+    public int hashCodeWithoutPairs() {
+        return Objects.hash(idField,rType, name, directional, mandatory, properties, metadata);
+    }
+
     @Override
     public String toString() {
         return "RelationshipType [name = " + name +", ePairs = " + ePairs + ", idField = " + idField + ", rType = " + rType + ", directional = " + directional + ", properties = " + properties + ", metadata = " + metadata + ", mandatory = " + mandatory + "]";
@@ -247,6 +252,11 @@ public class RelationshipType implements BaseElement {
     private List<EPair> ePairs = new ArrayList<>();
     private List<String> properties = new ArrayList<>();
     private List<String> metadata = new ArrayList<>();
+
+    @JsonIgnore
+    public String getSchemaName() {
+        return DBrName != null ? DBrName.toLowerCase() : name.toLowerCase();
+    }
 
     @JsonIgnore
     public boolean containsMetadata(String key) {

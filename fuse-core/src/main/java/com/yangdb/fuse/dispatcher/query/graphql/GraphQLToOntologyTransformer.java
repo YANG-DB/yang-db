@@ -453,7 +453,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
                     .flatMap(ep -> ep.getePairs().stream())
                     .collect(Collectors.toList());
             //replace multi relationships with one containing all epairs
-            context.addRelationshipType(value.get(0).withEPairs(pairs.toArray(new EPair[0])));
+            context.addRelationshipType(value.get(0).withEPairs(pairs));
         });
         return context;
     }

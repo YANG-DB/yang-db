@@ -32,6 +32,8 @@ import static com.yangdb.fuse.model.GlobalConstants.ID;
  */
 public interface BaseElement {
     String getName();
+    String getSchemaName();
+    String getDBrName();
     List<String> getIdField();
     List<String> getMetadata();
     List<String> fields();

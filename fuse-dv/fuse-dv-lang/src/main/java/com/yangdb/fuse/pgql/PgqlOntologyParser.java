@@ -28,8 +28,10 @@ import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import oracle.pgql.lang.Pgql;
 import oracle.pgql.lang.PgqlException;
-import oracle.pgql.lang.PgqlResult;
-import oracle.pgql.lang.ddl.propertygraph.*;
+import oracle.pgql.lang.ddl.propertygraph.CreatePropertyGraph;
+import oracle.pgql.lang.ddl.propertygraph.EdgeTable;
+import oracle.pgql.lang.ddl.propertygraph.ElementTable;
+import oracle.pgql.lang.ddl.propertygraph.VertexTable;
 import oracle.pgql.lang.ir.PgqlStatement;
 import oracle.pgql.lang.ir.QueryExpression;
 import oracle.pgql.lang.ir.SchemaQualifiedName;
@@ -37,6 +39,8 @@ import oracle.pgql.lang.ir.StatementType;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.ontology.Ontology.OntologyPrimitiveType.*;
@@ -69,12 +73,37 @@ public class PgqlOntologyParser implements OntologyTransformerIfc<String, Ontolo
             vertexTables.forEach(t -> transform(builder, t));
             //transform tables into vertices
             edgeTables.forEach(t -> transform(builder, t));
-
+            //consolidate edges within same label relating to different pairs
+            consolidateEdges(builder);
             return builder.build();
         } catch (PgqlException e) {
             throw new FuseError.FuseErrorException("No valid Pgql Ontology DDL query ",
                     new FuseError("Pgql Ontology Parser Error", "No valid Pgql Ontology command " + query));
         }
+    }
+
+    /**
+     * consolidate different relations that refer to the same db table but relate to different pair of vertices
+     * @param builder
+     */
+    private void consolidateEdges(Ontology.OntologyBuilder builder) {
+        //collect the similar shallow relationships
+        Map<Integer, Set<RelationshipType>> map = builder.getRelationships().stream().collect(
+                Collectors.groupingBy(RelationshipType::hashCodeWithoutPairs, Collectors.toSet()));
+        //gather all epairs of all similar relationships into the first one
+        builder.withRelationshipTypes(map.values().stream()
+                .map(this::combine).collect(Collectors.toList()));
+    }
+
+    /**
+     * collect all epairs into the first relationship
+     * @param relations
+     * @return
+     */
+    private RelationshipType combine( Set<RelationshipType> relations) {
+        return relations.stream().limit(1).findAny().get().withEPairs(
+                relations.stream().flatMap(r->r.getePairs().stream()).collect(Collectors.toList())
+        );
     }
 
     /**

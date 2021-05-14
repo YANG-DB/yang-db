@@ -311,6 +311,14 @@ public class Ontology {
             return this;
         }
 
+        public List<RelationshipType> getRelationships() {
+            return relationshipTypes;
+        }
+
+        public List<EntityType> getEntityTypes() {
+            return entityTypes;
+        }
+
         public Ontology build() {
             Ontology ontology = new Ontology();
             ontology.setOnt(ont);

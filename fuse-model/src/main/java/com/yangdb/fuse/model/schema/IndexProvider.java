@@ -46,8 +46,10 @@ package com.yangdb.fuse.model.schema;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.collect.ImmutableList;
+import com.yangdb.fuse.model.ontology.BaseElement;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.RelationshipType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -180,36 +182,47 @@ public class IndexProvider {
          * @param ontology
          * @return
          */
+        //todo - refactor this so that all base elements (entityType, relationType) are collected according to schemaName and
+        // all similar schema names are joined with the all the collected parameters
         public static IndexProvider generate(Ontology ontology) {
             IndexProvider provider = new IndexProvider();
             provider.ontology = ontology.getOnt();
+            //dedup entities according to physical schema name and select the first representing index of each schematic name & collect all group's properties into that representative
+            List<BaseElement> dedupedEntities = ontology.getEntityTypes().stream().collect(Collectors.groupingBy(EntityType::getSchemaName,
+                    Collectors.toSet())).values().stream().flatMap(v -> v.stream().limit(1)).collect(Collectors.toList());
+
+            //dedup relations according to physical schema name and select the first representing index of each schematic name & collect all group's properties into that representative
+            List<BaseElement> dedupedRelations = ontology.getRelationshipTypes().stream().collect(Collectors.groupingBy(RelationshipType::getSchemaName,
+                    Collectors.toSet())).values().stream().flatMap(v -> v.stream().limit(1)).collect(Collectors.toList());
+
             //generate entities
-            provider.entities = ontology.getEntityTypes().stream().map(e ->
-                    new Entity(e.getName(), STATIC.name(), PartitionType.INDEX.name(),
-                            //E/S indices need to be lower cased
-                            new Props(ImmutableList.of(getSchemaName(e.getDBrName(), e.getName()))),
-                            Collections.emptyList(), Collections.emptyMap()))
+            provider.entities = dedupedEntities.stream().map(e ->
+                            new Entity(e.getName(), STATIC.name(), PartitionType.INDEX.name(),
+                                    //E/S indices need to be lower cased
+                                    new Props(ImmutableList.of(e.getSchemaName())),
+                                    Collections.emptyList(), Collections.emptyMap()))
                     .collect(Collectors.toList());
 
             //generate relations
-            provider.relations = ontology.getRelationshipTypes().stream().map(e -> {
+            provider.relations = dedupedRelations.stream().map(e -> {
                 // verify if relationship exists with same DB name as index we need to create a UNIFIED type mapping
-                if (provider.getEntityByProp(getSchemaName(e.getDBrName(), e.getName())).isPresent()) {
+                if (provider.getEntityByProp(e.getSchemaName()).isPresent()) {
                     //update type to UNIFIED
-                    provider.getEntityByProp(getSchemaName(e.getDBrName(), e.getName())).get()
+                    provider.getEntityByProp(e.getSchemaName()).get()
                             .setPartition(UNIFIED.name());
                     //add fields
                 }
                 return new Relation(e.getName(), STATIC.name(), PartitionType.INDEX.name(), false, Collections.emptyList(),
                         //E/S indices need to be lower cased
-                        new Props(ImmutableList.of(getSchemaName(e.getDBrName(), e.getName()))),
+                        new Props(ImmutableList.of(e.getSchemaName())),
                         Collections.emptyList(), Collections.emptyMap());
             }).collect(Collectors.toList());
+
+            //todo collect all similar schema names elements and combine them - practically will always remove entity index provider to be combined
+            //with its associated relation index provider and also should copy the properties from the combined entity
             return provider;
         }
 
-        private static String getSchemaName(String dBrName, String name) {
-            return dBrName != null ? dBrName.toLowerCase() : name.toLowerCase();
-        }
+
     }
 }

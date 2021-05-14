@@ -164,7 +164,7 @@ public class EPair {
 
     @Override
     public String toString() {
-        return "EPair [name= " + name + ",eTypeA= " + eTypeA + ",sideAId= " + sideAIdField + ", eTypeB = " + eTypeB + ", sideAId = " + sideBIdField + "]";
+        return "EPair [name= " + name + ",eTypeA= " + eTypeA + ",sideAId= " + sideAIdField + ", eTypeB = " + eTypeB + ", sideBId = " + sideBIdField + "]";
     }
 
     //region Fields

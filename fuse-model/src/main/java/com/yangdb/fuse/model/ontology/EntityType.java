@@ -90,6 +90,11 @@ public class EntityType implements BaseElement {
         this.metadata = metadata;
     }
 
+    @JsonIgnore
+    public String getSchemaName() {
+        return DBrName != null ? DBrName.toLowerCase() : name.toLowerCase();
+    }
+
     @JsonProperty("DBrName")
     public String getDBrName() {
         return DBrName;
