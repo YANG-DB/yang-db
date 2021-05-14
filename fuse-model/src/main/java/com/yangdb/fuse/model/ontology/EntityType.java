@@ -125,6 +125,28 @@ public class EntityType implements BaseElement {
         return properties != null ? properties : Collections.emptyList();
     }
 
+
+    @Override
+    @JsonIgnore
+    public EntityType withProperties(List<String> properties) {
+        setProperties(properties);
+        return this;
+    }
+
+    @Override
+    @JsonIgnore
+    public EntityType withMetadata(List<String> metadata) {
+        setMetadata(metadata);
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public EntityType withMandatory(List<String> mandatory) {
+        setMandatory(mandatory);
+        return this;
+    }
+
     public List<String> getParentType() {
         return parentType != null ? parentType : Collections.emptyList();
     }

@@ -39,6 +39,9 @@ public interface BaseElement {
     List<String> fields();
     List<String> getProperties();
 
+    BaseElement withProperties(List<String> properties);
+    BaseElement withMetadata(List<String> metadata);
+    BaseElement withMandatory(List<String> mandatory);
 
     @JsonIgnore
     static String idFieldName(List<String> values) {

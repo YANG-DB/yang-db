@@ -188,12 +188,14 @@ public class IndexProvider {
             IndexProvider provider = new IndexProvider();
             provider.ontology = ontology.getOnt();
             //dedup entities according to physical schema name and select the first representing index of each schematic name & collect all group's properties into that representative
-            List<BaseElement> dedupedEntities = ontology.getEntityTypes().stream().collect(Collectors.groupingBy(EntityType::getSchemaName,
-                    Collectors.toSet())).values().stream().flatMap(v -> v.stream().limit(1)).collect(Collectors.toList());
+            Map<String, Set<EntityType>> map = ontology.getEntityTypes().stream().collect(Collectors.groupingBy(EntityType::getSchemaName,Collectors.toSet()));
+            // collect all entities group's properties into the selected representative
+            List<BaseElement> dedupedEntities = map.values().stream().map(Builder::combine).collect(Collectors.toList());
 
             //dedup relations according to physical schema name and select the first representing index of each schematic name & collect all group's properties into that representative
-            List<BaseElement> dedupedRelations = ontology.getRelationshipTypes().stream().collect(Collectors.groupingBy(RelationshipType::getSchemaName,
-                    Collectors.toSet())).values().stream().flatMap(v -> v.stream().limit(1)).collect(Collectors.toList());
+            Map<String, Set<RelationshipType>> mapRel = ontology.getRelationshipTypes().stream().collect(Collectors.groupingBy(RelationshipType::getSchemaName,Collectors.toSet()));
+            // collect all relation's group's properties into the selected representative
+            List<BaseElement> dedupedRelations = mapRel.values().stream().map(Builder::combine).collect(Collectors.toList());
 
             //generate entities
             provider.entities = dedupedEntities.stream().map(e ->
@@ -223,6 +225,16 @@ public class IndexProvider {
             return provider;
         }
 
-
+        /**
+         * combine group of associated elements into a representative that collects all its corresponding associated properties values
+         * @param elements
+         * @return
+         */
+        private static BaseElement combine(Set<? extends BaseElement> elements) {
+            return elements.stream().limit(1).findAny().get().withProperties(
+                    elements.stream().flatMap(r->r.getProperties().stream()).collect(Collectors.toList())
+            );
+        }
     }
+
 }

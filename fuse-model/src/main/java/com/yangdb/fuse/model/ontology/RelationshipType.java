@@ -156,6 +156,27 @@ public class RelationshipType implements BaseElement {
         return properties != null ? properties : Collections.emptyList();
     }
 
+    @Override
+    @JsonIgnore
+    public RelationshipType withProperties(List<String> properties) {
+        setProperties(properties);
+        return this;
+    }
+
+    @Override
+    @JsonIgnore
+    public RelationshipType withMetadata(List<String> metadata) {
+        setMetadata(metadata);
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public RelationshipType withMandatory(List<String> mandatory) {
+        setMandatory(mandatory);
+        return this;
+    }
+
     public List<String> getMandatory() {
         return mandatory != null ? mandatory : Collections.emptyList();
     }
