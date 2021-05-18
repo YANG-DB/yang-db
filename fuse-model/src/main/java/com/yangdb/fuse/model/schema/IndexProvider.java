@@ -46,6 +46,7 @@ package com.yangdb.fuse.model.schema;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.yangdb.fuse.model.ontology.BaseElement;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -71,8 +72,18 @@ public class IndexProvider {
     private List<Entity> entities = new ArrayList<>();
     @JsonProperty("relations")
     private List<Relation> relations = new ArrayList<>();
+    @JsonProperty("unified")
+    private List<BaseTypeElement> unified = new ArrayList<>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("unified")
+    public List<BaseTypeElement> getUnified() {
+       return (List<BaseTypeElement>) Stream.concat(unified.stream()
+                .filter(e -> !e.getNested().isEmpty())
+                .flatMap(e -> e.getNested().stream()), unified.stream())
+                .collect(Collectors.toList());
+    }
 
     @JsonProperty("entities")
     public List<Entity> getEntities() {
@@ -220,8 +231,14 @@ public class IndexProvider {
                         Collections.emptyList(), Collections.emptyMap());
             }).collect(Collectors.toList());
 
-            //todo collect all similar schema names elements and combine them - practically will always remove entity index provider to be combined
+            // collect all similar schema names elements and combine them - practically will always remove entity index provider to be combined
             //with its associated relation index provider and also should copy the properties from the combined entity
+            for (BaseElement element : dedupedEntities.stream().filter(e -> mapRel.containsKey(e.getSchemaName())).collect(Collectors.toList())) {
+                //add all properties from entity to relevant relation
+                combine( ImmutableSet.of(mapRel.get(element.getSchemaName()).stream().limit(1).findAny().get(),element));
+                // remove just added relation from   list
+                provider.entities.remove(element);
+            }
             return provider;
         }
 
