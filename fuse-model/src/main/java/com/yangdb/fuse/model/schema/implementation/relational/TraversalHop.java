@@ -58,6 +58,16 @@ public class TraversalHop {
      */
     private List<EdgeAttribute> attributes = new ArrayList<>();
 
+    /***
+     * Set of attributes that belong to source node and are redundant.
+     */
+    private List<Attribute> redundantSourceAttributes = new ArrayList<>();
+
+    /***
+     * Set of attributes that belong to target node and are redundant.
+     */
+    private List<Attribute> redundantTargetAttributes = new ArrayList<>();
+
     private int stepNumber = 1;
 
     private List<RestrictionClauses> restriction;
@@ -147,6 +157,22 @@ public class TraversalHop {
         this.attributes = attributes;
         this.stepNumber = stepNumber;
         this.restriction = restriction;
+    }
+
+    public List<Attribute> getRedundantSourceAttributes() {
+        return redundantSourceAttributes;
+    }
+
+    public void setRedundantSourceAttributes(List<Attribute> redundantSourceAttributes) {
+        this.redundantSourceAttributes = redundantSourceAttributes;
+    }
+
+    public List<Attribute> getRedundantTargetAttributes() {
+        return redundantTargetAttributes;
+    }
+
+    public void setRedundantTargetAttributes(List<Attribute> redundantTargetAttributes) {
+        this.redundantTargetAttributes = redundantTargetAttributes;
     }
 
     /**

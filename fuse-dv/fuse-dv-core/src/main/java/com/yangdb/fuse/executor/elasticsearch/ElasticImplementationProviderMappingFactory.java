@@ -28,10 +28,7 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.*;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
-import com.yangdb.fuse.model.schema.implementation.relational.ImplementationEdge;
-import com.yangdb.fuse.model.schema.implementation.relational.ImplementationLevel;
-import com.yangdb.fuse.model.schema.implementation.relational.ImplementationNode;
-import com.yangdb.fuse.model.schema.implementation.relational.TraversalHop;
+import com.yangdb.fuse.model.schema.implementation.relational.*;
 import javaslang.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.ResourceAlreadyExistsException;
@@ -68,7 +65,6 @@ public class ElasticImplementationProviderMappingFactory {
     private Client client;
     private RawSchema schema;
     private ImplementationLevel indexProvider;
-    private Ontology.Accessor ontology;
     private Config settingConfig = ConfigFactory.empty();
 
 
@@ -77,7 +73,6 @@ public class ElasticImplementationProviderMappingFactory {
         this.client = client;
         this.schema = schema;
         this.indexProvider = indexProvider;
-        this.ontology = new Ontology.Accessor(ontology);
         try {
             this.settingConfig = config.hasPath("elasticsearch.mappings.settings") ? config.getConfig("elasticsearch.mappings.settings") : ConfigFactory.empty();
         } catch (Throwable ignored) {
@@ -89,10 +84,6 @@ public class ElasticImplementationProviderMappingFactory {
         return this;
     }
 
-    public ElasticImplementationProviderMappingFactory ontology(Ontology ontology) {
-        this.ontology = new Ontology.Accessor(ontology);
-        return this;
-    }
 
     /**
      * create indices according to ontology
@@ -227,15 +218,28 @@ public class ElasticImplementationProviderMappingFactory {
         //set direction
         properties.put(DIRECTION, parseType("string"));
 
-        //todo populate sides
-        properties.put(node.getJoinTableSourceColumn(), Collections.singletonMap("type", "???"));//todo get column type from respective source node
-        properties.put(node.getJoinTableDestinationColumn(), Collections.singletonMap("type", "???"));//todo get column type from respective target node
+        // populate sides
+        properties.put(node.getSourceTableName(), populateRedundant(node.getSourceTableColumn(), node.getRedundantSourceAttributes()));
+        properties.put(node.getDestinationTableName(), populateRedundant(node.getDestinationTableColumn(), node.getRedundantSourceAttributes()));
         //add id
-        properties.put("id", Collections.singletonMap("type", "keyword"));
+        properties.put(ID, Collections.singletonMap("type", "keyword"));
 
         //populate fields & metadata
         populateEdgeProperties(node, properties);
         return mapping;
+    }
+
+    private HashMap<String, Object> populateRedundant(String column, List<Attribute> attributes) {
+        HashMap<String, Object> sideProperties = new HashMap<>();
+        HashMap<String, Object> values = new HashMap<>();
+        sideProperties.put(PROPERTIES, values);
+
+        //add side ID - or use default mandatory property
+        values.put(column, parseType("???"));//todo get type from node
+        //add side TYPE  - or use default mandatory property
+        values.put(TYPE, parseType("string"));
+        attributes.forEach(r -> values.put(r.getColumnName(), parseType(r.getDataType())));
+        return sideProperties;
     }
 
     private void populateEdgeProperties(TraversalHop node, Map<String, Object> properties) {
@@ -263,7 +267,6 @@ public class ElasticImplementationProviderMappingFactory {
 
         return jsonMap;
     }
-
 
 
     /**
@@ -305,85 +308,11 @@ public class ElasticImplementationProviderMappingFactory {
                     break;
             }
         } catch (Throwable typeNotFound) {
-            // manage non-primitive type such as enum or nested typed
-            Optional<Tuple2<Ontology.Accessor.NodeType, String>> type = ontology.matchNameToType(nameType);
-            if (type.isPresent()) {
-                switch (type.get()._1()) {
-                    case ENTITY:
-                        //todo - manage the nested-embedded type here
-                        break;
-                    case ENUM:
-                        //enum is always backed by integer
-                        map.put("type", "integer");
-                        break;
-                    case RELATION:
-                        break;
-                }
-            } else {
-                //default
-                map.put("type", "text");
-                map.put("fields", singletonMap("keyword", singletonMap("type", "keyword")));
-            }
+            //default
+            map.put("type", "text");
+            map.put("fields", singletonMap("keyword", singletonMap("type", "keyword")));
         }
         return map;
-    }
-
-    /**
-     * add the index entity settings part of the template according to the ontology relations
-     *
-     * @return
-     */
-    public Settings generateSettings(EntityType entityType, Entity entity, String label) {
-        ontology.entity(entityType.getName()).get().getIdField().forEach(idField -> {
-            if (!ontology.entity(entityType.getName()).get().fields().contains(idField))
-                throw new FuseError.FuseErrorException(new FuseError("Entity Schema generation exception", " Entity " + label + " not containing id metadata property "));
-        });
-        // TODO: 05/12/2019  - use index provider to correctly build index settings
-        return builder(entity);
-    }
-
-    /**
-     * add the index relation settings part of the template according to the ontology relations
-     *
-     * @return
-     */
-    public Settings generateSettings(RelationshipType relationType, Relation rel, String label) {
-        ontology.relation(relationType.getName()).get().getIdField().forEach(idField -> {
-            if (!ontology.relation(relationType.getName()).get().fields().contains(idField))
-                throw new FuseError.FuseErrorException(new FuseError("Relation Schema generation exception", " Relationship " + label + " not containing id metadata property "));
-        });
-        return builder(rel);
-    }
-
-    private Settings builder(Relation relation) {
-        Settings.Builder builder = getSettings();
-        if (relation.getNested().isEmpty()) {
-            //assuming id is a mandatory part of metadata/properties
-            if (!ontology.relation$(relation.getType()).getIdField().isEmpty())
-                builder.put("sort.field", ontology.relation$(relation.getType()).getIdField().get(0)).put("sort.order", "asc");
-            //todo - move to this correct fields indexing
-/*
-            ontology.relation$(relation.getType()).getIdField().forEach(field ->
-                    builder.put("sort.field", field).put("sort.order", "asc"));
-*/
-        }
-        return builder.build();
-    }
-
-    private Settings builder(Entity entity) {
-        Settings.Builder builder = getSettings();
-        //nested entity is not supported with sorting feature in E/S
-        if (entity.getNested().isEmpty()) {
-            //assuming id is a mandatory part of metadata/properties
-            if (!ontology.entity$(entity.getType()).getIdField().isEmpty())
-                builder.put("sort.field", ontology.entity$(entity.getType()).getIdField().get(0)).put("sort.order", "asc");
-            //todo - move to this correct fields indexing
-/*
-            ontology.entity$(entity.getType()).getIdField().forEach(field ->
-                    builder.put("sort.field", field).put("sort.order", "asc"));
-*/
-        }
-        return builder.build();
     }
 
     /**

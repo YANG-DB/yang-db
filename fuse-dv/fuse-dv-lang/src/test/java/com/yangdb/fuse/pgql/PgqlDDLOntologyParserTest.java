@@ -25,7 +25,32 @@ public class PgqlDDLOntologyParserTest extends TestCase {
             "      NO PROPERTIES\n" +
             "  )";
 
-    public static final String DDL_QUERY = "CREATE PROPERTY GRAPH financial_transactions\n" +
+    public static final String DDL_QUERY_1 = "CREATE PROPERTY GRAPH financial_transactions\n" +
+            "  VERTEX TABLES (\n" +
+            "    Individuals LABEL Individual PROPERTIES ( name ),\n" +
+            "    Companies LABEL Company PROPERTIES ( name ),\n" +
+            "    Accounts LABEL Account PROPERTIES ( number )\n" +
+            "  )\n" +
+            "  EDGE TABLES (\n" +
+            "    Transactions\n" +
+            "      SOURCE KEY ( from_account ) REFERENCES Accounts\n" +
+            "      DESTINATION KEY ( to_account ) REFERENCES Accounts\n" +
+            "      LABEL transaction PROPERTIES ( amount ),\n" +
+            "    Ownership AS Owner\n" +
+            "      SOURCE KEY ( number ) REFERENCES Accounts\n" +
+            "      DESTINATION  KEY ( name ) REFERENCES Individuals\n" +
+            "      LABEL owner NO PROPERTIES,\n" +
+            "    Accounts AS Owner\n" +
+            "      SOURCE KEY ( number ) REFERENCES Accounts\n" +
+            "      DESTINATION  KEY ( name ) REFERENCES Companies\n" +
+            "      LABEL owner NO PROPERTIES,\n" +
+            "    Organization AS worksFor\n" +
+            "      SOURCE KEY ( id ) REFERENCES Individuals\n" +
+            "      DESTINATION  KEY ( name ) REFERENCES Companies\n" +
+            "      NO PROPERTIES\n" +
+            "  )";
+
+    public static final String DDL_QUERY_2 = "CREATE PROPERTY GRAPH financial_transactions\n" +
             "  VERTEX TABLES (\n" +
             "    Individuals LABEL Individual PROPERTIES ( name ),\n" +
             "    Companies LABEL Company PROPERTIES ( name ),\n" +
@@ -55,7 +80,7 @@ public class PgqlDDLOntologyParserTest extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY);
+        ontology = new PgqlOntologyParser().transform("financial_transactions", DDL_QUERY_2);
         accessor = new Ontology.Accessor(ontology);
 
     }
