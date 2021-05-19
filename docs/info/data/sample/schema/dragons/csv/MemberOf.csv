@@ -1,4 +1,4 @@
-id,entityA,entityA.type,entityB,entityB.type,startDate,endDate
+id,entityA.id,entityA.type,entityB.id,entityB.type,startDate,endDate
 MEMB_P03G01,P03_CountessdeLo,Person,G01-masons,Guild,12/12/1758,12/12/1759
 MEMB_P02G02,P02_Mlle.Baptistine,Person,G02-merchant,Guild,1/1/1778,1/1/1785
 MEMB_P03G03,P03_CountessdeLo,Person,G03-craft,Guild,12/12/1758,
