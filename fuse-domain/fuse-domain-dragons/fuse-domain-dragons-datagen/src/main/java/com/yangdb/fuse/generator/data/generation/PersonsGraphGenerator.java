@@ -194,6 +194,11 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         appendResults(personsRecords, entitiesFile);
         appendResults(personsKnowsRecords, knowsRelationsFile);
     }
+
+    @Override
+    protected void writeCSVs(List<Person> elements) {
+        //todo
+    }
     //endregion
 
     //region Private Methods

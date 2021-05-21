@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * @param <C> - Configuration
- * @param <E> - Entity (e.g., Dragon, Person)
+ * @param <E> - Element (e.g., vertex with its relations)
  */
 public abstract class GraphGeneratorBase<C,E> {
 
@@ -90,6 +90,11 @@ public abstract class GraphGeneratorBase<C,E> {
      * @param edgesList list of edges (source id, target id)
      */
     protected abstract void writeGraph(List<String> nodesList, List<Tuple2> edgesList);
+    /**
+     * Write the elements to the file system in csv format for each element & its relations
+     * @param elements
+     */
+    protected abstract void writeCSVs(List<E> elements);
     //endregion
 
     //region Getters

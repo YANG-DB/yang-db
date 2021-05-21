@@ -77,7 +77,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
     //region Public Methods
 
 
-    public void generateSmallDragonsGraph(String resultsPath, boolean drawGraph) {
+    public void generateSmallDragonsGraph(Optional<String> resultsPath, boolean drawGraph) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
             DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(dragonConf);
@@ -188,6 +188,8 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         for (String nodeId : nodesList) {
             dragonsRecords.add(buildEntityNode(nodeId).getRecord());
             if (dragonsRecords.size() % BUFFER == 0) { //BUFFER
+                //add header
+                dragonsRecords.add(0,new String[]{"id","name","age","gender","color"});
                 appendResults(dragonsRecords, entitiesFile);
                 dragonsRecords.clear();
             }
@@ -208,7 +210,9 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 }
 
                 if ((dragonsFiresRecords.size() + dragonsFreezeRecords.size()) % BUFFER == 0) { //BUFFER
+                    dragonsFiresRecords.add(0,new String[]{"id","source","target","date","temp"});
                     appendResults(dragonsFiresRecords, fireRelationsFile);
+                    dragonsFreezeRecords.add(0,new String[]{"id","source","target","from","to"});
                     appendResults(dragonsFreezeRecords, freezeRelationsFile);
                     dragonsFreezeRecords.clear();
                     dragonsFiresRecords.clear();
@@ -220,6 +224,11 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         appendResults(dragonsFiresRecords, fireRelationsFile);
         appendResults(dragonsFreezeRecords, freezeRelationsFile);
 
+    }
+
+    @Override
+    protected void writeCSVs(List<Dragon> elements) {
+        //todo
     }
     //endregion
 

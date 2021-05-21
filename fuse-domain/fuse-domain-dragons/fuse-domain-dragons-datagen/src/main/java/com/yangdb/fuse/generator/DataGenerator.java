@@ -32,6 +32,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -83,7 +84,7 @@ public class DataGenerator {
         try {
             configuration = new DataGenConfiguration(path).getInstance();
             String resultsPath = System.getProperty("user.dir") + File.separator +
-                    configuration.getString("resultsPath");
+                    configuration.getString("resultsPath")!=null ? configuration.getString("resultsPath") : "temp";
             logger.info("Creating Results Folder: {}", resultsPath);
             Files.createDirectories(Paths.get(resultsPath));
         } catch (Exception e) {
