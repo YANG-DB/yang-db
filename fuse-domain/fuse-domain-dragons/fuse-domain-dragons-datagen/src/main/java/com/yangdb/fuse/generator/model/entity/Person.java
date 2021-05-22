@@ -32,6 +32,10 @@ import java.util.Date;
 public class Person extends EntityBase {
 
     //region Getters & Setters
+    public String getName() {
+        return firstName +" " + lastName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -104,7 +108,9 @@ public class Person extends EntityBase {
                 this.gender.toString(),
                 Long.toString(this.birthDate.getTime()),
                 Long.toString(this.deathDate.getTime()),
-                Integer.toString(this.height)};
+                Integer.toString(this.height),
+                this.getName()
+        };
     }
     //endregion
 
@@ -129,6 +135,7 @@ public class Person extends EntityBase {
     //region Builder
     public static final class Builder {
         private String id;
+        private String name;
         private String firstName;
         private String lastName;
         private Gender gender;

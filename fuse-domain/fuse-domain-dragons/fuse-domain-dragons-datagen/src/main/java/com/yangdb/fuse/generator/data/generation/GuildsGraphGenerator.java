@@ -66,6 +66,7 @@ public class GuildsGraphGenerator {
     public List<Guild> generateGuilds() {
         List<Guild> guildsList = new ArrayList<>();
         List<String[]> guildsRecords = new ArrayList<>();
+        guildsRecords.add(0,new String[]{"id","name","description","iconId","url","establishDate"});
         try {
             GuildGenerator generator = new GuildGenerator(guildConf);
             int guildsSize = guildConf.getNumberOfNodes();
@@ -136,6 +137,7 @@ public class GuildsGraphGenerator {
 
     private void printPersonsToGuild(Map<String, List<String>> personsToGuild, EntityType entityType) {
         List<String[]> p2gRecords = new ArrayList<>();
+        p2gRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"});
 
         for (Map.Entry<String, List<String>> p2g : personsToGuild.entrySet()) {
             String guildId = p2g.getKey();

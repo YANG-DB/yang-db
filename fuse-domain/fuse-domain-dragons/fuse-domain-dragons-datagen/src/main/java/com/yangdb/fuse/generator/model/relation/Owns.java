@@ -22,6 +22,7 @@ package com.yangdb.fuse.generator.model.relation;
 
 
 
+import com.yangdb.fuse.generator.model.enums.EntityType;
 import com.yangdb.fuse.generator.model.enums.RelationType;
 
 import java.util.Date;
@@ -32,8 +33,9 @@ import java.util.Date;
 public class Owns extends RelationBase {
 
     //region Ctrs
-    public Owns(String id, String source, String target, Date since, Date till) {
+    public Owns(String id, EntityType entityType, String source, String target, Date since, Date till) {
         super(id, source, target, RelationType.OWNS);
+        this.entityType = entityType;
         this.since = since;
         this.till = till;
     }
@@ -64,13 +66,16 @@ public class Owns extends RelationBase {
         return new String[]{
                 this.getId(),
                 this.getSource(),
+                entityType.name(),//source entity type
                 this.getTarget(),
+                "Person",// target entity type
                 Long.toString(this.getSince().getTime()),
                 Long.toString(this.getTill().getTime())
         };
     }
     //endregion
 
+    private EntityType entityType;
     //region Fields
     private Date since;
     private Date till;
