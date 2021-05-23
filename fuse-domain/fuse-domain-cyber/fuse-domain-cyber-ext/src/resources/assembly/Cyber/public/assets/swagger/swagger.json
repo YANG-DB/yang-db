@@ -307,7 +307,7 @@
           "GraphApi"
         ],
         "summary": "Execute find Path graph query",
-        "description": "Execute find Path graph query between two concrete vertices",
+        "description": "Execute find Path graph query between two vertices (both can be concrete or just the first one or none)",
         "parameters": [
           {
             "name": "ontology",
@@ -327,21 +327,18 @@
             "name": "sourceId",
             "in": "query",
             "description": "vertex source Id ",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetEntity",
             "in": "query",
             "description": "target entity type",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetId",
             "in": "query",
             "description": "vertex target Id ",
-            "required": true,
             "type": "string"
           },
           {

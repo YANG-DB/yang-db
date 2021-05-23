@@ -438,21 +438,18 @@
             "name": "sourceId",
             "in": "query",
             "description": "vertex source Id ",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetEntity",
             "in": "query",
             "description": "target entity type",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetId",
             "in": "query",
             "description": "vertex target Id ",
-            "required": true,
             "type": "string"
           },
           {

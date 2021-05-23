@@ -62,7 +62,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.dispatcher.cursor.CursorFactory.request;
-import static com.yangdb.fuse.dispatcher.utils.GraphApiUtils.findPathQuery;
 import static com.yangdb.fuse.model.Utils.getOrCreateId;
 import static com.yangdb.fuse.model.asgQuery.AsgCompositeQuery.hasInnerQuery;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.QueryType.parameterized;
@@ -235,7 +234,7 @@ public abstract class QueryDriverBase implements QueryDriver {
     public Optional<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
         String id = UUID.randomUUID().toString();
         try {
-            Query pathQuery = findPathQuery(ontology, sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
+            Query pathQuery = GraphApiUtils.findPath(ontology, sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops);
             CreateQueryRequest queryRequest = new CreateQueryRequest(id,
                     id,
                     pathQuery,

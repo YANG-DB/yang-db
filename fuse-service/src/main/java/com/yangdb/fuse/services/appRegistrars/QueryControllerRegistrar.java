@@ -316,9 +316,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<Object> response = controller.findPath(
                     req.param("ontology").value(),
                     req.param("sourceEntity").value(),
-                    req.param("sourceId").value(),
-                    req.param("targetEntity").value(),
-                    req.param("targetId").value(),
+                    req.param("sourceId").value(""),//optional no value allowed
+                    req.param("targetEntity").value(""),//optional no value allowed
+                    req.param("targetId").value(""),//optional no value allowed
                     req.param("relationType").value(),
                     req.param("maxHops").intValue());
 
