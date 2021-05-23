@@ -221,5 +221,10 @@ public interface QueryDriver {
      */
     Optional<Object> getNeighbors(String ontology, String type, String vertexId);
 
-
+    /**
+     * profile query by execution & get profile info
+     * @param queryId
+     * @return
+     */
+    Optional<Object> profile(String queryId);
 }

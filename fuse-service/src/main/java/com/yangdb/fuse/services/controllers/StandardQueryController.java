@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,7 +46,7 @@ import static org.jooby.Status.*;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardQueryController implements QueryController<QueryController,QueryDriver> {
+public class StandardQueryController implements QueryController<QueryController, QueryDriver> {
     public static final String cursorControllerParameter = "StandardQueryController.@cursorController";
     public static final String pageControllerParameter = "StandardQueryController.@pageController";
 
@@ -65,7 +65,7 @@ public class StandardQueryController implements QueryController<QueryController,
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
@@ -77,7 +77,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request) {
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
+        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
                 .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
@@ -85,8 +85,8 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runV1Query(Query query, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().run(query,pageSize,cursorType ))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(driver().run(query, pageSize, cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
@@ -94,32 +94,32 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<ValidationResult> validate(Query query) {
-        return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR )
+        return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR)
                 .data(Optional.of(driver().validateAndRewriteQuery(query)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
 
     @Override
-    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(Optional.of(driver().findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops)))
+    public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity, String targetId, String relationType, int maxHops) {
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(Optional.of(driver().findPath(ontology, sourceEntity, sourceId, targetEntity, targetId, relationType, maxHops)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
 
     @Override
     public ContentResponse<Object> getVertex(String ontology, String type, String id) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(Optional.of(driver().getVertex(ontology,type,id)))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(Optional.of(driver().getVertex(ontology, type, id)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
 
     @Override
     public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(Optional.of(driver().getNeighbors(ontology,type,id)))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(Optional.of(driver().getNeighbors(ontology, type, id)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
@@ -127,8 +127,8 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().runCypher(cypher,ontology))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(driver().runCypher(cypher, ontology))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
 
@@ -136,34 +136,35 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().runCypher(cypher,ontology,pageSize,cursorType))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(driver().runCypher(cypher, ontology, pageSize, cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
 
     @Override
     public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().runGraphQL(graphQL,ontology,pageSize,cursorType))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(driver().runGraphQL(graphQL, ontology, pageSize, cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
+
     @Override
     public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
-                .data(driver().runSparql(sparql,ontology,pageSize,cursorType))
+        return Builder.builder(CREATED, SERVER_ERROR)
+                .data(driver().runSparql(sparql, ontology, pageSize, cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
 
     @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryRequest request) {
-        return  createAndFetch(this.create(request),request);
+        return createAndFetch(this.create(request), request);
     }
 
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateJsonQueryRequest request) {
-        return  createAndFetch(this.create(request),request);
+        return createAndFetch(this.create(request), request);
     }
 
     private ContentResponse<QueryResourceInfo> createAndFetch(ContentResponse<QueryResourceInfo> queryResourceInfoResponse, CreateQueryRequestMetadata request) {
@@ -205,9 +206,9 @@ public class StandardQueryController implements QueryController<QueryController,
         }
 
 //      early exist -> in case of parameterized query content already created
-        if(queryResourceInfoResponse.getData()!=null &&
+        if (queryResourceInfoResponse.getData() != null &&
                 !queryResourceInfoResponse.getData().getCursorResourceInfos().isEmpty() &&
-                    !queryResourceInfoResponse.getData().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty())
+                !queryResourceInfoResponse.getData().getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty())
             return queryResourceInfoResponse;
 
         //
@@ -272,7 +273,7 @@ public class StandardQueryController implements QueryController<QueryController,
     @Override
     public ContentResponse<Object> fetchNextPage(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
         return Builder.builder(OK, NOT_FOUND)
-                .data(driver().getNextPageData(queryId,cursorId,pageSize,deleteCurrentPage))
+                .data(driver().getNextPageData(queryId, cursorId, pageSize, deleteCurrentPage))
                 .compose();
     }
 
@@ -319,6 +320,13 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> profile(String queryId) {
+        return Builder.builder(OK, NOT_FOUND)
+                .data(driver().profile(queryId))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<Boolean> delete(String queryId) {
         return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
                 .data(driver().delete(queryId))
@@ -327,7 +335,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> plan(Query query) {
-            return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(ACCEPTED, NOT_FOUND)
+        return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(ACCEPTED, NOT_FOUND)
                 .data(driver().plan(query))
                 .compose();
     }
@@ -342,6 +350,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     /**
      * replace execution driver
+     *
      * @param driver
      * @return
      */

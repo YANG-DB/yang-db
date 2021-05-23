@@ -998,6 +998,35 @@
         }
       }
     },
+    "/query/{id}/profile": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Profile query ",
+        "description": "Profile query by execution",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/query/{id}/asg/visualize": {
       "get": {
         "tags": [

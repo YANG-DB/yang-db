@@ -157,6 +157,11 @@ public class KnowledgeExtensionQueryController implements QueryController<QueryC
     }
 
     @Override
+    public ContentResponse<Object> profile(String queryId) {
+        return controller.profile(queryId);
+    }
+
+    @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return controller.planVerbose(queryId);
     }

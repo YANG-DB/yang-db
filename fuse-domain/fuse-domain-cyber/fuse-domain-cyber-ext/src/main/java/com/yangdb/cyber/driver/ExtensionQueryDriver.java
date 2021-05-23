@@ -111,4 +111,8 @@ public class ExtensionQueryDriver extends StandardQueryDriver {
         //endregion
     private QueryTransformer<String, Query> transformer;
 
+    @Override
+    public Optional<Object> profile(String queryId) {
+        return Optional.empty();
+    }
 }

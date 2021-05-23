@@ -80,6 +80,11 @@ public class MockDriver {
         }
 
         @Override
+        public Optional<Object> profile(String queryId) {
+            return Optional.empty();
+        }
+
+        @Override
         protected PlanWithCost<Plan, PlanDetailedCost> planWithCost(QueryMetadata metadata, AsgQuery query) {
             return PlanWithCost.EMPTY_PLAN;
         }

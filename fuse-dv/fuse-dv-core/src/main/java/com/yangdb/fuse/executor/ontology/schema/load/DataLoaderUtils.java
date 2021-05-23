@@ -27,6 +27,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -37,6 +38,8 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.geojson.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,6 +56,7 @@ import static java.lang.Double.parseDouble;
 
 public interface DataLoaderUtils {
     DateParser parser = DateParser.newBuilder().build();
+    Logger logger = org.slf4j.LoggerFactory.getLogger(DataLoaderUtils.class);
 
     /**
      * init E/S indices templates
@@ -164,12 +168,21 @@ public interface DataLoaderUtils {
             case "date":
             case "dateValue":
                 try {
+                    if (NumberUtils.isCreatable(value.toString())) {
+                        return sdf.format(new Date(Long.parseLong(value.toString())));
+                    }
                     return sdf.format(sdf.parse(value.toString()));
                 } catch (ParseException e) {
                     try {
                         return sdf.format(new Date(value.toString()));
                     } catch (Throwable e1) {
-                        return sdf.format(parser.parseDate(value.toString()));
+                        try {
+                            return sdf.format(parser.parseDate(value.toString()));
+                        } catch (Throwable t) {
+                            //ignor error - only log & skip row
+                            logger.warn(String.format("Failed to parse dateValue during data loading for %s",value.toString()));
+                            return value.toString();
+                        }
                     }
                 }
             case "geo":
@@ -181,57 +194,61 @@ public interface DataLoaderUtils {
         return value;
     }
 
-    static ObjectNode parseAndSetValue(String field,ObjectNode element, String explicitType, Object value, DateFormat sdf) {
+    static ObjectNode parseAndSetValue(String field, ObjectNode element, String explicitType, Object value, DateFormat sdf) {
         switch (explicitType) {
             case "text":
             case "string":
             case "stringValue":
-                return element.put(field,value.toString());
+                return element.put(field, value.toString());
             case "int":
             case "intValue":
                 try {
-                    return element.put(field,Integer.valueOf(value.toString()));
+                    return element.put(field, Integer.valueOf(value.toString()));
                 } catch (NumberFormatException e) {
                     try {
-                        return element.put(field,Long.valueOf(value.toString()));
+                        return element.put(field, Long.valueOf(value.toString()));
                     } catch (NumberFormatException e1) {
-                        return element.put(field,value.toString());
+                        return element.put(field, value.toString());
                     }
                 }
             case "long":
             case "longValue":
                 try {
-                    return element.put(field,Long.valueOf(value.toString()));
+                    return element.put(field, Long.valueOf(value.toString()));
                 } catch (NumberFormatException e) {
-                    return element.put(field,value.toString());
+                    return element.put(field, value.toString());
                 }
             case "double":
             case "float":
             case "floatValue":
                 try {
-                    return element.put(field,Float.valueOf(value.toString()));
+                    return element.put(field, Float.valueOf(value.toString()));
                 } catch (NumberFormatException e) {
-                    return element.put(field,value.toString());
+                    return element.put(field, value.toString());
                 }
             case "date":
             case "dateValue":
                 try {
-                    return element.put(field,sdf.format(sdf.parse(value.toString())));
+                    if (NumberUtils.isCreatable(value.toString())) {
+                        return element.put(field, sdf.format(new Date(Long.parseLong(value.toString()))));
+                    }
+
+                    return element.put(field, sdf.format(sdf.parse(value.toString())));
                 } catch (ParseException e) {
                     try {
-                        return element.put(field,sdf.format(new Date(value.toString())));
+                        return element.put(field, sdf.format(new Date(value.toString())));
                     } catch (Throwable e1) {
-                        return element.put(field,sdf.format(parser.parseDate(value.toString())));
+                        return element.put(field, sdf.format(parser.parseDate(value.toString())));
                     }
                 }
             case "geo":
             case "geoValue":
                 element.putArray(field)
-                        .insert(0,parseDouble(value.toString().split("[,]")[1]))
-                        .insert(1,parseDouble(value.toString().split("[,]")[0]));
+                        .insert(0, parseDouble(value.toString().split("[,]")[1]))
+                        .insert(1, parseDouble(value.toString().split("[,]")[0]));
                 return element;
         }
-        return element.put(field,value.toString());
+        return element.put(field, value.toString());
     }
 
     static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
@@ -273,6 +290,14 @@ public interface DataLoaderUtils {
             case "date":
             case "dateValue":
                 try {
+                    if (NumberUtils.isCreatable(value.toString())) {
+                        try {
+                            new Date(Long.parseLong(value.toString()));
+                            return true;
+                        } catch (Throwable t) {
+                            return false;
+                        }
+                    }
                     sdf.parse(value.toString());
                     return true;
                 } catch (ParseException e) {
@@ -283,7 +308,7 @@ public interface DataLoaderUtils {
                         try {
                             parser.parseDate(value.toString());
                             return true;
-                        }catch (Throwable err) {
+                        } catch (Throwable err) {
                             return false;
                         }
                     }

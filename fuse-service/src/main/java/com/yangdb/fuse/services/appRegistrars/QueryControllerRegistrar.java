@@ -112,7 +112,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register graph API context **/
         graphApi(app, appUrlSupplier);
 
-      /**  register V1 API context **/
+        /**  register V1 API context **/
         v1Context(app, appUrlSupplier);
 
         /**  register cypher API context **/
@@ -162,18 +162,22 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         });
 
+        /** profile the query by execution */
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/profile",
+                req -> API.profile(app, req, this));
+
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/print",
                 req -> API.printQuery(app, req, this));
 
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/visualize",
-                (req,resp) -> API.queryView(app, req,resp, this));
+                (req, resp) -> API.queryView(app, req, resp, this));
 
 
         /** view the asg query with d3 html*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/visualize",
-                (req,resp) -> API.asgView(app, req,resp, this));
+                (req, resp) -> API.asgView(app, req, resp, this));
 
 
         /** get the asg query */
@@ -181,11 +185,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
             return Results.with(response, response.status());
         });
-
-        /** view the elastic query with d3 html*/
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view",
-                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.queryStoreUrl() + "/" + req.param("queryId").value() + "/elastic"));
 
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/json", req -> {
@@ -216,7 +215,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query verbose plan */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/visualize",
-                (req,resp) -> API.planView(app, req,resp, this));
+                (req, resp) -> API.planView(app, req, resp, this));
 
         //swagger
         app.use(new ApiTool()
@@ -536,6 +535,22 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         }
 
+        /**
+         * profile query execution
+         *
+         * @param app
+         * @param req
+         * @param registrar
+         * @return
+         * @throws Throwable
+         */
+        public static Object profile(Jooby app, Request req, QueryControllerRegistrar registrar) throws Throwable {
+            Route.of("profile").write();
+            String queryId = req.param("queryId").value();
+            ContentResponse<Object> profile = registrar.getController(app).profile(queryId);
+            return Results.with(profile,profile.status());
+        }
+
         public static Result nextPage(Jooby app, Request req, QueryControllerRegistrar registrar) {
             Route.of("nextPageData").write();
             ContentResponse<Object> page = registrar.getController(app)
@@ -588,6 +603,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /**
          * print an SVG representation of the V1 query
+         *
          * @param app
          * @param req
          * @param resp
@@ -603,11 +619,12 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
         /**
-          * print an SVG representation of the ASG query
+         * print an SVG representation of the ASG query
+         *
          * @param app
          * @param req
          * @param resp
@@ -623,11 +640,12 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
         /**
          * print an SVG representation of the execution plan
+         *
          * @param app
          * @param req
          * @param resp
@@ -643,7 +661,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
     }

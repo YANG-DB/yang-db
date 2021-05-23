@@ -202,6 +202,12 @@ public interface QueryController<C,D> extends Controller<C,D> {
      * @return
      */
     ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
+    /**
+     * profile query by execution and returning profile info
+     * @param queryId
+     * @return
+     */
+    ContentResponse<Object> profile(String queryId);
 
     ContentResponse<PlanNode<Plan>> planVerbose(String queryId);
 

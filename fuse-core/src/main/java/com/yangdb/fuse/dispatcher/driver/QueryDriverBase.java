@@ -310,6 +310,31 @@ public abstract class QueryDriverBase implements QueryDriver {
     }
 
     @Override
+    public Optional<Object> profile(String queryId) {
+        if (!resourceStore.getQueryResource(queryId).isPresent())
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            "Query with id[" + queryId + "] not found in store")));
+
+        QueryResource queryResource = resourceStore.getQueryResource(queryId).get();
+        CreateQueryRequest request = queryResource.getRequest();
+        if(request.getCreateCursorRequest()!=null) {
+            request.getCreateCursorRequest().withProfile(true);
+        } else {
+            request.setCreateCursorRequest(new CreateCursorRequest("paths",new CreatePageRequest(100))
+                    .withProfile(true));
+        }
+        Optional<QueryResourceInfo> resourceInfo = create(request);
+        if (!resourceInfo.isPresent())
+            return Optional.empty();
+
+        if (resourceInfo.get().getError() != null)
+            return Optional.of(resourceInfo.get().getError());
+
+        return Optional.of(resourceInfo.get());
+    }
+
+    @Override
     public Optional<Object> getNextPageData(String queryId, Optional<String> cursorId, int pageSize, boolean deleteCurrentPage) {
         try {
             if (!resourceStore.getQueryResource(queryId).isPresent())
