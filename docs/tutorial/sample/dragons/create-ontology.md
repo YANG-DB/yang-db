@@ -69,7 +69,15 @@ This ontology is represented in YandDb using a json file which is present under 
 
 New ontologies can be added freely using the REST API: http://localhost:8888/swagger#/operations/catalog/post_catalog_ontology 
 
-We will focus in the creation of new ontologies in another tutorial.
+We will focus on the creation of new ontologies in another tutorial.
+
+#####Visualize
+If you would like to visualize the logical ontology - a special REST API exits just for that...
+http://localhost:8888/swagger#/operations/catalog/get_catalog_ontology__id__visualize 
+
+The next svg file (result of the visualization API call) visualize our Dragons ontology structure:
+![ontology](img/illustrateGraphDragonsOntology.svg)
+
 
 ###Elasticsearch Schema
 Since we have a logical file representing the ontology - we would like to make use of it to generate the appropriate
