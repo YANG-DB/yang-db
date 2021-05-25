@@ -124,3 +124,6 @@ Once these dashboards are loaded into kibana we can view their appearance:
 ####The yangDb og dashboard
 ![dashboard logs](./img/kibana-yangdb-logs-dashboard.png)
 
+### What's next ?
+Now that we've installed all the necessary tool and started them - we can continue to the next tutorial in which we will
+start talking about our demo use case  - the Dragons Ontology (HBO's Game Of Thrown)
