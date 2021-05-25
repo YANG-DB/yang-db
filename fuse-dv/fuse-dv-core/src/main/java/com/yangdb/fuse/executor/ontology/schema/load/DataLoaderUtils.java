@@ -134,6 +134,7 @@ public interface DataLoaderUtils {
     }
 
     static Object parseValue(String explicitType, Object value, DateFormat sdf) {
+        if(value==null) return "";
         switch (explicitType) {
             case "text":
             case "string":
@@ -195,6 +196,7 @@ public interface DataLoaderUtils {
     }
 
     static ObjectNode parseAndSetValue(String field, ObjectNode element, String explicitType, Object value, DateFormat sdf) {
+        if(value==null) return element.put(field, "");
         switch (explicitType) {
             case "text":
             case "string":
@@ -252,6 +254,7 @@ public interface DataLoaderUtils {
     }
 
     static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
+        if(value==null) return false;
         switch (explicitType) {
             case "text":
             case "string":
