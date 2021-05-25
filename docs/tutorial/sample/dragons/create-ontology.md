@@ -4,7 +4,7 @@ Since we completed the installation phase (see installation documentation) we ca
 First graph ontology for the Dragons scenario.
 
 Lets review the main entities for HBO's Game Of Thrown:
-![entities](./img/game-of-thrones-entities-diagram.png)
+![entities](img/game-of-thrones-entities-diagram.png)
 
 We can list the entities with respect to their functional nature : 
  - Nodes that represent labeled elements with properties
@@ -79,12 +79,12 @@ This part is done using the next REST API : http://localhost:8888/swagger#/opera
 
 This is the swagger screen:
 
-![init-schema](./img/yangdb-init-es-schema.png)
+![init-schema](img/yangdb-init-es-schema.png)
 
 We can see the result response replied with the number of indexes it created
 
 Lets see the actual indexes as they appear in cerebro:
-![cerebro-schema](./img/cerebro-yandb-dragons-indexes.png)
+![cerebro-schema](img/cerebro-yandb-dragons-indexes.png)
 
 We can see the indexes with their default shards and replica setting as taken from the default yangDb's configuation.
 

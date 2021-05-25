@@ -56,7 +56,7 @@ It has a web ui that uses port 9000 to connect to the elastic server, running it
 in the bin folder under the installation location.
 
 - Cerebro ES cluster view
-  ![Cerebro ES cluster view](./img/cerebro-view-cluster.png )
+  ![Cerebro ES cluster view](img/cerebro-view-cluster.png )
 
 ---
 ###Running YangDB
@@ -91,19 +91,19 @@ Once this is done we can start the yangDb server (using the script mentioned abo
 ####Calling the run script:
 The next logging result should be apparent:
 
-![YangDb console logs](./img/yangDb-start-consule-logs.png)
+![YangDb console logs](img/yangDb-start-consule-logs.png)
 
 ####Access the swagger web UI:
 
 As it states -  the url  http://0.0.0.0:8888/  is available, we will focus our attention to the
 REST API swagger page http://localhost:8888/swagger
 
-![YangDb swagger](./img/yangDb-swagger.png)
+![YangDb swagger](img/yangDb-swagger.png)
 
 
 After the swagger is shown we can view in cerebro web ui the default log & system indexes that yang db creates once it's attached to elastic
 
-![YangDb indexes](./img/cerebro-yangdb-default-indexes.png)
+![YangDb indexes](img/cerebro-yangdb-default-indexes.png)
 
 These indexes are used for logging the activities of the graph server as well as storage of system data relevant to its internal
 functionalities and behavior.
@@ -113,16 +113,27 @@ Once the logging index is alive we can view the specially drafted kibana dashboa
 ---
 ###Setup YangDb Kibana Dashboards
 
+
+####Load custom Kibana dashboards
+
 We will load the next prepared kibana dashboards located in the dashboard folder:
-![dashboard location](./img/yang-db-kibana-dashboard-location.png)
+![dashboard location](img/yang-db-kibana-dashboard-location.png)
+
+**Loading the json dashboard to kibana..**
+
+In Kibana toolbar, navigate to Settings » Objects tab.
+Click the Import button and select the Dashboards. json.
+
+![load dashboards](img/kibana-load-yangdb-dashboards.png)
+
 
 Once these dashboards are loaded into kibana we can view their appearance:
 
 ####The list of available yangDb dashboards
-![dashboard list](./img/kibana-yangdb-dashbaords.png)
+![dashboard list](img/kibana-yangdb-dashbaords.png)
 
 ####The yangDb og dashboard
-![dashboard logs](./img/kibana-yangdb-logs-dashboard.png)
+![dashboard logs](img/kibana-yangdb-logs-dashboard.png)
 
 ### What's next ?
 Now that we've installed all the necessary tool and started them - we can continue to the next tutorial in which we will
