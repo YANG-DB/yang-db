@@ -149,7 +149,7 @@ Lets visualize the results:
 
 
 
-####Query:3
+#### Query:3
 This time lets see Guilds registered in kingdoms that have a positive cache flow...
 ```
     Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
@@ -174,10 +174,7 @@ Now lets see the exciting Dragons battles ... give us the dragons who fire upon 
 ```
 
 
-Lets visualize the results:
-![yangdb-page-result-visualize-q3](img/todo.png)
-
-Now we can also visualize the actual intermediate query that the engine has generated to fetch the data
+As same as before we visualize the results or we can even visualize the actual intermediate query that the engine has generated to fetch the data
 we will use the nest REST API to visualize the AST (Abstract Syntax Tree) that was created:
 
 http://localhost:8888/swagger#/operations/query/get_query__id__asg_visualize
