@@ -314,16 +314,14 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
                             "Query with id[" + queryId + "] not found in store")));
-
+        //get query resource
         QueryResource queryResource = resourceStore.getQueryResource(queryId).get();
-        CreateQueryRequest request = queryResource.getRequest();
-        if(request.getCreateCursorRequest()!=null) {
-            request.getCreateCursorRequest().withProfile(true);
-        } else {
-            request.setCreateCursorRequest(new CreateCursorRequest("paths",new CreatePageRequest(100))
-                    .withProfile(true));
-        }
-        Optional<QueryResourceInfo> resourceInfo = create(request);
+        //activate profile flag
+        queryResource.getRequest().getCreateCursorRequest().withProfile(true);
+        //execute query
+        Optional<QueryResourceInfo> resourceInfo = this.getQueryResourceInfo(queryResource.getRequest(), this.getInfo(queryId));
+
+        //return data
         if (!resourceInfo.isPresent())
             return Optional.empty();
 
@@ -331,6 +329,7 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(resourceInfo.get().getError());
 
         return Optional.of(resourceInfo.get());
+
     }
 
     @Override

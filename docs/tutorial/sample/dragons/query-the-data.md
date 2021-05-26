@@ -166,3 +166,38 @@ This time lets see Guilds registered in kingdoms that have a positive cache flow
 
 Lets visualize the results:
 ![yangdb-page-result-visualize-q3](img/visualize-q3.png)
+
+####Query:4
+Now lets see the exciting Dragons battles ... give us the dragons who fire upon black dragons
+```
+    Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *
+```
+
+
+Lets visualize the results:
+![yangdb-page-result-visualize-q3](img/todo.png)
+
+Now we can also visualize the actual intermediate query that the engine has generated to fetch the data
+we will use the nest REST API to visualize the AST (Abstract Syntax Tree) that was created:
+
+http://localhost:8888/swagger#/operations/query/get_query__id__asg_visualize
+![yangdb-page-result-visualize-asg-q3](img/visualize-asg-q3.png)
+
+
+####Query:4
+Now lets see this complex query:
+
+A (female) person that owns a black dragon, that black dragon fired upon another male dragon;
+The female person also owns a horse that is originated from a kingdom that has a positive funds...
+
+
+```
+    Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}),
+            (p:Person)-[oh:Own]-(h:Horse),
+            (d:Dragon)-[f:Fire]-(other:Dragon { gender:MALE}),
+            (h:Horse)-[org:OriginatedIn]->(k:Kingdom )
+     where k.funds > 0  return *
+```
+
+**The ASG query looks as follows:**
+![yangdb-page-result-visualize-asg-q4](img/visualize-asg-q4.png)

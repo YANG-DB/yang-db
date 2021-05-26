@@ -94,7 +94,8 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     }
 
     private GraphTraversal traversalEntity(GraphTraversal traversal, TranslationContext context, PlanWithCost<Plan, PlanDetailedCost> plan, EntityOp entityOp) {
-        if (PlanUtil.isLast(plan.getPlan(), entityOp)) {
+        //assuming there must be at least on entityOp step
+        if (PlanUtil.last(plan.getPlan(), EntityOp.class).get().equals(entityOp)) {
             //last step that is an entity step
             traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
             appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());

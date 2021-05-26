@@ -100,6 +100,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
 
     //region Private Methods
     private Set<String> getContextRelevantLabels(CompositeControllerContext context) {
+    //removed since it takes labels with potentially different type from actual constraints type
         if (context.getVertexControllerContext().isPresent()) {
             return getVertexContextRelevantLabels(context);
         }

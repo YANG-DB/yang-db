@@ -40,9 +40,9 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
         super();
 
         this.strategies = Stream.of(
-                new EntityOpTranslationStrategy(EntityTranslationOptions.none),
+                new EntityOpTranslationStrategy(EntityTranslationOptions.filterEntity),
                 new CompositePlanOpTranslationStrategy(
-                        new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
+                        new EntityFilterOpTranslationStrategy(EntityTranslationOptions.filterEntity),
                         new EntitySelectionTranslationStrategy()
 //                        new WhereByOpTranslationStrategy()
                 ),
