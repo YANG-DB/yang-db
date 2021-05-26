@@ -1,4 +1,4 @@
-##Loading Sample Data
+## Loading Sample Data
 So we've completed installing the ontology and generating the physical elasticsearch schema (see create-ontology tutorial)
 And now we would like to load some data.
 
@@ -59,7 +59,7 @@ The next files represent the person entity and its different type of relations a
 Running the data generator looks as follows:
 ![data generator console](img/data-generator-console.png)
 
-###Loading CSV files
+### Loading CSV files
 We will use the swagger REST API to load the csv files http://localhost:8888/swagger#/operations/load/post_load_ontology__id__csv_load 
 
 ![yangdb-swagger-csv](img/yangdb-swagger-csv-upload.png)
@@ -76,7 +76,7 @@ we would be able to ask interesting graph queries upon the data.
 
 ---
 
-####Amounts
+#### Amounts
 Once all csv file are loaded here are the expected document amount:
  
     - Dragon: 1000
@@ -93,7 +93,7 @@ Once all csv file are loaded here are the expected document amount:
     - RegisteredIn: 42 
     - OriginatedIn: 4250
 
-###What's Next
+### What's Next
 For the most exciting part - in the next tutorial we will query the graph data using cypher query language
 
 
