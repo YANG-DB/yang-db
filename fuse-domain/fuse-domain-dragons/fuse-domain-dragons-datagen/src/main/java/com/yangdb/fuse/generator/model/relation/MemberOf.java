@@ -63,7 +63,9 @@ public class MemberOf extends RelationBase {
         return new String[]{
                 this.getId(),
                 this.getSource(),
+                "Person",// source entity type
                 this.getTarget(),
+                "Guild",// target entity type
                 Long.toString(this.getSince().getTime()),
                 Long.toString(this.getTill().getTime())
         };

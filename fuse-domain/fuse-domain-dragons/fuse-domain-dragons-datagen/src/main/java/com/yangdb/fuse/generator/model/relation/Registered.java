@@ -54,7 +54,9 @@ public class Registered extends RelationBase {
         return new String[]{
                 this.getId(),
                 this.getSource(),
+                "Guild",// source entity type
                 this.getTarget(),
+                "Kingdom",// target entity type
                 Long.toString(this.getSince().getTime())
         };
     }

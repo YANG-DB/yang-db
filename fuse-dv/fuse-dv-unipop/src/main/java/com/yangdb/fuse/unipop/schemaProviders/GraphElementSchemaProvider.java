@@ -141,12 +141,28 @@ public interface GraphElementSchemaProvider {
         @Override
         public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
             //this.edgeSchemas.entrySet().stream().filter(p->!p.getValue().isEmpty()).filter(p->p.getKey().contains("relatedEntity")).collect(Collectors.toList())
-            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label))).orElseGet(Collections::emptyList);
+            switch (direction) {
+                case OUT:
+                case IN:
+                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label)))
+                            .orElseGet(Collections::emptyList);
+                default://both - first search the out going direction if no found try the in direction
+                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label)))
+                            .orElseGet(()->this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label)));
+            }
         }
 
         @Override
         public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
-            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label, vertexLabelB))).orElseGet(Collections::emptyList);
+            switch (direction) {
+                case OUT:
+                case IN:
+                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label,vertexLabelB)))
+                            .orElseGet(Collections::emptyList);
+                default://both - first search the out going direction if no found try the in direction
+                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label,vertexLabelB)))
+                            .orElseGet(()->this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label,vertexLabelB)));
+            }
         }
 
         @Override

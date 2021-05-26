@@ -64,7 +64,9 @@ public class Fires extends RelationBase {
     public String[] getRecord() {
         return new String[]{this.getId(),
                 this.getSource(),
+                "Dragon",// source entity type
                 this.getTarget(),
+                "Dragon",// target entity type
                 Long.toString(this.getDate().getTime()),
                 Integer.toString(this.temperature)};
     }

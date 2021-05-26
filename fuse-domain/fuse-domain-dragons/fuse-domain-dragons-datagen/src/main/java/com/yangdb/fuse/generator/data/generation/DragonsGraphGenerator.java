@@ -77,7 +77,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
     //region Public Methods
 
 
-    public void generateSmallDragonsGraph(String resultsPath, boolean drawGraph) {
+    public void generateSmallDragonsGraph(Optional<String> resultsPath, boolean drawGraph) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
             DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(dragonConf);
@@ -157,9 +157,10 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
     @Override
     protected RelationBase buildEntityRelation(String sourceId, String targetId, String edgeId) {
-        ArrayList<Pair<RelationType, Double>> probs = new ArrayList<>(Arrays.asList(new Pair<>(RelationType.FIRES,
-                        configuration.getFireProbability()),
-                new Pair<>(RelationType.FREEZES, configuration.getFreezProbability())));
+        ArrayList<Pair<RelationType, Double>> probs = new ArrayList<>(
+                Arrays.asList(new Pair<>(RelationType.FIRES,configuration.getFireProbability()),
+                              new Pair<>(RelationType.FREEZES, configuration.getFreezProbability())
+                        ));
         RelationType relationType = RandomUtil.enumeratedDistribution(probs);
         Date date = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
         int temperature = RandomUtil.randomInt(configuration.getFireMinTemperature(), configuration.getFireMaxTemperature());
@@ -171,16 +172,25 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
         if (relationType == RelationType.FREEZES) {
             Date dateTill = DateUtil.addMinutesToDate(date, RandomUtil.randomInt(1, configuration.getFreezMaxDuraution()));
-            relationBase = new Freezes(edgeId, sourceId, targetId, date, dateTill);
+            relationBase = new Freezes(edgeId, sourceId, targetId, date, dateTill,temperature);
         }
         return relationBase;
     }
 
     @Override
     protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
+        List<String[]> peopleRecords = new ArrayList<>();
         List<String[]> dragonsRecords = new ArrayList<>();
+
         List<String[]> dragonsFiresRecords = new ArrayList<>();
         List<String[]> dragonsFreezeRecords = new ArrayList<>();
+
+        //add headers
+        peopleRecords.add(0,new String[]{"id","name","birthDate","power","gender","color"});
+        dragonsRecords.add(0,new String[]{"id","name","birthDate","power","gender","color"});
+        dragonsFiresRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","date","temp"});
+        dragonsFreezeRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","from","to"});
+
         String fireRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FIRES + ".csv";
         String freezeRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FREEZES + ".csv";
         String entitiesFile = configuration.getEntitiesFilePath();
@@ -188,6 +198,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         for (String nodeId : nodesList) {
             dragonsRecords.add(buildEntityNode(nodeId).getRecord());
             if (dragonsRecords.size() % BUFFER == 0) { //BUFFER
+                //add header
                 appendResults(dragonsRecords, entitiesFile);
                 dragonsRecords.clear();
             }
@@ -198,7 +209,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
             for (int i = 0; i < numOfInteractions; i++) {
                 String sourceId = edge._1.toString();
                 String targetId = edge._2.toString();
-                String edgeId = sourceId + "_" + targetId + "_" + Integer.toString(i);
+                String edgeId = sourceId + "_" + targetId + "_" + i;
                 RelationBase rel = buildEntityRelation(sourceId, targetId, edgeId);
                 if (rel.getRelationType() == RelationType.FIRES) {
                     dragonsFiresRecords.add(rel.getRecord());
@@ -216,10 +227,15 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
             }
         }
 
-        appendResults(dragonsRecords, entitiesFile);
         appendResults(dragonsFiresRecords, fireRelationsFile);
+        appendResults(dragonsRecords, entitiesFile);
         appendResults(dragonsFreezeRecords, freezeRelationsFile);
 
+    }
+
+    @Override
+    protected void writeCSVs(List<Dragon> elements) {
+        //todo
     }
     //endregion
 

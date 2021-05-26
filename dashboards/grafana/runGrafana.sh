@@ -1,3 +1,4 @@
+#!/bin/bash
 #docker pull grafana
 docker pull grafana/grafana
 # docker Run grafana

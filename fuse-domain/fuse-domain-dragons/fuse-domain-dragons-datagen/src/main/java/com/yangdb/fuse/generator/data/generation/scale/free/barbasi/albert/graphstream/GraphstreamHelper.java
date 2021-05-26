@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -131,11 +132,11 @@ public class GraphstreamHelper {
 
     }
 
-    public static void printScaleFreeDataSummary(Graph g, String path) throws IOException {
+    public static void printScaleFreeDataSummary(Graph g, Optional<String> path) throws IOException {
         Map<Integer, Long> sortedMap = new TreeMap<>(g.getNodeSet().stream().map(Node::getOutDegree)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
 
-        String filePath = URLDecoder.decode(path + "//ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
+        String filePath = URLDecoder.decode(path.orElse("./temp") + "/ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
 
         CsvUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
         sortedMap.forEach((degree, count) -> CsvUtil.appendResult(new String[]{count + "", degree + ""}, filePath));

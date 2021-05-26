@@ -307,7 +307,7 @@
           "GraphApi"
         ],
         "summary": "Execute find Path graph query",
-        "description": "Execute find Path graph query between two concrete vertices",
+        "description": "Execute find Path graph query between two vertices (both can be concrete or just the first one or none)",
         "parameters": [
           {
             "name": "ontology",

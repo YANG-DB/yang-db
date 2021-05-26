@@ -25,6 +25,8 @@ package com.yangdb.fuse.generator.model.entity;
 import com.yangdb.fuse.generator.model.enums.Color;
 import com.yangdb.fuse.generator.model.enums.Gender;
 
+import java.util.Date;
+
 /**
  * Created by benishue on 15-May-17.
  */
@@ -40,6 +42,14 @@ public class Dragon extends EntityBase {
         this.name = name;
     }
     //endregion
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
 
     //region Getters & Setters
     public String getName() {
@@ -80,7 +90,9 @@ public class Dragon extends EntityBase {
     @Override
     public String toString() {
         return "Dragon{" +
-                "name='" + name + '\'' +
+                "id='" + getId() + '\'' +
+                ", name=" + name +
+                ", birthDate=" + birthDate +
                 ", power=" + power +
                 ", gender=" + gender +
                 ", color=" + color +
@@ -90,6 +102,7 @@ public class Dragon extends EntityBase {
     public String[] getRecord(){
         return new String[] { this.getId(),
                 this.name,
+                this.birthDate.toString(),
                 Integer.toString(this.getPower()),
                 this.getGender().toString(),
                 this.getColor().toString()};
@@ -98,6 +111,7 @@ public class Dragon extends EntityBase {
 
     //region Fields
     private String name;
+    private Date birthDate;
     private int power;
     private Gender gender;
     private Color color;
@@ -106,6 +120,7 @@ public class Dragon extends EntityBase {
     //region Builder
     public static final class Builder {
         private String id;
+        private Date birthDate;
         private String name;
         private int power;
         private Gender gender;
@@ -116,6 +131,11 @@ public class Dragon extends EntityBase {
 
         public static Builder get() {
             return new Builder();
+        }
+
+        public Builder withBirthDate(Date date) {
+            this.birthDate = date;
+            return this;
         }
 
         public Builder withId(String id) {
@@ -146,6 +166,7 @@ public class Dragon extends EntityBase {
         public Dragon build() {
             Dragon dragon = new Dragon();
             dragon.setId(id);
+            dragon.setBirthDate(birthDate);
             dragon.setName(name);
             dragon.setPower(power);
             dragon.setGender(gender);
@@ -153,6 +174,7 @@ public class Dragon extends EntityBase {
             return dragon;
         }
     }
+
     //endregion
 
 }

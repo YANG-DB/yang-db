@@ -54,7 +54,9 @@ public class Knows extends RelationBase {
         return new String[]{
                 this.getId(),
                 this.getSource(),
+                "Person",// source entity type
                 this.getTarget(),
+                "Person",// target entity type
                 Long.toString(this.getSince().getTime())
         };
     }

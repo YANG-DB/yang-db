@@ -167,6 +167,8 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
     protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
         List<String[]> personsRecords = new ArrayList<>();
         List<String[]> personsKnowsRecords = new ArrayList<>();
+        personsRecords.add(0,new String[]{"id","firstName","lastName","gender","birthDate","deathDate","height"});
+        personsKnowsRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since"});
 
         String knowsRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.KNOWS + ".csv";
         String entitiesFile = configuration.getEntitiesFilePath();
@@ -193,6 +195,11 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
         appendResults(personsRecords, entitiesFile);
         appendResults(personsKnowsRecords, knowsRelationsFile);
+    }
+
+    @Override
+    protected void writeCSVs(List<Person> elements) {
+        //todo
     }
     //endregion
 
@@ -253,6 +260,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
     private void printAnimalsToPerson(Map<String, List<String>> animalsToPerson, EntityType entityType) {
         List<String[]> d2pRecords = new ArrayList<>();
+        d2pRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"});
 
         for (Map.Entry<String, List<String>> p2A : animalsToPerson.entrySet()) {
             String personId = p2A.getKey();
@@ -261,7 +269,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
                 String edgeId = personId + "_" + dragonId;
                 Date since = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
                 Date till = RandomUtil.randomDate(since, configuration.getEndDateOfStory());
-                RelationBase personOwnsAnimalsRel = new Owns(edgeId, personId, dragonId, since, till);
+                RelationBase personOwnsAnimalsRel = new Owns(edgeId, entityType,personId, dragonId, since, till);
                 d2pRecords.add(personOwnsAnimalsRel.getRecord());
             }
         }

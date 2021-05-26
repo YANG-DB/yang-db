@@ -32,6 +32,7 @@ import java.util.Date;
  */
 public class PersonConfiguration extends EntityConfigurationBase {
 
+
     //region Ctrs
     public PersonConfiguration(final Configuration configuration) {
 
@@ -44,6 +45,7 @@ public class PersonConfiguration extends EntityConfigurationBase {
                         configuration.getString("resultsPath") + File.separator
                         + configuration.getString("person.personsRelationsCsvFileName")
         );
+        this.knowProbability = configuration.getDouble("person.knowProbability");
 
         this.heightMean = configuration.getDouble("person.heightMean");
         this.heightSD = configuration.getDouble("person.heightSD");
@@ -114,9 +116,13 @@ public class PersonConfiguration extends EntityConfigurationBase {
         return sdHorsesPerPerson;
     }
 
-    //endregion
+    public double getKnowProbability() {
+        return knowProbability;
+    }
+//endregion
 
     //region Fields
+    private final double knowProbability;
     private final double heightMean;
     private final double heightSD;
     private final double maxChildren;

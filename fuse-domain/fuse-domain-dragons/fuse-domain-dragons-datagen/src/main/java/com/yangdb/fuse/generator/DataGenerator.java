@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -45,10 +46,39 @@ public class DataGenerator {
 
 
     public static void main(String[] args) {
+        System.out.println("\n" +
+                "                                                            \n"+
+                " **********************************************************  \n"+
+                " **********************************************************  \n"+
+                " _____                                                      \n" +
+                "(____ \\                                                     \n" +
+                " _   \\ \\ ____ ____  ____  ___  ____   ___                   \n" +
+                "| |   | / ___) _  |/ _  |/ _ \\|  _ \\ /___)                  \n" +
+                "| |__/ / |  ( ( | ( ( | | |_| | | | |___ |                  \n" +
+                "|_____/|_|   \\_||_|\\_|| |\\___/|_| |_(___/                   \n" +
+                "                  (_____|                                   \n" +
+                "     _____                                                  \n" +
+                "    (____ \\       _                                         \n" +
+                "     _   \\ \\ ____| |_  ____                                 \n" +
+                "    | |   | / _  |  _)/ _  |                                \n" +
+                "    | |__/ ( ( | | |_( ( | |                                \n" +
+                "    |_____/ \\_||_|\\___)_||_|                                \n" +
+                "                                                            \n" +
+                "        ______                                              \n" +
+                "       / _____)                             _               \n" +
+                "      | /  ___  ____ ____   ____  ____ ____| |_  ___   ____ \n" +
+                "      | | (___)/ _  )  _ \\ / _  )/ ___) _  |  _)/ _ \\ / ___)\n" +
+                "      | \\____/( (/ /| | | ( (/ /| |  ( ( | | |_| |_| | |    \n" +
+                "       \\_____/ \\____)_| |_|\\____)_|   \\_||_|\\___)___/|_|    \n" +
+                "                                                            \n"+
+                " **********************************************************  \n"+
+                " **********************************************************  \n"+
+                "                                                            \n");
         if (!isValidNumberOfArguments(args)) {
-            System.exit(-1);
+            System.out.println("Not found configuration argument - using default one : 'test.generator.properties' ");
+            args = new String[] {Thread.currentThread().getContextClassLoader().getResource("test.generator.properties").getFile()};
         }
-        loadConfiguration(args[0]);
+        Path path = loadConfiguration(args[0]);
 
         try {
             DragonsGraphGenerator dgg = new DragonsGraphGenerator(new DragonConfiguration(configuration));
@@ -77,19 +107,25 @@ public class DataGenerator {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+        System.out.println(" **********************************************************  \n");
+        System.out.println(String.format("Completed writing graph data to destination folder %s ",path.toString()));
+        System.out.println(" **********************************************************  \n");
+
     }
 
-    public static void loadConfiguration(String path) {
+    public static Path loadConfiguration(String path) {
         try {
             configuration = new DataGenConfiguration(path).getInstance();
             String resultsPath = System.getProperty("user.dir") + File.separator +
-                    configuration.getString("resultsPath");
+                    configuration.getString("resultsPath")!=null ? configuration.getString("resultsPath") : "graphBench";
             logger.info("Creating Results Folder: {}", resultsPath);
-            Files.createDirectories(Paths.get(resultsPath));
+            System.out.printf("Creating Results Folder: %s%n", resultsPath);
+            return Files.createDirectories(Paths.get(resultsPath));
         } catch (Exception e) {
             logger.error("Failed to load configuration", e);
         }
 
+        return null;
     }
 
 

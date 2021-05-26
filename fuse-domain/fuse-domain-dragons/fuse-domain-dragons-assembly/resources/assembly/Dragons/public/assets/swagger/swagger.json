@@ -438,21 +438,18 @@
             "name": "sourceId",
             "in": "query",
             "description": "vertex source Id ",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetEntity",
             "in": "query",
             "description": "target entity type",
-            "required": true,
             "type": "string"
           },
           {
             "name": "targetId",
             "in": "query",
             "description": "vertex target Id ",
-            "required": true,
             "type": "string"
           },
           {
@@ -538,7 +535,7 @@
             "description": "cypher query",
             "required": true,
             "type": "string",
-            "default": "Match  (p1:Entity)-[hasEv1:hasEvalue]->(value1:Evalue),\n       (p1:Entity)-[hasRelEn:relatedEntity]->(p2:Entity ),\n       (p2:Entity)-[hasEv2:hasEvalue]->(value2:Evalue {stringValue:'Myriel'})  return *"
+            "default": "Match (p1:Person)-[know:Know]->(p2:Person {name:'Myriel'})  return *"
           },
           {
             "name": "ontology",
@@ -987,6 +984,35 @@
         "responses": {
           "200": {
             "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/profile": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Profile query ",
+        "description": "Profile query by execution",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Returns <code>200</code> with a single query info or <code>404</code>",
             "schema": {
               "$ref": "#/definitions/QueryInfo"
@@ -1788,8 +1814,8 @@
         ],
         "relationshipTypes": [
           {
-            "rType": "knows",
-            "name": "knows",
+            "rType": "Know",
+            "name": "Know",
             "directional": true,
             "ePairs": [
               {
@@ -1865,7 +1891,7 @@
       "example": {
         "id": "1",
         "name": "Q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
       }
     },
@@ -1886,7 +1912,7 @@
       "example": {
         "id": "1",
         "name": "q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n  \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
       }
     },
@@ -1907,7 +1933,7 @@
       "example": {
         "id": "1",
         "name": "Q1",
-        "ontology": "Knowledge",
+        "ontology": "Dragons",
         "query": "{\n    person {\n        name,\n        knows {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            knows {\n                name,\n                description\n            }\n        }\n    }\n}"
       }
     },
@@ -1932,7 +1958,7 @@
         "id": "1",
         "name": "Q1",
         "query": {
-          "ont": "Knowledge",
+          "ont": "Dragons",
           "elements": [
             {
               "type": "Start",
@@ -1944,7 +1970,7 @@
               "eNum": 1,
               "next": 2,
               "eTag": "A",
-              "eType": "Entity"
+              "eType": "Person"
             },
             {
               "eNum": 2,
@@ -1960,26 +1986,26 @@
               "dir": "R",
               "eNum": 3,
               "next": 4,
-              "rType": "relatedEntity"
+              "rType": "Know"
             },
             {
               "type": "ETyped",
               "eNum": 4,
               "eTag": "B",
-              "eType": "Entity"
+              "eType": "Person"
             },
             {
               "type": "Rel",
               "dir": "R",
               "eNum": 5,
               "next": 6,
-              "rType": "hasEvalue"
+              "rType": "Know"
             },
             {
               "type": "ETyped",
               "eNum": 6,
               "eTag": "Ev",
-              "eType": "Evalue"
+              "eType": "Person"
             }
           ]
         },
@@ -2052,7 +2078,7 @@
         }
       },
       "example": {
-        "ont": "Knowledge",
+        "ont": "Dragons",
         "elements": [
           {
             "type": "Start",
@@ -2064,15 +2090,14 @@
             "eNum": 1,
             "next": 2,
             "eTag": "A",
-            "eType": "Entity"
+            "eType": "Person"
           },
           {
             "eNum": 2,
             "type": "Quant1",
             "qType": "all",
             "next": [
-              3,
-              5
+              3
             ]
           },
           {
@@ -2080,26 +2105,13 @@
             "dir": "R",
             "eNum": 3,
             "next": 4,
-            "rType": "relatedEntity"
+            "rType": "Know"
           },
           {
             "type": "ETyped",
             "eNum": 4,
             "eTag": "B",
-            "eType": "Entity"
-          },
-          {
-            "type": "Rel",
-            "dir": "R",
-            "eNum": 5,
-            "next": 6,
-            "rType": "hasEvalue"
-          },
-          {
-            "type": "ETyped",
-            "eNum": 6,
-            "eTag": "Ev",
-            "eType": "Evalue"
+            "eType": "Person"
           }
         ]
       }
@@ -2215,6 +2227,7 @@
             },
             "id": "Myriel",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Myriel",
               "age": 43
@@ -2226,6 +2239,7 @@
             },
             "id": "Napoleon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Napoleon",
               "age": 68
@@ -2237,6 +2251,7 @@
             },
             "id": "Mlle.Baptistine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Baptistine",
               "age": 21
@@ -2248,6 +2263,7 @@
             },
             "id": "Mme.Magloire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Magloire",
               "age": 13
@@ -2259,6 +2275,7 @@
             },
             "id": "CountessdeLo",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "CountessdeLo",
               "age": 32
@@ -2270,6 +2287,7 @@
             },
             "id": "Geborand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Geborand",
               "age": 73
@@ -2281,6 +2299,7 @@
             },
             "id": "Champtercier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Champtercier",
               "age": 51
@@ -2292,6 +2311,7 @@
             },
             "id": "Cravatte",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cravatte",
               "age": 23
@@ -2303,6 +2323,7 @@
             },
             "id": "Count",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Count",
               "age": 58
@@ -2314,6 +2335,7 @@
             },
             "id": "OldMan",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "OldMan",
               "age": 70
@@ -2325,6 +2347,7 @@
             },
             "id": "Labarre",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Labarre",
               "age": 27
@@ -2336,6 +2359,7 @@
             },
             "id": "Valjean",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Valjean",
               "age": 25
@@ -2347,6 +2371,7 @@
             },
             "id": "Marguerite",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Marguerite",
               "age": 40
@@ -2358,6 +2383,7 @@
             },
             "id": "Mme.deR",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.deR",
               "age": 9
@@ -2369,6 +2395,7 @@
             },
             "id": "Isabeau",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Isabeau",
               "age": 10
@@ -2380,6 +2407,7 @@
             },
             "id": "Gervais",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gervais",
               "age": 36
@@ -2391,6 +2419,7 @@
             },
             "id": "Tholomyes",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Tholomyes",
               "age": 42
@@ -2402,6 +2431,7 @@
             },
             "id": "Listolier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Listolier",
               "age": 31
@@ -2413,6 +2443,7 @@
             },
             "id": "Fameuil",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fameuil",
               "age": 30
@@ -2424,6 +2455,7 @@
             },
             "id": "Blacheville",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Blacheville",
               "age": 27
@@ -2435,6 +2467,7 @@
             },
             "id": "Favourite",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Favourite",
               "age": 20
@@ -2446,6 +2479,7 @@
             },
             "id": "Dahlia",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Dahlia",
               "age": 19
@@ -2457,6 +2491,7 @@
             },
             "id": "Zephine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Zephine",
               "age": 17
@@ -2468,6 +2503,7 @@
             },
             "id": "Fantine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fantine",
               "age": 16
@@ -2479,6 +2515,7 @@
             },
             "id": "Mme.Thenardier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Thenardier",
               "age": 37
@@ -2490,6 +2527,7 @@
             },
             "id": "Thenardier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Thenardier",
               "age": 19
@@ -2501,6 +2539,7 @@
             },
             "id": "Cosette",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cosette",
               "age": 24
@@ -2512,6 +2551,7 @@
             },
             "id": "Javert",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Javert",
               "age": 31
@@ -2523,6 +2563,7 @@
             },
             "id": "Fauchelevent",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Fauchelevent",
               "age": 38
@@ -2534,6 +2575,7 @@
             },
             "id": "Bamatabois",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bamatabois",
               "age": 21
@@ -2545,6 +2587,7 @@
             },
             "id": "Perpetue",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Perpetue",
               "age": 29
@@ -2556,6 +2599,7 @@
             },
             "id": "Simplice",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Simplice",
               "age": 19
@@ -2567,6 +2611,7 @@
             },
             "id": "Scaufflaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Scaufflaire",
               "age": 19
@@ -2578,6 +2623,7 @@
             },
             "id": "Woman1",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Woman1",
               "age": 20
@@ -2589,6 +2635,7 @@
             },
             "id": "Judge",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Judge",
               "age": 39
@@ -2600,6 +2647,7 @@
             },
             "id": "Champmathieu",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Champmathieu",
               "age": 45
@@ -2611,6 +2659,7 @@
             },
             "id": "Brevet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Brevet",
               "age": 35
@@ -2622,6 +2671,7 @@
             },
             "id": "Chenildieu",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Chenildieu",
               "age": 30
@@ -2633,6 +2683,7 @@
             },
             "id": "Cochepaille",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Cochepaille",
               "age": 32
@@ -2644,6 +2695,7 @@
             },
             "id": "Pontmercy",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Pontmercy",
               "age": 22
@@ -2655,6 +2707,7 @@
             },
             "id": "Boulatruelle",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Boulatruelle",
               "age": 21
@@ -2666,6 +2719,7 @@
             },
             "id": "Eponine",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Eponine",
               "age": 20
@@ -2677,6 +2731,7 @@
             },
             "id": "Anzelma",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Anzelma",
               "age": 190
@@ -2688,6 +2743,7 @@
             },
             "id": "Woman2",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Woman2",
               "age": 18
@@ -2699,6 +2755,7 @@
             },
             "id": "MotherInnocent",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "MotherInnocent",
               "age": 28
@@ -2710,6 +2767,7 @@
             },
             "id": "Gribier",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gribier",
               "age": 41
@@ -2721,6 +2779,7 @@
             },
             "id": "Jondrette",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Jondrette",
               "age": 45
@@ -2732,6 +2791,7 @@
             },
             "id": "Mme.Burgon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Burgon",
               "age": 43
@@ -2743,6 +2803,7 @@
             },
             "id": "Gavroche",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gavroche",
               "age": 23
@@ -2754,6 +2815,7 @@
             },
             "id": "Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gillenormand",
               "age": 23
@@ -2765,6 +2827,7 @@
             },
             "id": "Magnon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Magnon",
               "age": 36
@@ -2776,6 +2839,7 @@
             },
             "id": "Mlle.Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Gillenormand",
               "age": 37
@@ -2787,6 +2851,7 @@
             },
             "id": "Mme.Pontmercy",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Pontmercy",
               "age": 38
@@ -2798,6 +2863,7 @@
             },
             "id": "Mlle.Vaubois",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mlle.Vaubois",
               "age": 28
@@ -2809,6 +2875,7 @@
             },
             "id": "Lt.Gillenormand",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Lt.Gillenormand",
               "age": 24
@@ -2820,6 +2887,7 @@
             },
             "id": "Marius",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Marius",
               "age": 22
@@ -2831,6 +2899,7 @@
             },
             "id": "BaronessT",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "BaronessT",
               "age": 12
@@ -2842,6 +2911,7 @@
             },
             "id": "Mabeuf",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mabeuf",
               "age": 11
@@ -2853,6 +2923,7 @@
             },
             "id": "Enjolras",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Enjolras",
               "age": 10
@@ -2864,6 +2935,7 @@
             },
             "id": "Combeferre",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Combeferre",
               "age": 9
@@ -2875,6 +2947,7 @@
             },
             "id": "Prouvaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Prouvaire",
               "age": 8
@@ -2886,6 +2959,7 @@
             },
             "id": "Feuilly",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Feuilly",
               "age": 7
@@ -2897,6 +2971,7 @@
             },
             "id": "Courfeyrac",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Courfeyrac",
               "age": 6
@@ -2908,6 +2983,7 @@
             },
             "id": "Bahorel",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bahorel",
               "age": 18
@@ -2919,6 +2995,7 @@
             },
             "id": "Bossuet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Bossuet",
               "age": 17
@@ -2930,6 +3007,7 @@
             },
             "id": "Joly",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Joly",
               "age": 16
@@ -2941,6 +3019,7 @@
             },
             "id": "Grantaire",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Grantaire",
               "age": 15
@@ -2952,6 +3031,7 @@
             },
             "id": "MotherPlutarch",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "MotherPlutarch",
               "age": 25
@@ -2963,6 +3043,7 @@
             },
             "id": "Gueulemer",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Gueulemer",
               "age": 27
@@ -2974,6 +3055,7 @@
             },
             "id": "Babet",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Babet",
               "age": 29
@@ -2985,6 +3067,7 @@
             },
             "id": "Claquesous",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Claquesous",
               "age": 30
@@ -2996,6 +3079,7 @@
             },
             "id": "Montparnasse",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Montparnasse",
               "age": 60
@@ -3007,6 +3091,7 @@
             },
             "id": "Toussaint",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Toussaint",
               "age": 68
@@ -3018,6 +3103,7 @@
             },
             "id": "Child1",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Child1",
               "age": 8
@@ -3029,6 +3115,7 @@
             },
             "id": "Child2",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Child2",
               "age": 8
@@ -3040,6 +3127,7 @@
             },
             "id": "Brujon",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Brujon",
               "age": 28
@@ -3051,6 +3139,7 @@
             },
             "id": "Mme.Hucheloup",
             "label": "Person",
+            "type": "logical",
             "properties": {
               "name": "Mme.Hucheloup",
               "age": 78
@@ -3059,7 +3148,8 @@
         ],
         "edges": [
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Napoleon",
             "target": "Myriel",
             "metadata": {
@@ -3067,7 +3157,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mlle.Baptistine",
             "target": "Myriel",
             "metadata": {
@@ -3075,7 +3166,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Magloire",
             "target": "Myriel",
             "metadata": {
@@ -3083,7 +3175,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Magloire",
             "target": "Mlle.Baptistine",
             "metadata": {
@@ -3091,7 +3184,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "CountessdeLo",
             "target": "Myriel",
             "metadata": {
@@ -3099,7 +3193,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Geborand",
             "target": "Myriel",
             "metadata": {
@@ -3107,7 +3202,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Champtercier",
             "target": "Myriel",
             "metadata": {
@@ -3115,7 +3211,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cravatte",
             "target": "Myriel",
             "metadata": {
@@ -3123,7 +3220,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Count",
             "target": "Myriel",
             "metadata": {
@@ -3131,7 +3229,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "OldMan",
             "target": "Myriel",
             "metadata": {
@@ -3139,7 +3238,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Valjean",
             "target": "Labarre",
             "metadata": {
@@ -3147,7 +3247,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Valjean",
             "target": "Mme.Magloire",
             "metadata": {
@@ -3155,7 +3256,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Valjean",
             "target": "Mlle.Baptistine",
             "metadata": {
@@ -3163,7 +3265,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Valjean",
             "target": "Myriel",
             "metadata": {
@@ -3171,7 +3274,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marguerite",
             "target": "Valjean",
             "metadata": {
@@ -3179,7 +3283,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.deR",
             "target": "Valjean",
             "metadata": {
@@ -3187,7 +3292,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Isabeau",
             "target": "Valjean",
             "metadata": {
@@ -3195,7 +3301,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gervais",
             "target": "Valjean",
             "metadata": {
@@ -3203,7 +3310,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Listolier",
             "target": "Tholomyes",
             "metadata": {
@@ -3211,7 +3319,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fameuil",
             "target": "Tholomyes",
             "metadata": {
@@ -3219,7 +3328,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fameuil",
             "target": "Listolier",
             "metadata": {
@@ -3227,7 +3337,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Blacheville",
             "target": "Tholomyes",
             "metadata": {
@@ -3235,7 +3346,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Blacheville",
             "target": "Listolier",
             "metadata": {
@@ -3243,7 +3355,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Blacheville",
             "target": "Fameuil",
             "metadata": {
@@ -3251,7 +3364,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Favourite",
             "target": "Tholomyes",
             "metadata": {
@@ -3259,7 +3373,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Favourite",
             "target": "Listolier",
             "metadata": {
@@ -3267,7 +3382,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Favourite",
             "target": "Fameuil",
             "metadata": {
@@ -3275,7 +3391,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Favourite",
             "target": "Blacheville",
             "metadata": {
@@ -3283,7 +3400,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Dahlia",
             "target": "Tholomyes",
             "metadata": {
@@ -3291,7 +3409,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Dahlia",
             "target": "Listolier",
             "metadata": {
@@ -3299,7 +3418,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Dahlia",
             "target": "Fameuil",
             "metadata": {
@@ -3307,7 +3427,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Dahlia",
             "target": "Blacheville",
             "metadata": {
@@ -3315,7 +3436,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Dahlia",
             "target": "Favourite",
             "metadata": {
@@ -3323,7 +3445,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Tholomyes",
             "metadata": {
@@ -3331,7 +3454,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Listolier",
             "metadata": {
@@ -3339,7 +3463,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Fameuil",
             "metadata": {
@@ -3347,7 +3472,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Blacheville",
             "metadata": {
@@ -3355,7 +3481,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Favourite",
             "metadata": {
@@ -3363,7 +3490,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Zephine",
             "target": "Dahlia",
             "metadata": {
@@ -3371,7 +3499,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Tholomyes",
             "metadata": {
@@ -3379,7 +3508,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Listolier",
             "metadata": {
@@ -3387,7 +3517,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Fameuil",
             "metadata": {
@@ -3395,7 +3526,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Blacheville",
             "metadata": {
@@ -3403,7 +3535,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Favourite",
             "metadata": {
@@ -3411,7 +3544,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Dahlia",
             "metadata": {
@@ -3419,7 +3553,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Zephine",
             "metadata": {
@@ -3427,7 +3562,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Marguerite",
             "metadata": {
@@ -3435,7 +3571,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fantine",
             "target": "Valjean",
             "metadata": {
@@ -3443,7 +3580,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Thenardier",
             "target": "Fantine",
             "metadata": {
@@ -3451,7 +3589,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Thenardier",
             "target": "Valjean",
             "metadata": {
@@ -3459,7 +3598,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Thenardier",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3467,7 +3607,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Thenardier",
             "target": "Fantine",
             "metadata": {
@@ -3475,7 +3616,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Thenardier",
             "target": "Valjean",
             "metadata": {
@@ -3483,7 +3625,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cosette",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3491,7 +3634,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cosette",
             "target": "Valjean",
             "metadata": {
@@ -3499,7 +3643,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cosette",
             "target": "Tholomyes",
             "metadata": {
@@ -3507,7 +3652,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cosette",
             "target": "Thenardier",
             "metadata": {
@@ -3515,7 +3661,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Javert",
             "target": "Valjean",
             "metadata": {
@@ -3523,7 +3670,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Javert",
             "target": "Fantine",
             "metadata": {
@@ -3531,7 +3679,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Javert",
             "target": "Thenardier",
             "metadata": {
@@ -3539,7 +3688,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Javert",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3547,7 +3697,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Javert",
             "target": "Cosette",
             "metadata": {
@@ -3555,7 +3706,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fauchelevent",
             "target": "Valjean",
             "metadata": {
@@ -3563,7 +3715,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Fauchelevent",
             "target": "Javert",
             "metadata": {
@@ -3571,7 +3724,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bamatabois",
             "target": "Fantine",
             "metadata": {
@@ -3579,7 +3733,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bamatabois",
             "target": "Javert",
             "metadata": {
@@ -3587,7 +3742,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bamatabois",
             "target": "Valjean",
             "metadata": {
@@ -3595,7 +3751,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Perpetue",
             "target": "Fantine",
             "metadata": {
@@ -3603,7 +3760,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Simplice",
             "target": "Perpetue",
             "metadata": {
@@ -3611,7 +3769,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Simplice",
             "target": "Valjean",
             "metadata": {
@@ -3619,7 +3778,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Simplice",
             "target": "Fantine",
             "metadata": {
@@ -3627,7 +3787,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Simplice",
             "target": "Javert",
             "metadata": {
@@ -3635,7 +3796,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Scaufflaire",
             "target": "Valjean",
             "metadata": {
@@ -3643,7 +3805,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Woman1",
             "target": "Valjean",
             "metadata": {
@@ -3651,7 +3814,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Woman1",
             "target": "Javert",
             "metadata": {
@@ -3659,7 +3823,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Judge",
             "target": "Valjean",
             "metadata": {
@@ -3667,7 +3832,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Judge",
             "target": "Bamatabois",
             "metadata": {
@@ -3675,7 +3841,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Champmathieu",
             "target": "Valjean",
             "metadata": {
@@ -3683,7 +3850,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Champmathieu",
             "target": "Judge",
             "metadata": {
@@ -3691,7 +3859,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Champmathieu",
             "target": "Bamatabois",
             "metadata": {
@@ -3699,7 +3868,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brevet",
             "target": "Judge",
             "metadata": {
@@ -3707,7 +3877,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brevet",
             "target": "Champmathieu",
             "metadata": {
@@ -3715,7 +3886,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brevet",
             "target": "Valjean",
             "metadata": {
@@ -3723,7 +3895,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brevet",
             "target": "Bamatabois",
             "metadata": {
@@ -3731,7 +3904,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Chenildieu",
             "target": "Judge",
             "metadata": {
@@ -3739,7 +3913,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Chenildieu",
             "target": "Champmathieu",
             "metadata": {
@@ -3747,7 +3922,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Chenildieu",
             "target": "Brevet",
             "metadata": {
@@ -3755,7 +3931,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Chenildieu",
             "target": "Valjean",
             "metadata": {
@@ -3763,7 +3940,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Chenildieu",
             "target": "Bamatabois",
             "metadata": {
@@ -3771,7 +3949,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Judge",
             "metadata": {
@@ -3779,7 +3958,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Champmathieu",
             "metadata": {
@@ -3787,7 +3967,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Brevet",
             "metadata": {
@@ -3795,7 +3976,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Chenildieu",
             "metadata": {
@@ -3803,7 +3985,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Valjean",
             "metadata": {
@@ -3811,7 +3994,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Cochepaille",
             "target": "Bamatabois",
             "metadata": {
@@ -3819,7 +4003,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Pontmercy",
             "target": "Thenardier",
             "metadata": {
@@ -3827,7 +4012,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Boulatruelle",
             "target": "Thenardier",
             "metadata": {
@@ -3835,7 +4021,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Eponine",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3843,7 +4030,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Eponine",
             "target": "Thenardier",
             "metadata": {
@@ -3851,7 +4039,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Anzelma",
             "target": "Eponine",
             "metadata": {
@@ -3859,7 +4048,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Anzelma",
             "target": "Thenardier",
             "metadata": {
@@ -3867,7 +4057,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Anzelma",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3875,7 +4066,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Woman2",
             "target": "Valjean",
             "metadata": {
@@ -3883,7 +4075,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Woman2",
             "target": "Cosette",
             "metadata": {
@@ -3891,7 +4084,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Woman2",
             "target": "Javert",
             "metadata": {
@@ -3899,7 +4093,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "MotherInnocent",
             "target": "Fauchelevent",
             "metadata": {
@@ -3907,7 +4102,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "MotherInnocent",
             "target": "Valjean",
             "metadata": {
@@ -3915,7 +4111,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gribier",
             "target": "Fauchelevent",
             "metadata": {
@@ -3923,7 +4120,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Burgon",
             "target": "Jondrette",
             "metadata": {
@@ -3931,7 +4129,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gavroche",
             "target": "Mme.Burgon",
             "metadata": {
@@ -3939,7 +4138,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gavroche",
             "target": "Thenardier",
             "metadata": {
@@ -3947,7 +4147,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gavroche",
             "target": "Javert",
             "metadata": {
@@ -3955,7 +4156,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gavroche",
             "target": "Valjean",
             "metadata": {
@@ -3963,7 +4165,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gillenormand",
             "target": "Cosette",
             "metadata": {
@@ -3971,7 +4174,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gillenormand",
             "target": "Valjean",
             "metadata": {
@@ -3979,7 +4183,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Magnon",
             "target": "Gillenormand",
             "metadata": {
@@ -3987,7 +4192,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Magnon",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -3995,7 +4201,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mlle.Gillenormand",
             "target": "Gillenormand",
             "metadata": {
@@ -4003,7 +4210,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mlle.Gillenormand",
             "target": "Cosette",
             "metadata": {
@@ -4011,7 +4219,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mlle.Gillenormand",
             "target": "Valjean",
             "metadata": {
@@ -4019,7 +4228,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Pontmercy",
             "target": "Mlle.Gillenormand",
             "metadata": {
@@ -4027,7 +4237,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Pontmercy",
             "target": "Pontmercy",
             "metadata": {
@@ -4035,7 +4246,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mlle.Vaubois",
             "target": "Mlle.Gillenormand",
             "metadata": {
@@ -4043,7 +4255,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Lt.Gillenormand",
             "target": "Mlle.Gillenormand",
             "metadata": {
@@ -4051,7 +4264,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Lt.Gillenormand",
             "target": "Gillenormand",
             "metadata": {
@@ -4059,7 +4273,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Lt.Gillenormand",
             "target": "Cosette",
             "metadata": {
@@ -4067,7 +4282,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Mlle.Gillenormand",
             "metadata": {
@@ -4075,7 +4291,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Gillenormand",
             "metadata": {
@@ -4083,7 +4300,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Pontmercy",
             "metadata": {
@@ -4091,7 +4309,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Lt.Gillenormand",
             "metadata": {
@@ -4099,7 +4318,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Cosette",
             "metadata": {
@@ -4107,7 +4327,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Valjean",
             "metadata": {
@@ -4115,7 +4336,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Tholomyes",
             "metadata": {
@@ -4123,7 +4345,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Thenardier",
             "metadata": {
@@ -4131,7 +4354,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Eponine",
             "metadata": {
@@ -4139,7 +4363,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Marius",
             "target": "Gavroche",
             "metadata": {
@@ -4147,7 +4372,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "BaronessT",
             "target": "Gillenormand",
             "metadata": {
@@ -4155,7 +4381,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "BaronessT",
             "target": "Marius",
             "metadata": {
@@ -4163,7 +4390,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mabeuf",
             "target": "Marius",
             "metadata": {
@@ -4171,7 +4399,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mabeuf",
             "target": "Eponine",
             "metadata": {
@@ -4179,7 +4408,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mabeuf",
             "target": "Gavroche",
             "metadata": {
@@ -4187,7 +4417,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Enjolras",
             "target": "Marius",
             "metadata": {
@@ -4195,7 +4426,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Enjolras",
             "target": "Gavroche",
             "metadata": {
@@ -4203,7 +4435,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Enjolras",
             "target": "Javert",
             "metadata": {
@@ -4211,7 +4444,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Enjolras",
             "target": "Mabeuf",
             "metadata": {
@@ -4219,7 +4453,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Enjolras",
             "target": "Valjean",
             "metadata": {
@@ -4227,7 +4462,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Combeferre",
             "target": "Enjolras",
             "metadata": {
@@ -4235,7 +4471,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Combeferre",
             "target": "Marius",
             "metadata": {
@@ -4243,7 +4480,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Combeferre",
             "target": "Gavroche",
             "metadata": {
@@ -4251,7 +4489,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Combeferre",
             "target": "Mabeuf",
             "metadata": {
@@ -4259,7 +4498,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Prouvaire",
             "target": "Gavroche",
             "metadata": {
@@ -4267,7 +4507,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Prouvaire",
             "target": "Enjolras",
             "metadata": {
@@ -4275,7 +4516,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Prouvaire",
             "target": "Combeferre",
             "metadata": {
@@ -4283,7 +4525,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Gavroche",
             "metadata": {
@@ -4291,7 +4534,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Enjolras",
             "metadata": {
@@ -4299,7 +4543,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Prouvaire",
             "metadata": {
@@ -4307,7 +4552,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Combeferre",
             "metadata": {
@@ -4315,7 +4561,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Mabeuf",
             "metadata": {
@@ -4323,7 +4570,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Feuilly",
             "target": "Marius",
             "metadata": {
@@ -4331,7 +4579,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Marius",
             "metadata": {
@@ -4339,7 +4588,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Enjolras",
             "metadata": {
@@ -4347,7 +4597,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Combeferre",
             "metadata": {
@@ -4355,7 +4606,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Gavroche",
             "metadata": {
@@ -4363,7 +4615,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Mabeuf",
             "metadata": {
@@ -4371,7 +4624,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Eponine",
             "metadata": {
@@ -4379,7 +4633,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Feuilly",
             "metadata": {
@@ -4387,7 +4642,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Courfeyrac",
             "target": "Prouvaire",
             "metadata": {
@@ -4395,7 +4651,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Combeferre",
             "metadata": {
@@ -4403,7 +4660,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Gavroche",
             "metadata": {
@@ -4411,7 +4669,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Courfeyrac",
             "metadata": {
@@ -4419,7 +4678,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Mabeuf",
             "metadata": {
@@ -4427,7 +4687,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Enjolras",
             "metadata": {
@@ -4435,7 +4696,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Feuilly",
             "metadata": {
@@ -4443,7 +4705,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Prouvaire",
             "metadata": {
@@ -4451,7 +4714,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bahorel",
             "target": "Marius",
             "metadata": {
@@ -4459,7 +4723,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Marius",
             "metadata": {
@@ -4467,7 +4732,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Courfeyrac",
             "metadata": {
@@ -4475,7 +4741,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Gavroche",
             "metadata": {
@@ -4483,7 +4750,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Bahorel",
             "metadata": {
@@ -4491,7 +4759,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Enjolras",
             "metadata": {
@@ -4499,7 +4768,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Feuilly",
             "metadata": {
@@ -4507,7 +4777,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Prouvaire",
             "metadata": {
@@ -4515,7 +4786,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Combeferre",
             "metadata": {
@@ -4523,7 +4795,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Mabeuf",
             "metadata": {
@@ -4531,7 +4804,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Bossuet",
             "target": "Valjean",
             "metadata": {
@@ -4539,7 +4813,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Bahorel",
             "metadata": {
@@ -4547,7 +4822,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Bossuet",
             "metadata": {
@@ -4555,7 +4831,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Gavroche",
             "metadata": {
@@ -4563,7 +4840,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Courfeyrac",
             "metadata": {
@@ -4571,7 +4849,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Enjolras",
             "metadata": {
@@ -4579,7 +4858,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Feuilly",
             "metadata": {
@@ -4587,7 +4867,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Prouvaire",
             "metadata": {
@@ -4595,7 +4876,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Combeferre",
             "metadata": {
@@ -4603,7 +4885,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Mabeuf",
             "metadata": {
@@ -4611,7 +4894,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Joly",
             "target": "Marius",
             "metadata": {
@@ -4619,7 +4903,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Bossuet",
             "metadata": {
@@ -4627,7 +4912,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Enjolras",
             "metadata": {
@@ -4635,7 +4921,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Combeferre",
             "metadata": {
@@ -4643,7 +4930,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Courfeyrac",
             "metadata": {
@@ -4651,7 +4939,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Joly",
             "metadata": {
@@ -4659,7 +4948,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Gavroche",
             "metadata": {
@@ -4667,7 +4957,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Bahorel",
             "metadata": {
@@ -4675,7 +4966,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Feuilly",
             "metadata": {
@@ -4683,7 +4975,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Grantaire",
             "target": "Prouvaire",
             "metadata": {
@@ -4691,7 +4984,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "MotherPlutarch",
             "target": "Mabeuf",
             "metadata": {
@@ -4699,7 +4993,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Thenardier",
             "metadata": {
@@ -4707,7 +5002,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Valjean",
             "metadata": {
@@ -4715,7 +5011,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -4723,7 +5020,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Javert",
             "metadata": {
@@ -4731,7 +5029,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Gavroche",
             "metadata": {
@@ -4739,7 +5038,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Gueulemer",
             "target": "Eponine",
             "metadata": {
@@ -4747,7 +5047,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Thenardier",
             "metadata": {
@@ -4755,7 +5056,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Gueulemer",
             "metadata": {
@@ -4763,7 +5065,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Valjean",
             "metadata": {
@@ -4771,7 +5074,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -4779,7 +5083,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Javert",
             "metadata": {
@@ -4787,7 +5092,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Gavroche",
             "metadata": {
@@ -4795,7 +5101,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Babet",
             "target": "Eponine",
             "metadata": {
@@ -4803,7 +5110,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Thenardier",
             "metadata": {
@@ -4811,7 +5119,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Babet",
             "metadata": {
@@ -4819,7 +5128,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Gueulemer",
             "metadata": {
@@ -4827,7 +5137,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Valjean",
             "metadata": {
@@ -4835,7 +5146,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Mme.Thenardier",
             "metadata": {
@@ -4843,7 +5155,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Javert",
             "metadata": {
@@ -4851,7 +5164,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Eponine",
             "metadata": {
@@ -4859,7 +5173,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Claquesous",
             "target": "Enjolras",
             "metadata": {
@@ -4867,7 +5182,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Javert",
             "metadata": {
@@ -4875,7 +5191,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Babet",
             "metadata": {
@@ -4883,7 +5200,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Gueulemer",
             "metadata": {
@@ -4891,7 +5209,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Claquesous",
             "metadata": {
@@ -4899,7 +5218,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Valjean",
             "metadata": {
@@ -4907,7 +5227,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Gavroche",
             "metadata": {
@@ -4915,7 +5236,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Eponine",
             "metadata": {
@@ -4923,7 +5245,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Montparnasse",
             "target": "Thenardier",
             "metadata": {
@@ -4931,7 +5254,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Toussaint",
             "target": "Cosette",
             "metadata": {
@@ -4939,7 +5263,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Toussaint",
             "target": "Javert",
             "metadata": {
@@ -4947,7 +5272,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Toussaint",
             "target": "Valjean",
             "metadata": {
@@ -4955,7 +5281,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Child1",
             "target": "Gavroche",
             "metadata": {
@@ -4963,7 +5290,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Child2",
             "target": "Gavroche",
             "metadata": {
@@ -4971,7 +5299,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Child2",
             "target": "Child1",
             "metadata": {
@@ -4979,7 +5308,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Babet",
             "metadata": {
@@ -4987,7 +5317,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Gueulemer",
             "metadata": {
@@ -4995,7 +5326,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Thenardier",
             "metadata": {
@@ -5003,7 +5335,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Gavroche",
             "metadata": {
@@ -5011,7 +5344,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Eponine",
             "metadata": {
@@ -5019,7 +5353,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Claquesous",
             "metadata": {
@@ -5027,7 +5362,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Brujon",
             "target": "Montparnasse",
             "metadata": {
@@ -5035,7 +5371,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Bossuet",
             "metadata": {
@@ -5043,7 +5380,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Joly",
             "metadata": {
@@ -5051,7 +5389,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Grantaire",
             "metadata": {
@@ -5059,7 +5398,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Bahorel",
             "metadata": {
@@ -5067,7 +5407,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Courfeyrac",
             "metadata": {
@@ -5075,7 +5416,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Gavroche",
             "metadata": {
@@ -5083,7 +5425,8 @@
             }
           },
           {
-            "label": "knows",
+            "type": "logicalRel",
+            "label": "Know",
             "source": "Mme.Hucheloup",
             "target": "Enjolras",
             "metadata": {

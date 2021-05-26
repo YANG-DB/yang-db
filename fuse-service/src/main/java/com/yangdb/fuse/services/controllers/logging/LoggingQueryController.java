@@ -400,6 +400,19 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> profile(String queryId) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                profile,
+                Composite.of(this.primerMdcWriter(), RequestIdByScope.of(query(queryId).get())),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> this.controller.profile(queryId), this.resultHandler());
+
+    }
+
+    @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
         return new LoggingSyncMethodDecorator<ContentResponse<PlanNode<Plan>>>(
                 this.logger,
@@ -464,6 +477,7 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     private static MethodName.MDCWriter getAsgByQueryId = MethodName.of("getAsgByQueryId");
     private static MethodName.MDCWriter traversal = MethodName.of("traversal");
     private static MethodName.MDCWriter explain = MethodName.of("explain");
+    private static MethodName.MDCWriter profile = MethodName.of("profile");
     private static MethodName.MDCWriter planVerbose = MethodName.of("planVerbose");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
     private static MethodName.MDCWriter plan = MethodName.of("plan");

@@ -53,6 +53,7 @@ public class HorsesGraphGenerator {
     public List<Horse> generateHorses() {
         List<Horse> guildsList = new ArrayList<>();
         List<String[]> horsesRecords = new ArrayList<>();
+        horsesRecords.add(0,new String[]{"id","name","color","weight","maxSpeed","maxDistance"});
         try {
             HorseGenerator generator = new HorseGenerator(horseConf);
             int guildsSize = horseConf.getNumberOfNodes();

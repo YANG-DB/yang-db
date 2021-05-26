@@ -26,6 +26,8 @@ import com.yangdb.fuse.generator.configuration.DragonConfiguration;
 import com.yangdb.fuse.generator.data.generation.other.PropertiesGenerator;
 import com.yangdb.fuse.generator.model.entity.Dragon;
 
+import java.util.Date;
+
 /**
  * Created by benishue on 19/05/2017.
  */
@@ -37,7 +39,9 @@ public class DragonGenerator extends EntityGeneratorBase<DragonConfiguration, Dr
 
     @Override
     public Dragon generate() {
-        return Dragon.Builder.get().withName(faker.name().firstName() + " " + faker.gameOfThrones().dragon())
+        return Dragon.Builder.get()
+                .withName(faker.name().firstName() + " " + faker.gameOfThrones().dragon())
+                .withBirthDate(faker.date().between(new Date( -46376431374L),new Date( -14819522574L)))
                 .withPower(faker.number()
                         .numberBetween(configuration.getMinPower(), configuration.getMaxPower()))
                 .withGender(PropertiesGenerator.generateGender())

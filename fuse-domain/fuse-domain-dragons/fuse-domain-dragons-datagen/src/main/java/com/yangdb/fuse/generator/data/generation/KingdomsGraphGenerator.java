@@ -65,6 +65,8 @@ public class KingdomsGraphGenerator {
     public List<Kingdom> generateKingdoms() {
         List<Kingdom> kingdomsList = new ArrayList<>();
         List<String[]> kingdomsRecords = new ArrayList<>();
+        kingdomsRecords.add(0,new String[]{"id","name","king","queen","independenceDay","funds"});
+
         try {
             KingdomGenerator generator = new KingdomGenerator(kingdomConf);
 
@@ -151,6 +153,7 @@ public class KingdomsGraphGenerator {
 
     private void printEntityToKingdom(List<Tuple2> entitiesToKingdom, EntityType entityType) {
         List<String[]> e2kRecords = new ArrayList<>();
+        e2kRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since"});
 
         for (Tuple2 e2k : entitiesToKingdom) {
             String entityId = e2k._1().toString();
@@ -160,7 +163,7 @@ public class KingdomsGraphGenerator {
 
             RelationBase entityToKingdomRel = null;
             if (entityType == EntityType.HORSE || entityType == EntityType.DRAGON) {
-                entityToKingdomRel = new Originated(edgeId, entityId, kingdomId, since);
+                entityToKingdomRel = new Originated(edgeId,entityType, entityId, kingdomId, since);
             }
             if (entityType == EntityType.GUILD) {
                 entityToKingdomRel = new Registered(edgeId, entityId, kingdomId, since);

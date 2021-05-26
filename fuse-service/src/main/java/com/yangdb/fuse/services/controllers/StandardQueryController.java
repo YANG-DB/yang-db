@@ -319,6 +319,13 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
+    public ContentResponse<Object> profile(String queryId) {
+        return Builder.builder(OK, NOT_FOUND)
+                .data(driver().profile(queryId))
+                .compose();
+    }
+
+    @Override
     public ContentResponse<Boolean> delete(String queryId) {
         return Builder.<Boolean>builder(ACCEPTED, NOT_FOUND)
                 .data(driver().delete(queryId))

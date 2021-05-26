@@ -162,6 +162,10 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         });
 
+        /** profile the query by execution */
+        app.get(appUrlSupplier.resourceUrl(":queryId") + "/profile",
+                req -> API.profile(app, req, this));
+
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/print",
                 req -> API.printQuery(app, req, this));
@@ -534,6 +538,22 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 //            return with(req,response);
             return Results.with(response, response.status());
 
+        }
+
+        /**
+         * profile query execution
+         *
+         * @param app
+         * @param req
+         * @param registrar
+         * @return
+         * @throws Throwable
+         */
+        public static Object profile(Jooby app, Request req, QueryControllerRegistrar registrar) throws Throwable {
+            Route.of("profile").write();
+            String queryId = req.param("queryId").value();
+            ContentResponse<Object> profile = registrar.getController(app).profile(queryId);
+            return Results.with(profile,profile.status());
         }
 
         public static Result nextPage(Jooby app, Request req, QueryControllerRegistrar registrar) {

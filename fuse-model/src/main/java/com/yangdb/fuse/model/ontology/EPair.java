@@ -73,6 +73,10 @@ public class EPair {
         this(String.format("%s->%s",eTypeA,eTypeB),eTypeA,eTypeB);
     }
 
+    public EPair(String eTypeA, String sideAIdField, String eTypeB, String sideBIdField) {
+        this(String.format("%s->%s",eTypeA,eTypeB),eTypeA,sideAIdField,eTypeB,sideBIdField);
+    }
+
     public EPair(String name, String eTypeA, String eTypeB) {
         this.eTypeA = eTypeA;
         this.eTypeB = eTypeB;

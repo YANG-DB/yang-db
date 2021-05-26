@@ -1,7 +1,7 @@
 
 package com.yangdb.fuse.asg.translator.sparql;
 
-import com.yangdb.fuse.dispatcher.ontology.SimpleOntologyProvider;
+import com.yangdb.fuse.dispatcher.ontology.InMemoryOntologyProvider;
 import com.yangdb.fuse.dispatcher.query.rdf.OWLToOntologyTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
@@ -49,7 +49,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 new String(Files.readAllBytes(new File(personas.toURI()).toPath())),
                 new String(Files.readAllBytes(new File(dbpedia.toURI()).toPath()))));
 
-        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new SimpleOntologyProvider(ontology), new M1SparqlAsgStrategyRegistrar()));
+        sparQLTransformer = new AsgSparQLTransformer(new SparqlTranslator(new InMemoryOntologyProvider(ontology), new M1SparqlAsgStrategyRegistrar()));
         // transformer
         Assert.assertNotNull(ontology);
     }
