@@ -1,4 +1,4 @@
-##My First Tutorial - Installation
+## My First Tutorial - Installation
 
 The purpose of this document is to give a very simple & intuitive way to create and interact with YangDB graph engine so that
 One can evaluate and understand the basic use case and usage patterns of this framework.
@@ -6,7 +6,7 @@ One can evaluate and understand the basic use case and usage patterns of this fr
 This tutorial will be a step by step with image illustration from the basic setup of elastic / kibana / yangdb - icluding the
 Initiating schema & data loading till the actual query and reviewing the results.
 
-###Why not use docker ?
+### Why not use docker ?
 
 During this tutorial we will be using RPM installation of the tools used inside this guide - it is very much possible to use
 Docker / docker-compose for all the usage describes below, my choice for using the RPM distribution of the tools was made to allow
@@ -29,7 +29,7 @@ The following tool are necessary for the tutorial process and for general usage 
 
 ---
 
-###Running elasticsearch
+### Running elasticsearch
 
 This is simple & easy - just go to the installation folder / bin and run the elasticsearch.sh executable
 Configuration of the cluster is also needed in order to allow yangDB to access the demo default cluster, just edit the
@@ -43,13 +43,13 @@ elasticsearch.yml file in the config folder and add the following line:
 Once this is done you can run the elasticsearch server - ports 9200 & 9300 must be avialable...
 
 ---
-###Running kibana
+### Running kibana
 
 Again - this is easy to execute, just go to the bin folder under the installation location and run the kibana executable
 The kibana should be able to connect to the running elasticsearch server via 9200 port
 
 ---
-###Running Cerebro
+### Running Cerebro
 
 Cerebro is an open source management tool for elasticsearch server which simplify the usage and maintenance of elasticsearch cluster
 It has a web ui that uses port 9000 to connect to the elastic server, running it is done using the cerebro executable that resided
@@ -59,14 +59,14 @@ in the bin folder under the installation location.
   ![Cerebro ES cluster view](img/cerebro-view-cluster.png )
 
 ---
-###Running YangDB
+### Running YangDB
 
 **YangDB is a graph execution engine on top of elasticsearch, it has a REST API interface that allows interacting with it.**
 
 Running yangDb from its installation folder (after un-tar the downloaded artifact) is simple, it is done via the
 start-fuse-service.sh script in the installation folder.
 
-####Configuration for YangDB
+#### Configuration for YangDB
 
 When one needs to configure the yangDb server he should open the application.conf file under the config folder.
 The default configuration for the demo is named Dragons and is wrapped around a game of thrones dats scenario.
@@ -88,12 +88,12 @@ _This should be the final configuration for the elasticsearch connection_
 
 Once this is done we can start the yangDb server (using the script mentioned above)
 
-####Calling the run script:
+#### Calling the run script:
 The next logging result should be apparent:
 
 ![YangDb console logs](img/yangDb-start-consule-logs.png)
 
-####Access the swagger web UI:
+#### Access the swagger web UI:
 
 As it states -  the url  http://0.0.0.0:8888/  is available, we will focus our attention to the
 REST API swagger page http://localhost:8888/swagger
@@ -111,10 +111,10 @@ functionalities and behavior.
 Once the logging index is alive we can view the specially drafted kibana dashboards made to monitor and observe yangDb
 
 ---
-###Setup YangDb Kibana Dashboards
+### Setup YangDb Kibana Dashboards
 
 
-####Load custom Kibana dashboards
+#### Load custom Kibana dashboards
 
 We will load the next prepared kibana dashboards located in the dashboard folder:
 ![dashboard location](img/yang-db-kibana-dashboard-location.png)
@@ -129,10 +129,10 @@ Click the Import button and select the Dashboards. json.
 
 Once these dashboards are loaded into kibana we can view their appearance:
 
-####The list of available yangDb dashboards
+#### The list of available yangDb dashboards
 ![dashboard list](img/kibana-yangdb-dashbaords.png)
 
-####The yangDb og dashboard
+#### The yangDb og dashboard
 ![dashboard logs](img/kibana-yangdb-logs-dashboard.png)
 
 ### What's next ?
