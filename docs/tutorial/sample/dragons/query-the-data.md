@@ -174,17 +174,14 @@ Now lets see the exciting Dragons battles ... give us the dragons who fire upon 
 ```
 
 
-Lets visualize the results:
-![yangdb-page-result-visualize-q3](img/todo.png)
-
-Now we can also visualize the actual intermediate query that the engine has generated to fetch the data
+As same as before we visualize the results or we can even visualize the actual intermediate query that the engine has generated to fetch the data
 we will use the nest REST API to visualize the AST (Abstract Syntax Tree) that was created:
 
 http://localhost:8888/swagger#/operations/query/get_query__id__asg_visualize
 ![yangdb-page-result-visualize-asg-q3](img/visualize-asg-q3.png)
 
 
-####Query:6
+#### Query:6
 Now lets see this complex query:
 
 A (female) person that owns a black dragon, that black dragon fired upon another male dragon;
