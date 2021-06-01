@@ -1,11 +1,11 @@
-###Sample Queries 
+### Sample Queries 
 
 We will present few sample queries to show different usage capabilities of Yang.db in regard to the dragons schema
 
-####Loading CSV
+#### Loading CSV
 Once loading the csv different graph nodes and edges is complete we can start asking different questions about the information.
 
-####Queries - in cypher language
+#### Queries - in cypher language
  
  - Get all nodes types:
     ```match (p) return *```

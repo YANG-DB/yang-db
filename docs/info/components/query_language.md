@@ -46,7 +46,7 @@ V1 supports the following primitive data types:
 ### V1 Vocabulary:
 _Start_ – The query start node
 
-####Entities
+#### Entities
 Entity can belong to one of the next categories:	
 
 * EUntyped – Untyped Entity
@@ -55,12 +55,12 @@ Entity can belong to one of the next categories:
 * EConcrete – Concrete Entity Type
 * Has a concrete id
 
-####Relationships
+#### Relationships
 Relationship has direction & type (Can support untyped relations)
 
 * Rel – Relationship
 
-####Properties
+#### Properties
 Every relation & entity can have properties.
 
 * RelProp – Relationship property
@@ -71,13 +71,13 @@ Properties have name, type (data type) & constraint:
 * RelPropGroup – Relationship property group
 * EPropGroup – Entity property group
 
-####Constraint
+#### Constraint
 
 Constraint is combined of an operator and an expression.
 
 A constraint filters assignment to only those assignments for which the value of the expression for the assigned entity/relationship satisfies the constraint.
 
-####Start node
+#### Start node
  Every query begin element, each query element number appears in the rectangle brackets.
  
  Quantifiers sub-elements appear in the curly brackets.
@@ -87,7 +87,7 @@ Example
 
 Query as a json document:
 
-```javascript
+```
 {
   "name": "Q1",
   "elements": [
@@ -123,7 +123,7 @@ Query as a json document:
 ```
 
 Additional simple string representation:
-```javascript
+```
     Start [0]: EConcrete [1]: Rel [2]: ETyped [3]
 ```
 Each v1 query has a name and a (linked) list of elements which are labeled with :
@@ -132,7 +132,7 @@ Each v1 query has a name and a (linked) list of elements which are labeled with 
 
 
 Additional Query with quantifier and property constraint 
-```javascript
+```
 {
   "name": "Q10",
   "elements": [
@@ -185,6 +185,6 @@ Additional Query with quantifier and property constraint
 ```
 Additional simple string representation:
 
-```javascript
+```
    Start [0]: ETyped [1]: Quant1 [2]:{3|4}: EProp [3]: Rel [4]: ETyped [5]
 ```

@@ -85,7 +85,7 @@ V1 supports the following primitive data types:
 ### V1 Vocabulary:
 _Start_ – The query start node
 
-####Entities
+#### Entities
 Entity can belong to one of the next categories:	
 
 * EUntyped – Untyped Entity
@@ -94,12 +94,12 @@ Entity can belong to one of the next categories:
 * EConcrete – Concrete Entity Type
 * Has a concrete id
 
-####Relationships
+#### Relationships
 Relationship has direction & type (Can support untyped relations)
 
 * Rel – Relationship
 
-####Properties
+#### Properties
 Every relation & entity can have properties.
 
 * RelProp – Relationship property
@@ -110,7 +110,7 @@ Properties have name, type (data type) & constraint:
 * RelPropGroup – Relationship property group
 * EPropGroup – Entity property group
 
-####Constraint
+#### Constraint
 
 Constraint is combined of an operator and an expression.
 
@@ -120,7 +120,7 @@ Example
 -------
 Query as a json document:
 
-```javascript
+```
 {
   "name": "Q1",
   "elements": [
@@ -156,7 +156,7 @@ Query as a json document:
 ```
 
 Additional simple string representation:
-```javascript
+```
     Start [0]: EConcrete [1]: Rel [2]: ETyped [3]
 ```
 Each v1 query has a name and a (linked) list of elements which are labeled with :
@@ -165,7 +165,7 @@ Each v1 query has a name and a (linked) list of elements which are labeled with 
 
 
 Additional Query with quantifier and property constraint 
-```javascript
+```
 {
   "name": "Q10",
   "elements": [
@@ -218,14 +218,13 @@ Additional Query with quantifier and property constraint
 ```
 Additional simple string representation:
 
-```javascript
+```
    Start [0]: ETyped [1]: Quant1 [2]:{3|4}: EProp [3]: Rel [4]: ETyped [5]
 ```
 
 Start node – is the query begin element, each query element number appears in the rectangle brackets.
 Quantifiers sub-elements appear in the curly brackets.
- 
-##ASG - Abstract Syntax Graph
+## ASG - Abstract Syntax Graph
 
 In the process of receiving the V1 graph query we want to apply a set of predefined simple strategies that would transform the logical query to a lower lever logical query.
 
@@ -235,7 +234,7 @@ Performing:
 * Infer untyped expressions
 * Constraints transformations (String to concrete types)
 
-####Validity
+#### Validity
 A query is considered valid when it preserves the traversal steps:
 
 * (Entity | optional costraints)-[Relation|optional costraints]->(Entity)
@@ -245,12 +244,12 @@ Another validation concern is the constraints of the graph’s schema;
 
 An entity may by of a given type A which has properties a1 & a2. If constraint exists in the query, it must follow  the entity's properties.
 
-##(L)EPB  - Logical Execution Plan Builder
+## (L)EPB  - Logical Execution Plan Builder
 ![](https://media.licdn.com/dms/image/C4E12AQE1OLxgsJvdew/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=IvcsBixXfakKoY8r3BnvQcr5srbLrYVckW0Veqw1Wjc)
 
 The responsibility of this phase is to transform (build) ASG query into a plan which is cost optimized according to set of predefined statistical parameters collected over the dataset.
 
-###Strategies
+### Strategies
 The Logical Plan executor is responsible for building a valid (logical) execution plan that will later be translated into physical traversal execution plan.
 
 The Plan Execution Builder comes with 3 strategies:
@@ -283,7 +282,7 @@ The pruner acts according to size & cost minimization – for example we only al
 ### Process Of Execution Plan Building 
 ![](https://codeopinion.com/wp-content/uploads/2015/02/query-150x150.png)
 
-####Initial Extenders
+#### Initial Extenders
 
 Initially we begin with empty plan and spawn initials (single step) plans, all plans start from ETyped node.
 We continue the process of plan building with the next steps...
@@ -298,7 +297,7 @@ While we have available search options (unvisited query elements) do:
 
 Once no more new steps available – we should have a list of valid best prices plans of which we will take the first (or any) for execution.
 
-####On-Going Extender Types
+#### On-Going Extender Types
 An extender attempts to extend an existing plan with the next patterns:
 
 > (entity)—[relation]—(entity) 
@@ -308,17 +307,17 @@ An extender attempts to extend an existing plan with the next patterns:
 From any step in the execution plan, we try to extend the plan either left or right (with elements from the query)
 Left is considered ancestor, right is considered descendant.
 
-####Example 1
+#### Example 1
 
 Let’s assume we have the next query:
-```javascript
+```
 Start [0]: ETyped [1]: Quant1 [2]:{3|4}: EProp [3]: Rel [4]: ETyped [5]
 ```
 
 First we will initially create seeds plans (starting from Entity):
 First Phase: Initial Plans 
 ------
-```javascript
+```
 •	ETyped [1] – Plan 1
 •	ETyped [5] – Plan 2
 ```
@@ -329,7 +328,7 @@ Second Phase:
 
  * Extending each plan with all possible extenders (all directions)
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped [1] (no left extension possible) 	     – Plan 1
 •	ETyped [5] --> Rel[4] --> ETyped [1]:EProp[3]    – Plan (2)-3
@@ -341,15 +340,15 @@ StepDescendantsAdjacentStrategy –extender that attempts extending right(Descen
 
 The final plans are 3 & 4, there are similar but in reverse order.
 
-####Example 2
+#### Example 2
 Additional available Extender strategies...
 Let’s assume we have the next query:
-```javascript
+```
 Start [0]: ETyped [1]: Quant1 [2]:{3|4|6}: EProp [3]: Rel [4]: ETyped [5] : Rel [6]: EConcrete[7]
 ```
 
 First Phase: 
-```javascript
+```
 •	ETyped [1] – Plan 1
 •	ETyped [5] – Plan 2
 •	ETyped [7] – Plan 3
@@ -358,7 +357,7 @@ First Phase:
 Second Phase:
 Extending each plan with all possible extenders (all directions)
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped [1] (no left extension possible) 	     – Plan 1
 •	ETyped [5] --> Rel[4] --> ETyped [1]:EProp[3]    – Plan (2)-4
@@ -378,7 +377,7 @@ GotoExtensionStrategy - extender that jumps to already visited element
 
 Forth Phase:
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped[7]-->Rel[6]-->ETyped[5]-->Rel[4]-->ETyped[1]:EProp[3]	 - Plan (5)-10
 •	ETyped[5]-->Rel[6]-->ETyped[7]->GoTo[5]-->Rel[4]-->ETyped[1]:EProp[3] – plan (9)-11
@@ -391,16 +390,16 @@ StepDescendantsAdjacentStrategy –extender that attempts extending right(Descen
 Plans 10-13 are the final plans, while additional non-valid plans had been removed during the build process. 
 The missing step here is the cost estimation. In the next section we will apply the same plan building process but with the additional cost estimators.
 
-####Example 3
+#### Example 3
 
 Examining the Join Extender...
 Let’s assume we have the next query:
-```javascript
+```
 Start [0]: ETyped [1]: Quant1 [2]:{3|4|6}: EProp [3]: Rel [4]: ETyped [5] : Rel [6]: EConcrete[7]
 ```
 
 First Phase: 
-```javascript
+```
 •	ETyped [1] – Plan 1
 •	ETyped [5] – Plan 2
 •	ETyped [7] – Plan 3
@@ -410,21 +409,21 @@ Second Phase:
 Todo ...
 
 
-##Cost Estimator
+## Cost Estimator
 ![](https://static.priceandcost.com/wp-content/uploads/2018/03/Your_Guide_to_Project_Management_Cost_Estimation_blog.jpg)
 
 Cost estimator is the process of evaluating a “cost” of an execution plan according to a prior made statistical calculation for the distribution of values in the dataset.
 
 Each execution step (element in the query) of any graph element (entity, relation, filter) will be estimated based on the physical storage statistical attributes of the data.
 
-####Redundancy
+#### Redundancy
 Redundancy is the process of pushing node attributes to adjacent relations – making them redundant in the data.
 The purpose of this process will increase the volume of data stored on one hand, on the other hand it will decrease 
 
 the amount of data needed to fetch in each query, and will enable more accurate execution plan.
 In a redundant model we will store on each relation both id’s of the relating sides, the relating types and any of the sides properties we may think may be of redundancy value.
 
-####Collecting statistical data process
+#### Collecting statistical data process
 ![](https://i0.wp.com/www.skepticalraptor.com/blog/wp-content/uploads/2017/07/anti-vaccine-statistics.png?zoom=2&resize=2000%2C1200&ssl=1)
 
 The process of collecting statistical information about elements of the graph – is tightly connected to the physical storage format of the underlying DB.
@@ -440,7 +439,7 @@ In a document store like elasticsearch there is an additional level of abstracti
 
 * Mappings – mappings is Elasticsearch’s schema index structure, we use it to label the graph elements with a distinct type (each type can have named properties).
 
-###Types of statistical estimators:
+### Types of statistical estimators:
 
 Entity
 ----
@@ -458,7 +457,7 @@ Histogram with buckets (bucket per range)
 *  *    Field cardinality 
 *  *    Graph elements cardinality
 
-####Graph element properties Example 
+#### Graph element properties Example 
 Let’s assume we have a Person entity type with name property, we will create a histogram with 26 buckets – one per each starting letter.
 
 Given a bucket for the letter ‘J’ – it will contain the unique name (starting with J) in the data (Jack, Jhon) and the unique Entities with that name.
@@ -473,9 +472,8 @@ Let’s assume we would like to estimate number of people named ‘JMorgam’ �
 
 If we assume equal distribution of cardinality inside the bucket, we may take the assumption that since the second letter is M - which is about in the middle of the alphabet, we can get better estimation by assuming ½ of the values are from the letter ‘m’ onwards ...
 Estimate will be (350,000 / 100) /2 = 17500.
- 
 
-####Bucket Ranges – depends on field type
+#### Bucket Ranges – depends on field type
 Bucket may have the following ranges (according to the field type)
 
 **Numeric** – given bucket number and min-max range – buckets range according to data
@@ -488,12 +486,12 @@ Bucket may have the following ranges (according to the field type)
 
 **Dynamic** – given bucket number, auto calculate min-max (numeric only) according to data 
 
-####Relation – 
+#### Relation – 
 Let’s review relation histogram; The histogram is defined to measures count & cardinality of the following tuple 
 
 (A,B are the relations side respectively) :
 
-```javascript
+```
 {A.id, A type, B.id, B type, Rel.id, direction, values}.
 ```
 
@@ -512,7 +510,7 @@ Example:
 -----
 **Owns** – 3 dimensional histogram for ‘own type relation.
 
-```javascript
+```
 {
   "type": "owns",
   "fields": [
@@ -542,7 +540,7 @@ Example:
   ]
 }
 ```
-##Filter selectivity – 
+## Filter selectivity – 
 A filter condition is a predicate expression specified in the predicate clause (property constraint) of a V1 query.
 
 A predicate can be a compound logical expression with logical AND, OR, NOT operators combining multiple single conditions.
@@ -555,7 +553,7 @@ For logical AND expression, its filter selectivity is the selectivity of left co
 Available Filter Conditions:
 ---
 
-```javascript
+```
 •	empty
 •	notEmpty
 •	eq
@@ -580,18 +578,18 @@ Available Filter Conditions:
 •	fuzzyNe
 ```
 
-##Collection Statistics Framework
+## Collection Statistics Framework
 
 For every property we collect histogram data, each histogram has a list of buckets holding monotonic range of content, the location of its content (index, shard) type, documents count & cardinality.
 
-###Example fields to histogram mapping
+### Example fields to histogram mapping
 The next example has 3 types of histograms for 3 fields:
 
 * **Age** – numeric histogram
 * **Name** – String histogram (equal width bucket size)
 * **Address** – manual buckets histogram
 
-```javascript
+```
 "types": [{
   "type": "dragon", #(entity type)
   "fields": [{
@@ -633,11 +631,11 @@ The next example has 3 types of histograms for 3 fields:
 
 >String histogram:
 
-```javascript
+```
 numOfBuckets = Math.ceil(Math.pow(numChars, prefixLen) / interval
 ```
 
-##Join
+## Join
 In relational algebra join has 4 type semantics:
 * Inner join
 * Left outer join
@@ -651,7 +649,7 @@ Optional operator a --Optional-->b will fetch all type of a’s and if exists re
 
 The direction of the join is according to the direction of the relation. 
 
-###Join cost estimation
+### Join cost estimation
 
 For estimating the join cost we currently assume using in memory hash-join; lets assume we need to join two groups A with size n and B with size m.
 The cost of doing in-memory hash join is the I/O cost of fetching the groups from the data-set to the driver,
@@ -662,22 +660,22 @@ The count estimation of the elements after the join is the smallest size group
 
 This is an upper bound estimation; the actual count may be lower.
 
-###Cost Estimator is Pattern Based
+### Cost Estimator is Pattern Based
 For an existing plan, adding a step to the plan has a price, this price is added to the current total price of the plan.
 
 Cost is estimated for the following steps:
 
-```javascript
+```
 EntityPattern – EntityPatternCostEstimator cost estimator
 ```
 Estimates single entity step cost – entity docCount (with filter if exists)
 
-```javascript
+```
 EntityRelationEntityPattern – EntityRelationEntityPatternCostEstimator cost estimator
 ```
 Estimates (entity)-->[relation]-->(entity) step cost – see formula below
 
-```javascript
+```
 GoToEntityRelationEntityPattern – GoToEntityRelationEntityPatternCostEstimator cost estimator
 ```
 
@@ -686,7 +684,7 @@ Estimates cost of the entity relation entity pattern with additional goTo step
 Example
 ----
 We will use the next schema:
-###Entities:
+### Entities:
 **Person** (1M distinct values)
 * id
 * Name (1K distinct values)
@@ -712,7 +710,7 @@ We will use the next schema:
 **Company** (1000 distinct values)
 * Name
 
-###Relations:
+### Relations:
 Owns (Person->car)
 * 50% of the people own car (geometric distribution with mean 1) 
 
@@ -728,19 +726,19 @@ Collision Factor:
 Redundant Properties 
 Holds count & cardinality of the edges within the context of the measured redundant property.
 
-####**Side A**
+#### Side A
 * * Person Name – multidimension histogram [name, direction]
 * * * String Histogram with about 2000 buckets (equal width) 
 * * Person age – multidimension histogram [age, direction]
 * * * Dynamic Histogram with 100 buckets
 
-####**Side B**
+#### Side B
 * * City Name – multidimension histogram [name, direction]
 * * * Term Histogram with about 500 buckets (number of distinct models)
 * * City Country – multidimension histogram [country, direction]
 * * * Term Histogram with about 50 buckets (number of distinct models)
 
-####Located-In (Person->City, Company->City)
+#### Located-In (Person->City, Company->City)
 
 **Selectivity**: (average number of edges)
 
@@ -752,7 +750,7 @@ Holds count & cardinality of the edges within the context of the measured redund
 * Number of Persons / Number of Cities
 * Number of Companies / Number of Cities
 
-####Redundant Properties 
+#### Redundant Properties 
 **[Person,City]**
 
 *Side A*
@@ -790,23 +788,29 @@ Holds count & cardinality of the edges within the context of the measured redund
 
 * todo
 
-##Query
-```javascript
+## Query
+```
 Person[1]:Quant1[2]:{3|4|6}:Person.name[3]{start with “dan”}:Owns[4]:Car[5]:located[6]:City[7]: City.name[7]{equals “N.Y”}
 ```
 
 This query will be estimated on each step the extender adds, lets start the process by applying the initial extender & evaluating cost according to type’s count & cardinality
 
 Phase 1: (Initial Extender)
->EType[1]: EProp[3] - cost : (person cardinality 1M)  - **Plan 1**
+```
+  EType[1]: EProp[3] - cost : (person cardinality 1M)  - **Plan 1**
+```
 
 Estimating EProp[3] using property histogram, the condition “starts with:‘dan’” is mapped to a bucket with value cardinality of 50K.
 
->EType [5]: - cost : (car cardinality 100) - **Plan 2**
->EType [7]: - cost : (city cardinality 5k) - **Plan 3**
+```
+ EType [5]: - cost : (car cardinality 100) - **Plan 2**
+ EType [7]: - cost : (city cardinality 5k) - **Plan 3**
+```
 
 Phase 2: (Step Extender)
->EType[1]:EProp[3]-->Rel[4]-->EType[5]	- Plan (1)-4
+```
+  EType[1]:EProp[3]-->Rel[4]-->EType[5]	- Plan (1)-4
+```
 
 Estimating Rel[4]  :
 **Side A**
@@ -828,10 +832,14 @@ Step count = number of graph elements to be scanned: nodes + side B edges
 * Edges count = min(SideA edges estimation, SideB edges estimation) 
 * Side B estimation (using edge collision estimator)
 
->Step count = 20K+10
+```
+ Step count = 20K+10
+```
 
 The new plan cost is:
->new_count = old_count*step_propagation_factor + step_count
+```
+ new_count = old_count*step_propagation_factor + step_count
+```
 
 Step propagation factor is the new knowledge we have on the estimated number of graph elements – this estimation should be propagated back to the former estimators to fix their counts using the new knowledge we discovered.
 
@@ -840,51 +848,54 @@ Step propagation factor is the new knowledge we have on the estimated number of 
 
 
 
-##Statistics Provider API
-* >Todo
+## Statistics Provider API
+* Todo
 
-###Cost Types
-* >Todo
+### Cost Types
+* Todo
 
 
-##Graph Traversal Appender 
-* >Todo
+## Graph Traversal Appender
+* Todo
 
-##Executor & Projection
-* >Todo
+## Executor & Projection
+* Todo
 
-##Physical storage schema
+## Physical storage schema
 
-###Entities
-* >Todo
+### Entities
+* Todo
 
-###Relation
+### Relation
 In the datastore for performance reasons we store the relations twice, each time from a different direction:
+```
 Person[dany]-[Owns]->Car[Mazda] will be stored as document:
-* {person[dany], owns, dir:in, car[mazda]}
-* {car[mazda], owns, dir:out, person[dany]}
->Todo
+  * {person[dany], owns, dir:in, car[mazda]}
+  * {car[mazda], owns, dir:out, person[dany]}
+  ```
 
-##Gremlin as A Physical Traversal language
+Todo
+
+## Gremlin as A Physical Traversal language
 ![](https://upload.wikimedia.org/wikipedia/en/thumb/5/54/Gremlin_%28programming_language%29.png/220px-Gremlin_%28programming_language%29.png)
 
 We are using Gremlin as the Physical traversal language over our graph DB store:
 
->Gremlin is a graph traversal language and virtual machine developed by Apache TinkerPop of the  Apache Software Foundation. 
->Gremlin works for both OLTP-based graph databases as well as OLAP-based graph processors. Gremlin's automata and functional language foundation enable Gremlin to naturally support imperative and declarative querying, host language agnosticism, user-defined domain specific languages, an extensible compiler/optimizer, single- and multi-machine execution models, hybrid depth- and breadth-first evaluation, as well as Turing Completeness.
-Gremlin supports declarative graph pattern matching similar to SPARQL. 
+* Gremlin is a graph traversal language and virtual machine developed by Apache TinkerPop of the  Apache Software Foundation. 
+* Gremlin works for both OLTP-based graph databases as well as OLAP-based graph processors. Gremlin's automata and functional language foundation enable Gremlin to naturally support imperative and declarative querying, host language agnosticism, user-defined domain specific languages, an extensible compiler/optimizer, single- and multi-machine execution models, hybrid depth- and breadth-first evaluation, as well as Turing Completeness.
+* Gremlin supports declarative graph pattern matching similar to SPARQL. 
 
-###GREMLIN STEPS (INSTRUCTION SET)
+### GREMLIN STEPS (INSTRUCTION SET)
 The following traversal is a Gremlin traversal in the Gremlin-Java8 dialect.
 [see http://tinkerpop.apache.org/docs/current/reference/#intro](Link URL)
 
 
-```javascript
-g.V().as("a").out("knows").as("b").select("a","b").by("name").by("age")
+```
+  g.V().as("a").out("knows").as("b").select("a","b").by("name").by("age")
 ```
 
 A string representation of the traversal above :
-```javascript
+```
 [GraphStep([],vertex)@[a], VertexStep(OUT,[knows],vertex)@[b], SelectStep([a, b],[value(name), value(age)])]
 ```
 The “steps” are the primitives of the Gremlin graph traversal machine.
@@ -892,10 +903,10 @@ They are the parameterized instructions that the machine ultimately executes.
 
 The Gremlin instruction set is approximately 30 steps. These steps are sufficient to provide general purpose computing and what is typically required to express the common motifs of any graph traversal query.
 
->GREMLIN VM
+* GREMLIN VM
 The Gremlin graph traversal machine can execute on a single machine or across a multi-machine compute cluster. Execution agnosticism allows Gremlin to run over both graph databases (OLTP) and graph processors (OLAP).
 
->PRIMARY COMPONENTS OF THE TINKERPOP3 STRUCTURE API
+* PRIMARY COMPONENTS OF THE TINKERPOP3 STRUCTURE API
 
 * Graph: maintains a set of vertices and edges, and access to database functions such as transactions.
 * Element: maintains a collection of properties and a string label denoting the element type.
@@ -904,13 +915,14 @@ The Gremlin graph traversal machine can execute on a single machine or across a 
 * Property<V>: a string key associated with a V value.
 * * VertexProperty<V>: a string key associated with a V value as well as a collection of Property<U> properties (vertices only)
 
->PRIMARY COMPONENTS OF THE TINKERPOP3 PROCESS API
+* PRIMARY COMPONENTS OF THE TINKERPOP3 PROCESS API
 
 * TraversalSource: a generator of traversals for a particular graph, domain specific language (DSL), and execution engine.
-* * Traversal<S,E>: a functional data flow process transforming objects of type S into object of type E.
+
+*  Traversal<S,E>: a functional data flow process transforming objects of type S into object of type E.
 * * GraphTraversal: a traversal DSL that is oriented towards the semantics of the raw graph (i.e. vertices, edges, etc.).
 
->TODO
+* TODO
 
 
 
@@ -929,4 +941,4 @@ The project if a maven multi modules project
 
 
 
-Have fun!
+#Have fun!

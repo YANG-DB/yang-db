@@ -1,8 +1,8 @@
-##Query the Data
+## Query the Data
 During the last tutorial we've uploaded the Dragon's CSV ontology using the dedicated API and now we are ready to ask the
 graph questions we've been waiting for.
 
-###Graph Query Language
+### Graph Query Language
 For a general purpose query to return the data we are looking for we need a language that can express the logical relations between the 
 entities and relationships. The SQL language does support this type of relational algebra, but it is very difficult to express an expression that has
 few "hops" of relationships in a regular SQL statement.
@@ -26,10 +26,10 @@ the following :
  - https://neo4j.com/developer/cypher/ 
  - https://neo4j.com/blog/open-cypher-sql-for-graphs/
 
-###Let's start asking questions
+### Let's start asking questions
 First I would like to see some Dragons in the graph, I will use the REST API for sending the appropriate cypher query
 
-####Query:1
+#### Query:1
 
      Match (d:Dragon) return *
 
@@ -101,13 +101,13 @@ After the server completes the execution it returns the following results:
 
 This is the general response of the YangDb query API, it contains the following elements:
 
-####Query Resource 
+#### Query Resource 
  - request ID
  - execution time
  - request store url (all queries are stored)
  - cursor resource
 
-####Cursor Resource 
+#### Cursor Resource 
 The cursor resource is the actual container in which the data is fetched and paged, a query may have multiple cursores where each cursor
 represents a point in time (data snapshot) where the query took place and its relevant results.
 
@@ -117,7 +117,7 @@ represents a point in time (data snapshot) where the query took place and its re
  - cursor format (Json / CSV / ...)
  - page resource
 
-####Page Resource 
+#### Page Resource 
 The page results contain the pages that represent the data patterns that returned from the engine, the pages contain the data 
 
 - page ID
@@ -126,20 +126,20 @@ The page results contain the pages that represent the data patterns that returne
 - pattern (the query itself)
 - data 
 
-####Visualize the Results 
+#### Visualize the Results 
 Since all the results actually reside inside the page resource we can access the ext REST API to visualize a page result using
 the query Id, Cursor Id and the Page Id 
 
 ![yangdb-page-result-visualize-api](img/yangdb-page-result-visualize-api.png)
 
-###Find Me a Friend
+### Find Me a Friend
 Now I would like to see some People knowing other people in the graph, again I will use the REST API for sending the appropriate cypher query
 
     Match (p1:Person)-[know:Know]-(p2:Person) return *
 
 This time I would like the other side of the relation people to female -
 
-####Query:2
+#### Query:2
 ```
     Match (p1:Person)-[know:Know]-(p2:Person {gender: FEMALE}) return *
 ```
@@ -149,7 +149,7 @@ Lets visualize the results:
 
 
 
-####Query:3
+#### Query:3
 This time lets see Guilds registered in kingdoms that have a positive cache flow...
 ```
     Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
@@ -158,7 +158,7 @@ This time lets see Guilds registered in kingdoms that have a positive cache flow
 Lets visualize the results:
 ![yangdb-page-result-visualize-q3](img/visualize-q3.png)
 
-####Query:4
+#### Query:4
 This time lets see Guilds registered in kingdoms that have a positive cache flow...
 ```
     Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
@@ -167,7 +167,7 @@ This time lets see Guilds registered in kingdoms that have a positive cache flow
 Lets visualize the results:
 ![yangdb-page-result-visualize-q3](img/visualize-q3.png)
 
-####Query:4
+#### Query:5
 Now lets see the exciting Dragons battles ... give us the dragons who fire upon black dragons
 ```
     Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *
@@ -184,7 +184,7 @@ http://localhost:8888/swagger#/operations/query/get_query__id__asg_visualize
 ![yangdb-page-result-visualize-asg-q3](img/visualize-asg-q3.png)
 
 
-####Query:4
+####Query:6
 Now lets see this complex query:
 
 A (female) person that owns a black dragon, that black dragon fired upon another male dragon;

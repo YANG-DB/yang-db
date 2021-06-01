@@ -39,7 +39,7 @@ https://www.gqlstandards.org/
         • Oracle, Neo4j, TigerGraph, IBM, SAP/Sybase, JCC Consulting
 
 
-###SQL Capabilities & Future needs
+### SQL Capabilities & Future needs
 It is clear that SQL is the queen of all the query languages and supported almost everywhere, but It can be very hard to do knowledge and analytical questions using SQL only…
 
 In opensearch  SQL was added to address some of these need but still the strong association between	the actual tables and the physical indexes is unavoidable.
@@ -72,7 +72,7 @@ return p.name
 The sql here is twice longer, error prone (join columns) and performant depended on join reordering of one supported…
 SQL is well-optimized for relational database models, but once it has to handle complex, relationship-oriented queries, its performance quickly degrades.
 
-###Domain Evolution & Multi-tenant
+### Domain Evolution & Multi-tenant
 In many cases we would like to change or decouple (evolve) some business entities on our dataset, such changes many time cause us to re-index our store according to our new domain model.
 
 In the logical ontology we are making a strong effort separating these logical-physical entities so that many of the logical changes would not necessary force us to reindex the data.
@@ -190,7 +190,7 @@ Next the physical representation which describes some store related instructions
 
 As shown lower level store aspects are represented here and can be configured for space & store optimization.
 
-###REST API
+### REST API
 ![swagger](img/yangDb-swagger.png) 	 
 Yang-DB offers a rich REST API to handle all the relevant functionalities:
  - Operational
@@ -202,7 +202,7 @@ Yang-DB offers a rich REST API to handle all the relevant functionalities:
 We will focus on the query part to demonstrate these capabilities:
 
 
-###Query
+### Query
 
 The purpose of the graph language was to ease these exact hard constraints and to allow a more free (logical) language the has no explicit instruction of the way the algebric relation
 should be resolved (Join in SQL) and all the patterns are present in a logical format.
@@ -218,7 +218,7 @@ versus the composite and large explicit SQL equivalent query:
 Now that we recognize the advantage of this semantics - lets review the data representation of YangDB:
 
 
-###Query Execution
+### Query Execution
 **- Query is a resource**
  1) Each query resource is being validated and rewritten to an AST tree that represents the actual logical traversal
  ![asg](img/visualize-asg-q4.png)       
@@ -230,7 +230,7 @@ execution plan using unipop (gremlin based) graph traversal engine which later i
 
  3) Data is fetched in pages while each page can be cached locally or disposed after usage.
     
-####Results Projection
+#### Results Projection
  
 Results can be projected as assignments, tables or sub-graph 
 Since the cursor represents a point in time with respect to the actual data, a new cursor on the same query can return different results...

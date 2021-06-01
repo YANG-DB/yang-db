@@ -1,13 +1,13 @@
-#Ontology Structure
+# Ontology Structure
 The purpose of this document is to explain and show example for the logical ontology (schema) structure that is used
 for the definition of the entities and relationship representing the logical data model.
 
-###Structure
+### Structure
 The ontology schema is constructed from the next elements:
 
 -------------
 
- #####Entities
+ ##### Entities
   The basic block element that is used to query and traverse accross the data domain
   
        {
@@ -40,7 +40,7 @@ The ontology schema is constructed from the next elements:
    
 -------------
     
- #####Relationships
+ ##### Relationships
   The basic relation between the entities that is used to query and traverse accross the data domain
   
   Each relationship can be defined for numerous pair of entities ... 
@@ -91,7 +91,7 @@ The ontology schema is constructed from the next elements:
          
 -------------
        
- #####Properties
+ ##### Properties
   The representation of fields belonging to a specific entity or relation
   
         {
@@ -104,7 +104,7 @@ The ontology schema is constructed from the next elements:
    -name: representing the name of the field 
    -type: representing the schematic type of the field (primitive mostly)
   
-  #####Basic available types:
+  ##### Basic available types:
    - int
    - string
    - text
@@ -117,7 +117,7 @@ The ontology schema is constructed from the next elements:
    - sub type -> referencing the entities list 
    
   
- #####Enumeration
+ ##### Enumeration
   The dictionary of lost of predefined values that correspond to basic enumerated list
   
       {
@@ -145,7 +145,7 @@ The ontology schema is constructed from the next elements:
 -------------
 
   
- ###API
+ ### API
  The ontology json is used almost in every aspect of the database, since YangDb can contain multiple logical
  ontologies (in addition to multiple physical schemas) the api allows adding of new ontologies...
  

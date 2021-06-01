@@ -1,13 +1,13 @@
-##Index Provider Explained
+## Index Provider Explained
 Index Provider purpose is to define a low level schematic structure for the underlying physical store
 
 The store will implement the index provider instructions according to its store architecture and capabilities
 
-##Elasticseach Store
+## Elasticseach Store
 The default index store we provide with YangDB is the Elasticsearch database. Elasticsearch is a Index store with the capability
 to elastic expand its cluster according to dynamic needs. 
 
-###Indexing Policy
+### Indexing Policy
 Elasticsearch offers the index data structure as its main indexing facility that represents a document class (in general
 this is a virtual concept which has diverse meaning over the years - see elastic documentation
  - https://www.elastic.co/blog/index-vs-type
@@ -29,13 +29,13 @@ the different tools available on YangDb such as:
  
  -------------
 
- ###Entities & Relations
+ ### Entities & Relations
  YangDB logical ontology allows the definition of three different categories:
   - entities
   - relationships
   - enumerations
   
-  ####Entities  
+  #### Entities  
   Entities are a logical structure that represents an entity with its attributes. An entity may hold primitive data types such as
   integer fields, date fields, text fields and so...
   
@@ -79,11 +79,11 @@ Attributes with the same name will be overidden by the lower hirarchy.
 
 -------------
 
-###Schema Store
+### Schema Store
 The 'Elasticsearch' index provider offers the next possibilities to store Person / Student entities : 
   
-####Entities  
-  #####Static  
+#### Entities  
+##### Static  
   Direct mapping of the entity type to a single index     
    
    
@@ -106,7 +106,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
            ]
          }             
   
-  #####Partitioned 
+  ##### Partitioned 
   Mapping of the entity type to a multiple indices where each index is called after some partitioned based field
   
          {
@@ -124,7 +124,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
            }
          }
 
-  #####Unified 
+  ##### Unified 
   Mapping the entity type to a universal single index containing all the schematic structure
   
     {
@@ -146,7 +146,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
       ]
     }
 
-  #####Nested 
+  ##### Nested 
   Mapping the entity (sub)type to an index containing as an embedded/nested document 
   
   In our example the Profession is the nested entity here ...
@@ -172,11 +172,11 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
 
 -------------
 
-  ####Relationships  
+  #### Relationships  
   Entities are a logical structure that represents a relationship between two entity with its attributes. A relationship may hold primitive data types such as
   integer fields, date fields, text fields and so...
   
-  #####Redundancy
+  ##### Redundancy
   Redundancy is the ability to store redundant data on the relationship element that represents the information residing on the side(s) of the relation.
   
   Example:
@@ -214,7 +214,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
 
 -------------
  
- ###API
+ ### API
  The index provider json structure is usaged to create a coresponding schema structure (template)
  
  On YangDb we will call the next API that will generate the coresponding Index templates

@@ -1,9 +1,9 @@
-##(L)EPB  - Logical Execution Plan Builder
+## (L)EPB  - Logical Execution Plan Builder
 ![](https://media.licdn.com/dms/image/C4E12AQE1OLxgsJvdew/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=IvcsBixXfakKoY8r3BnvQcr5srbLrYVckW0Veqw1Wjc)
 
 The responsibility of this phase is to transform the logical query into a plan which is cost optimized according to set of predefined statistical parameters collected over the dataset.
 
-###Strategies
+### Strategies
 The Logical Plan executor is responsible for building a valid (logical) execution plan that will later be translated into physical traversal execution plan.
 
 The Plan Execution Builder comes with 3 strategies:
@@ -36,7 +36,7 @@ The pruner acts according to size & cost minimization – for example we only al
 ### Process Of Execution Plan Building 
 ![](https://codeopinion.com/wp-content/uploads/2015/02/query-150x150.png)
 
-####Initial Extenders
+#### Initial Extenders
 
 Initially we begin with empty plan and spawn initials (single step) plans, all plans start from ETyped node.
 We continue the process of plan building with the next steps...
@@ -51,27 +51,28 @@ While we have available search options (unvisited query elements) do:
 
 Once no more new steps available – we should have a list of valid best prices plans of which we will take the first (or any) for execution.
 
-####On-Going Extender Types
+#### On-Going Extender Types
 An extender attempts to extend an existing plan with the next patterns:
-
+```
 > (entity)—[relation]—(entity) 
 > (entity):{constraints}—[ relation] :{constraints}—(entity) :{constraints}
 > (entity)—[relation]—(entity)—(goTo:visited_entity) 
+```
 
 From any step in the execution plan, we try to extend the plan either left or right (with elements from the query)
 Left is considered ancestor, right is considered descendant.
 
-####Example 1
+#### Example 1
 
 Let’s assume we have the next query:
-```javascript
+```
 Start [0]: ETyped [1]: Quant1 [2]:{3|4}: EProp [3]: Rel [4]: ETyped [5]
 ```
 
 First we will initially create seeds plans (starting from Entity):
 First Phase: Initial Plans 
 ------
-```javascript
+```
 •	ETyped [1] – Plan 1
 •	ETyped [5] – Plan 2
 ```
@@ -82,7 +83,7 @@ Second Phase:
 
  * Extending each plan with all possible extenders (all directions)
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped [1] (no left extension possible) 	     – Plan 1
 •	ETyped [5] --> Rel[4] --> ETyped [1]:EProp[3]    – Plan (2)-3
@@ -94,24 +95,24 @@ StepDescendantsAdjacentStrategy –extender that attempts extending right(Descen
 
 The final plans are 3 & 4, there are similar but in reverse order.
 
-####Example 2
+#### Example 2
 Additional available Extender strategies...
 Let’s assume we have the next query:
-```javascript
+```
 Start [0]: ETyped [1]: Quant1 [2]:{3|4|6}: EProp [3]: Rel [4]: ETyped [5] : Rel [6]: EConcrete[7]
 ```
 
-#####First Phase: 
-```javascript
+##### First Phase: 
+```
 •	ETyped [1] – Plan 1
 •	ETyped [5] – Plan 2
 •	ETyped [7] – Plan 3
 ```
 
-#####Second Phase:
+##### Second Phase:
 Extending each plan with all possible extenders (all directions)
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped [1] (no left extension possible) 	     – Plan 1
 •	ETyped [5] --> Rel[4] --> ETyped [1]:EProp[3]    – Plan (2)-4
@@ -129,9 +130,9 @@ GotoExtensionStrategy - extender that jumps to already visited element
 •	ETyped [5] --> Rel[6] --> ETyped [7]-> GoTo[5]	- plan (5)-9
 ```
 
-#####Third Phase:
+##### Third Phase:
 
-```javascript
+```
 StepAncestorAdjacentStrategy – extender that attempts extending left (ancestor)
 •	ETyped[7]-->Rel[6]-->ETyped[5]-->Rel[4]-->ETyped[1]:EProp[3]	 - Plan (5)-10
 •	ETyped[5]-->Rel[6]-->ETyped[7]->GoTo[5]-->Rel[4]-->ETyped[1]:EProp[3] – plan (9)-11

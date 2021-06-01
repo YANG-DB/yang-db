@@ -1,4 +1,4 @@
-##Create an Ontology
+## Create an Ontology
 
 Since we completed the installation phase (see installation documentation) we can create our
 First graph ontology for the Dragons scenario.
@@ -15,7 +15,7 @@ _Side node_ - only a portion of the entities are inside the ontology since we wa
 entire picture simple and clear to unfamiliar people ...
 
 
-####Nodes
+#### Nodes
 
  - People
  - Dragons
@@ -23,7 +23,7 @@ entire picture simple and clear to unfamiliar people ...
  - Kingdoms
  - Guilds
 ---
-####Edges
+#### Edges
 
  - **Owns** 
    
@@ -64,14 +64,14 @@ entire picture simple and clear to unfamiliar people ...
 ---
 
       
-###Ontology File
+### Ontology File
 This ontology is represented in YandDb using a json file which is present under the ontology folder (Dragons.json)
 
 New ontologies can be added freely using the REST API: http://localhost:8888/swagger#/operations/catalog/post_catalog_ontology 
 
 We will focus on the creation of new ontologies in another tutorial.
 
-#####Visualize
+##### Visualize
 If you would like to visualize the logical ontology - a special REST API exits just for that...
 http://localhost:8888/swagger#/operations/catalog/get_catalog_ontology__id__visualize 
 
@@ -79,7 +79,7 @@ The next svg file (result of the visualization API call) visualize our Dragons o
 ![ontology](img/illustrateGraphDragonsOntology.svg)
 
 
-###Elasticsearch Schema
+### Physical Schema
 Since we have a logical file representing the ontology - we would like to make use of it to generate the appropriate
 elasticsearch index template and actual indexes so that we can upload the graph data.
 
@@ -98,7 +98,7 @@ We can see the indexes with their default shards and replica setting as taken fr
 
 We can also examine the index mapping template to understand the schema physical structure as it is derived from the logical ontology.
 
-#####Physical Schema Considerations
+##### Physical Schema Considerations
 The actual structure and layout of the index representing logical entities and edges is a complex task since it may take into account
 many considerations such as performance, size, structure and such. 
 

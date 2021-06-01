@@ -1,9 +1,9 @@
-###Movies Dataset
+### Movies Dataset
 Taken from https://www.kaggle.com/rounakbanik/the-movies-dataset
 
 The movies dataset contains the following tables:
 
-#####Context
+##### Context
 
 These files contain metadata for all 45,000 movies listed in the Full MovieLens Dataset. The dataset consists of movies released on or before July 2017. Data points include cast, crew, plot keywords, budget, revenue, posters, release dates, languages, production companies, countries, TMDB vote counts and vote averages.
 
