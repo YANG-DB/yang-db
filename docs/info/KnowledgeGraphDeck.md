@@ -1,13 +1,20 @@
 ## Knowledge Graph On OpenSearch
 
-In lights of the prominent rise of knowledge Data Bases and the understanding that such modern data abstractions (topology) better suits the real world use cases - It is essential that any search engine must be enhanced with such capabilities.
+In lights of the prominent rise of knowledge Data Bases and the understanding that such modern data abstractions (ontology) better suits the real world use cases - It is essential that any search engine must be enhanced with such capabilities.
 
 Many of the real world use cases resembling graph more than anything else, this is why we would like to allow every data consumer query his data in a way that allow the domain experts to ask questions that closely relate to their business entities with an appropriate language.
 
 Such a knowledge graph capability & semantics would allow us to ask questions resembling our business use cases with a more fluent and native way  that bring closer the business entities with the query semantics.
 
+### Relationship Matter
 
-YangDb Knwoledge Graph
+In the real world the nature of the relationship between our business entities can give us great value and allow us to understand patterns in the data.
+In standard store (RDBMS / Column / Document / KeyValue) we are facing a hard time reflecting the true and dynamic relations that entities maintain and create.
+this is due to the distict physical nature of each store and its specific capabilities.
+
+In an ideal world we would like to abstract this physical conciderations in faivor of maintaining the logical layer of the entities and their evolving relationships.
+
+### YangDb Knwoledge Graph
 
 In this desk I would like to present YangDb - open source knowledge graph extension for opensearch.
 
@@ -18,7 +25,7 @@ I will focus on the next elements:
 
 I will show a working demo and finally discuss a work-plan of integrating its capabilities into opensearch as a plug-in.
 
-##### Where is the World Going To (SQL)
+### Where is the World Going To (SQL)
 
 In the past year the industry has come to understand and accept the need to do graph query on top of (part of) the standard SQL language. The open cypher initiative was a large part of this direction and contributed to the understanding that such support is needed for the community.
 
@@ -26,7 +33,7 @@ https://www.opencypher.org/articles/2019/09/12/SQL-and-now-GQL/
 https://pgql-lang.org/
 https://www.gqlstandards.org/
 
-##### Involved factors:
+### Involved factors:
 
 **• ISO:**
     
