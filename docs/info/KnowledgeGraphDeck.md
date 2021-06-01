@@ -48,7 +48,9 @@ We would like to ask logical questions that are somewhat separated from the phys
 
 We would also want to simplify the data correlation and joining of separated indexes regardless of their actual mapping - releasing the question form the actual low level internal join details.
 Join question of different entities can become very complex and performant delicate in standard SQL - using a graph expression language would simplify this task:
+
 ---
+
 Lest see the next example:
 
 ![schame](img/relational-schema.png)
