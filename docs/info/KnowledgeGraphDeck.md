@@ -235,16 +235,18 @@ execution plan using unipop (gremlin based) graph traversal engine which later i
 Results can be projected as assignments, tables or sub-graph 
 Since the cursor represents a point in time with respect to the actual data, a new cursor on the same query can return different results...
 
-#DEMO
+# DEMO
 The demo will show the Game Of Thrown Ontology and will demonstrate 
  - Creating the logical ontology
  - Loading CSV data to the Graph
  - Query the data and view results
 
-#Questions
- ...
+# Questions
+ * ???
+ * ???
+ * ???
 
-#Roadmap
+# Roadmap
 Review the planned roadmap for Knowledge graph opensearch plugin
 
  - Support logical ontology
