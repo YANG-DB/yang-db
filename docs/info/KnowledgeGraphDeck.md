@@ -9,16 +9,18 @@ Such a knowledge graph capability & semantics would allow us to ask questions re
 ### Relationship Matter
 
 In the real world the nature of the relationship between our business entities can give us great value and allow us to understand patterns in the data.
-In standard store (RDBMS / Column / Document / KeyValue) we are facing a hard time reflecting the true and dynamic relations that entities maintain and create.
-this is due to the distict physical nature of each store and its specific capabilities.
 
-In an ideal world we would like to abstract this physical conciderations in faivor of maintaining the logical layer of the entities and their evolving relationships.
+In most of the standard stores (RDBMS / Column / Document / KeyValue) we are facing a hard time reflecting the true and dynamic nature of relations that the entities maintain and create.
+
+This is due to the distinct physical nature of each store and its specific capabilities & performance goals.
+
+In an ideal world we would like to abstract this physical considerations in favor of maintaining a **Domain logical layer** (Ontology) for the entities and their evolving relationships.
 
 ### YangDb Knwoledge Graph
 
 In this desk I would like to present YangDb - open source knowledge graph extension for opensearch.
 
-I will focus on the next elements:
+Focus on the next elements:
 - Ontology layer adding a knowledge domain on top of the physical indexes structure
 - Query semantics (cypher) that focus on the domain entities and hide the underlaying complexities
 - Logical & physical execution planner that optimize execution on top of the actual data
