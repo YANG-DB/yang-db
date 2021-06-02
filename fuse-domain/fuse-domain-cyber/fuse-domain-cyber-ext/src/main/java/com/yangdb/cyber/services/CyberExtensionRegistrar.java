@@ -9,9 +9,9 @@ package com.yangdb.cyber.services;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,7 @@ import com.yangdb.fuse.model.transport.ExecutionScope;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.services.appRegistrars.AppControllerRegistrarBase;
 import com.yangdb.fuse.services.controllers.QueryController;
-import org.jooby.Jooby;
-import org.jooby.Request;
-import org.jooby.Result;
-import org.jooby.Results;
+import org.jooby.*;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -56,20 +53,20 @@ public class CyberExtensionRegistrar extends AppControllerRegistrarBase<CyberExt
         app.get("ext", () -> Results.redirect("/public/assets/swagger/swagger-ext.json"));
 
         /** create a clause query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/clause",req -> postClause(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/clause", req -> postClause(app, req, this.getController(app)));
         /** run a clause query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",req -> runClause(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run", (req, res) -> runClause(app, req, res, this.getController(app)));
         /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run",req -> runCypher(app,req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run", (req, res) -> runCypher(app, req,res, this.getController(app)));
         /** run a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",req-> runV1(app,req, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run", (req, res) -> runV1(app, req, res, this.getController(app)));
 
     }
 
     public static Result postClause(Jooby app, final Request req, QueryController controller) throws Exception {
         Route.of("postClause").write();
 
-        Map<String,Object> createQueryRequest = req.body(Map.class);
+        Map<String, Object> createQueryRequest = req.body(Map.class);
         String query = new JSONObject((Map) createQueryRequest.get("query")).toString();
         CreateJsonQueryRequest request = new CreateJsonQueryRequest(
                 createQueryRequest.get("id").toString(),
@@ -93,15 +90,15 @@ public class CyberExtensionRegistrar extends AppControllerRegistrarBase<CyberExt
     }
 
 
-    public static Result runClause(Jooby app, final Request req, QueryController controller) throws Exception {
+    public static Result runClause(Jooby app, final Request req, final Response resp, QueryController controller) throws Exception {
         Route.of("runClause").write();
 
-        Map<String,Object> createQueryRequest = req.body(Map.class);
-        String query = new JSONObject(Collections.singletonMap("clause",createQueryRequest.get("clause"))).toString();
+        Map<String, Object> createQueryRequest = req.body(Map.class);
+        String query = new JSONObject(Collections.singletonMap("clause", createQueryRequest.get("clause"))).toString();
         String ontology = req.param("ontology").value();
         req.set(ExecutionScope.class, new ExecutionScope(1000 * 60 * 10));
 
-        ContentResponse<Object> response = controller.runCypher(query,ontology);
+        ContentResponse<Object> response = controller.runCypher(query, ontology);
 
         return Results.with(response, response.status());
     }

@@ -19,7 +19,8 @@
   ],
   "produces": [
     "application/json",
-    "application/xml"
+    "application/xml",
+    "text/csv"
 
   ],
   "paths": {

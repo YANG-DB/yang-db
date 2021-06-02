@@ -20,46 +20,81 @@ package com.yangdb.fuse.services.appRegistrars;
  * #L%
  */
 
+import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
+import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
+import com.yangdb.fuse.model.results.CsvQueryResult;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import org.jooby.Request;
 import org.jooby.Response;
 import org.jooby.Result;
 import org.jooby.Results;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RegistrarsUtils {
 
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    public static final String TEXT_CSV = "text/csv";
+    public static final String IMAGE_SVG_XML = "image/svg+xml";
+
     /**
      * result is projected according to mime type
+     *
      * @param req
      * @param res
      * @param response
      * @return
      * @throws Throwable
      */
-    protected static Result with(Request req, Response res, ContentResponse<Object> response) throws Throwable {
+    public static Result with(Request req, Response res, ContentResponse<Object> response) throws Throwable {
+        if(response.getData() instanceof FuseError)
+            //return error (log)
+            return Results.with(response, response.status());
+
         //write content as temp file
-        if (req.accepts("application/octet-stream").isPresent()) {
+        if (req.accepts(APPLICATION_OCTET_STREAM).isPresent()) {
             File tempFile = File.createTempFile(response.getRequestId(), "-suffix");
             FileWriter writer = new FileWriter(tempFile);
             writer.write(response.getData().toString());
             writer.close();
             res.download(tempFile);
             tempFile.deleteOnExit();
+        } else if (req.accepts(TEXT_CSV).isPresent()) {
+            String now = Instant.now().toString();
+            File tempFile = File.createTempFile("csv_" + now, ".csv");
+
+            QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
+            if(!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
+                //get only the data content from the page resource
+                CsvQueryResult data = (CsvQueryResult) ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
+                Files.write(tempFile.toPath(), data.content().getBytes(StandardCharsets.UTF_8));
+                res.download(tempFile);
+                tempFile.deleteOnExit();
+            }
+        } else if (req.accepts(IMAGE_SVG_XML).isPresent()) {
+            res.download((File) response.getData());
+            ((File) response.getData()).deleteOnExit();
         }
         return Results.with(response, response.status());
     }
 
     protected static Result withImg(Request req, Response res, ContentResponse<File> response) throws Throwable {
         //write content as temp file
-        if (req.accepts("image/svg+xml").isPresent()) {
+        if (req.accepts(IMAGE_SVG_XML).isPresent()) {
             res.download(response.getData());
             response.getData().deleteOnExit();
         }
         return Results.with(response, response.status());
     }
+
 
 }

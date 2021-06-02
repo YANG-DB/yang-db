@@ -238,24 +238,24 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/cypher", req -> API.postCypher(app, req, this.getController(app)));
         /** run a cypher query (support both get/post protocols)  */
-        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run", req -> API.runCypher(app, req, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/cypher/run", req -> API.runCypher(app, req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/run",( req,res) -> API.runCypher(app, req,res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/cypher/run", ( req,res) -> API.runCypher(app, req,res, this.getController(app)));
     }
 
     private void sparqlContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a sparql query */
         app.post(appUrlSupplier.queryStoreUrl() + "/sparql", req -> API.postSparql(app, req, this.getController(app)));
         /** run a sparql query (support both get/post protocols) */
-        app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run", req -> API.runSparql(app, req, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run", req -> API.runSparql(app, req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run", ( req,res) -> API.runSparql(app, req,res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run", ( req,res) -> API.runSparql(app, req,res, this.getController(app)));
     }
 
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL", req -> API.postGraphQL(app, req, this.getController(app)));
         /** run a cypher query (support both get/post protocols) */
-        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", req -> API.runGraphQL(app, req, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", req -> API.runGraphQL(app, req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", ( req,res) -> API.runGraphQL(app, req,res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", ( req,res) -> API.runGraphQL(app, req,res, this.getController(app)));
     }
 
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -272,7 +272,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.post(appUrlSupplier.queryStoreUrl() + "/v1", req -> API.postV1(app, req, this.getController(app)));
 
         /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run", req -> API.runV1(app, req, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run", ( req,res) -> API.runV1(app, req,res, this.getController(app)));
     }
 
     private void graphApi(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -438,7 +438,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         }
 
-        public static Result runV1(Jooby app, final Request req, QueryController controller) throws Exception {
+        public static Result runV1(Jooby app, final Request req, final Response resp, QueryController controller) throws Exception {
             Route.of("runQuery").write();
 
             Query query = req.body(Query.class);
@@ -453,7 +453,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status());
         }
 
-        public static Result runCypher(Jooby app, final Request req, QueryController controller) throws Throwable {
+        public static Result runCypher(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runCypher").write();
 
             Optional<String> query;
@@ -475,10 +475,10 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
-            return Results.with(response, response.status());
+            return RegistrarsUtils.with(req,resp, response);
         }
 
-        public static Result runSparql(Jooby app, final Request req, QueryController controller) throws Throwable {
+        public static Result runSparql(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runSparql").write();
 
             Optional<String> query;
@@ -500,10 +500,10 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
-            return Results.with(response, response.status());
+            return RegistrarsUtils.with(req,resp, response);
         }
 
-        public static Result runGraphQL(Jooby app, final Request req, QueryController controller) throws Throwable {
+        public static Result runGraphQL(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runGraphQL").write();
 
             Optional<String> query;
@@ -525,7 +525,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
-            return Results.with(response, response.status());
+            return RegistrarsUtils.with(req,resp, response);
         }
 
         public static Result call(Jooby app, Request req, QueryController controller) throws Exception {

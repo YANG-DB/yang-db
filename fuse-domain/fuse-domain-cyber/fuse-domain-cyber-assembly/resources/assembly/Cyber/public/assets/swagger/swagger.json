@@ -20,7 +20,9 @@
   "produces": [
     "application/json",
     "application/xml",
-    "image/*"
+    "image/*",
+    "text/csv"
+
   ],
   "paths": {
     "/": {

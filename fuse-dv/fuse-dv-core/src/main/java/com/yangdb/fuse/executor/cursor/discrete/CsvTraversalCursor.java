@@ -33,6 +33,13 @@ import java.io.StringWriter;
 import java.util.*;
 
 public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
+
+    public static final String EID_1 = "eid1";
+    public static final String EID_2 = "eid2";
+    public static final String R_TYPE = "rType";
+    public static final String E_TYPE = "eType";
+    public static final String ID = "id";
+
     //region CursorFactory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -116,9 +123,9 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
                         return property.get().getValue().toString();
                     }else{
                         switch (csvElement.getProperty()){
-                            case "id":
+                            case ID:
                                 return entity.get().geteID();
-                            case "eType":
+                            case E_TYPE:
                                 return entity.get().geteType();
                         }
                     }
@@ -133,11 +140,11 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
                         return property.get().getValue().toString();
                     }else{
                         switch (csvElement.getProperty()){
-                            case "eid1":
+                            case EID_1:
                                 return relationship.get().geteID1();
-                            case "eid2":
+                            case EID_2:
                                 return relationship.get().geteID2();
-                            case "rType":
+                            case R_TYPE:
                                 return relationship.get().getrType();
                         }
                     }
@@ -164,13 +171,7 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
             convertProperties(entity.getProperties());
         }
 
-        Stream<Relationship> sortedRelations = Stream.ofAll(assignment.getRelationships()).sorted((o1, o2) -> {
-            int compareRes = o1.geteTag1().compareTo(o2.geteTag1());
-            if (compareRes == 0) {
-                return o1.geteTag2().compareTo(o2.geteTag2());
-            }
-            return compareRes;
-        });
+        Stream<Relationship> sortedRelations = Stream.ofAll(assignment.getRelationships()).sorted(Comparator.comparing(Relationship::getrID));
 
         for (Relationship relation : sortedRelations) {
             values.add(relation.getrID());

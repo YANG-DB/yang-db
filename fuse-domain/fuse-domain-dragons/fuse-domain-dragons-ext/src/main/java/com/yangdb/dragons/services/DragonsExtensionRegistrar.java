@@ -28,11 +28,9 @@ import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
 import com.yangdb.fuse.model.transport.ExecutionScope;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.services.appRegistrars.AppControllerRegistrarBase;
+import com.yangdb.fuse.services.appRegistrars.RegistrarsUtils;
 import com.yangdb.fuse.services.controllers.QueryController;
-import org.jooby.Jooby;
-import org.jooby.Request;
-import org.jooby.Result;
-import org.jooby.Results;
+import org.jooby.*;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -58,11 +56,11 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
         /** create a clause query */
         app.post(appUrlSupplier.queryStoreUrl() + "/clause",req -> postClause(app,req,this.getController(app)));
         /** run a clause query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",req -> runClause(app,req,this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/clause/run",( req,res) -> runClause(app,req,res,this.getController(app)));
         /** run a cypher query */
-        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run",req -> runCypher(app,req, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/cypher/logical/run",( req,res) -> runCypher(app,req, res,this.getController(app)));
         /** run a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",req-> runV1(app,req, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/query/v1/logical/run",( req,res)-> runV1(app,req,res, this.getController(app)));
 
     }
 
@@ -93,7 +91,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
     }
 
 
-    public static Result runClause(Jooby app, final Request req, QueryController controller) throws Exception {
+    public static Result runClause(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
         Route.of("runClause").write();
 
         Map<String,Object> createQueryRequest = req.body(Map.class);
@@ -103,7 +101,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
 
         ContentResponse<Object> response = controller.runCypher(query,ontology);
 
-        return Results.with(response, response.status());
+        return RegistrarsUtils.with(req,resp, response);
     }
     //endregion
 }

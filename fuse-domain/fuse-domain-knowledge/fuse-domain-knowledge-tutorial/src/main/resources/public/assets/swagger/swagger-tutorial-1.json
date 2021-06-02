@@ -18,7 +18,9 @@
     "application/json"
   ],
   "produces": [
-    "application/json"
+    "application/json",
+    "text/csv"
+
   ],
   "paths": {
     "/load/ontology/{id}/init": {
