@@ -46,4 +46,9 @@ public class AssignmentsErrorQueryResult extends AssignmentsQueryResult {
     public String toString() {
         return error().getErrorDescription();
     }
+
+    @Override
+    public String content() {
+        return toString();
+    }
 }

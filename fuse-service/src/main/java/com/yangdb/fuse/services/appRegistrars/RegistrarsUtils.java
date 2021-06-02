@@ -20,11 +20,13 @@ package com.yangdb.fuse.services.appRegistrars;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.CsvQueryResult;
+import com.yangdb.fuse.model.results.TextContent;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import org.jooby.Request;
 import org.jooby.Response;
@@ -42,10 +44,12 @@ import java.util.List;
 
 public class RegistrarsUtils {
 
+    public static final String APPLICATION_JSON = "application/json";
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String TEXT_CSV = "text/csv";
     public static final String IMAGE_SVG_XML = "image/svg+xml";
-
+    //json fast serializer
+    public static ObjectMapper mapper = new ObjectMapper();
     /**
      * result is projected according to mime type
      *
@@ -75,8 +79,24 @@ public class RegistrarsUtils {
             QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
             if(!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
                 //get only the data content from the page resource
-                CsvQueryResult data = (CsvQueryResult) ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
-                Files.write(tempFile.toPath(), data.content().getBytes(StandardCharsets.UTF_8));
+                Object element = ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
+                String content = element.toString();
+                if(element instanceof TextContent) {
+                     content = ((TextContent) element).content();
+                }
+                Files.write(tempFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
+                res.download(tempFile);
+                tempFile.deleteOnExit();
+            }
+        } else if (req.accepts(APPLICATION_JSON).isPresent()) {
+            String now = Instant.now().toString();
+            File tempFile = File.createTempFile(  now, ".json");
+
+            QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
+            if(!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
+                //get only the data content from the page resource
+                Object element = ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
+                Files.write(tempFile.toPath(), mapper.writeValueAsString(element).getBytes(StandardCharsets.UTF_8));
                 res.download(tempFile);
                 tempFile.deleteOnExit();
             }
