@@ -44,6 +44,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.graph.Graph;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.yangdb.fuse.executor.cursor.discrete.ForwardOnlyPathsTraversalCursor;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
@@ -56,6 +57,8 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
+import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
+import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.rendering.SVGGraphRenderer;
@@ -72,6 +75,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.transport.cursor.CreateCursorRequest.getDefaultCursorRequestType;
 import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
@@ -443,7 +447,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             ContentResponse<Object> response = controller.runV1Query(query,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
             return Results.with(response, response.status());
@@ -468,7 +472,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             ContentResponse<Object> response = controller.runCypher(query.get(), ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
             return Results.with(response, response.status());
@@ -493,7 +497,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             ContentResponse<Object> response = controller.runSparql(query.get(), ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
             return Results.with(response, response.status());
@@ -518,7 +522,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
             ContentResponse<Object> response = controller.runGraphQL(query.get(), ontology,
                     req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : LogicalGraphCursorRequest.CursorType
+                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
             );
 
             return Results.with(response, response.status());

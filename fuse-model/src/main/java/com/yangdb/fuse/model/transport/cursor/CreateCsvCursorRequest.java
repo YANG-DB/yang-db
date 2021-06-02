@@ -47,6 +47,7 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     }
 
     public CreateCsvCursorRequest(CsvElement[] csvElements, CreatePageRequest createPageRequest) {
-        this(csvElements, createPageRequest, false);
+        this(csvElements, createPageRequest, true);
 
     }
 
@@ -100,8 +101,8 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
     //endregion
 
     //region Fields
-    private CsvElement[] csvElements;
-    private boolean withHeaders;
+    private CsvElement[] csvElements = new CsvElement[0];
+    private boolean withHeaders = true;
     //endregion
 
     //region Builder
@@ -129,7 +130,7 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
         }
 
         private List<CsvElement> csvElements;
-        private boolean withHeaders = false;
+        private boolean withHeaders = true;
     }
     //endregion
 

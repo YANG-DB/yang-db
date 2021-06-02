@@ -51,6 +51,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 
 public abstract class CreateCursorRequest {
+    /**
+     * current default cursor request
+     * @return
+     */
+    public static final String getDefaultCursorRequestType() {
+        return CreateForwardOnlyPathTraversalCursorRequest.CursorType;
+    }
 
     //default max execution time
     public static final int DEFAULT_EXECUTION_TIME = 10 * 60 * 1000;

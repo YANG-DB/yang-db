@@ -16,7 +16,7 @@ This is due to the distinct physical nature of each store and its specific capab
 
 In an ideal world we would like to abstract this physical considerations in favor of maintaining a **Domain logical layer** (Ontology) for the entities and their evolving relationships.
 
-### YangDb Knwoledge Graph
+### YangDb Knowledge Graph
 
 In this desk I would like to present YangDb - open source knowledge graph extension for opensearch.
 

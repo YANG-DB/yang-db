@@ -27,6 +27,7 @@ import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest;
 import com.opencsv.CSVWriter;
 import javaslang.collection.Stream;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -39,7 +40,7 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
         public Cursor createCursor(Context context) {
             return new CsvTraversalCursor(
                     new PathsTraversalCursor((TraversalCursorContext)context),
-                    (CreateCsvCursorRequest) context.getCursorRequest());
+                     context.getCursorRequest()!=null ? (CreateCsvCursorRequest) context.getCursorRequest() : new CreateCsvCursorRequest());
         }
         //endregion
     }
@@ -74,7 +75,7 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
 
     //region Private Methods
     private void addHeaders(CreateCsvCursorRequest csvCursorRequest, CsvQueryResult.Builder builder) {
-        if(csvCursorRequest.getCsvElements().length > 0){
+        if(!ArrayUtils.isEmpty(csvCursorRequest.getCsvElements())){
             String[] header = new String[csvCursorRequest.getCsvElements().length];
             for (int i = 0; i < csvCursorRequest.getCsvElements().length; i++) {
                 CreateCsvCursorRequest.CsvElement currentElm = csvCursorRequest.getCsvElements()[i];
@@ -89,7 +90,7 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
     }
 
     private String convertToCsv(Assignment<Entity,Relationship> assignment){
-        if(csvCursorRequest.getCsvElements().length == 0){
+        if(ArrayUtils.isEmpty(csvCursorRequest.getCsvElements())){
             return convertToCsvNoSelection(assignment);
         }
         StringWriter writer = new StringWriter();
