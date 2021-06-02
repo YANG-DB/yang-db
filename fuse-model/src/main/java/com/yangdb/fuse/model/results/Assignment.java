@@ -24,6 +24,7 @@ package com.yangdb.fuse.model.results;
  */
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -82,6 +83,16 @@ public class Assignment<E extends Vertex,R extends Edge> {
     //region Fields
     private List<E> entities;
     private List<R> relationships;
+
+    @JsonIgnore
+    public Optional<E> getEntityByTag(String tag) {
+        return entities.stream().filter(e->e.tag().equals(tag)).findAny();
+    }
+
+    @JsonIgnore
+    public Optional<R> getRelationByTag(String tag) {
+        return relationships.stream().filter(e->e.tag().equals(tag)).findAny();
+    }
     //endregion
 
     public static final class Builder<E extends Vertex,R extends Edge> {

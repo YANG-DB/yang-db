@@ -75,6 +75,14 @@ public class Relationship implements Edge , Comparable<Relationship>{
         this.rID = rID;
     }
 
+    public String getrTag() {
+        return rTag;
+    }
+
+    public void setrTag(String rTag) {
+        this.rTag = rTag;
+    }
+
     public boolean isAgg() {
         return agg;
     }
@@ -183,7 +191,7 @@ public class Relationship implements Edge , Comparable<Relationship>{
     @Override
     public String toString()
     {
-        return "Relationship [eID1 = "+eID1+", rType = "+rType+", attachedProperties = "+attachedProperties+", eID2 = "+eID2+", directional = "+directional+", agg = "+agg+", properties = "+properties+", rID = "+rID+"]";
+        return "Relationship [eID1 = "+eID1+", rType = "+rType+", rTag = "+rTag+", attachedProperties = "+attachedProperties+", eID2 = "+eID2+", directional = "+directional+", agg = "+agg+", properties = "+properties+", rID = "+rID+"]";
     }
     //endregion
 
@@ -194,6 +202,7 @@ public class Relationship implements Edge , Comparable<Relationship>{
     private boolean directional;
     private String eID1;
     private String eID2;
+    private String rTag;
     private String eTag1;
     private String eTag2;
     private List<Property> properties;
@@ -212,6 +221,11 @@ public class Relationship implements Edge , Comparable<Relationship>{
     @Override
     public String id() {
         return rID;
+    }
+
+    @Override
+    public String tag() {
+        return rTag;
     }
 
     @Override
@@ -263,6 +277,10 @@ public class Relationship implements Edge , Comparable<Relationship>{
             this.rType = rType;
             return this;
         }
+      public Builder withRTag(String rTag) {
+            this.rTag = rTag;
+            return this;
+        }
 
         public Builder withDirectional(boolean directional) {
             this.directional = directional;
@@ -308,6 +326,7 @@ public class Relationship implements Edge , Comparable<Relationship>{
             relationship.eID1 = this.eID1;
             relationship.rID = this.rID;
             relationship.rType = this.rType;
+            relationship.rTag = this.rTag;
             relationship.eID2 = this.eID2;
             relationship.eTag1 = this.eTag1;
             relationship.eTag2 = this.eTag2;
@@ -318,6 +337,7 @@ public class Relationship implements Edge , Comparable<Relationship>{
         //region Fields
         private String rID;
         private boolean agg;
+        private String rTag;
         private String rType;
         private boolean directional;
         private String eID1;

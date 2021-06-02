@@ -212,6 +212,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
                 .map(Optional::get)
                 .toJavaList();
         builder.withRID(edge.id().toString());
+        builder.withRTag(rel.geteTag());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());

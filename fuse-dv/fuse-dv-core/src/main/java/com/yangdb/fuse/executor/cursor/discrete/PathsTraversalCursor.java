@@ -178,6 +178,7 @@ public class PathsTraversalCursor implements Cursor {
         Relationship.Builder builder = Relationship.Builder.instance();
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
+        builder.withRTag(rel.geteTag());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());
         //add properties

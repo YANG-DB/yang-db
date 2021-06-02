@@ -179,6 +179,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
     private Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
         builder.withRID(edge.id().toString());
+        builder.withRTag(rel.geteTag());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
         builder.withEID2(edge.inVertex().id().toString());

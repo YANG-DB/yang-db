@@ -184,6 +184,7 @@ public class TraversalCursor implements Cursor {
         PromiseEdge edge = path.get(Pop.last, prevEntity.geteTag() + "-->" + nextEntity.geteTag());
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
+        builder.withRTag(rel.geteTag());
 
         switch (rel.getDir()) {
             case R:

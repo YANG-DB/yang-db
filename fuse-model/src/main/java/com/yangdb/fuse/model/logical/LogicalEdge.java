@@ -56,6 +56,8 @@ public class LogicalEdge implements Edge {
     @JsonProperty("id")
     private String id;
     @JsonProperty("label")
+    private String tag;
+    @JsonProperty("tag")
     private String label = EDGE;
     @JsonProperty("source")
     private String source;
@@ -98,6 +100,16 @@ public class LogicalEdge implements Edge {
             properties.addProperties(String.format("_%s", property), value);
         }
         return this;
+    }
+
+    @JsonProperty("tag")
+    public String getTag() {
+        return tag;
+    }
+
+    @JsonProperty("tag")
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @JsonProperty("label")
@@ -175,6 +187,7 @@ public class LogicalEdge implements Edge {
         return getClass().getSimpleName() + "{" +
                 "id='" + id + '\'' +
                 "label='" + label + '\'' +
+                "tag='" + tag + '\'' +
                 ", source='" + source + '\'' +
                 ", target='" + target + '\'' +
                 ", direction=" + direction +
@@ -187,6 +200,11 @@ public class LogicalEdge implements Edge {
     @JsonProperty("id")
     public String id() {
         return getId() != null ? id : String.format("%s.%s", source, target);
+    }
+
+    @Override
+    public String tag() {
+        return getTag();
     }
 
     @Override

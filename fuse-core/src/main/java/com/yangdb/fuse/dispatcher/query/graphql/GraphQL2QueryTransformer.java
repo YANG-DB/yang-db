@@ -68,6 +68,9 @@ public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<Stri
         if(execute.getErrors().isEmpty())
             return instance.build();
 
+        //todo implement projection fields
+//        query.setProjectedFields(populate);
+
         throw new IllegalArgumentException(execute.getErrors().toString());
     }
 

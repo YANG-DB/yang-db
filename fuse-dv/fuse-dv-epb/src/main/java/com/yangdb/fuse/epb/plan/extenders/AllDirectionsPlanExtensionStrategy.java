@@ -107,10 +107,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
             AsgEBase<Rel> rel = element;
             if(reverseDirection){
                 Rel rel1 = rel.geteBase();
-                Rel rel2 = new Rel();
-                rel2.seteNum(rel1.geteNum());
-                rel2.setrType(rel1.getrType());
-                rel2.setWrapper(rel1.getWrapper());
+                Rel rel2 = rel1.clone();
                 if(rel1.getDir().equals(Rel.Direction.L)){
                     rel2.setDir(Rel.Direction.R);
                 }else if(rel1.getDir().equals(Rel.Direction.R)){

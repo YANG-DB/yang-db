@@ -47,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.*;
 import com.yangdb.fuse.model.query.aggregation.CountComp;
@@ -123,11 +124,11 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
         this.elements = elements;
     }
 
-    public List<String> getProjectedFields() {
+    public Map<String, List<AsgEBase<EBase>>>  getProjectedFields() {
         return projectedFields;
     }
 
-    public void setProjectedFields(List<String> projectedFields) {
+    public void setProjectedFields(Map<String, List<AsgEBase<EBase>>> projectedFields) {
         this.projectedFields = projectedFields;
     }
 //endregion
@@ -175,7 +176,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
     private String name;
     private AsgEBase<Start> start;
     private Query origin;
-    private List<String> projectedFields = new ArrayList<>();
+    private Map<String, List<AsgEBase<EBase>>> projectedFields = new HashMap<>();
 
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
@@ -225,8 +226,8 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
             return this;
         }
 
-        public AsgQueryBuilder withProjectedFields(List<String> projectedFields) {
-            this.asgQuery.projectedFields = projectedFields;
+        public AsgQueryBuilder withProjectedFields(List<EBase> projectedFields) {
+            projectedFields.forEach(f->this.asgQuery.projectedFields.put(((Tagged)f).geteTag(),Arrays.asList(new AsgEBase<>(f))));
             return this;
         }
 

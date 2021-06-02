@@ -25,6 +25,8 @@ import java.util.Map;
 public interface Edge  {
     String id();
 
+    String tag();
+
     String label();
 
     Map<String,Object> metadata();

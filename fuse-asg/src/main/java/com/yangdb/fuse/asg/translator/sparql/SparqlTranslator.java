@@ -55,6 +55,9 @@ public class SparqlTranslator implements AsgTranslator<QueryInfo<String>, AsgQue
         ParsedQuery statement = new SPARQLParser().parseQuery(source.getQuery(), IRI.create(query.getOnt()).toString());
         final SparqlStrategyContext context = new SparqlStrategyContext(ontology,statement,query, query.getStart());
 
+        //todo implement projection fields
+//        query.setProjectedFields(populate);
+
         //apply strategies
         strategies.iterator().forEachRemaining(strategy -> strategy.apply(query, context));
         return query;

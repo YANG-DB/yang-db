@@ -43,6 +43,11 @@ package com.yangdb.fuse.model.transport.cursor;
  *
  */
 
+import com.yangdb.fuse.model.query.EBase;
+import com.yangdb.fuse.model.query.entity.EEntityBase;
+import com.yangdb.fuse.model.query.entity.Typed;
+import com.yangdb.fuse.model.query.properties.BaseProp;
+import com.yangdb.fuse.model.query.properties.BasePropGroup;
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 import javaslang.collection.Stream;
 
@@ -152,6 +157,13 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
             this.elementType = elementType;
         }
 
+        public CsvElement(String key, EBase eBase) {
+            this.tag1 = key;
+            this.property = (eBase instanceof Typed) ? ((Typed) eBase).getTyped() : eBase.getClass().getSimpleName();
+            this.elementType = (eBase instanceof EEntityBase || eBase instanceof BaseProp || eBase instanceof BasePropGroup) ? ElementType.Entity : ElementType.Rel ;
+
+        }
+
         public String getTag1() {
             return tag1;
         }
@@ -193,6 +205,7 @@ public class CreateCsvCursorRequest extends CreateCursorRequest {
 
     public enum ElementType{
         Entity,
-        Rel
+        Rel,
+        Prop
     }
 }

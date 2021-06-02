@@ -654,11 +654,8 @@ public class AsgQueryUtil {
     }
 
     public static AsgEBase<Rel> reverse(AsgEBase<Rel> relAsgEBase) {
-        Rel reversedRel = new Rel();
-        reversedRel.seteNum(relAsgEBase.geteNum());
-        reversedRel.setrType(relAsgEBase.geteBase().getrType());
+        Rel reversedRel = relAsgEBase.geteBase().clone();
         reversedRel.setDir(relAsgEBase.geteBase().getDir() == Rel.Direction.L ? Rel.Direction.R : Rel.Direction.L);
-
         return AsgEBase.Builder.<Rel>get().withEBase(reversedRel).build();
     }
 

@@ -49,6 +49,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.yangdb.fuse.model.Next;
+import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.asgQuery.IQuery;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
@@ -107,11 +108,16 @@ public class Query implements IQuery<EBase> {
         this.nonidentical = nonidentical;
     }
 
-    public List<String> getProjectedFields() {
-        return projectedFields;
+    public List<EBase> getProjectedFields() {
+        return projectedFields!=null ? projectedFields : generatePopulateFields();
     }
 
-    public void setProjectedFields(List<String> projectedFields) {
+    private List<EBase> generatePopulateFields() {
+        this.setProjectedFields(getElements().stream().filter(e->e instanceof Tagged).collect(Collectors.toList()));
+        return getProjectedFields();
+    }
+
+    public void setProjectedFields(List<EBase> projectedFields) {
         this.projectedFields = projectedFields;
     }
 
@@ -120,7 +126,7 @@ public class Query implements IQuery<EBase> {
     private String name;
     private List<List<String>> nonidentical;
     private List<EBase> elements = new ArrayList<>();
-    private List<String> projectedFields = new ArrayList<>();
+    private List<EBase> projectedFields = new ArrayList<>();
     //endregion
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
@@ -130,7 +136,7 @@ public class Query implements IQuery<EBase> {
 
         private String ont;
         private String name;
-        private List<String> projectedFields = new ArrayList<>();
+        private List<EBase> projectedFields = new ArrayList<>();
         private List<Wrapper<? extends EBase>> elements;
         private List<List<String>> nonidentical;
 
@@ -231,7 +237,7 @@ public class Query implements IQuery<EBase> {
             return this;
         }
 
-        public Builder projectField(String ... name) {
+        public Builder projectField(EBase ... name) {
             this.projectedFields.addAll(Arrays.asList(name));
             return this;
         }
