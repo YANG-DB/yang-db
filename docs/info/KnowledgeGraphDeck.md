@@ -62,7 +62,7 @@ Join question of different entities can become very complex and performant delic
 
 Lest see the next example:
 
-![schame](img/relational-schema.png)
+![schame](https://github.com/YANG-DB/yang-db/blob/develop/docs/info/img/relational-schema.png)
 
 **sql statement:**
 ```
@@ -202,7 +202,7 @@ Next the physical representation which describes some store related instructions
 As shown lower level store aspects are represented here and can be configured for space & store optimization.
 
 ### REST API
-![swagger](img/yangDb-swagger.png) 	 
+![swagger](https://github.com/YANG-DB/yang-db/blob/develop/docs/info/img/yangDb-swagger.png) 	 
 Yang-DB offers a rich REST API to handle all the relevant functionalities:
  - Operational
  - Monitoring
@@ -224,7 +224,7 @@ In the next image we can visualize the simple cypher pattern
 
 versus the composite and large explicit SQL equivalent query:
 
-![cypher vs sql](img/cypher_vs_sql.png)
+![cypher vs sql](https://github.com/YANG-DB/yang-db/blob/develop/docs/info/img/cypher_vs_sql.png)
 
 Now that we recognize the advantage of this semantics - lets review the data representation of YangDB:
 
@@ -232,7 +232,7 @@ Now that we recognize the advantage of this semantics - lets review the data rep
 ### Query Execution
 **- Query is a resource**
  1) Each query resource is being validated and rewritten to an AST tree that represents the actual logical traversal
- ![asg](img/visualize-asg-q4.png)       
+ ![asg](https://github.com/YANG-DB/yang-db/blob/develop/docs/info/img/visualize-asg-q4.png)       
 
  
  2) A cursor resource is the place where the actual data traversal is happening, the query logical plan is transformed to a physical
@@ -252,11 +252,6 @@ The demo will show the Game Of Thrown Ontology and will demonstrate
  - Loading CSV data to the Graph
  - Query the data and view results
 
-# Questions
- * ???
- * ???
- * ???
-
 # Roadmap
 Review the planned roadmap for Knowledge graph opensearch plugin
 
@@ -264,4 +259,7 @@ Review the planned roadmap for Knowledge graph opensearch plugin
  - Support PGQL query language
  - Support Execution Cost Based Planner
  - Support Distributed Join Execution
+
+# The Presentation
+ ![presentation](https://github.com/YANG-DB/yang-db/blob/develop/docs/info/YangDbOpenSearch.pdf)       
 
