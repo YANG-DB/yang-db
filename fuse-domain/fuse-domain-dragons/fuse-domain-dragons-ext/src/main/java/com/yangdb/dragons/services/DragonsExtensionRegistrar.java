@@ -91,7 +91,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
     }
 
 
-    public static Result runClause(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
+    public static void runClause(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
         Route.of("runClause").write();
 
         Map<String,Object> createQueryRequest = req.body(Map.class);
@@ -101,7 +101,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
 
         ContentResponse<Object> response = controller.runCypher(query,ontology);
 
-        return RegistrarsUtils.with(req,resp, response);
+        RegistrarsUtils.with(req,resp, response);
     }
     //endregion
 }

@@ -44,8 +44,8 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.graph.Graph;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.yangdb.fuse.executor.cursor.discrete.ForwardOnlyPathsTraversalCursor;
 import com.yangdb.fuse.logging.Route;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -57,9 +57,6 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
-import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.CreateForwardOnlyPathTraversalCursorRequest;
-import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import com.yangdb.fuse.model.validation.ValidationResult;
 import com.yangdb.fuse.rendering.SVGGraphRenderer;
 import com.yangdb.fuse.services.controllers.QueryController;
@@ -86,6 +83,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     public static final int TIMEOUT = 1000 * 60 * 10;
     public static final int PAGE_SIZE = 1000;
     public static final String GRAPH_QL = "graphQL";
+    public static final String PAGE_SIZE_KEY = "pageSize";
+    public static final String CURSOR_TYPE_KEY = "cursorType";
+    public static final String QUERY_ID_KEY = "queryId";
 
     //region Constructors
     public QueryControllerRegistrar() {
@@ -116,7 +116,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /**  register graph API context **/
         graphApi(app, appUrlSupplier);
 
-      /**  register V1 API context **/
+        /**  register V1 API context **/
         v1Context(app, appUrlSupplier);
 
         /**  register cypher API context **/
@@ -139,20 +139,20 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.get(appUrlSupplier.resourceUrl(":queryId"), req -> {
             Route.of("getQuery").write();
 
-            ContentResponse response = this.getController(app).getInfo(req.param("queryId").value());
+            ContentResponse response = this.getController(app).getInfo(req.param(QUERY_ID_KEY).value());
             return Results.with(response, response.status());
         });
 
         /** delete a query */
         app.delete(appUrlSupplier.resourceUrl(":queryId"), req -> {
             Route.of("deleteQuery").write();
-            ContentResponse response = this.getController(app).delete(req.param("queryId").value());
+            ContentResponse response = this.getController(app).delete(req.param(QUERY_ID_KEY).value());
             return Results.with(response, response.status());
         });
 
         /** get the query verbose plan */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/planVerbose", req -> {
-            ContentResponse response = this.getController(app).planVerbose(req.param("queryId").value());
+            ContentResponse response = this.getController(app).planVerbose(req.param(QUERY_ID_KEY).value());
             //temporary fix for json serialization of object graphs
             return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
                     .type("application/json");
@@ -162,7 +162,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query v1*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/v1", req -> {
-            ContentResponse response = this.getController(app).getV1(req.param("queryId").value());
+            ContentResponse response = this.getController(app).getV1(req.param(QUERY_ID_KEY).value());
             return Results.with(response, response.status());
         });
 
@@ -176,28 +176,28 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query v1 print*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/visualize",
-                (req,resp) -> API.queryView(app, req,resp, this));
+                (req, resp) -> API.queryView(app, req, resp, this));
 
 
         /** view the asg query with d3 html*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/visualize",
-                (req,resp) -> API.asgView(app, req,resp, this));
+                (req, resp) -> API.asgView(app, req, resp, this));
 
 
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg", req -> {
-            ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
+            ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param(QUERY_ID_KEY).value());
             return Results.with(response, response.status());
         });
 
         /** view the elastic query with d3 html*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view",
                 req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.queryStoreUrl() + "/" + req.param("queryId").value() + "/elastic"));
+                        appUrlSupplier.queryStoreUrl() + "/" + req.param(QUERY_ID_KEY).value() + "/elastic"));
 
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/json", req -> {
-            ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param("queryId").value());
+            ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param(QUERY_ID_KEY).value());
             return Results.json(response.getData());
         });
 
@@ -207,14 +207,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query plan execution */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan", req -> {
-            ContentResponse response = this.getController(app).explain(req.param("queryId").value());
+            ContentResponse response = this.getController(app).explain(req.param(QUERY_ID_KEY).value());
             //temporary fix for jason serialization of object graphs
             return Results.with(JsonWriter.objectToJson(response), response.status());
         });
 
         /** get the query verbose plan */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/json", req -> {
-            ContentResponse response = this.getController(app).explain(req.param("queryId").value());
+            ContentResponse response = this.getController(app).explain(req.param(QUERY_ID_KEY).value());
             return Results.json(response.getData());
         });
 
@@ -224,7 +224,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /** get the query verbose plan */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/visualize",
-                (req,resp) -> API.planView(app, req,resp, this));
+                (req, resp) -> API.planView(app, req, resp, this));
 
         //swagger
         app.use(new ApiTool()
@@ -246,16 +246,16 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** create a sparql query */
         app.post(appUrlSupplier.queryStoreUrl() + "/sparql", req -> API.postSparql(app, req, this.getController(app)));
         /** run a sparql query (support both get/post protocols) */
-        app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run", ( req,res) -> API.runSparql(app, req,res, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run", ( req,res) -> API.runSparql(app, req,res, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/sparql/run", (req, res) -> API.runSparql(app, req, res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run", (req, res) -> API.runSparql(app, req, res, this.getController(app)));
     }
 
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** create a cypher query */
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL", req -> API.postGraphQL(app, req, this.getController(app)));
         /** run a cypher query (support both get/post protocols) */
-        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", ( req,res) -> API.runGraphQL(app, req,res, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", ( req,res) -> API.runGraphQL(app, req,res, this.getController(app)));
+        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
     }
 
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -272,7 +272,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.post(appUrlSupplier.queryStoreUrl() + "/v1", req -> API.postV1(app, req, this.getController(app)));
 
         /** create a v1 query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run", ( req,res) -> API.runV1(app, req,res, this.getController(app)));
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/run", (req, res) -> API.runV1(app, req, res, this.getController(app)));
     }
 
     private void graphApi(Jooby app, AppUrlSupplier appUrlSupplier) {
@@ -323,7 +323,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.findPath(
-                    req.param("ontology").value(),
+                    req.param(GlobalConstants.ONTOLOGY).value(),
                     req.param("sourceEntity").value(),
                     req.param("sourceId").value(),
                     req.param("targetEntity").value(),
@@ -341,7 +341,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.getVertex(
-                    req.param("ontology").value(),
+                    req.param(GlobalConstants.ONTOLOGY).value(),
                     req.param("type").value(),
                     req.param("id").value());
 
@@ -355,7 +355,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.getNeighbors(
-                    req.param("ontology").value(),
+                    req.param(GlobalConstants.ONTOLOGY).value(),
                     req.param("type").value(),
                     req.param("id").value());
 
@@ -446,14 +446,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runV1Query(query,
-                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
+                    req.param(PAGE_SIZE_KEY).isSet() ? req.param(PAGE_SIZE_KEY).intValue() : PAGE_SIZE,
+                    req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
             return Results.with(response, response.status());
         }
 
-        public static Result runCypher(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
+        public static void runCypher(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runCypher").write();
 
             Optional<String> query;
@@ -467,18 +467,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             query.orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
 
-            String ontology = req.param("ontology").value();
+            String ontology = req.param(GlobalConstants.ONTOLOGY).value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runCypher(query.get(), ontology,
-                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
+                    req.param(PAGE_SIZE_KEY).isSet() ? req.param(PAGE_SIZE_KEY).intValue() : PAGE_SIZE,
+                    req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
-            return RegistrarsUtils.with(req,resp, response);
+            RegistrarsUtils.with(req, resp, response);
         }
 
-        public static Result runSparql(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
+        public static void runSparql(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runSparql").write();
 
             Optional<String> query;
@@ -492,18 +492,18 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             query.orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
 
-            String ontology = req.param("ontology").value();
+            String ontology = req.param(GlobalConstants.ONTOLOGY).value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runSparql(query.get(), ontology,
-                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
+                    req.param(PAGE_SIZE_KEY).isSet() ? req.param(PAGE_SIZE_KEY).intValue() : PAGE_SIZE,
+                    req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
-            return RegistrarsUtils.with(req,resp, response);
+            RegistrarsUtils.with(req, resp, response);
         }
 
-        public static Result runGraphQL(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
+        public static void runGraphQL(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runGraphQL").write();
 
             Optional<String> query;
@@ -517,15 +517,15 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             query.orElseThrow(
                     () -> new FuseError.FuseErrorException(new FuseError("Request Error", "No query parameter found in request")));
 
-            String ontology = req.param("ontology").value();
+            String ontology = req.param(GlobalConstants.ONTOLOGY).value();
             req.set(ExecutionScope.class, new ExecutionScope(TIMEOUT));
 
             ContentResponse<Object> response = controller.runGraphQL(query.get(), ontology,
-                    req.param("pageSize").isSet() ? req.param("pageSize").intValue() : PAGE_SIZE,
-                    req.param("cursorType").isSet() ? req.param("cursorType").value() : getDefaultCursorRequestType()
+                    req.param(PAGE_SIZE_KEY).isSet() ? req.param(PAGE_SIZE_KEY).intValue() : PAGE_SIZE,
+                    req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
-            return RegistrarsUtils.with(req,resp, response);
+            RegistrarsUtils.with(req, resp, response);
         }
 
         public static Result call(Jooby app, Request req, QueryController controller) throws Exception {
@@ -555,24 +555,24 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          */
         public static Object profile(Jooby app, Request req, QueryControllerRegistrar registrar) throws Throwable {
             Route.of("profile").write();
-            String queryId = req.param("queryId").value();
+            String queryId = req.param(QUERY_ID_KEY).value();
             ContentResponse<Object> profile = registrar.getController(app).profile(queryId);
-            return Results.with(profile,profile.status());
+            return Results.with(profile, profile.status());
         }
 
         public static Result nextPage(Jooby app, Request req, QueryControllerRegistrar registrar) {
             Route.of("nextPageData").write();
             ContentResponse<Object> page = registrar.getController(app)
-                    .fetchNextPage(req.param("queryId").value(),
+                    .fetchNextPage(req.param(QUERY_ID_KEY).value(),
                             req.param("cursorId").toOptional(String.class),
-                            req.param("pageSize").intValue(),
+                            req.param(PAGE_SIZE_KEY).intValue(),
                             req.param("deletePage").isSet() ? req.param("deletePage").booleanValue() : true);
             return Results.with(page, page.status());
 
         }
 
         public static Result printAsg(Jooby app, Request req, QueryControllerRegistrar registrar) {
-            ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(req.param("queryId").value());
+            ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(req.param(QUERY_ID_KEY).value());
             String print = AsgQueryDescriptor.print(response.getData());
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
@@ -582,7 +582,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result planGraph(Jooby app, Request req, QueryControllerRegistrar registrar) {
-            ContentResponse response = registrar.getController(app).explain(req.param("queryId").value());
+            ContentResponse response = registrar.getController(app).explain(req.param(QUERY_ID_KEY).value());
             Boolean cycle = Boolean.valueOf(req.param("cycle").toOptional().orElse("true"));
             Graph<PlanWithCostDescriptor.GraphElement> graph = PlanWithCostDescriptor.graph((PlanWithCost<Plan, PlanDetailedCost>) response.getData(), cycle);
             Map<String, Set> map = new HashMap<>();
@@ -592,7 +592,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result planPrint(Jooby app, Request req, QueryControllerRegistrar registrar) {
-            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param("queryId").value());
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param(QUERY_ID_KEY).value());
             String print = PlanWithCostDescriptor.print(response.getData(), true);
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
@@ -601,7 +601,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result printQuery(Jooby app, Request req, QueryControllerRegistrar registrar) {
-            ContentResponse<Query> response = registrar.getController(app).getV1(req.param("queryId").value());
+            ContentResponse<Query> response = registrar.getController(app).getV1(req.param(QUERY_ID_KEY).value());
             String print = QueryDescriptor.print(response.getData());
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
@@ -612,6 +612,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /**
          * print an SVG representation of the V1 query
+         *
          * @param app
          * @param req
          * @param resp
@@ -620,18 +621,19 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          * @throws Throwable
          */
         public static Object queryView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
-            String queryId = req.param("queryId").value();
+            String queryId = req.param(QUERY_ID_KEY).value();
             ContentResponse<Query> response = registrar.getController(app).getV1(queryId);
             String dotGraph = QueryDescriptor.printGraph(response.getData());
             File file = SVGGraphRenderer.render(queryId, dotGraph);
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
         /**
-          * print an SVG representation of the ASG query
+         * print an SVG representation of the ASG query
+         *
          * @param app
          * @param req
          * @param resp
@@ -640,18 +642,19 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          * @throws Throwable
          */
         public static Object asgView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
-            String queryId = req.param("queryId").value();
+            String queryId = req.param(QUERY_ID_KEY).value();
             ContentResponse<AsgQuery> response = registrar.getController(app).getAsg(queryId);
             String dotGraph = AsgQueryDescriptor.printGraph(response.getData());
             File file = SVGGraphRenderer.render(queryId, dotGraph);
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
         /**
          * print an SVG representation of the execution plan
+         *
          * @param app
          * @param req
          * @param resp
@@ -660,14 +663,14 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          * @throws Throwable
          */
         public static Object planView(Jooby app, Request req, Response resp, QueryControllerRegistrar registrar) throws Throwable {
-            String queryId = req.param("queryId").value();
-            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param("queryId").value());
+            String queryId = req.param(QUERY_ID_KEY).value();
+            ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = registrar.getController(app).explain(req.param(QUERY_ID_KEY).value());
             String dotGraph = PlanWithCostDescriptor.printGraph(response.getData());
             File file = SVGGraphRenderer.render(queryId, dotGraph);
             ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
                     .data(file)
                     .compose();
-            return RegistrarsUtils.withImg(req,resp,compose);
+            return RegistrarsUtils.withImg(req, resp, compose);
         }
 
     }

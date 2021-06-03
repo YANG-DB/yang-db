@@ -28,10 +28,7 @@ import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.results.CsvQueryResult;
 import com.yangdb.fuse.model.results.TextContent;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import org.jooby.Request;
-import org.jooby.Response;
-import org.jooby.Result;
-import org.jooby.Results;
+import org.jooby.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,6 +47,7 @@ public class RegistrarsUtils {
     public static final String IMAGE_SVG_XML = "image/svg+xml";
     //json fast serializer
     public static ObjectMapper mapper = new ObjectMapper();
+
     /**
      * result is projected according to mime type
      *
@@ -59,58 +57,65 @@ public class RegistrarsUtils {
      * @return
      * @throws Throwable
      */
-    public static Result with(Request req, Response res, ContentResponse<Object> response) throws Throwable {
-        if(response.getData() instanceof FuseError)
+    public static void with(Request req, Response res, ContentResponse<Object> response) throws Throwable {
+        if (response.getData() instanceof FuseError) {
             //return error (log)
-            return Results.with(response, response.status());
+            res.status(Status.SERVER_ERROR);
+            res.type(MediaType.json);
+            res.send(response);
+        }
 
         //write content as temp file
         if (req.accepts(APPLICATION_OCTET_STREAM).isPresent()) {
+            res.type(MediaType.octetstream);
             File tempFile = File.createTempFile(response.getRequestId(), "-suffix");
             FileWriter writer = new FileWriter(tempFile);
             writer.write(response.getData().toString());
             writer.close();
-            res.download(tempFile);
             tempFile.deleteOnExit();
+            res.status(response.status());
+            //has to be last
+            res.download(tempFile);
         } else if (req.accepts(TEXT_CSV).isPresent()) {
+            res.type(MediaType.text);
             String now = Instant.now().toString();
             File tempFile = File.createTempFile("csv_" + now, ".csv");
 
             QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
-            if(!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
+            if (!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
                 //get only the data content from the page resource
                 Object element = ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
                 String content = element.toString();
-                if(element instanceof TextContent) {
-                     content = ((TextContent) element).content();
+                if (element instanceof TextContent) {
+                    content = ((TextContent) element).content();
                 }
                 Files.write(tempFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
-                res.download(tempFile);
                 tempFile.deleteOnExit();
+                res.status(response.status());
+                //has to be last
+                res.download(tempFile);
             }
         } else if (req.accepts(APPLICATION_JSON).isPresent()) {
-            String now = Instant.now().toString();
-            File tempFile = File.createTempFile(  now, ".json");
-
-            QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
-            if(!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
-                //get only the data content from the page resource
-                Object element = ((queryResourceInfo).getCursorResourceInfos().get(0)).getPageResourceInfos().get(0).getData();
-                Files.write(tempFile.toPath(), mapper.writeValueAsString(element).getBytes(StandardCharsets.UTF_8));
-                res.download(tempFile);
-                tempFile.deleteOnExit();
-            }
+            res.type(MediaType.json);
+            res.status(response.status());
         } else if (req.accepts(IMAGE_SVG_XML).isPresent()) {
-            res.download((File) response.getData());
             ((File) response.getData()).deleteOnExit();
+            res.status(response.status());
+            //has to be last
+            res.download((File) response.getData());
         }
-        return Results.with(response, response.status());
+
+        //default response
+        res.status(response.status());
+        res.type(MediaType.json);
+        res.send(response);
     }
 
     protected static Result withImg(Request req, Response res, ContentResponse<File> response) throws Throwable {
         //write content as temp file
         if (req.accepts(IMAGE_SVG_XML).isPresent()) {
             res.download(response.getData());
+            res.status(response.status());
             response.getData().deleteOnExit();
         }
         return Results.with(response, response.status());
