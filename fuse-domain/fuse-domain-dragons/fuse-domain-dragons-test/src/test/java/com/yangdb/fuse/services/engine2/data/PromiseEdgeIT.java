@@ -4,7 +4,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.services.TestsConfiguration;
 import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
+import com.yangdb.fuse.services.mockEngine.TestSuiteAPISuite;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
+import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
@@ -55,6 +57,10 @@ public class PromiseEdgeIT implements BaseITMarker {
 
     @BeforeClass
     public static void setup() throws Exception {
+
+//        GlobalElasticEmbeddedNode.getInstance("Dragons");
+//        TestSuiteAPISuite.setup();//remark when doing IT tests
+
         String idField = "id";
         registry = new MetricRegistry();
 
@@ -100,7 +106,7 @@ public class PromiseEdgeIT implements BaseITMarker {
         Traversal constraint = __.and(__.has(T.label, "fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
-        when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
+        when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer(T.label.getAccessor(), P.eq(Constraint.by(constraint)))));
 
         //create vertices getTo start getFrom
         Vertex startVertex1 = mock(Vertex.class);

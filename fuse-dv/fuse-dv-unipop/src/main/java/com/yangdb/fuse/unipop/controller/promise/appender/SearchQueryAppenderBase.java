@@ -21,6 +21,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
  */
 
 import com.yangdb.fuse.unipop.controller.common.appender.SearchAppender;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 
@@ -31,11 +32,11 @@ public abstract class SearchQueryAppenderBase<TContext> implements SearchAppende
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, TContext context) {
-        return append(searchBuilder.getQueryBuilder(), context);
+        return append(searchBuilder.getQueryBuilder(),searchBuilder.getAggregationBuilder() , context);
     }
     //endregion
 
     //region Abstract Methods
-    protected abstract boolean append(QueryBuilder queryBuilder, TContext context);
+    protected abstract boolean append(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, TContext context);
     //endregion
 }

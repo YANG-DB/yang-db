@@ -22,6 +22,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
 
 import com.yangdb.fuse.unipop.controller.common.appender.SearchAppender;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
@@ -39,15 +40,11 @@ public class FilterVerticesSearchAppender implements SearchAppender<VertexContro
 
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-
         Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
-
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().bool().filter().bool().must();
-
-        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
-
+        AggregationBuilder aggregationBuilder = searchBuilder.getAggregationBuilder().seekRoot();
+        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder,aggregationBuilder , false);
         traversalQueryTranslator.visit(traversal);
-
         return true;
 
     }

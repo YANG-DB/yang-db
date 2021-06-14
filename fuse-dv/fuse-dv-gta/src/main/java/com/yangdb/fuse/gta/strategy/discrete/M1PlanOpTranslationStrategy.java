@@ -54,6 +54,7 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
 //                        new WhereByOpTranslationStrategy()
                 ),
                 new OptionalOpTranslationStrategy(this),
+                new AggregationOpTranslationStrategy(this),
                 new CountOpTranslationStrategy(this),
                 new UnionOpTranslationStrategy(this)
         ).toJavaList();

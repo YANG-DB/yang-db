@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
@@ -42,7 +43,7 @@ public class ContainsGeoDistanceQueryTranslator implements PredicateQueryTransla
     }
 
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
         Contains contains = (Contains) predicate.getBiPredicate();
         final List box = (List) predicate.getValue();
         switch (contains) {

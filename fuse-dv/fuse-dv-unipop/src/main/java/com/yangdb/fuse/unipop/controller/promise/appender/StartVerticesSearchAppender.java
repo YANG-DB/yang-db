@@ -23,6 +23,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
 import com.yangdb.fuse.unipop.controller.common.appender.SearchAppender;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
@@ -30,6 +31,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 /**
@@ -39,13 +41,10 @@ public class StartVerticesSearchAppender implements SearchAppender<VertexControl
 
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-
         Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
-
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().bool().filter().bool().must();
-
-        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
-
+        AggregationBuilder aggregationBuilder = searchBuilder.getAggregationBuilder().seekRoot();
+        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder,aggregationBuilder , false);
         traversalQueryTranslator.visit(traversal);
 
         return true;
@@ -53,7 +52,7 @@ public class StartVerticesSearchAppender implements SearchAppender<VertexControl
     }
 
     private Traversal buildStartVerticesConstraint(Iterable<Vertex> vertices) {
-        return __.has(GlobalConstants.EdgeSchema.SOURCE_ID, P.within(Stream.ofAll(vertices).map(vertex -> vertex.id()).toJavaList()));
+        return __.has(GlobalConstants.EdgeSchema.SOURCE_ID, P.within(Stream.ofAll(vertices).map(Element::id).toJavaList()));
     }
 
 }

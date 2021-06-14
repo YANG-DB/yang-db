@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -40,7 +41,7 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
 
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
         Compare compare = (Compare) predicate.getBiPredicate();
         String rangeName = shouldAggregateRange ? key : null;
         switch (compare) {

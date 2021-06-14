@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.utils.traversal;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.translation.M1QueryTranslator;
 import com.yangdb.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
@@ -43,7 +44,8 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     //region Constructor
     public TraversalQueryTranslator(
             QueryBuilder queryBuilder,
-            boolean shouldCache) {
+            AggregationBuilder aggregationBuilder, boolean shouldCache) {
+        this.aggregationBuilder = aggregationBuilder;
         this.queryBuilder = queryBuilder;
         this.sequenceSupplier = () -> this.sequenceNumber++;
         this.shouldCache = shouldCache;
@@ -124,9 +126,8 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
         PredicateQueryTranslator queryTranslator = M1QueryTranslator.instance;
 
         if (hasStep.getHasContainers().size() == 1) {
-            queryBuilder = queryTranslator.translate(queryBuilder,
-                    hasStep.getHasContainers().get(0).getKey(),
-                    hasStep.getHasContainers().get(0).getPredicate());
+            queryBuilder = queryTranslator.translate(queryBuilder, aggregationBuilder,
+                    hasStep.getHasContainers().get(0).getKey(), hasStep.getHasContainers().get(0).getPredicate());
         } else {
             int nextSequenceNumber = sequenceSupplier.get();
             String currentLabel = "must_" + nextSequenceNumber;
@@ -134,7 +135,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
             hasStep.getHasContainers().forEach(hasContainer -> {
                 queryBuilder.seek(currentLabel);
-                queryBuilder = queryTranslator.translate(queryBuilder, hasContainer.getKey(), hasContainer.getPredicate());
+                queryBuilder = queryTranslator.translate(queryBuilder,aggregationBuilder , hasContainer.getKey(), hasContainer.getPredicate());
             });
         }
 
@@ -190,6 +191,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
     //region Fields
     private QueryBuilder queryBuilder;
+    private AggregationBuilder aggregationBuilder;
     private int sequenceNumber = 0;
     private Supplier<Integer> sequenceSupplier;
 

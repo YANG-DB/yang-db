@@ -55,6 +55,7 @@ public class M2PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
                 ),
                 new OptionalOpTranslationStrategy(this),
                 new CountOpTranslationStrategy(this),
+                new AggregationOpTranslationStrategy(this),
                 new UnionOpTranslationStrategy(this),
                 new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class)
         ).toJavaList();

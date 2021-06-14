@@ -22,6 +22,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
 
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.yangdb.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 
 /**
@@ -31,7 +32,7 @@ import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<ElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    public boolean append(QueryBuilder queryBuilder, ElementControllerContext context) {
+    public boolean append(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, ElementControllerContext context) {
        /* OptionalComp<TraversalConstraint> constraint = context.getConstraint();
         if (constraint.isPresent()) {
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();

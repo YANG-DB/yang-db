@@ -22,6 +22,7 @@ package com.yangdb.fuse.unipop.controller.discrete.appender;
 
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -40,7 +41,7 @@ import java.util.Set;
 public class DualEdgeDirectionSearchAppender extends SearchQueryAppenderBase<VertexControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {
+    protected boolean append(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, VertexControllerContext context) {
         Set<String> labels = context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
                 Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();
@@ -77,8 +78,10 @@ public class DualEdgeDirectionSearchAppender extends SearchQueryAppenderBase<Ver
                 break;
         }
 
+        QueryBuilder builder = queryBuilder.seekRoot().query().bool().filter().bool().must();
+        AggregationBuilder aggBuilder = aggregationBuilder.seekRoot();
         TraversalQueryTranslator traversalQueryTranslator =
-                new TraversalQueryTranslator(queryBuilder.seekRoot().query().bool().filter().bool().must(), false);
+                new TraversalQueryTranslator(builder, aggBuilder, false);
         traversalQueryTranslator.visit(directionConstraint);
         return true;
     }

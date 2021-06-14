@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
@@ -39,12 +40,12 @@ public class OrPQueryTranslator extends CompositeQueryTranslator {
 
     //region CompositeQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
         OrP<?> orP = (OrP<?>)predicate;
         queryBuilder.push().bool().should();
         for(P<?> innerPredicate : orP.getPredicates()) {
             queryBuilder.push();
-            queryBuilder = super.translate(queryBuilder, key, innerPredicate);
+            queryBuilder = super.translate(queryBuilder, aggregationBuilder, key, innerPredicate);
             queryBuilder.pop();
         }
 

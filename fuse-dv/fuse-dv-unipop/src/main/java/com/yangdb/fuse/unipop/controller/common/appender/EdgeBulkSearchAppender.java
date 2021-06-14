@@ -22,6 +22,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
 
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
@@ -36,7 +37,7 @@ import java.util.Set;
 public class EdgeBulkSearchAppender extends SearchQueryAppenderBase<VertexControllerContext> {
     //region VertexControllerContext Implementation
     @Override
-    protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {
+    protected boolean append(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, VertexControllerContext context) {
         Set<String> labels = context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
                 Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();

@@ -9,9 +9,9 @@ package com.yangdb.fuse.dispatcher.driver;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,11 +21,8 @@ package com.yangdb.fuse.dispatcher.driver;
  */
 
 
-
 import com.google.inject.Inject;
-import com.yangdb.fuse.client.export.GraphWriter;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
-import com.yangdb.fuse.client.export.graphml.GraphMLWriter;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
@@ -45,11 +42,7 @@ import javaslang.collection.Stream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-
-import static java.util.Collections.emptyMap;
 
 /**
  * Created by Roman on 12/15/2017.
@@ -188,15 +181,15 @@ public abstract class PageDriverBase implements PageDriver {
             try {
                 AssignmentsQueryResult result = (AssignmentsQueryResult) getData(queryId, cursorId, pageId).get();
                 Assignment graph = (Assignment) result.getAssignments().get(0);
-                if(writerStrategy.writer(format).isPresent()) {
+                if (writerStrategy.writer(format).isPresent()) {
                     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    writerStrategy.writer(format).get().writeGraph(stream,graph);
+                    writerStrategy.writer(format).get().writeGraph(stream, graph);
                     return Optional.of(new String(stream.toByteArray()));
                 }
                 return Optional.of(result);
             } catch (IOException e) {
                 return Optional.of(new QueryResourceInfo().error(
-                        new FuseError(Query.class.getSimpleName(),e)));
+                        new FuseError(Query.class.getSimpleName(), e)));
             }
         }
         return Optional.empty();

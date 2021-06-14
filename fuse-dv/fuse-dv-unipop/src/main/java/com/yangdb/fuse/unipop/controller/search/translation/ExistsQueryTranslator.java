@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.unipop.process.predicate.ExistsP;
@@ -31,7 +32,7 @@ import org.unipop.process.predicate.NotExistsP;
 public class ExistsQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
         if (predicate == null) {
             return queryBuilder;
         }

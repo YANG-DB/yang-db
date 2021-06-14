@@ -21,6 +21,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
  */
 
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 
@@ -30,11 +31,11 @@ import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslato
 public class ElementConstraintSearchAppender extends SearchQueryAppenderBase<ElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    protected boolean append(QueryBuilder queryBuilder, ElementControllerContext context) {
+    protected boolean append(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, ElementControllerContext context) {
         if (!context.getConstraint().isPresent()) {
             return false;
         }
-        new TraversalQueryTranslator(queryBuilder.seekRoot().query().bool().filter().bool().must(), false)
+        new TraversalQueryTranslator(queryBuilder.seekRoot().query().bool().filter().bool().must(),aggregationBuilder.seekRoot() , false)
                 .visit(context.getConstraint().get().getTraversal());
 
         return true;

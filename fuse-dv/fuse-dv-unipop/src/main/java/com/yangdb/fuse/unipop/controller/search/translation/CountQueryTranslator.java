@@ -23,42 +23,30 @@ package com.yangdb.fuse.unipop.controller.search.translation;
 import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.unipop.process.predicate.CountP;
 
 /**
  * Created by Roman on 18/05/2017.
  */
-public class HiddenQueryTranslator extends CompositeQueryTranslator {
-    //region Constructors
-    public HiddenQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
-        super(translators);
-    }
-
-    public HiddenQueryTranslator(PredicateQueryTranslator...translators) {
-        super(translators);
-    }
-    //endregion
-
-    //region Override Methods
+public class CountQueryTranslator implements PredicateQueryTranslator {
+    //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
-        String plainKey = Graph.Hidden.isHidden(key) ? Graph.Hidden.unHide(key) : key;
-        String newKey;
-
-        switch (plainKey) {
-            case "id":
-                newKey = "_id";
-                break;
-
-            case "label":
-                newKey = "type";
-                break;
-
-            default:
-                newKey = plainKey;
+        if (predicate == null) {
+            return queryBuilder;
         }
 
-        return super.translate(queryBuilder, aggregationBuilder, newKey, predicate);
+        if (predicate instanceof CountP) {
+            return queryBuilder.push().exists(key).pop();
+        }
+
+
+        return queryBuilder;
+    }
+
+    @Override
+    public boolean test(String key, P<?> predicate) {
+        return predicate!=null;
     }
     //endregion
 }

@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -42,10 +43,10 @@ public class CompositeQueryTranslator implements PredicateQueryTranslator {
 
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
         List<PredicateQueryTranslator> translators = Stream.ofAll(this.translators).filter(t -> t.test(key, predicate)).toJavaList();
         for (PredicateQueryTranslator predicateQueryTranslator : translators) {
-            queryBuilder = predicateQueryTranslator.translate(queryBuilder, key, predicate);
+            queryBuilder = predicateQueryTranslator.translate(queryBuilder, aggregationBuilder, key, predicate);
         }
 
         return queryBuilder;

@@ -50,32 +50,20 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
 
         TraversalValuesByKeyProvider labelsProvider = new TraversalValuesByKeyProvider();
-
         Set<String> labels = labelsProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
-
-        for (String label :
-                labels) {
-
+        for (String label :labels) {
             Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(label);
-
             if (!Stream.ofAll(edgeSchemas).isEmpty()) {
                 // currently supports a single edge schema
                 GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
-
                 IndexPartitions indexPartitions = edgeSchema.getIndexPartitions().get();
-
                 if (indexPartitions instanceof TimeSeriesIndexPartitions) {
-
                     TimeSeriesIndexPartitions tsIndexPartition = (TimeSeriesIndexPartitions) indexPartitions;
-
                     TraversalPredicateByKeyProvider visitor = new TraversalPredicateByKeyProvider();
-
                     Set<P> predicates = visitor.getPredicateByKey(context.getConstraint().get().getTraversal(), tsIndexPartition.getTimeField());
-
                     if(predicates.size() == 0) {
                         //if there are no constraints, add all getIndices
                         searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet());
-
                     } else {
                         //ass only getIndices satisfying the constraints
                         searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions())
@@ -87,10 +75,8 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
                     //index partition is static, add all getIndices
                     searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet());
                 }
-
             }
         }
-
         return true;
 
     }

@@ -23,6 +23,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
@@ -92,7 +93,8 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
         }
 
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query();//.filtered().filter();
-        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
+        AggregationBuilder aggregationBuilder = searchBuilder.getAggregationBuilder().seekRoot();
+        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, aggregationBuilder, false);
         traversalQueryTranslator.visit(newConstraint);
         return true;
     }
