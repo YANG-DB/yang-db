@@ -114,6 +114,8 @@ public class SearchBuilder {
         String[] indices = getIndices().stream().toArray(String[]::new);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch();
         searchRequestBuilder.setQuery(queryBuilder.getQuery());
+        //add aggregations
+        aggregationBuilder.getAggregations().forEach(searchRequestBuilder::addAggregation);
         searchRequestBuilder.setSize((int) getLimit());
         searchRequestBuilder.setIndices(indices);
 
