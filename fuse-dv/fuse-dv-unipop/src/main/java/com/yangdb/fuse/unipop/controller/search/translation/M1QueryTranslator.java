@@ -38,7 +38,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                                 new ContainsGeoDistanceQueryTranslator("geoValue"),
                                 new ContainsQueryTranslator()),
                         new ExistsQueryTranslator(),
-                        new CountQueryTranslator(),
+                        new CountFilterQueryTranslator(),
                         new TextQueryTranslator(),
 //                        new NestedQueryTranslator(),
                         new AndPQueryTranslator(
@@ -47,7 +47,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                                         new ContainsGeoBoundsQueryTranslator("geoValue"),
                                         new ContainsQueryTranslator()),
                                 new ExistsQueryTranslator(),
-                                new CountQueryTranslator(),
+                                new CountFilterQueryTranslator(),
                                 new TextQueryTranslator()
                         ),
                         new OrPQueryTranslator(
@@ -57,7 +57,7 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                                         new ContainsGeoDistanceQueryTranslator("geoValue"),
                                         new ContainsQueryTranslator()),
                                 new ExistsQueryTranslator(),
-                                new CountQueryTranslator(),
+                                new CountFilterQueryTranslator(),
                                 new TextQueryTranslator()
                         )
                 )

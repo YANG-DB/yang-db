@@ -1,10 +1,11 @@
 package com.yangdb.fuse.services.engine2.data;
 
 import com.yangdb.fuse.client.BaseFuseClient;
+import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.gta.strategy.utils.ConversionUtil;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils.*;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.Start;
@@ -13,29 +14,28 @@ import com.yangdb.fuse.model.query.entity.ETyped;
 import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
+import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.resourceInfo.CursorResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
-import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.results.Entity;
+import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.services.TestsConfiguration;
-import com.yangdb.fuse.client.FuseClient;
 import com.yangdb.fuse.stat.StatCalculator;
 import com.yangdb.fuse.stat.configuration.StatConfiguration;
-import com.yangdb.fuse.model.GlobalConstants;
-import com.yangdb.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
-import com.yangdb.fuse.unipop.promise.Promise;
-import com.yangdb.fuse.unipop.promise.TraversalConstraint;
-import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import com.yangdb.fuse.test.framework.index.MappingElasticConfigurer;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property;
 import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property.Type;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
+import com.yangdb.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
+import com.yangdb.fuse.unipop.promise.Promise;
+import com.yangdb.fuse.unipop.promise.TraversalConstraint;
+import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -43,7 +43,9 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
-import org.junit.*;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -147,7 +149,7 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                 FIRE.getName().toLowerCase() + "20170513"
         )).actionGet();
 
-        if(calcStats){
+        if (calcStats) {
             StatCalculator.run(client, client, new StatConfiguration("statistics.test.properties").getInstance());
         }
     }
@@ -166,7 +168,7 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                         FIRE.getName().toLowerCase() + "20170513"))
                 .actionGet();
 
-        if(statsUsed){
+        if (statsUsed) {
             client.admin().indices().delete(new DeleteIndexRequest("stat")).actionGet();
         }
     }
@@ -859,10 +861,9 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
     }
 
 
-
     private static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
-        for(int i = 0 ; i < numPeople ; i++) {
+        for (int i = 0; i < numPeople; i++) {
             Map<String, Object> person = new HashMap<>();
             person.put("id", "Person_" + i);
             person.put("type", "Person");
@@ -883,7 +884,7 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
             Function<Integer, Long> birthDateValueFunction) {
 
         List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
+        for (int i = 0; i < numDragons; i++) {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "Dragon_" + i);
             dragon.put("type", DRAGON.name);
@@ -906,12 +907,12 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
             int numDragons,
             Function<Integer, Long> timestampValueFunction,
             Function<Integer, Integer> temperatureValueFunction
-            ) throws ParseException {
+    ) throws ParseException {
         List<Map<String, Object>> fireEdges = new ArrayList<>();
 
         int counter = 0;
-        for(int i = 0 ; i < numDragons ; i++) {
-            for(int j = 0 ; j < i ; j++) {
+        for (int i = 0; i < numDragons; i++) {
+            for (int j = 0; j < i; j++) {
                 Map<String, Object> fireEdge = new HashMap<>();
                 fireEdge.put("id", FIRE.getName() + counter);
                 fireEdge.put("type", FIRE.getName());
@@ -960,8 +961,8 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                 .addProperty(GlobalConstants.EdgeSchema.DIRECTION, new Property(Type.keyword))
                 .addProperty(TEMPERATURE.name, new Property(Type.integer))
                 .addProperty(GlobalConstants.EdgeSchema.SOURCE, new Property()
-                    .addProperty("id", new Property(Type.keyword))
-                    .addProperty("type", new Property(Type.keyword)))
+                        .addProperty("id", new Property(Type.keyword))
+                        .addProperty("type", new Property(Type.keyword)))
                 .addProperty(GlobalConstants.EdgeSchema.DEST, new Property()
                         .addProperty("id", new Property(Type.keyword))
                         .addProperty("type", new Property(Type.keyword)));
@@ -984,7 +985,7 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
         Function<Integer, Long> birthDateValueFunction =
                 birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
 
-        for(int i = 0 ; i < numDragons ; i++) {
+        for (int i = 0; i < numDragons; i++) {
             for (int j = 0; j < i; j++) {
                 Entity entityA = Entity.Builder.instance()
                         .withEID("Dragon_" + i)
@@ -1008,14 +1009,14 @@ public abstract class EntityRelationEntityIT implements BaseITMarker {
                         .withRID(edgeIdProvider.get(GlobalConstants.Labels.PROMISE,
                                 new PromiseVertex(
                                         Promise.as(direction == Rel.Direction.R ?
-                                               entityA.geteID() :
-                                               entityB.geteID()),
+                                                entityA.geteID() :
+                                                entityB.geteID()),
                                         Optional.empty(),
                                         null),
                                 new PromiseVertex(
                                         Promise.as(direction == Rel.Direction.R ?
-                                               entityB.geteID() :
-                                               entityA.geteID()),
+                                                entityB.geteID() :
+                                                entityA.geteID()),
                                         Optional.empty(),
                                         null),
                                 null))

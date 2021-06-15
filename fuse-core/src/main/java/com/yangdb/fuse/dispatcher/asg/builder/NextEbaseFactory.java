@@ -45,7 +45,7 @@ public class NextEbaseFactory implements NextFactory {
     //region Constructor
     public NextEbaseFactory() {
         this.map = new HashMap<>() ;
-        this.map.put(Agg.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(Agg.class, (ebase) -> ((Agg)ebase).getNext() == 0 ? Collections.emptyList() : Collections.singletonList(((Agg) ebase).getNext()));
         this.map.put(HQuant.class, (ebase) -> (Collections.emptyList()));
         this.map.put(RelProp.class, (ebase) ->  (Collections.emptyList()));
         this.map.put(RelPropGroup.class, (ebase) ->  (Collections.emptyList()));

@@ -47,6 +47,10 @@ package com.yangdb.fuse.model.query.aggregation;
  * Created by lior.perry on 19/02/2017.
  */
 public abstract class AggMBase extends AggBase {
+    public AggMBase(int eNum) {
+        super(eNum);
+    }
+
     //region Properties
     public int getN() {
         return this.n;

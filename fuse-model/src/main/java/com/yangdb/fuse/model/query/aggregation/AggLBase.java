@@ -49,6 +49,10 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
  * Created by lior.perry on 19/02/2017.
  */
 public abstract class AggLBase extends AggBase {
+    public AggLBase(int eNum) {
+        super(eNum);
+    }
+
     //region Properties
     public String getATag() {
         return this.aTag;

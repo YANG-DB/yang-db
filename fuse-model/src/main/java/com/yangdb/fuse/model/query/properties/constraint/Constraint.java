@@ -74,6 +74,11 @@ public class Constraint {
         this(op,expr);
         this.iType = iType;
     }
+    public Constraint(ConstraintOp op,CountConstraintOp countOp, Object expr, String iType) {
+        this(op,expr);
+        this.countOp = countOp;
+        this.iType = iType;
+    }
     //endregion
 
     //region Override Methods
@@ -120,7 +125,7 @@ public class Constraint {
 
     @Override
     public Constraint clone() {
-        return new Constraint(op,expr,iType);
+        return new Constraint(op,countOp,expr,iType);
     }
 
     //endregion
@@ -128,6 +133,14 @@ public class Constraint {
     //region Properties
     public ConstraintOp getOp() {
         return op;
+    }
+
+    public CountConstraintOp getCountOp() {
+        return countOp;
+    }
+
+    public void setCountOp(CountConstraintOp countOp) {
+        this.countOp = countOp;
     }
 
     public void setOp(ConstraintOp op) {
@@ -153,10 +166,15 @@ public class Constraint {
 
     //region Fields
     private ConstraintOp op;
+    private CountConstraintOp countOp;
     private Object expr;
     //default - inclusive
     private String iType = "[]";
     //endregion
+
+    public static Constraint of(CountConstraintOp op, Object expr) {
+        return new Constraint(null,op,expr,"[]");
+    }
 
     public static Constraint of(ConstraintOp op) {
         return of(op, null, "[]");

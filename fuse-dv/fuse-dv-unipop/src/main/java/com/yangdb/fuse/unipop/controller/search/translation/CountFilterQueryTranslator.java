@@ -1,8 +1,8 @@
-package org.unipop.process.predicate;
+package com.yangdb.fuse.unipop.controller.search.translation;
 
 /*-
  * #%L
- * unipop-core
+ * fuse-dv-unipop
  * %%
  * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
  * %%
@@ -20,13 +20,16 @@ package org.unipop.process.predicate;
  * #L%
  */
 
+import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
+import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.unipop.process.predicate.CountFilterP;
 
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
- * Created by Roman on 11/9/2015.
  *
  * Example of a terms count query with range filter on amount of terms
  * {
@@ -44,7 +47,7 @@ import java.util.Objects;
  *   },
  *   "aggs": {
  *     "edges": {
- *       "terms": {
+ *       "entityA.id": {
  *         "field": "entityA.id"
  *       },
  *       "aggs": {
@@ -56,56 +59,36 @@ import java.util.Objects;
  *             "script": "def a=params.edgeCount; a > 405 && a < 567"
  *           }
  *         }
- *       },
- *       "meta": {
- *         "key": "entityA.id"
  *       }
  *     }
  *   }
  * }
  */
-public class CountP<V> extends P<V> {
-    private final Type type;
-    private final Compare compare;
+public class CountFilterQueryTranslator implements PredicateQueryTranslator {
+    //region PredicateQueryTranslator Implementation
+    @Override
+    public QueryBuilder translate(QueryBuilder queryBuilder, AggregationBuilder aggregationBuilder, String key, P<?> predicate) {
+        if (predicate == null) {
+            return queryBuilder;
+        }
 
-    enum Type {
-        terms,
-        count,
-        min,
-        max,
-        avg,
-        stats,
-        histogram,
-        cardinality
-    }
+        if (predicate instanceof CountFilterP) {
+            CountFilterP filterP = (CountFilterP) predicate;
+            String field = key;
+            //populate count based filter sub aggregation (bucket-filter type in ES semantics)
+            AggregationBuilder countFilter = aggregationBuilder.seek(field).countFilter(field);
+            countFilter.field(field);
+            countFilter.operator(filterP.getBiPredicate());
+            countFilter.operands(Collections.singletonList(filterP.getValue()));
+        }
 
-    //region Constructors
-    private CountP(Type type, Compare compare, V value) {
-        super(null, value);
-        this.type = type;
-        this.compare = compare;
-    }
 
-    public Type getType() {
-        return type;
-    }
-
-    public Compare getCompare() {
-        return compare;
+        return queryBuilder;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        CountP<?> countP = (CountP<?>) o;
-        return type == countP.type && compare == countP.compare;
+    public boolean test(String key, P<?> predicate) {
+        return predicate!=null && predicate.getBiPredicate() instanceof Compare;
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), type, compare);
-    }
-//endregion
+    //endregion
 }

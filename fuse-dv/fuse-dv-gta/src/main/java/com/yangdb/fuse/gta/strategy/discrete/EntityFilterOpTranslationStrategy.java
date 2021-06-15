@@ -27,6 +27,7 @@ import com.yangdb.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.yangdb.fuse.gta.strategy.utils.ConversionUtil;
 import com.yangdb.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.yangdb.fuse.gta.strategy.utils.TraversalUtil;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.execution.plan.PlanOp;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -44,7 +45,6 @@ import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.RankingProp;
 import com.yangdb.fuse.model.query.properties.SchematicEProp;
 import com.yangdb.fuse.model.query.properties.constraint.WhereByConstraint;
-import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.process.traversal.dsl.graph.__;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import com.yangdb.fuse.unipop.step.BoostingStepWrapper;
@@ -61,8 +61,6 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor.describe;
 
 /**
  * Created by Roman on 09/05/2017.

@@ -15,6 +15,7 @@ import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.RelPropGroup;
 import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.model.query.properties.constraint.CountConstraintOp;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -23,6 +24,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.unipop.process.predicate.CountFilterP;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,7 @@ import static org.mockito.Mockito.when;
  * Created by Roman on 10/05/2017.
  */
 public class RelationFilterOpTranslationStrategyTest {
+
     static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, "1"))
@@ -58,6 +61,15 @@ public class RelationFilterOpTranslationStrategyTest {
                 .build();
     }
 
+    static AsgQuery simpleQueryCount(String queryName, String ontologyName) {
+
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "1"))
+                .next(rel(2, "1", R)
+                        .below(relPropGroup(3, all,
+                                RelProp.of(4, "4", of(CountConstraintOp.ge, "100")))))
+                .build();
+    }
     static AsgQuery simpleQueryOr(String queryName, String ontologyName) {
 
         return AsgQuery.Builder.start(queryName, ontologyName)
@@ -119,6 +131,17 @@ public class RelationFilterOpTranslationStrategyTest {
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
 
+
+    @Test
+    public void test_rel_count(){
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.start().and(
+                                __.start().has(T.label, "Fire"),
+                                __.start().has("timestamp", CountFilterP.gte(100))
+                        )));
+        test_rel_group_inner(simpleQueryCount("name", "ontName"), expectedTraversal);
+    }
 
     @Test
     public void test_rel_or(){
@@ -188,7 +211,7 @@ public class RelationFilterOpTranslationStrategyTest {
 
 
 
-        Assert.assertEquals(expectedTraversal, actualTraversal);
+        Assert.assertEquals(expectedTraversal.toString(), actualTraversal.toString());
     }
 
     @Test

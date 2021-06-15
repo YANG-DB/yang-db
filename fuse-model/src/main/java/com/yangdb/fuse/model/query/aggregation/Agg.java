@@ -44,11 +44,19 @@ package com.yangdb.fuse.model.query.aggregation;
  */
 
 import com.yangdb.fuse.model.Tagged;
+import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 
 /**
  * Created by lior.perry on 19/02/2017.
  */
 public class Agg extends AggLBase implements Tagged {
+    public Agg(int eNum, String eTag,Constraint constraint,  int next) {
+        super(eNum);
+        seteTag(eTag);
+        setCon(constraint);
+        setNext(next);
+    }
+
     //region Properties
     public String geteTag() {
         return this.eTag;

@@ -21,8 +21,10 @@ package com.yangdb.fuse.unipop.controller.search;
  */
 
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
@@ -37,6 +39,7 @@ import org.elasticsearch.search.aggregations.metrics.scripted.ScriptedMetricAggr
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
+import org.elasticsearch.search.aggregations.pipeline.PipelineAggregatorBuilders;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -47,13 +50,16 @@ import java.util.stream.Collectors;
  * Created by lior.perry on 26/03/2017.
  */
 public class AggregationBuilder implements Cloneable {
+
+
     public enum Op {
         root,
         param,
         filters,
         filter,
         terms,
-        count,
+        countFilter,
+        bucketFilter,
         min,
         max,
         avg,
@@ -128,15 +134,32 @@ public class AggregationBuilder implements Cloneable {
         return this;
     }
 
-    public AggregationBuilder count(String name) {
+    public AggregationBuilder bucketFilter(String name, Compare compare) {
         if (this.current.op != Op.terms && this.current.op != Op.filters && this.current.op != Op.root) {
-            throw new UnsupportedOperationException("'count' may only appear in the 'terms', 'filters' or 'root' context");
+            throw new UnsupportedOperationException("'bucket-filter' may only appear in the 'terms', 'filters' or 'root' context");
         }
-
         if (this.seekLocalName(this.current, name) != null) {
             this.current = this.seekLocalName(this.current, name);
         } else {
-            Composite count = new CountComposite(name, this.current);
+            Composite filterComposite = new BucketFilterComposite(name, this.current);
+            this.current.getChildren().add(filterComposite);
+            this.current = filterComposite;
+        }
+
+        return this;
+    }
+
+    /**
+     * count filter is a terms filter aggregation with a bucket selection sub aggregation
+     * @param name
+     * @return
+     */
+    public AggregationBuilder countFilter(String name) {
+        //count filter is a terms filter aggregation with a bucket selection sub aggregation
+        if (this.seekLocalName(this.current, name) != null) {
+            this.current = this.seekLocalName(this.current, name);
+        } else {
+            Composite count = new CountFilterComposite(name, this.current);
             this.current.getChildren().add(count);
             this.current = count;
         }
@@ -281,6 +304,14 @@ public class AggregationBuilder implements Cloneable {
 
     public AggregationBuilder field(String value) {
         return this.param("field", value);
+    }
+
+    public AggregationBuilder operator(BiPredicate value) {
+        return this.param("operator", value);
+    }
+
+    public AggregationBuilder operands(List<Object> value) {
+        return this.param("operands", value);
     }
 
     public AggregationBuilder script(String value) {
@@ -742,30 +773,75 @@ public class AggregationBuilder implements Cloneable {
         //endregion
     }
 
-    public class CountComposite extends Composite {
+    public class CountFilterComposite extends Composite {
+        public static final String COUNT = "Count";
+        private BiPredicate operator;
+        private List<String> operands;
+
         //region Constructor
-        public CountComposite(String name, Composite parent) {
-            super(name, Op.count, parent);
+        public CountFilterComposite(String name, Composite parent) {
+            super(name, Op.countFilter, parent);
         }
         //endregion
 
         //region Composite Implementation
         @Override
         public Object build() {
-            String countField = null;
+            String countFilterField = null;
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
                     .map(child -> (ParamComposite) child).collect(Collectors.toList())) {
                 switch (param.getName().toLowerCase()) {
                     case "field":
-                        countField = (String)param.getValue();
+                        countFilterField = (String)param.getValue();
+                        break;
+                    case "operator":
+                        operator = (BiPredicate) param.getValue();
+                        break;
+                    case "operands":
+                        operands = (List<String>)param.getValue();
+                        break;
+
+                }
+            }
+
+            if (countFilterField != null) {
+                String fieldName = (this.getName()+ COUNT).replace(".","_");
+                TermsAggregationBuilder aggregation = AggregationBuilders.terms(this.getName()).field(this.getName())
+                        .subAggregation(PipelineAggregatorBuilders.bucketSelector(countFilterField,
+                                Collections.singletonMap(fieldName,"_count"),
+                                BuildFilterScript.script(fieldName, operator,operands)));
+                return aggregation;
+            }
+
+            return this;
+        }
+        //endregion
+    }
+    public class BucketFilterComposite extends Composite {
+        //region Constructor
+        public BucketFilterComposite(String name, Composite parent) {
+            super(name, Op.bucketFilter, parent);
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        public Object build() {
+            String filterField = null;
+            for (ParamComposite param : this.getChildren().stream()
+                    .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
+                    .map(child -> (ParamComposite) child).collect(Collectors.toList())) {
+                switch (param.getName().toLowerCase()) {
+                    case "field":
+                        filterField = (String)param.getValue();
                         break;
                 }
             }
 
-            if (countField != null) {
+            if (filterField != null) {
                 ValueCountAggregationBuilder count = AggregationBuilders.count(this.getName());
-                count.field(countField);
+                count.field(filterField);
                 return count;
             }
 
@@ -1087,5 +1163,49 @@ public class AggregationBuilder implements Cloneable {
             return topHitsBuilder;
         }
         //endregion
+    }
+
+    /**
+     * generate script such as "def a=params.edgeCount; a > 405 && a < 567"
+     */
+    public static class BuildFilterScript {
+        /**
+         * generate script filter for compare assignment
+         * @param field
+         * @param operator
+         * @param operands
+         * @return
+         */
+        public static Script script(String field,BiPredicate operator, List<String> operands) {
+            String variable = "a";
+            StringBuilder script = new StringBuilder("def " + variable + "=").append("params.").append(field).append(";");
+
+            //construct filtering expression
+            if(!Objects.isNull(operator)  && operator instanceof Compare) {
+                script.append(variable);
+                switch ((Compare)operator) {
+                    case eq:
+                        script.append("=");
+                        break;
+                    case lt:
+                        script.append("<");
+                        break;
+                    case lte:
+                        script.append("<=");
+                        break;
+                    case gt:
+                        script.append(">");
+                        break;
+                    case gte:
+                        script.append(">");
+                        break;
+                }
+            }
+            if(!operands.isEmpty()) {
+                script.append(operands.get(0));
+            }
+
+            return new Script(script.toString());
+        }
     }
 }
