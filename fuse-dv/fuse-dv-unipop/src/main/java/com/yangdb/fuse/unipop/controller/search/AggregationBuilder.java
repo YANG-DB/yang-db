@@ -1176,7 +1176,7 @@ public class AggregationBuilder implements Cloneable {
          * @param operands
          * @return
          */
-        public static Script script(String field,BiPredicate operator, List<String> operands) {
+        public static Script script(String field,BiPredicate operator, List operands) {
             String variable = "a";
             StringBuilder script = new StringBuilder("def " + variable + "=").append("params.").append(field).append(";");
 

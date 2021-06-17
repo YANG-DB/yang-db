@@ -88,7 +88,7 @@ public class CountFilterQueryTranslator implements PredicateQueryTranslator {
 
     @Override
     public boolean test(String key, P<?> predicate) {
-        return predicate!=null && predicate.getBiPredicate() instanceof Compare;
+        return predicate!=null && predicate.getBiPredicate() instanceof CountFilterP.CountFilterCompare;
     }
     //endregion
 }

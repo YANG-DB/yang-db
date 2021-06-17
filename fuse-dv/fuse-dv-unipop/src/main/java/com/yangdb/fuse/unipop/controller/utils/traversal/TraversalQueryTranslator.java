@@ -156,7 +156,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
                 PropertiesStep propertiesStep = (PropertiesStep) subTraversal.getSteps().get(0);
 
                 if (propertiesStep.getPropertyKeys().length == 1) {
-                    this.visitRecursive(new HasStep<>(null, new HasContainer(propertiesStep.getPropertyKeys()[0], new ExistsP<Object>())));
+                    this.visitRecursive(new HasStep<>(null, new HasContainer(propertiesStep.getPropertyKeys()[0], new ExistsP<>())));
                 } else {
                     int nextSequenceNumber = sequenceSupplier.get();
                     String currentLabel = "should_" + nextSequenceNumber;
@@ -164,7 +164,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
                     for (String key : propertiesStep.getPropertyKeys()) {
                         queryBuilder.seek(currentLabel);
-                        this.visitRecursive(new HasStep<>(null, new HasContainer(key, new ExistsP<Object>())));
+                        this.visitRecursive(new HasStep<>(null, new HasContainer(key, new ExistsP<>())));
                     }
                 }
             }
