@@ -80,6 +80,7 @@ public class KnowledgeM2AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
                 new LikeToEqTransformationAsgStrategy(),
+                new AggFilterTransformationAsgStrategy(),
                 new ConstraintExpLowercaseTransformationAsgStrategy(Arrays.asList(STRING_VALUE,CONTENT,TITLE,DISPLAY_NAME,DESCRIPTION)),
                 new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 //knowledge ranking asg strategies

@@ -130,7 +130,7 @@ public class PromiseVertexController extends VertexControllerBase {
         }
 
         //search
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION).setSize(0);
         SearchResponse response = searchRequest.execute().actionGet();
 
         //convert result

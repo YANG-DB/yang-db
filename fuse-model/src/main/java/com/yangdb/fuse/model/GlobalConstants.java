@@ -24,6 +24,8 @@ package com.yangdb.fuse.model;
  * Created by lior.perry on 19/03/2017.
  */
 public class GlobalConstants {
+    public static final boolean INCLUDE_AGGREGATION = true;
+
     public static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     public static String ONTOLOGY = "ontology";

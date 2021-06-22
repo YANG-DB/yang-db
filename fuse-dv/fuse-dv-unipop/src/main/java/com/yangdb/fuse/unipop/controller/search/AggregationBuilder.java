@@ -40,6 +40,7 @@ import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuild
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 import org.elasticsearch.search.aggregations.pipeline.PipelineAggregatorBuilders;
+import org.unipop.process.predicate.CountFilterP;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -774,7 +775,7 @@ public class AggregationBuilder implements Cloneable {
     }
 
     public class CountFilterComposite extends Composite {
-        public static final String COUNT = "Count";
+        public static final String COUNT_FIELD = "_Count";
         private BiPredicate operator;
         private List<String> operands;
 
@@ -806,7 +807,7 @@ public class AggregationBuilder implements Cloneable {
             }
 
             if (countFilterField != null) {
-                String fieldName = (this.getName()+ COUNT).replace(".","_");
+                String fieldName = (this.getName()+ COUNT_FIELD).replace(".","_");
                 TermsAggregationBuilder aggregation = AggregationBuilders.terms(this.getName()).field(this.getName())
                         .subAggregation(PipelineAggregatorBuilders.bucketSelector(countFilterField,
                                 Collections.singletonMap(fieldName,"_count"),
@@ -1181,9 +1182,9 @@ public class AggregationBuilder implements Cloneable {
             StringBuilder script = new StringBuilder("def " + variable + "=").append("params.").append(field).append(";");
 
             //construct filtering expression
-            if(!Objects.isNull(operator)  && operator instanceof Compare) {
+            if(!Objects.isNull(operator)  && operator instanceof CountFilterP.CountFilterCompare) {
                 script.append(variable);
-                switch ((Compare)operator) {
+                switch ((CountFilterP.CountFilterCompare)operator) {
                     case eq:
                         script.append("=");
                         break;

@@ -64,6 +64,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new ConstraintIterableTransformationAsgStrategy(),
                 new RedundantLikeConstraintAsgStrategy(),
                 new RedundantLikeAnyConstraintAsgStrategy(),
+                new AggFilterTransformationAsgStrategy(),
                 new LikeToEqTransformationAsgStrategy(),
                 new RedundantInSetConstraintAsgStrategy(),
                 new RedundantInRangeConstraintAsgStrategy(),

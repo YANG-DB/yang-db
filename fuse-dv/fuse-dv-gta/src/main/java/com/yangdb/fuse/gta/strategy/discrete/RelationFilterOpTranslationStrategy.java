@@ -9,9 +9,9 @@ package com.yangdb.fuse.gta.strategy.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.yangdb.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.yangdb.fuse.gta.strategy.utils.ConversionUtil;
 import com.yangdb.fuse.gta.strategy.utils.TraversalUtil;
 import com.yangdb.fuse.dispatcher.gta.TranslationContext;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.execution.plan.*;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -63,7 +64,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
     //region PlanOpTranslationStrategy Implementation
     @Override
     protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
-        RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
+        RelationFilterOp relationFilterOp = (RelationFilterOp) planOp;
         Optional<RelationOp> relationOp = PlanUtil.adjacentPrev(plan.getPlan(), relationFilterOp);
         if (!relationOp.isPresent()) {
             return traversal;
@@ -128,23 +129,36 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
                 }
 
                 return __.start().and(traversals);
-            case some: return __.start().or(traversals);
+            case some:
+                return __.start().or(traversals);
 
-            default: return __.start().and(traversals);
+            default:
+                return __.start().and(traversals);
         }
     }
 
     private Optional<Traversal> convertRelPropToTraversal(RelProp relProp, Ontology.Accessor ont) {
-        Optional<Property> property = ont.$property(relProp.getpType());
-        if (property.isPresent()) {
+        if (!relProp.isAggregation()) {
+            //row based constraint
+            Optional<Property> property = ont.$property(relProp.getpType());
+            if (property.isPresent()) {
+                if (relProp.getClass().equals(RelProp.class)) {
+                    return Optional.of(__.start().has(property.get().getName(), ConversionUtil.convertConstraint(relProp.getCon())));
+                } else if (SchematicRelProp.class.isAssignableFrom(relProp.getClass())) {
+                    return Optional.of(__.start().has(((SchematicRelProp) relProp).getSchematicName(),
+                            ConversionUtil.convertConstraint(relProp.getCon())));
+                }
+            }
+        } else {
+            //aggregation based constraint -
+            String foreignKeyName = GlobalConstants.EdgeSchema.SOURCE_ID;//todo take this from the schema
             if (relProp.getClass().equals(RelProp.class)) {
-                return Optional.of(__.start().has(property.get().getName(), ConversionUtil.convertConstraint(relProp.getCon())));
+                return Optional.of(__.start().has(foreignKeyName, ConversionUtil.convertConstraint(relProp.getCon())));
             } else if (SchematicRelProp.class.isAssignableFrom(relProp.getClass())) {
-                return Optional.of(__.start().has(((SchematicRelProp)relProp).getSchematicName(),
+                return Optional.of(__.start().has(((SchematicRelProp) relProp).getSchematicName(),
                         ConversionUtil.convertConstraint(relProp.getCon())));
             }
         }
-
         return Optional.empty();
     }
     //endregion

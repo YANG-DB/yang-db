@@ -154,6 +154,15 @@ public interface CypherUtils {
     }
 
 
+    static List<org.opencypher.v9_0.expressions.Variable> func(org.opencypher.v9_0.expressions.Expression expression) {
+        return
+                expression!=null ? asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()
+                .filter(v -> org.opencypher.v9_0.expressions.FunctionInvocation.class.isAssignableFrom(v.getClass()))
+                .collect(Collectors.toList()).stream()
+                .map(p-> ((org.opencypher.v9_0.expressions.Variable) p))
+                .collect(Collectors.toList()) : Collections.emptyList();
+
+    }
     static List<org.opencypher.v9_0.expressions.Variable> var(org.opencypher.v9_0.expressions.Expression expression) {
         return
                 expression!=null ? asJavaCollectionConverter(expression.subExpressions()).asJavaCollection().stream()

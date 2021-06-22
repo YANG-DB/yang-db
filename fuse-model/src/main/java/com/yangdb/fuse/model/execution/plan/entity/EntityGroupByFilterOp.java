@@ -22,7 +22,7 @@ package com.yangdb.fuse.model.execution.plan.entity;
 
 /*-
  *
- * EntityOp.java - fuse-model - yangdb - 2,016
+ * EntityGroupByOp.java - fuse-model - yangdb - 2,016
  * org.codehaus.mojo-license-maven-plugin-1.16
  * $Id$
  * $HeadURL$
@@ -45,25 +45,45 @@ package com.yangdb.fuse.model.execution.plan.entity;
 
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.execution.plan.AsgEBasePlanOp;
-import com.yangdb.fuse.model.query.entity.EEntityBase;
+import com.yangdb.fuse.model.query.aggregation.Agg;
 
 /**
  * Created by lior.perry on 20/02/2017.
  */
-public class EntityOp extends AsgEBasePlanOp<EEntityBase> {
+public class EntityGroupByFilterOp extends AsgEBasePlanOp<Agg> {
     //region Constructor
-    public EntityOp() {
+    public EntityGroupByFilterOp() {
         super(new AsgEBase<>());
     }
 
-    public EntityOp(AsgEBase<EEntityBase> asgEBase) {
-        super(asgEBase);
+    public EntityGroupByFilterOp(String name, String vertexTag, AsgEBase<Agg> agg) {
+        super(agg);
+        this.name = name;
+        this.vertexTag = vertexTag;
+    }
+    //endregion
+
+    //region Properties
+    public String getName() {
+        return this.name;
     }
 
-    @Override
-    public AsgEBase<EEntityBase> getAsgEbase() {
-        return super.getAsgEbase();
+    public void setName(String value) {
+        this.name = value;
     }
 
+    public String getVertexTag() {
+        return this.vertexTag;
+    }
+
+    public void setVertexTag(String value) {
+        this.vertexTag = value;
+    }
+
+    //endregion
+
+    //region Fields
+    private String vertexTag;
+    private String name;
     //endregion
 }

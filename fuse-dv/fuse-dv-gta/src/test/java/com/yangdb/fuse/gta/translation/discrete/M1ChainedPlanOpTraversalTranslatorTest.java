@@ -18,6 +18,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.query.Rel;
 
+import com.yangdb.fuse.model.query.properties.constraint.CountConstraintOp;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.promise.Constraint;
@@ -78,6 +79,25 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 __.start().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
+                                __.start().has(T.id, "12345678"),
+                                __.start().has(T.label, "Person"))))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
+                        .otherV().as("B");
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
+    public void test_concrete_rel_typed_Agg() throws Exception {
+        Plan plan = create_Con_Rel_Typ_Agg_PathQuery();
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null),
+                new TranslationContext(ont, new PromiseGraph().traversal()));
+
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().and(
                                 __.start().has(T.id, "12345678"),
                                 __.start().has(T.label, "Person"))))
@@ -235,6 +255,28 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 .next(typed(6, "1", "B"))
                 .next(quant1(7, QuantType.all))
                 .next(ePropGroup(8))
+                .build();
+
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8))
+        );
+    }
+
+    private Plan create_Con_Rel_Typ_Agg_PathQuery() {
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
+                .next(agg(2,com.yangdb.fuse.model.query.properties.constraint.Constraint.of(CountConstraintOp.le,100),"groupBy"))
+                .next(quant1(3, QuantType.all))
+                .in(ePropGroup(4))
+                .next(rel(5, "1", Rel.Direction.R).below(relProp(6)))
+                .next(typed(7, "1", "B"))
+                .next(quant1(8, QuantType.all))
+                .next(ePropGroup(9))
                 .build();
 
         return new Plan(

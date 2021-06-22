@@ -43,6 +43,7 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
                 new EntityOpTranslationStrategy(EntityTranslationOptions.none),
                 new CompositePlanOpTranslationStrategy(
                         new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
+                        new AggregationFilterOpTranslationStrategy(EntityTranslationOptions.none),
                         new EntitySelectionTranslationStrategy()
 //                        new WhereByOpTranslationStrategy()
                 ),
@@ -50,11 +51,11 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
                 new RelationOpTranslationStrategy(),
                 new CompositePlanOpTranslationStrategy(
                         new RelationFilterOpTranslationStrategy(),
+                        new AggregationFilterOpTranslationStrategy(EntityTranslationOptions.none),
                         new RelationSelectionTranslationStrategy()
 //                        new WhereByOpTranslationStrategy()
                 ),
                 new OptionalOpTranslationStrategy(this),
-                new AggregationOpTranslationStrategy(this),
                 new CountOpTranslationStrategy(this),
                 new UnionOpTranslationStrategy(this)
         ).toJavaList();

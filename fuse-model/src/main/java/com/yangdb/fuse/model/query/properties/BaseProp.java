@@ -43,6 +43,7 @@ package com.yangdb.fuse.model.query.properties;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
@@ -164,6 +165,14 @@ public abstract class BaseProp extends EBase{
         return proj;
     }
 
+    /**
+     * state is this property constraint an aggregation
+     * @return
+     */
+    @JsonIgnore
+    public boolean isAggregation() {
+        return getCon()!=null && getCon().getCountOp()!=null;
+    }
     /**
      * set projection (projection & constraints are exclusives)
      * @param proj

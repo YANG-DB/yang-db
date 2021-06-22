@@ -33,7 +33,7 @@ public class CollectionUtil {
         if (value == null) {
             return Collections.emptyList();
         } else if (Iterable.class.isAssignableFrom(value.getClass())) {
-            return Stream.ofAll((Iterable)value).map(o -> (T)o).toJavaList();
+            return Stream.ofAll((Iterable)value).map(o -> o).toJavaList();
         } else if (value.getClass().isArray()) {
             return Stream.of((T[])value).toJavaList();
         } else {

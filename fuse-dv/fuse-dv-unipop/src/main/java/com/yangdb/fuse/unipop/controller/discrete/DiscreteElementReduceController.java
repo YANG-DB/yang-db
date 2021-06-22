@@ -86,7 +86,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
             buildVertexQuery(reduceQuery, searchBuilder);
         }
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchResponse response = searchRequest.execute().actionGet();
         long totalHits = response.getHits().getTotalHits();
         //report count
@@ -168,12 +168,13 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
                         wrap(new EdgeSourceSearchAppender()),
+//                        wrap(new EdgeSourceCountFilterSearchAppender()),
                         //todo: add configuration to enable/disable routing
 //                        wrap(new EdgeRoutingSearchAppender()),
                         wrap(new EdgeSourceRoutingSearchAppender()),
                         wrap(new EdgeIndexSearchAppender()),
                         wrap(new DualEdgeDirectionSearchAppender()),
-                        wrap(new MustFetchSourceSearchAppender("type")),
+                        wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 
@@ -216,7 +217,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
-                        wrap(new MustFetchSourceSearchAppender("type")),
+                        wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 

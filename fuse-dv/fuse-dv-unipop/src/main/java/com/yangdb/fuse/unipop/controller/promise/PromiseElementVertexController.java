@@ -139,7 +139,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
      *         //1. Build the SearchBuilder
      *         //1.1 Create the QueryAppender neccessary for the SearchBuilder
      *
-     *         //1.2 Apply the QueryAppender with the propriate arguments and get the SearchBuilder
+     *         //1.2 Apply the QueryAppender with the appropriate arguments and get the SearchBuilder
      *         //
      *         //2. Execute the SearchBuilder - run the query (elastic)
      *         //
@@ -180,13 +180,13 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 wrap(new IndexSearchAppender()),
                 wrap(new SizeSearchAppender(this.configuration)),
                 wrap(new PromiseConstraintSearchAppender()),
-                wrap(new MustFetchSourceSearchAppender("type")),
+                wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
                 wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);
 
         //build
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,

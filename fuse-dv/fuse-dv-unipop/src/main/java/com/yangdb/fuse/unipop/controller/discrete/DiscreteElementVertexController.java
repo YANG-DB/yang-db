@@ -111,14 +111,14 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
-                        wrap(new MustFetchSourceSearchAppender("type")),
+                        wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
                 searchRequest,

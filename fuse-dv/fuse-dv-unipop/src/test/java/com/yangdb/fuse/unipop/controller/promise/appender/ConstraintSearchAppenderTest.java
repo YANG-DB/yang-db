@@ -1,5 +1,6 @@
 package com.yangdb.fuse.unipop.controller.promise.appender;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.OntologyTestUtils;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
@@ -149,7 +150,7 @@ public class ConstraintSearchAppenderTest {
 
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
-        SearchRequestBuilder builder = searchBuilder.build(client, false);
+        SearchRequestBuilder builder = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}", builder.toString());
     }
 
@@ -176,7 +177,7 @@ public class ConstraintSearchAppenderTest {
 
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
-        SearchRequestBuilder builder = searchBuilder.build(client, false);
+        SearchRequestBuilder builder = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
     }
 
@@ -203,7 +204,7 @@ public class ConstraintSearchAppenderTest {
 
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
-        SearchRequestBuilder builder = searchBuilder.build(client, false);
+        SearchRequestBuilder builder = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"filter\":[{\"bool\":{\"should\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"should\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
     }
 
@@ -233,7 +234,7 @@ public class ConstraintSearchAppenderTest {
 
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
-        SearchRequestBuilder builder = searchBuilder.build(client, false);
+        SearchRequestBuilder builder = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"filter\":[{\"bool\":{\"must\":[{\"wildcard\":{\"qwerty\":{\"wildcard\":\"*bla*\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
         //        ES 5 regexp plugin
 //        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"filter\":[{\"bool\":{\"must\":[{\"script\":{\"script\":{\"source\":\"wildcard\",\"lang\":\"native\",\"params\":{\"expression\":\"*bla*\",\"field\":\"qwerty\"}},\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString() );
@@ -265,7 +266,7 @@ public class ConstraintSearchAppenderTest {
 
         ConstraintSearchAppender searchAppender = new ConstraintSearchAppender();
         searchAppender.append(searchBuilder, context);
-        SearchRequestBuilder builder = searchBuilder.build(client, false);
+        SearchRequestBuilder builder = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"filter\":[{\"bool\":{\"should\":[{\"wildcard\":{\"qwerty\":{\"wildcard\":\"*bla*\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"should\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString());
 //        ES 5 regexp plugin
 //        Assert.assertEquals("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"filter\":[{\"bool\":{\"should\":[{\"script\":{\"script\":{\"source\":\"wildcard\",\"lang\":\"native\",\"params\":{\"expression\":\"*bla*\",\"field\":\"qwerty\"}},\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"should\":[{\"bool\":{\"must\":[{\"term\":{\"abc\":{\"value\":\"123\",\"boost\":100.0}}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"edf\":{\"value\":\"bla bla\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":5.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"Person\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":false}",builder.toString());

@@ -130,13 +130,13 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                     wrap(new FilterVerticesSearchAppender()),
                     wrap(new SizeSearchAppender(configuration)),
                     wrap(new PromiseConstraintSearchAppender()),
-                    wrap(new MustFetchSourceSearchAppender("type")),
+                    wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
                     wrap(new FilterSourceSearchAppender()),
                     wrap(new FilterIndexSearchAppender()));
 
         appender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION).setSize(0);
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,

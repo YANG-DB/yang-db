@@ -50,6 +50,7 @@ import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.Tagged;
 import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.query.*;
+import com.yangdb.fuse.model.query.aggregation.Agg;
 import com.yangdb.fuse.model.query.aggregation.CountComp;
 import com.yangdb.fuse.model.query.entity.*;
 import com.yangdb.fuse.model.query.optional.OptionalComp;
@@ -284,6 +285,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
             concrete.seteTag(eTag);
 
             return new AsgEBase<>(concrete);
+        }
+
+        public static AsgEBase<Agg> agg(int eNum, Constraint constraint,String eTag) {
+            return new AsgEBase<>(new Agg(eNum,eTag,constraint,0));
         }
 
         public Builder in(AsgEBase... eBase) {

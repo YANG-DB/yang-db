@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.validation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.asg.validation;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
@@ -54,11 +53,11 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         List<AsgEBase<Rel>> list = nextDescendants(query.getStart(), Rel.class);
 
         list.forEach(rel -> {
-            if(!rel.getB().isEmpty()) {
+            if (!rel.getB().isEmpty()) {
                 AsgEBase<? extends EBase> asgEBase = rel.getB().get(0);
-                if(asgEBase.geteBase() instanceof RelProp) {
+                if (asgEBase.geteBase() instanceof RelProp) {
                     errors.addAll(check(accessor, rel, ((RelProp) asgEBase.geteBase())));
-                } else if(asgEBase.geteBase() instanceof RelPropGroup) {
+                } else if (asgEBase.geteBase() instanceof RelPropGroup) {
                     errors.addAll(check(accessor, rel, ((RelPropGroup) asgEBase.geteBase())));
                 }
             }
@@ -81,18 +80,18 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         RelationshipType relationshipType = accessor.$relation$(base.geteBase().getrType());
         String pType = property.getpType();
 
-        if (relationshipType.fields().stream().noneMatch(p -> p.equals(pType))) {
+        if (!property.isAggregation() && relationshipType.fields().stream().noneMatch(p -> p.equals(pType))) {
             errors.add(ERROR_2 + ":" + print(base, property));
         }
 
         // if projection type prop -> dont check constraints
-        if(property.getProj()!=null) {
+        if (property.getProj() != null) {
             return errors;
         }
 
         //interval type
-        if(property.getCon().getiType()==null) {
-            errors.add(String.format(ERROR_3 ," interval type ",property));
+        if (property.getCon().getiType() == null) {
+            errors.add(String.format(ERROR_3, " interval type ", property));
         }
 
         //expresion
@@ -103,8 +102,8 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         }
 
         //operation
-        if(property.getCon().getOp()==null) {
-            errors.add(String.format(ERROR_3 ," operation ",property));
+        if (property.getCon().getCountOp() == null && property.getCon().getOp() == null) {
+            errors.add(String.format(ERROR_3, " operation ", property));
         }
 
         return errors;
