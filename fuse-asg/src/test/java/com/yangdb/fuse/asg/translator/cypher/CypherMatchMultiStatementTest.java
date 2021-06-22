@@ -56,7 +56,7 @@ public class CypherMatchMultiStatementTest {
                             "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                             "                                                                                                                                                  └─?[..][801], \n" +
                             "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class CypherMatchMultiStatementTest {
                             "                               └-> Rel(:C c#2)──Typ[:B b#3], \n" +
                             "                               └-> Rel(:D d#4)──Typ[:E e#5]──Q[500:all]:{6}, \n" +
                             "                                                                       └<--Rel(:F Rel_#6#6)──Typ[:G g#7]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class CypherMatchMultiStatementTest {
                             "                                          └─?[..][501], \n" +
                             "                                                  └─?[501]:[fieldId<eq,e>], \n" +
                             "                                                  └─?[502]:[stringValue<eq,e>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class CypherMatchMultiStatementTest {
                 "                                                                                                                                └─?[..][2801], \n" +
                 "                                                                                                                                         └─?[2801]:[stringValue<eq,g>], \n" +
                 "                                                                                                                                         └─?[2802]:[fieldId<eq,g>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 

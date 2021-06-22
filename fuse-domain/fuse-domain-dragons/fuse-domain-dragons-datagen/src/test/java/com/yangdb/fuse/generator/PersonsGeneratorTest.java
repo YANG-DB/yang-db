@@ -56,8 +56,8 @@ public class PersonsGeneratorTest {
         assertTrue(TestUtil.isFileExists(personsFilePath));
         List<String[]> dragonsLines = CsvUtil.readCSV(personsFilePath, ',');
         assertTrue(dragonsLines.size() > personConfiguration.getNumberOfNodes() - 1);
-        assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = graph Id
-        assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
+        assertTrue(dragonsLines.get(1)[0].equals("0")); //[0] = graph Id
+        assertTrue(dragonsLines.get(2)[0].equals("1")); // No weird 'Jumps'
     }
 
     @Test

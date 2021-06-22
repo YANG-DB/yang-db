@@ -131,7 +131,7 @@ public class ElementConstraintSearchAppenderTest {
                 JSONCompareMode.LENIENT);
 
         Assert.assertEquals(
-                "[{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_idCount\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_idCount;12\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}]",
+                "[{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a>12\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}]",
                 searchBuilder.getAggregationBuilder().getAggregations().toString());
     }
 

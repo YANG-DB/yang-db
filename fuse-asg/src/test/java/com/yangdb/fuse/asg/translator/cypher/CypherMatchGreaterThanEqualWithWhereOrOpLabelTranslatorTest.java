@@ -75,7 +75,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                 )
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                                                 ))
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                 "                                                                                    └─?[901]:[birth<ge,28/01/2001>], \n" +
                 "                               └─?[..][701], \n" +
                 "                                       └─?[701]:[age<lt,100>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                 "                                                                            └─?[..][901], \n" +
                 "                                                                                    └─?[901]:[type<inSet,[Person]>], \n" +
                 "                                                                                    └─?[902]:[birth<lt,28/01/2001>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -216,7 +216,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -254,7 +254,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                 "                                                           └─?[1401]:[type<inSet,[Fire]>], \n" +
                 "                                                                                     └─?[..][1501], \n" +
                 "                                                                                              └─?[1501]:[age<lt,100>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -295,7 +295,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -335,7 +335,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                 "                               └<--Rel(:* c#8)──UnTyp[:[] b#9], \n" +
                 "                                          └─?[..][800], \n" +
                 "                                                  └─?[801]:[size<gt,50>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 

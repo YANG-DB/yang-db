@@ -43,6 +43,7 @@ package com.yangdb.fuse.model.asgQuery;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -172,6 +173,12 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
         return result;
     }
 
+    @JsonIgnore
+    public AsgQuery withProjectedFields(Map<String, List<AsgEBase<EBase>>> projectedFields) {
+        this.setProjectedFields(projectedFields);
+        return this;
+    }
+
     //region Fields
     private String ont;
     private String name;
@@ -181,6 +188,7 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>> {
 
     private Collection<NamedParameter> parameters = new ArrayList<>();
     private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
+
 
     //endregion
 

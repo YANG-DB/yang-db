@@ -25,7 +25,7 @@ public class CountFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.elasticsearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_idCount\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_idCount;a=120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a=120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
 
     }
 
@@ -34,11 +34,11 @@ public class CountFilterQueryTranslatorTest extends TestCase {
         final AggregationBuilder builder = new AggregationBuilder();
         AggregationBuilder edge = builder.countFilter(ENTITY_A_ID);
         edge.param("field", ENTITY_A_ID);
-        edge.param("operator", Compare.gte);
+        edge.param("operator", CountFilterP.CountFilterCompare.gte);
         edge.param("operands", Collections.singletonList("120"));
 
         Iterable<org.elasticsearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_idCount\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_idCount;a>120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a>120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
     }
 }

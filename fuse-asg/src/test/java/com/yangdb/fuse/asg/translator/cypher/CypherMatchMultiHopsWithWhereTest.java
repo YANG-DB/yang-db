@@ -8,12 +8,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Collections;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
-import static com.yangdb.fuse.model.query.properties.EProp.of;
-import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_CYPHERQL;
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +45,7 @@ public class CypherMatchMultiHopsWithWhereTest {
                 "                                    └─?[..][101], \n" +
                 "                                            └─?[101]:[name<contains,jh>], \n" +
                 "                                            └─?[102]:[type<inSet,[Horse]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -73,7 +72,7 @@ public class CypherMatchMultiHopsWithWhereTest {
                 "                                                                     └<--Rel(:* h#8), \n" +
                 "                                                                                └─?[..][901], \n" +
                 "                                                                                        └─?[901]:[height<eq,200>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -98,7 +97,7 @@ public class CypherMatchMultiHopsWithWhereTest {
                 "                                                                                                                                                                               └<--Rel(:* h#26)──UnTyp[:[] i#27], \n" +
                 "                                  └─?[..][1901], \n" +
                 "                                           └─?[1901]:[type<inSet,[Horse]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -127,7 +126,7 @@ public class CypherMatchMultiHopsWithWhereTest {
                 "                                                                                               └─?[2101]:[age<gt,100>], \n" +
                 "                                  └─?[..][1901], \n" +
                 "                                           └─?[1901]:[name<contains,jh>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     //endregion
 

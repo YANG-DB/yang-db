@@ -99,7 +99,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
     }
 
     protected String getTagName(org.opencypher.v9_0.expressions.Expression prop) {
-        return ((Property) prop).propertyKey().name();
+        return CypherUtils.var(prop).get(0).name();
     }
 
     protected Optional<String> getKeyName(org.opencypher.v9_0.expressions.Expression prop) {
@@ -111,7 +111,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
         if (CypherUtils.var(property).isEmpty())
             return Optional.empty();
 
-        return Optional.of(CypherUtils.var(property).get(0).name());
+        return Optional.of(((Property) prop).propertyKey().name());
     }
 
     protected Optional<String> getExpressionName(org.opencypher.v9_0.expressions.Expression lhs) {

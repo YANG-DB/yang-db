@@ -51,7 +51,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 "                                  └─?[..][101], \n" +
                 "                                          └─?[101]:[name<eq,Alice>], \n" +
                 "                                          └─?[102]:[type<inSet,[Horse]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
     @Test
@@ -82,7 +82,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_AND_B_OfType_Return_A_with_multi_pattern() {
@@ -113,7 +113,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(like, "jh*"))
                         )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_contains() {
@@ -150,7 +150,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "type", of(inSet, Arrays.asList("Horse")))
                         )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_AND_A_OfType_Return_A_with_endsWith() {
@@ -168,7 +168,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(endsWith, "jh*")))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(startsWith, "jh*")))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 
@@ -203,7 +203,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(quant1(100, all))
                 .in(ePropGroup(101,all,of(101, "type", of(inSet, Arrays.asList("Dragon")))))
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -222,7 +222,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "type", of(inSet, Arrays.asList("Hours"))))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(inSet, Arrays.asList("jhone","jane"))))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -260,7 +260,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(eq, "jhone")))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -279,7 +279,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                                 of(102, "name", of(ne, "jhone")))
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -337,7 +337,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_OfType_Return_A() {
@@ -370,7 +370,7 @@ public class CypherMatchHasLabelWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     //endregion

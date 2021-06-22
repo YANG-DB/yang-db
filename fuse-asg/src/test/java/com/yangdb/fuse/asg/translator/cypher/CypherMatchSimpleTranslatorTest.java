@@ -49,7 +49,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(unTyped(1, "a"))
                 .build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(typed(1, "Dragon", "a"))
                 .build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class CypherMatchSimpleTranslatorTest {
                 .next(unTyped(1, "a",Arrays.asList("Dragon","Person")))
                 .build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class CypherMatchSimpleTranslatorTest {
                         rel(2, null, Rel.Direction.RL,"c")
                                 .next(typed(3,"Person", "b"))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 
@@ -117,7 +117,7 @@ public class CypherMatchSimpleTranslatorTest {
                                 .next(unTyped(3, "b"))
                 ).build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class CypherMatchSimpleTranslatorTest {
                                 .next(unTyped(3, "b"))
                 ).build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 
@@ -156,7 +156,7 @@ public class CypherMatchSimpleTranslatorTest {
                                 .next(typed(3,"Person", "b"))
                 ).build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class CypherMatchSimpleTranslatorTest {
                         rel(2, "*", Rel.Direction.RL,"c")
                                 .next(typed(3,"Person", "b"))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -192,7 +192,7 @@ public class CypherMatchSimpleTranslatorTest {
                                 .next(unTyped(3, "b"))
                 ).build();
 
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 
@@ -211,7 +211,7 @@ public class CypherMatchSimpleTranslatorTest {
                         rel(2, "Fire", Rel.Direction.RL,"c")
                                 .next(typed(3,"Person", "b"))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     //endregion

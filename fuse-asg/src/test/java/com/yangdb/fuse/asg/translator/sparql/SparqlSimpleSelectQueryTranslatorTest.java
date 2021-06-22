@@ -18,6 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.TYPE_SPARQL;
@@ -137,7 +138,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected2, print(query2));
+        assertEquals(expected2, print(query2.withProjectedFields(Collections.emptyMap())));
 
     }
 
@@ -165,13 +166,13 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "}";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected = "Projected fields:name\n" +
+        String expected =
                 "[└── Start, \n" +
                 "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4}, \n" +
                 "                                                                  └─?[..][4], \n" +
                 "                                                                        └─?[3]:[http://xmlns.com/foaf/0.1/firstName<IdentityProjection>], \n" +
                 "                                                                        └─?[5]:[type<eq,http://xmlns.com/foaf/0.1/Person>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -242,7 +243,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -273,13 +274,13 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
         AsgQueryUtil.replaceTagsStartingWith(query,"_anon_",eBase -> "_anon_" + eBase.geteNum());
 
-        String expected = "Projected fields:person|firstName|email\n" +
+        String expected = 
                 "[└── Start, \n" +
                 "    ──Typ[:http://www.w3.org/2002/07/owl#Thing person#1]──Q[2:all]:{4|5}, \n" +
                 "                                                                    └─?[..][4], \n" +
                 "                                                                          └─?[3]:[http://xmlns.com/foaf/0.1/name<IdentityProjection>]──Typ[:http://www.w3.org/2002/07/owl#Thing email#6], \n" +
                 "                                                                    └-> Rel(:http://xmlns.com/foaf/0.1/mbox _const_23b75369_uri#5)]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -310,12 +311,12 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "}";
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
-        String expected = "Projected fields:homepage\n" +
+        String expected =
                 "[└── Start, \n" +
                 "    ──Conc[:http://www.w3.org/2002/07/owl#Thing http://www.w3.org/People/Berners-Lee/card#i#1]──Q[2:all]:{3}, \n" +
                 "                                                                                                        └-> Rel(:http://xmlns.com/foaf/0.1/knows _const_531c5f7d_uri#3)──Typ[:http://www.w3.org/2002/07/owl#Thing known#4]──Q[5:all]:{6}, \n" +
                 "                                                                                                                                                                                                                                    └-> Rel(:http://xmlns.com/foaf/0.1/homepage _const_aba78b99_uri#6)──Typ[:http://www.w3.org/2002/07/owl#Thing homepage#7]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -358,14 +359,14 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
 
         AsgQueryUtil.replaceTagsStartingWith(query,"_anon_",eBase -> "_anon_" + eBase.geteNum());
-        String expected = "Projected fields:country_name|population\n" +
+        String expected =
                 "[└── Start, \n" +
                 "    ──Typ[:http://www.w3.org/2002/07/owl#Thing country#1]──Q[2:all]:{4}, \n" +
                 "                                                                   └─?[..][4], \n" +
                 "                                                                         └─?[3]:[type<eq,http://dbpedia.org/class/yago/LandlockedCountries>], \n" +
                 "                                                                         └─?[5]:[http://xmlns.com/foaf/0.1/name<IdentityProjection>], \n" +
                 "                                                                         └─?[5]:[http://dbpedia.org/ontology/populationTotalRanking<gt,15000000>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -430,7 +431,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -521,7 +522,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -585,7 +586,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                    └─?[..][6], \n" +
                 "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<eq,Novelist>], \n" +
                 "                                                                          └─?[7]:[http://dbpedia.org/ontology/description<eq,Author>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -663,7 +664,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                    └─?[..][6], \n" +
                 "                                                                          └─?[5]:[http://dbpedia.org/ontology/description<eq,Novelist>], \n" +
                 "                                                                          └─?[7]:[http://dbpedia.org/ontology/description<eq,Author>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -736,7 +737,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -799,7 +800,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -830,7 +831,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -886,7 +887,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
         final AsgQuery query = sparQLTransformer.transform(new QueryInfo<>(s, "q", TYPE_SPARQL, OntologyNameSpace.defaultNameSpace + "foaf"));
         AsgQueryUtil.replaceTagsStartingWith(query,"_anon_",eBase -> "_anon_" + eBase.geteNum());
 
-        String expected = "Projected fields:uri|label\n" +
+        String expected =
                 "[└── Start, \n" +
                 "    ──Typ[:http://www.w3.org/2002/07/owl#Thing domain#1]──Q[2:all]:{4|5}, \n" +
                 "                                                                    └─?[..][4], \n" +
@@ -895,7 +896,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                      └-> Rel(:http://dbpedia.org/ontology/country _const_2b8b59d8_uri#8)──Typ[:http://www.w3.org/2002/07/owl#Thing uri#9]──Q[10:all]:{12}, \n" +
                 "                                                                                                                                                                                                                                                                      └─?[..][12], \n" +
                 "                                                                                                                                                                                                                                                                             └─?[11]:[label<IdentityProjection>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -1001,7 +1002,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1046,7 +1047,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1160,7 +1161,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1207,7 +1208,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1235,7 +1236,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1262,7 +1263,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1289,7 +1290,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -1344,7 +1345,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
                 "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
                 "                                                                                                                                                  └─?[..][801], \n" +
                 "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 }

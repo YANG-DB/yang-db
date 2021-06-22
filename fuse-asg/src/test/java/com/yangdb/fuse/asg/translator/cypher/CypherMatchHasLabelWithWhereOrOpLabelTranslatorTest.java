@@ -78,7 +78,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                             .next(unTyped(9, "b"))
                                             ))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
     @Test
@@ -126,7 +126,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                             )
                                             ))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -176,7 +176,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                             )
                                             ))
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
 
     }
 
@@ -194,7 +194,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                             "                   └─UnTyp[:[] a#3], \n" +
                             "                               └─?[..][301], \n" +
                 "                                       └─?[301]:[name<like,jh*>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                             "                   └─UnTyp[:[] a#3], \n" +
                             "                               └─?[..][301], \n" +
                             "                                       └─?[301]:[type<inSet,[Horse]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_startsWith() {
@@ -227,7 +227,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                 "                   └─UnTyp[:[] a#3], \n" +
                 "                               └─?[..][301], \n" +
                 "                                       └─?[301]:[name<startsWith,jh*>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_where_A_OfType_OR_A_OfType_Return_A_with_endsWith() {
@@ -243,7 +243,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                 "                   └─UnTyp[:[] a#3], \n" +
                 "                               └─?[..][301], \n" +
                 "                                       └─?[301]:[name<endsWith,jh*>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -260,7 +260,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                             "                   └─UnTyp[:[] a#3], \n" +
                             "                               └─?[..][301], \n" +
                             "                                       └─?[301]:[name<inSet,[jhone, jane]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -277,7 +277,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                         "                   └─UnTyp[:[] a#3], \n" +
                         "                               └─?[..][301], \n" +
                         "                                       └─?[301]:[name<eq,jhone>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -294,7 +294,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                             "                   └─UnTyp[:[] a#3], \n" +
                             "                               └─?[..][301], \n" +
                             "                                       └─?[301]:[name<ne,jhone>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 
@@ -334,7 +334,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                 )
                 )
                 .build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -384,7 +384,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                                     unTyped(12, "b")))
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -424,7 +424,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -473,7 +473,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
     @Test
     public void testMatch_A_AND_where_A_OfType_And_OR_B_OfType_AND_b_Return_() {
@@ -524,7 +524,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -562,7 +562,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                 "                                      └─?[..][1301], \n" +
                 "                                               └─?[1301]:[type<inSet,[Dragon]>], \n" +
                 "                                               └─?[1302]:[type<inSet,[Hours]>]]";
-        assertEquals(expected, print(query));
+        assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
     @Test
@@ -604,7 +604,7 @@ public class CypherMatchHasLabelWithWhereOrOpLabelTranslatorTest {
                                                 )
                                 )
                 ).build();
-        assertEquals(print(expected), print(query));
+        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 
 

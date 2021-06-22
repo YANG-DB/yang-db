@@ -4,6 +4,8 @@ import com.yangdb.fuse.asg.translator.AsgTranslator;
 import com.yangdb.fuse.asg.translator.cypher.strategies.MatchCypherTranslatorStrategy;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
+import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.properties.RelProp;
@@ -14,8 +16,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor.print;
@@ -51,6 +52,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .next(quant1(100, all))
                 .in(ePropGroup(101,all,of(101, "age", of(gt, 100))))
                 .build();
+        expected.setProjectedFields(Collections.singletonMap("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get())));
         assertEquals(print(expected), print(query));
     }
 
@@ -69,6 +71,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                                 of(102, "birth", of(ge, "28/01/2001")))
                 )
                 .build();
+        expected.setProjectedFields(Collections.singletonMap("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get())));
         assertEquals(print(expected), print(query));
     }
 
@@ -96,6 +99,11 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
+        Map<String, List<AsgEBase<EBase>>> fields = new HashMap<>();
+        fields.put("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get()));
+        fields.put("b", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "b").get()));
+        fields.put("Rel_#2", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "Rel_#2").get()));
+        expected.setProjectedFields(fields);
         assertEquals(print(expected), print(query));
     }
 
@@ -123,6 +131,12 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
+
+        Map<String, List<AsgEBase<EBase>>> fields = new HashMap<>();
+        fields.put("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get()));
+        fields.put("b", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "b").get()));
+        fields.put("Rel_#2", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "Rel_#2").get()));
+        expected.setProjectedFields(fields);
         assertEquals(print(expected), print(query));
     }
 
@@ -157,8 +171,15 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
+        Map<String, List<AsgEBase<EBase>>> fields = new HashMap<>();
+        fields.put("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get()));
+        fields.put("b", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "b").get()));
+        fields.put("c", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "c").get()));
+        expected.setProjectedFields(fields);
         assertEquals(print(expected), print(query));
     }
+
+
 
     @Test
     public void testMatch_A_where_A_OfType_testMatch_A_where_A_OfType_AND_C_Return_All() {
@@ -189,6 +210,11 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
                 .next(unTyped(1, "a"))
                 .next(quantA)
                 .build();
+        Map<String, List<AsgEBase<EBase>>> fields = new HashMap<>();
+        fields.put("a", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "a").get()));
+        fields.put("b", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "b").get()));
+        fields.put("c", Collections.singletonList(AsgQueryUtil.getByTag(expected.getStart(), "c").get()));
+        expected.setProjectedFields(fields);
         assertEquals(print(expected), print(query));
     }
 
