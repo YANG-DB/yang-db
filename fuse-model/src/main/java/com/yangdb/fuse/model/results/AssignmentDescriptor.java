@@ -45,9 +45,12 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
                     joiner.add(print(getEntityById(rel.geteID2(), assignment).orElseGet(() ->
                             new Entity(Collections.emptySet(), rel.geteID1(), "???", Collections.emptyMap()))));
                 });
-        return (joiner.toString().toCharArray()[joiner.length() - 1] == '-') ?
-                joiner.toString().substring(0, joiner.length() - 1) : joiner.toString();
-
+        if(joiner.length() > 0 )
+                return (joiner.toString().toCharArray()[joiner.length() - 1] == '-') ? joiner.toString().substring(0, joiner.length() - 1) : joiner.toString();
+        else {
+            assignment.getEntities().forEach(a -> joiner.add(a.geteID()));
+        }
+        return joiner.toString();
     }
 
     private Optional<Entity> getEntityById(String id, Assignment<Entity, Relationship> assignment) {
