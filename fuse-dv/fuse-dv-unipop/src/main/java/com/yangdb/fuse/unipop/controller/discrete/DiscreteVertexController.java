@@ -186,6 +186,14 @@ public class DiscreteVertexController extends VertexControllerBase {
                 wrap(new NormalizeIndexSearchAppender(100)));
     }
 
+    /**
+     * this section is done separately against the E/S engine since we cant use the resulting aggregation results to get document (using filter) inside the same query -
+     * this feature was requested form E/S in the pull requests and still awaiting development - once completed this method will be unified with the calling thread
+     * @param context
+     * @param searchBuilder
+     * @param searchVertexQuery
+     * @return
+     */
     private CompositeControllerContext.Impl filterByAggregation(CompositeControllerContext context, SearchBuilder searchBuilder, SearchVertexQuery searchVertexQuery) {
         searchBuilder.setLimit(0);//agg needs no actual hits returned only the agg buckets themselves
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true);
