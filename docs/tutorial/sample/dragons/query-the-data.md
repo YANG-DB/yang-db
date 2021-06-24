@@ -164,9 +164,6 @@ This time lets see Guilds registered in kingdoms that have a positive cache flow
     Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
 ```
 
-Lets visualize the results:
-![yangdb-page-result-visualize-q3](img/visualize-q3.png)
-
 #### Query:5
 Now lets see the exciting Dragons battles ... give us the dragons who fire upon black dragons
 ```
@@ -198,3 +195,23 @@ The female person also owns a horse that is originated from a kingdom that has a
 
 **The ASG query looks as follows:**
 ![yangdb-page-result-visualize-asg-q4](img/visualize-asg-q4.png)
+
+#### Query:6
+**Lets aggregate some data:**
+
+If we want to filter out nodes according to their edge count we will use the following semantics:
+```
+Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 return *
+```
+When we use the aggregate function count with the tag as operand the engine will create a push-down of a pipe term aggregation...
+
+This will result in the Person node that fulfill the edge count filter condition.
+
+It is very much possible to combine the aggregative filter with row based filter such as the following query:
+
+```
+Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *
+```
+
+
+
