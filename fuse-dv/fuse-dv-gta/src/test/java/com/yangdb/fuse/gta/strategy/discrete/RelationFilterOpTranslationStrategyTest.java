@@ -138,7 +138,7 @@ public class RelationFilterOpTranslationStrategyTest {
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
                         Constraint.by(__.start().and(
                                 __.start().has(T.label, "Fire"),
-                                __.start().has("timestamp", CountFilterP.gte(100))
+                                __.start().has(GlobalConstants.EdgeSchema.SOURCE_ID, CountFilterP.gte(100))
                         )));
         test_rel_group_inner(simpleQueryCount("name", "ontName"), expectedTraversal);
     }

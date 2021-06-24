@@ -30,7 +30,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, nestedSchema, ontology, nestedProvider);
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
-        HashSet<String> indices = Sets.newHashSet("guilds","own","subjectof","people","kingdoms","freeze","know","fire","originatedin","registeredin","memberof","horses","dragons");
+        HashSet<String> indices = Sets.newHashSet("fire","freeze","own","subjectof","dragon","kingdom","people","horse","guild","know","registeredin","originatedin","memberof");
         list.stream().map(i->i._1).forEach(l->Assert.assertTrue("list must contain "+l,indices.contains(l)));
 
         indices.forEach(index ->{
@@ -47,36 +47,36 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "horse":
                 case "horses":
                 case "Horse":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horses")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horse")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horses");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horse");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Horse").toString(),"{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "dragon":
                 case "dragons":
                 case "Dragon":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragons")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragon")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragons");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragon");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Dragon").toString(),"{\"Dragon\":{\"properties\":{\"gender\":{\"type\":\"keyword\"},\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
                     break;
                 case "kingdoms":
                 case "kingdom":
                 case "Kingdom":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdoms")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdom")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdoms");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdom");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Kingdom").toString(),"{\"Kingdom\":{\"properties\":{\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "guilds":
                 case "guild":
                 case "Guild":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guilds")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guild")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guilds");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guild");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Guild").toString(),"{\"Guild\":{\"properties\":{\"iconId\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"}}}}");
                     break;
@@ -155,7 +155,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, embeddedSchema, ontology, embeddedProvider);
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
-        HashSet<String> indices = Sets.newHashSet("guilds","own","subjectof","people","kingdoms","freeze","know","fire","originatedin","registeredin","memberof","horses","dragons");
+        HashSet<String> indices = Sets.newHashSet("fire","freeze","own","subjectof","dragon","kingdom","people","horse","guild","know","registeredin","originatedin","memberof");
         list.stream().map(i->i._1).forEach(l->Assert.assertTrue("list must contain "+l,indices.contains(l)));
 
         indices.forEach(index ->{
@@ -172,36 +172,36 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "horse":
                 case "horses":
                 case "Horse":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horses")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("horse")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horses");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"horse");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Horse").toString(),"{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"weight\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "dragon":
                 case "dragons":
                 case "Dragon":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragons")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("dragon")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragons");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"dragon");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Dragon").toString(),"{\"Dragon\":{\"properties\":{\"gender\":{\"type\":\"keyword\"},\"color\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"},\"birthDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"}}}}");
                     break;
                 case "kingdoms":
                 case "kingdom":
                 case "Kingdom":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdoms")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("kingdom")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdoms");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"kingdom");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Kingdom").toString(),"{\"Kingdom\":{\"properties\":{\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}}}");
                     break;
                 case "guilds":
                 case "guild":
                 case "Guild":
-                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guilds")).actionGet();
+                    response = client.admin().indices().getTemplates(new GetIndexTemplatesRequest().names("guild")).actionGet();
                     Assert.assertEquals(response.getIndexTemplates().size(),1);
-                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guilds");
+                    Assert.assertEquals(response.getIndexTemplates().get(0).name(),"guild");
                     Assert.assertEquals(response.getIndexTemplates().get(0).settings().toString(),"{\"index.number_of_replicas\":\"1\",\"index.number_of_shards\":\"3\",\"index.sort.field\":\"id\",\"index.sort.order\":\"asc\"}");
                     Assert.assertEquals(response.getIndexTemplates().get(0).mappings().get("Guild").toString(),"{\"Guild\":{\"properties\":{\"iconId\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"},\"establishDate\":{\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\",\"type\":\"date\"},\"url\":{\"type\":\"keyword\"}}}}");
                     break;
@@ -306,7 +306,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, nestedProvider);
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
-        HashSet<String> labels = Sets.newHashSet("guilds","own","subjectof","people","kingdoms","freeze","know","fire","originatedin","registeredin","memberof","horses","dragons");
+        HashSet<String> labels = Sets.newHashSet("fire","freeze","own","subjectof","dragon","kingdom","people","horse","guild","know","registeredin","originatedin","memberof");
         list.stream().map(i->i._1).forEach(l->Assert.assertTrue("list must contain "+l,labels.contains(l)));
 
         Iterable<String> allIndices = schema.indices();
@@ -315,7 +315,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
         Set<Tuple2<Boolean,String>> indices =  new HashSet<>(mappingFactory.createIndices());
-        Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500", "idx_freeze_2000", "idx_fire_1500", "idx_freeze_1000", "guilds", "own", "subjectof", "idx_freeze_1500", "people", "idx_fire_2000", "idx_fire_1000", "idx_freeze_500", "kingdoms", "know", "registeredin", "originatedin", "memberof", "horses", "dragons"));
+        Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500","idx_freeze_2000","idx_fire_1500","idx_freeze_1000","own","subjectof","dragon","idx_freeze_1500","idx_fire_2000","kingdom","people","idx_fire_1000","horse","guild","idx_freeze_500","know","registeredin","originatedin","memberof"));
 
         Assert.assertEquals(indices.stream().map(i->i._2).collect(Collectors.toSet()), names);
         indices.forEach(index -> {
@@ -374,25 +374,27 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "registeredin":
                     Assert.assertEquals(response.toString(),"{\"registeredin\":{\"mappings\":{\"RegisteredIn\":{\"properties\":{\"direction\":{\"type\":\"keyword\"},\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Person":
+                case "person":
                 case "people":
                     Assert.assertEquals(response.toString(),"{\"people\":{\"mappings\":{\"Person\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"deathDate\":{\"type\":\"keyword\"},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"height\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"profession\":{\"type\":\"nested\",\"properties\":{\"certification\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"salary\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
                 case "Horse":
+                case "horse":
                 case "horses":
-                    Assert.assertEquals(response.toString(),"{\"horses\":{\"mappings\":{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"weight\":{\"type\":\"integer\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"horse\":{\"mappings\":{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"weight\":{\"type\":\"integer\"}}}}}}");
                     break;
                 case "Dragon":
+                case "dragon":
                 case "dragons":
-                    Assert.assertEquals(response.toString(),"{\"dragons\":{\"mappings\":{\"Dragon\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"color\":{\"type\":\"keyword\"},\"gender\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"dragon\":{\"mappings\":{\"Dragon\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"color\":{\"type\":\"keyword\"},\"gender\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Kingdom":
+                case "kingdom":
                 case "kingdoms":
-                    Assert.assertEquals(response.toString(),"{\"kingdoms\":{\"mappings\":{\"Kingdom\":{\"properties\":{\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"kingdom\":{\"mappings\":{\"Kingdom\":{\"properties\":{\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Guilds":
+                case "guild":
                 case "guilds":
-                    Assert.assertEquals(response.toString(),"{\"guilds\":{\"mappings\":{\"Guild\":{\"properties\":{\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"establishDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"iconId\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"url\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"guild\":{\"mappings\":{\"Guild\":{\"properties\":{\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"establishDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"iconId\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"url\":{\"type\":\"keyword\"}}}}}}");
                     break;
                 default:
                     Assert.fail("Not expecting non registered type "+ index);
@@ -408,7 +410,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
         ElasticIndexProviderMappingFactory mappingFactory = new ElasticIndexProviderMappingFactory(client, schema, ontology, embeddedProvider);
         List<Tuple2<String, Boolean>> list = mappingFactory.generateMappings();
         Assert.assertEquals(list.size(),13);
-        HashSet<String> labels = Sets.newHashSet("guilds","own","subjectof","people","kingdoms","freeze","know","fire","originatedin","registeredin","memberof","horses","dragons");
+        HashSet<String> labels = Sets.newHashSet("fire","freeze","own","subjectof","dragon","kingdom","people","horse","guild","know","registeredin","originatedin","memberof");
         list.stream().map(i->i._1).forEach(l->Assert.assertTrue("list must contain "+l,labels.contains(l)));
 
         Iterable<String> allIndices = schema.indices();
@@ -417,7 +419,7 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
 
         Set<Tuple2<Boolean,String>> indices =  new HashSet<>(mappingFactory.createIndices());
-        Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500", "idx_freeze_2000", "idx_fire_1500", "idx_freeze_1000", "guilds", "own", "subjectof", "idx_freeze_1500", "people", "idx_fire_2000", "idx_fire_1000", "idx_freeze_500", "kingdoms", "know", "registeredin", "originatedin", "memberof", "horses", "dragons"));
+        Set<String> names = new HashSet<>(Arrays.asList("idx_fire_500","idx_freeze_2000","idx_fire_1500","idx_freeze_1000","own","subjectof","dragon","idx_freeze_1500","idx_fire_2000","kingdom","people","idx_fire_1000","horse","guild","idx_freeze_500","know","registeredin","originatedin","memberof"));
 
         Assert.assertEquals(indices.stream().map(i->i._2).collect(Collectors.toSet()), names);
         indices.forEach(index -> {
@@ -475,25 +477,25 @@ public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTes
                 case "registeredin":
                     Assert.assertEquals(response.toString(),"{\"registeredin\":{\"mappings\":{\"RegisteredIn\":{\"properties\":{\"direction\":{\"type\":\"keyword\"},\"entityA\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"entityB\":{\"properties\":{\"id\":{\"type\":\"keyword\"},\"type\":{\"type\":\"keyword\"}}},\"id\":{\"type\":\"keyword\"},\"startDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Person":
+                case "person":
                 case "people":
                     Assert.assertEquals(response.toString(),"{\"people\":{\"mappings\":{\"Person\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"deathDate\":{\"type\":\"keyword\"},\"firstName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"gender\":{\"type\":\"keyword\"},\"height\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"lastName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"profession\":{\"properties\":{\"certification\":{\"type\":\"keyword\"},\"experience\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"salary\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Horse":
+                case "horse":
                 case "horses":
-                    Assert.assertEquals(response.toString(),"{\"horses\":{\"mappings\":{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"weight\":{\"type\":\"integer\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"horse\":{\"mappings\":{\"Horse\":{\"properties\":{\"distance\":{\"type\":\"integer\"},\"id\":{\"type\":\"keyword\"},\"maxSpeed\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"weight\":{\"type\":\"integer\"}}}}}}");
                     break;
-                case "Dragon":
+                case "dragon":
                 case "dragons":
-                    Assert.assertEquals(response.toString(),"{\"dragons\":{\"mappings\":{\"Dragon\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"color\":{\"type\":\"keyword\"},\"gender\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"dragon\":{\"mappings\":{\"Dragon\":{\"properties\":{\"birthDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"color\":{\"type\":\"keyword\"},\"gender\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"power\":{\"type\":\"integer\"},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Kingdom":
+                case "kingdom":
                 case "kingdoms":
-                    Assert.assertEquals(response.toString(),"{\"kingdoms\":{\"mappings\":{\"Kingdom\":{\"properties\":{\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"kingdom\":{\"mappings\":{\"Kingdom\":{\"properties\":{\"funds\":{\"type\":\"float\"},\"id\":{\"type\":\"keyword\"},\"independenceDay\":{\"type\":\"keyword\"},\"king\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"queen\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"}}}}}}");
                     break;
-                case "Guilds":
+                case "guild":
                 case "guilds":
-                    Assert.assertEquals(response.toString(),"{\"guilds\":{\"mappings\":{\"Guild\":{\"properties\":{\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"establishDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"iconId\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"url\":{\"type\":\"keyword\"}}}}}}");
+                    Assert.assertEquals(response.toString(),"{\"guild\":{\"mappings\":{\"Guild\":{\"properties\":{\"description\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"establishDate\":{\"type\":\"date\",\"format\":\"epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS\"},\"iconId\":{\"type\":\"keyword\"},\"id\":{\"type\":\"keyword\"},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\"}}},\"type\":{\"type\":\"keyword\"},\"url\":{\"type\":\"keyword\"}}}}}}");
                     break;
                 default:
                     Assert.fail("Not expecting non registered type "+ index);
