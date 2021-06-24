@@ -14,6 +14,11 @@ From Graph to Elastic - A tail of a Yang-DB...
 * Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull yangdb/yang.db
 * Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:latest (https://hub.docker.com/r/yangdb/yang.db/tags)
 
+#### Latest News
+ * opensearch community lecture given on yangDb
+ * https://github.com/YANG-DB/yang-db/blob/develop/docs/info/YangDbOpenSearch.pdf
+ * https://github.com/YANG-DB/yang-db/blob/develop/docs/info/KnowledgeGraphDeck.md
+
 
 #### Project YANG-DB
 * http://www.yangdb.org/ 
