@@ -1,5 +1,6 @@
 package com.yangdb.fuse.services.engine2.data.schema.discrete;
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
@@ -30,7 +31,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
             case "Person":
                 return Collections.singletonList(new GraphVertexSchema.Impl(
                         label,
-                        new IndexPartitions.Impl("_id",
+                        new IndexPartitions.Impl(GlobalConstants._ID,
                                 new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "person1"),
                                 new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "person2"))
                 ));

@@ -58,6 +58,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * search controller query interface
+ */
 public class SearchVertexQuery extends SearchQuery<Edge> implements VertexQuery {
 
     private final List<Vertex> vertices;

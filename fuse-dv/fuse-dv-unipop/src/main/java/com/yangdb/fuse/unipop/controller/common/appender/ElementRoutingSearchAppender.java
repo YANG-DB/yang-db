@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
@@ -62,7 +63,7 @@ public class ElementRoutingSearchAppender implements SearchAppender<CompositeCon
 
         Set<String> routingValues =
         Stream.ofAll(routingPropertyNames)
-                .map(propertyName -> propertyName.equals("_id") ? T.id.getAccessor() : propertyName)
+                .map(propertyName -> propertyName.equals(GlobalConstants._ID) ? T.id.getAccessor() : propertyName)
                 .flatMap(propertyName -> new TraversalValuesByKeyProvider().getValueByKey(
                         new TraversalExactProvider().getValue(context.getConstraint().get().getTraversal()),
                         propertyName))

@@ -45,18 +45,23 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by roman.margolis on 13/09/2017.
+ * This Search controller is responsible for the Edge type documents search pushed down to the engine...
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
@@ -78,8 +83,7 @@ public class DiscreteVertexController extends VertexControllerBase {
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
         List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
                 .filter(hasContainer -> hasContainer.getKey()
-                        .toLowerCase()
-                        .equals(GlobalConstants.HasKeys.CONSTRAINT))
+                        .equalsIgnoreCase(GlobalConstants.HasKeys.CONSTRAINT))
                 .toJavaList();
 
         if (constraintHasContainers.size() > 1) {
@@ -125,29 +129,20 @@ public class DiscreteVertexController extends VertexControllerBase {
                     .filter(Objects::nonNull).iterator();
         }
 
-        CompositeSearchAppender<CompositeControllerContext> searchAppender =
-                new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                        wrap(new IndexSearchAppender()),
-                        wrap(new SizeSearchAppender(this.configuration)),
-                        wrap(new ConstraintSearchAppender()),
-                        wrap(new FilterSourceSearchAppender()),
-                        wrap(new FilterSourceRoutingSearchAppender()),
-                        wrap(new ElementRoutingSearchAppender()),
-                        wrap(new EdgeBulkSearchAppender()),
-                        wrap(new EdgeSourceSearchAppender()),
-//                        wrap(new EdgeSourceCountFilterSearchAppender()),
-                        //todo: add configuration to enable/disable routing
-//                        wrap(new EdgeRoutingSearchAppender()),
-                        wrap(new EdgeSourceRoutingSearchAppender()),
-                        wrap(new EdgeIndexSearchAppender()),
-                        wrap(new DualEdgeDirectionSearchAppender()),
-                        wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
-                        wrap(new NormalizeRoutingSearchAppender(50)),
-                        wrap(new NormalizeIndexSearchAppender(100)));
-
+        CompositeSearchAppender<CompositeControllerContext> searchAppender = getAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
 
+        //if aggregation has content - first perform aggregation and the results would be down streamed to the next step which is the search actual hit
+        if(searchBuilder.getAggregationBuilder().getAggregations().iterator().hasNext()) {
+            context = filterByAggregation(context, searchBuilder, searchVertexQuery);
+            //override former appenders with new agg filter results (new context)
+            searchAppender = getAppender();
+            searchBuilder = new SearchBuilder();
+            searchAppender.append(searchBuilder, context);
+        }
+
+        //search
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
@@ -169,6 +164,55 @@ public class DiscreteVertexController extends VertexControllerBase {
                 .map(SearchHitDataItem::new)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
+    }
+
+    private CompositeSearchAppender<CompositeControllerContext> getAppender() {
+        return new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+                wrap(new IndexSearchAppender()),
+                wrap(new SizeSearchAppender(this.configuration)),
+                wrap(new ConstraintSearchAppender()),
+                wrap(new FilterSourceSearchAppender()),
+                wrap(new FilterSourceRoutingSearchAppender()),
+                wrap(new ElementRoutingSearchAppender()),
+                wrap(new EdgeBulkSearchAppender()),
+                wrap(new EdgeSourceSearchAppender()),
+                //todo: add configuration to enable/disable routing
+//                        wrap(new EdgeRoutingSearchAppender()),
+                wrap(new EdgeSourceRoutingSearchAppender()),
+                wrap(new EdgeIndexSearchAppender()),
+                wrap(new DualEdgeDirectionSearchAppender()),
+                wrap(new MustFetchSourceSearchAppender(GlobalConstants.TYPE)),
+                wrap(new NormalizeRoutingSearchAppender(50)),
+                wrap(new NormalizeIndexSearchAppender(100)));
+    }
+
+    private CompositeControllerContext.Impl filterByAggregation(CompositeControllerContext context, SearchBuilder searchBuilder, SearchVertexQuery searchVertexQuery) {
+        searchBuilder.setLimit(0);//agg needs no actual hits returned only the agg buckets themselves
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true);
+        //execute agg query
+        SearchResponse searchResponse = searchRequest.execute().actionGet();
+        //log step controller query
+        context.getStepDescriptor().getDescription().ifPresent(v->
+                profiler.get().setAnnotation(v,searchRequest.toString()));
+
+        List aggDataItems = SearchAggDataItem.build(searchResponse.getAggregations().getAsMap())
+                .stream().map(SearchAggDataItem::id).collect(Collectors.toList());
+
+        List<Vertex> filteredEdges = StreamSupport.stream(context.getBulkVertices().spliterator(), false)
+                .filter(e -> aggDataItems.contains(e.id()))
+                .collect(Collectors.toList());
+
+        return new CompositeControllerContext.Impl(
+                null,
+                new DiscreteVertexControllerContext(
+                        this.graph,
+                        searchVertexQuery.getStepDescriptor(),
+                        this.schemaProvider,
+                        context.getConstraint(),
+                        context.getSelectPHasContainers(),
+                        searchVertexQuery.getLimit(),
+                        searchVertexQuery.getDirection(),
+                        filteredEdges));
     }
 
 
@@ -197,7 +241,7 @@ public class DiscreteVertexController extends VertexControllerBase {
             if (Stream.ofAll(edgeSchema.getEndB().get().getIdFields()).size() == 1) {
                 String idField = Stream.ofAll(edgeSchema.getEndB().get().getIdFields()).get(0);
 
-                if (idField.equals("_id")) {
+                if (idField.equals(GlobalConstants._ID)) {
                     return false;
                 }
 

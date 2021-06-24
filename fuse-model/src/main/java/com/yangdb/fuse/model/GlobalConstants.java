@@ -24,7 +24,7 @@ package com.yangdb.fuse.model;
  * Created by lior.perry on 19/03/2017.
  */
 public class GlobalConstants {
-    public static final boolean INCLUDE_AGGREGATION = true;
+    public static final boolean INCLUDE_AGGREGATION = false;
 
     public static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
@@ -33,6 +33,7 @@ public class GlobalConstants {
     public static String ID = "id";
 
     public static String _ALL = "_all";
+    public static String _ID = "_id";
     public static final String RAW = "raw";
     public static final String TYPE = "type";
 

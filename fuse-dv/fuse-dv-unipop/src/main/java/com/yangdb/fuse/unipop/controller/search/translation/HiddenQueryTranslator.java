@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.search.translation;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -47,7 +48,7 @@ public class HiddenQueryTranslator extends CompositeQueryTranslator {
 
         switch (plainKey) {
             case "id":
-                newKey = "_id";
+                newKey = GlobalConstants._ID;
                 break;
 
             case "label":

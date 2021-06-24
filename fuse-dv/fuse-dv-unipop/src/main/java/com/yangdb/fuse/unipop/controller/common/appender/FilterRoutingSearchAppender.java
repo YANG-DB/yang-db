@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.ElementUtil;
@@ -78,7 +79,7 @@ public class FilterRoutingSearchAppender implements SearchAppender<VertexControl
 
     //region Private Methods
     private String translateRoutingPropertyName(String name) {
-        return name.equals("_id") ? T.id.getAccessor() : name;
+        return name.equals(GlobalConstants._ID) ? T.id.getAccessor() : name;
     }
     //endregion
 }

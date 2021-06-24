@@ -23,6 +23,7 @@ package com.yangdb.fuse.assembly.knowledge;
 import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -150,7 +151,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
     }
 
     public static final String KEYWORD = "keyword";
-    public static final String ID = "_id";
+    public static final String ID = GlobalConstants._ID;
 
     private RawSchema schema;
     //region GraphElementSchemaProviderFactory Implementation

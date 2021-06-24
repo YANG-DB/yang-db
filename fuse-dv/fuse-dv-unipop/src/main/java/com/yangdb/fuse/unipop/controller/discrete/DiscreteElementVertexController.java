@@ -55,6 +55,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by roman.margolis on 12/09/2017.
+ * This Search controller is responsible for the vertex type documents search pushed down to the engine...
  */
 public class DiscreteElementVertexController implements SearchQuery.SearchController {
     //region Constructors

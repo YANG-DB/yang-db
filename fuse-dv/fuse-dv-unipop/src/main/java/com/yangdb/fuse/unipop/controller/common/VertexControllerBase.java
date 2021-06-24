@@ -33,6 +33,7 @@ import java.util.function.Predicate;
 
 /**
  * Created by Roman on 15/05/2017.
+ * Edge controller query interface
  */
 public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController{
     //region Constructors
@@ -93,6 +94,12 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
                 .toJavaSet();
     }
 
+    /**
+     * implement when searching edge type documents
+     * @param searchVertexQuery
+     * @param edgeLabels
+     * @return
+     */
     protected abstract Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels);
 
     //endregion

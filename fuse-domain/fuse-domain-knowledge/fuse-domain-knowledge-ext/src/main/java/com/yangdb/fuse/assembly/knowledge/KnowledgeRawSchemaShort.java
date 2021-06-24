@@ -22,6 +22,7 @@ package com.yangdb.fuse.assembly.knowledge;
 
 import com.typesafe.config.Config;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 
@@ -168,15 +169,15 @@ public class KnowledgeRawSchemaShort implements RawSchema {
             case EVALUE:
                 return new IndexPartitions.Impl("logicalId", getPartitions(ENTITY));
             case RELATION:
-                return new IndexPartitions.Impl("_id", getPartitions(RELATION));
+                return new IndexPartitions.Impl(GlobalConstants._ID, getPartitions(RELATION));
             case RVALUE:
                 return new IndexPartitions.Impl("relationId", getPartitions(RELATION));
             case INSIGHT:
-                return new IndexPartitions.Impl("_id", getPartitions(INSIGHT));
+                return new IndexPartitions.Impl(GlobalConstants._ID, getPartitions(INSIGHT));
             case EFILE:
                 return new IndexPartitions.Impl("logicalId", getPartitions(ENTITY));
             case REFERENCE:
-                return  new IndexPartitions.Impl("_id", getPartitions(REFERENCE));
+                return  new IndexPartitions.Impl(GlobalConstants._ID, getPartitions(REFERENCE));
 
         }
         return null;

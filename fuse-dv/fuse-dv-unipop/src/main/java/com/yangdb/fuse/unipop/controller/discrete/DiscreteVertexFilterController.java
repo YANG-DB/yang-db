@@ -53,6 +53,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by roman.margolis on 26/09/2017.
+ * This Search controller is responsible for the edge->vertex (including filter) type documents search (arriving from edge to vertex) pushed down (including predicates) to the engine...
  */
 public class DiscreteVertexFilterController extends VertexControllerBase {
     //region Constructors

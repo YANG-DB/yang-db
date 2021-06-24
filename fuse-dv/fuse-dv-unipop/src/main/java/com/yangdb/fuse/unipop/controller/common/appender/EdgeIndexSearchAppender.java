@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.ElementUtil;
@@ -75,7 +76,7 @@ public class EdgeIndexSearchAppender implements SearchAppender<VertexControllerC
             return false;
         }
 
-        String partitionField = endSchema.getIndexPartitions().get().getPartitionField().get().equals("_id") ?
+        String partitionField = endSchema.getIndexPartitions().get().getPartitionField().get().equals(GlobalConstants._ID) ?
                 T.id.getAccessor() :
                 endSchema.getIndexPartitions().get().getPartitionField().get();
 

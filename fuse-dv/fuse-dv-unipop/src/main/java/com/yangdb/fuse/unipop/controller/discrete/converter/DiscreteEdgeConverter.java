@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete.converter;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.common.converter.DataItem;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
@@ -187,7 +188,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
 
     private List<Object> getIdFieldValues(DataItem dataItem, String idField) {
-        if (idField.equals("_id")) {
+        if (idField.equals(GlobalConstants._ID)) {
             return Collections.singletonList(dataItem.id());
         } else {
             return MapHelper.values(dataItem.properties(), idField);

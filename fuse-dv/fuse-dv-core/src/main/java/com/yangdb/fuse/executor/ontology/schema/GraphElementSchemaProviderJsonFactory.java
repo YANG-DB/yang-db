@@ -54,7 +54,7 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     public static final String KEYWORD = "keyword";
     public static final String TEXT = "text";
-    public static final String _ID = "_id";
+    public static final String _ID = GlobalConstants._ID;
 
     public static final String ID = "id";
     public static final String ENTITY_A = GlobalConstants.EdgeSchema.SOURCE;

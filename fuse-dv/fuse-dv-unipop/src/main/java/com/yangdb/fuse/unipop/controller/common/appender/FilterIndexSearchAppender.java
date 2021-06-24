@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.ElementUtil;
@@ -49,7 +50,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
         GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
 
         Optional<String> partitionField = vertexSchema.getIndexPartitions().get().getPartitionField().isPresent() ?
-                    vertexSchema.getIndexPartitions().get().getPartitionField().get().equals("_id") ?
+                    vertexSchema.getIndexPartitions().get().getPartitionField().get().equals(GlobalConstants._ID) ?
                         Optional.of(T.id.getAccessor()) :
                         Optional.of(vertexSchema.getIndexPartitions().get().getPartitionField().get()) :
                 Optional.empty();

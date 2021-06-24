@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
@@ -82,7 +83,7 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
             return Stream.ofAll(indexPartitions.get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet();
         }
 
-        String partitionField = indexPartitions.get().getPartitionField().get().equals("_id") ?
+        String partitionField = indexPartitions.get().getPartitionField().get().equals(GlobalConstants._ID) ?
                 T.id.getAccessor() :
                 indexPartitions.get().getPartitionField().get();
 
