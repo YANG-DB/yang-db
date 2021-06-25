@@ -1,4 +1,4 @@
-Elements of the V1 language
+Elements of the query language
 -------------
 
 ### Entity Types
