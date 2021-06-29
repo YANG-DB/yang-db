@@ -19,5 +19,6 @@
         <module>fuse-dv-unipop</module>
         <module>fuse-dv-stat</module>
         <module>fuse-dv-asg</module>
+        <module>fuse-dv-bolt</module>
     </modules>
 </project>
