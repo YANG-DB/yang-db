@@ -23,6 +23,8 @@ package com.yangdb.fuse.unipop.controller.search;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.aggregations.bucket.composite.CompositeAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -131,10 +133,32 @@ public class SearchBuilder {
         }
 
         if (includeAggregations) {
-            aggregationBuilder.getAggregations().forEach(searchRequestBuilder::addAggregation);
+            aggregationBuilder.getAggregations()
+                    .forEach(agg -> {
+                        enforceSize(agg,(int) getLimit());
+                        searchRequestBuilder.addAggregation(agg);
+
+                    });
         }
 
         return searchRequestBuilder;
+    }
+
+    /**
+     * enforce size for different potential aggs types
+     * @param agg
+     * @param limit
+     */
+    private void enforceSize(org.elasticsearch.search.aggregations.AggregationBuilder agg, int limit) {
+        if(TermsAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
+            ((TermsAggregationBuilder) agg).size(limit);
+            return;
+        }
+        if(CompositeAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
+            ((TermsAggregationBuilder) agg).size(limit);
+            return;
+        }
+        //todo add any size supported aggregation here
     }
     //endregion
 
