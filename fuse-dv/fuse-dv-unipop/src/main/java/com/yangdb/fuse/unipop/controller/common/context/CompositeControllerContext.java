@@ -101,6 +101,11 @@ public interface CompositeControllerContext extends VertexControllerContext{
         }
 
         @Override
+        public boolean isEmpty() {
+            return !getBulkVertices().iterator().hasNext();
+        }
+
+        @Override
         public Iterable<Vertex> getBulkVertices() {
             return this.vertexControllerContext
                     .map(BulkContext::getBulkVertices)

@@ -31,6 +31,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.*;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by Roman on 12/06/2017.
  */
@@ -39,7 +41,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
         // currently assuming homogeneous vertex bulk
-        String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        String vertexLabel = getLabel(context,"?");
 
         Iterable<GraphVertexSchema> vertexSchemas = context.getSchemaProvider().getVertexSchemas(vertexLabel);
         if (Stream.ofAll(vertexSchemas).isEmpty()) {

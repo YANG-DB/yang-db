@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by roman.margolis on 18/10/2017.
  */
@@ -40,7 +42,7 @@ public class FilterRoutingSearchAppender implements SearchAppender<VertexControl
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
         // currently assuming homogeneous vertex bulk
-        String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        String vertexLabel = getLabel(context,"?");
 
         Iterable<GraphVertexSchema> vertexSchemas = context.getSchemaProvider().getVertexSchemas(vertexLabel);
         if (Stream.ofAll(vertexSchemas).isEmpty()) {

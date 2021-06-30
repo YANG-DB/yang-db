@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by roman.margolis on 18/10/2017.
  *
@@ -55,7 +57,7 @@ public class EdgeSourceCountFilterSearchAppender implements SearchAppender<Verte
         String edgeLabel = Stream.ofAll(labels).get(0);
 
         //currently assuming a single vertex label in bulk
-        String contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        String contextVertexLabel = getLabel(context,"?");
 
         List<HasContainer> hasContainers = StreamSupport.stream(context.getSelectPHasContainers().spliterator(), false)
                 .filter(p -> CountFilterP.class.isAssignableFrom(p.getPredicate().getClass()))

@@ -43,6 +43,8 @@ import org.unipop.process.Profiler;
 
 import java.util.*;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by roman.margolis on 14/09/2017.
  */
@@ -58,7 +60,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         }
 
         //currently assuming a single vertex label in bulk
-        this.contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        this.contextVertexLabel = getLabel(context,"?");
 
         Set<String> labels = this.context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(this.context.getConstraint().get().getTraversal(), T.label.getAccessor()) :

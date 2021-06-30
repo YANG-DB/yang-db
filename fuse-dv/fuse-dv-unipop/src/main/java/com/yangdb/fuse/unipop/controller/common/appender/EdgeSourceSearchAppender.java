@@ -29,6 +29,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Set;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by roman.margolis on 18/10/2017.
  */
@@ -44,7 +46,7 @@ public class EdgeSourceSearchAppender implements SearchAppender<VertexController
         String edgeLabel = Stream.ofAll(labels).get(0);
 
         //currently assuming a single vertex label in bulk - at the head of the bulk
-        String contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        String contextVertexLabel = getLabel(context,"?");
 
 
         Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(contextVertexLabel, context.getDirection(), edgeLabel);
