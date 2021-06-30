@@ -1,4 +1,4 @@
-###Abstract
+### Abstract
 YANG-DB is a graph query engine. It is based on elasticsearch as the
 physical graph storage layer and the tinkerpop graph traversing framework.
 
