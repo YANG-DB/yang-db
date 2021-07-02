@@ -20,7 +20,6 @@ package com.yangdb.fuse.asg.translator.cypher.strategies.expressions;
  * #L%
  */
 
-
 import com.bpodgursky.jbool_expressions.Expression;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherUtils;
@@ -30,30 +29,24 @@ import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
-import com.yangdb.fuse.model.query.properties.EPropGroup;
-import com.yangdb.fuse.model.query.properties.RelPropGroup;
+import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
-import org.opencypher.v9_0.expressions.BinaryOperatorExpression;
-import org.opencypher.v9_0.expressions.Literal;
-import org.opencypher.v9_0.expressions.Property;
-import org.opencypher.v9_0.expressions.Variable;
+import org.opencypher.v9_0.expressions.*;
+import scala.collection.immutable.Set;
 
 import java.util.Collections;
 import java.util.Optional;
 
-public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression> extends BaseExpressionStrategy {
+import static scala.collection.JavaConverters.asJavaCollectionConverter;
+
+public abstract class BaseFunctionExpression<T extends FunctionInvocation> extends BaseExpressionStrategy {
 
     @Override
     public void apply(Optional<Expression> parent, Expression expression, AsgQuery query, CypherStrategyContext context) {
         T exp = get((((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression()));
-        org.opencypher.v9_0.expressions.Expression lhs = getLhs(exp);
-        org.opencypher.v9_0.expressions.Expression rhs = getRhs(exp);
-
-        Optional<String> keyNameOp = getKeyName(lhs);
-        if(!keyNameOp.isPresent()) return;
-
-        String keyName = keyNameOp.get();
-        String tag = getTagName(lhs);
+        String operator = getFuncName(exp);
+        Variable var = getFuncVars(exp);
+        String tag = var.name();
 
         //first find the node element by its var name in the query
         Optional<AsgEBase<EBase>> byTag = AsgQueryUtil.getByTag(context.getScope(), tag);
@@ -62,6 +55,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
 
         if (!byTag.isPresent()) return;
 
+        String keyName = getKeyName(operator, tag);
         //when tag is of entity type
         if (EEntityBase.class.isAssignableFrom(byTag.get().geteBase().getClass())) {
 
@@ -77,7 +71,7 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
             }
 
             ((EPropGroup) AsgQueryUtil.nextAdjacentDescendant(quantAsg, EPropGroup.class).get().geteBase())
-                    .getProps().add(addPredicate(current, keyName, constraint(exp.canonicalOperatorSymbol(), rhs)));
+                    .getProps().add(addPredicate(current, keyName, constraint(operator, tag)));
         }
 
         //when tag is of relation type
@@ -93,58 +87,44 @@ public abstract class BaseEqualityExpression<T extends BinaryOperatorExpression>
             final int current = Math.max(byTag.get().getB().stream().mapToInt(p -> p.geteNum()).max().orElse(0), byTag.get().geteNum());
             ((RelPropGroup) AsgQueryUtil.bAdjacentDescendant(byTag.get(), RelPropGroup.class).get().geteBase())
                     .getProps().add(addRelPredicate(current + 1, keyName,
-                    constraint(exp.canonicalOperatorSymbol(), (org.opencypher.v9_0.expressions.Expression) literal(lhs, rhs))));
+                    constraint(operator, tag)));
         }
     }
 
-    protected String getTagName(org.opencypher.v9_0.expressions.Expression prop) {
-        return CypherUtils.var(prop).get(0).name();
+    @Override
+    protected FunctionEProp addPredicate(int current, String propery, Constraint constraint) {
+        return new FunctionEProp(current,propery,constraint);
+    }
+    @Override
+    protected FunctionRelProp addRelPredicate(int current, String propery, Constraint constraint) {
+        return new FunctionRelProp(current,propery,constraint);
     }
 
-    protected Optional<String> getKeyName(org.opencypher.v9_0.expressions.Expression prop) {
-        Property property = null;
-        if(Property.class.isAssignableFrom(prop.getClass())) {
-            property = ((Property) prop);
-        }
-
-        if (CypherUtils.var(property).isEmpty())
-            return Optional.empty();
-
-        return Optional.of(((Property) prop).propertyKey().name());
+    protected String getKeyName(String operator, String tag) {
+        return operator + ":" + tag;
     }
 
-    protected Optional<String> getExpressionName(org.opencypher.v9_0.expressions.Expression lhs) {
+    protected abstract Variable getFuncVars(T exp);
 
-        Property property = null;
-        if (Property.class.isAssignableFrom(lhs.getClass())) {
-            property = ((Property) lhs);
-        }
-
-        if (CypherUtils.var(property).isEmpty()) return Optional.empty();
-
-        Variable variable = CypherUtils.var(property).get(0);
-        //first find the node element by its var name in the query
-
-        return Optional.of(variable.name());
-    }
+    protected abstract String getFuncName(T exp);
 
     protected Object literal(org.opencypher.v9_0.expressions.Expression lhs,
-                             org.opencypher.v9_0.expressions.Expression rhs) {
+                             Set<LogicalVariable> rhs) {
         return Literal.class.isAssignableFrom(lhs.getClass()) ? ((Literal) lhs) :
                 Literal.class.isAssignableFrom(rhs.getClass()) ? ((Literal) rhs) : null;
     }
 
     protected abstract T get(org.opencypher.v9_0.expressions.Expression expression);
 
-    protected org.opencypher.v9_0.expressions.Expression getRhs(T exp) {
-        return exp.rhs();
+    protected Set<LogicalVariable> getRhs(T exp) {
+        return asJavaCollectionConverter(exp.inputs()).asJavaCollection().iterator().next()._2();
     }
 
     protected org.opencypher.v9_0.expressions.Expression getLhs(T exp) {
-        return exp.lhs();
+        return asJavaCollectionConverter(exp.inputs()).asJavaCollection().iterator().next()._1();
     }
 
-    protected abstract Constraint constraint(String operator, org.opencypher.v9_0.expressions.Expression literal);
+    protected abstract Constraint constraint(String operator, String literal);
 
     @Override
     public abstract boolean isApply(Expression expression);

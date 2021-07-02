@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.translator.cypher.strategies.expressions;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,19 +21,22 @@ package com.yangdb.fuse.asg.translator.cypher.strategies.expressions;
  */
 
 
+import com.bpodgursky.jbool_expressions.Expression;
+import com.yangdb.fuse.asg.translator.cypher.strategies.CypherStrategyContext;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
 
-import com.yangdb.fuse.model.query.properties.EProp;
-import com.yangdb.fuse.model.query.properties.RelProp;
-import com.yangdb.fuse.model.query.properties.constraint.Constraint;
+import java.util.Optional;
 
-public abstract class BaseExpressionStrategy implements ExpressionStrategies {
+public class ReturnVariableExpression extends BaseExpressionStrategy {
 
-    protected EProp addPredicate(int current, String propery, Constraint constraint) {
-        return new EProp(current + 1, propery, constraint);
+    @Override
+    public void apply(Optional<Expression> parent, Expression expression, AsgQuery query, CypherStrategyContext context) {
+        //todo when AliasVariable replace all tags with that specific alias
+        //todo when UnAliasVariable
     }
 
-    protected RelProp addRelPredicate(int current, String propery, Constraint constraint) {
-        return new RelProp(current + 1, propery, constraint);
+    @Override
+    public boolean isApply(Expression expression) {
+        return (expression instanceof com.bpodgursky.jbool_expressions.Variable);
     }
-
 }

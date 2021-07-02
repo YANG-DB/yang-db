@@ -32,7 +32,6 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import javaslang.Tuple2;
 import org.apache.commons.io.IOUtils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -105,7 +104,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
      */
     public String translate(Ontology source) {
         //Todo
-        throw new NotImplementedException();
+        throw new RuntimeException("Not Implemented");
     }
 
     /**

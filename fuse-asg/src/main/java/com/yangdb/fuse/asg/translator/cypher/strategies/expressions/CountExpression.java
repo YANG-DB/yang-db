@@ -24,6 +24,9 @@ package com.yangdb.fuse.asg.translator.cypher.strategies.expressions;
 
 import com.bpodgursky.jbool_expressions.Expression;
 import com.yangdb.fuse.asg.translator.cypher.strategies.CypherUtils;
+import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.FunctionEProp;
+import com.yangdb.fuse.model.query.properties.FunctionRelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.CountConstraintOp;
 import org.opencypher.v9_0.expressions.FunctionInvocation;
@@ -63,6 +66,14 @@ public class CountExpression extends BaseEqualityExpression<org.opencypher.v9_0.
         throw new IllegalArgumentException("condition "+literal.asCanonicalStringVal()+" doesn't match any supported V1 constraints");
     }
 
+    @Override
+    protected FunctionEProp addPredicate(int current, String propery, Constraint constraint) {
+        return new FunctionEProp(current,propery,constraint);
+    }
+    @Override
+    protected FunctionRelProp addRelPredicate(int current, String propery, Constraint constraint) {
+        return new FunctionRelProp(current,propery,constraint);
+    }
 
     @Override
     public boolean isApply(Expression expression) {

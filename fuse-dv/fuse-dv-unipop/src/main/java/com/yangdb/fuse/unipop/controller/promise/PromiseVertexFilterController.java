@@ -148,9 +148,10 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         );
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
-        return Stream.ofAll(searchHits)
+        javaslang.collection.Iterator<Edge> results = Stream.ofAll(searchHits)
                 .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
+        return results;
     }
     //endregion
 

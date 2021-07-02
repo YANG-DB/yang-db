@@ -20,7 +20,6 @@ package org.unipop.process.predicate;
  * #L%
  */
 
-import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.util.ConnectiveP;
 
@@ -28,7 +27,6 @@ import java.math.BigDecimal;
 import java.util.function.BiPredicate;
 
 /**
- * Created by Roman on 11/9/2015.
  *
  * Example of a terms count query with range filter on amount of terms
  * {

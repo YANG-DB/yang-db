@@ -109,10 +109,14 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery>, GraphDescriptor
                 joiner.add(prefix + EEntityBase.class.getSimpleName() + "[" + id + "]");
             } else if (e.geteBase() instanceof Rel)
                 joiner.add("==>" + Relation.class.getSimpleName() + "(" + id + ")");
+            else if (e.geteBase() instanceof FunctionEProp)
+                joiner.add("F(?)" + "[" + id + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) e.geteBase())));
             else if (e.geteBase() instanceof EProp)
                 joiner.add("?" + "[" + id + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) e.geteBase())));
             else if (e.geteBase() instanceof EPropGroup)
                 joiner.add("?" + "[" + id + "]" + QueryDescriptor.printProps((EPropGroup) e.geteBase()));
+            else if (e.geteBase() instanceof FunctionRelProp)
+                joiner.add("F(?)" + "[" + id + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) e.geteBase())));
             else if (e.geteBase() instanceof RelProp)
                 joiner.add("?" + "[" + id + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) e.geteBase())));
             else if (e.geteBase() instanceof RelPropGroup)

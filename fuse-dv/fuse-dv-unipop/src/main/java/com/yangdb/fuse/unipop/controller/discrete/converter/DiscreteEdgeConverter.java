@@ -40,8 +40,10 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.process.Profiler;
+import org.unipop.process.predicate.DistinctFilterP;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
 
@@ -91,7 +93,12 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         Vertex outV = null;
         Vertex inV = null;
 
-        List<E> edges = new ArrayList<>();
+        Collection<E> edges = new ArrayList<>();
+        //if step context has a distinct filter on the edges - use set and dedup edges
+        if(StreamSupport.stream(context.getSelectPHasContainers().spliterator(), false)
+                .anyMatch(p -> DistinctFilterP.class.isAssignableFrom(p.getPredicate().getClass()))) {
+            edges = new HashSet<>();
+        }
 
         if (edgeSchema.getDirection().equals(Direction.OUT)) {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();

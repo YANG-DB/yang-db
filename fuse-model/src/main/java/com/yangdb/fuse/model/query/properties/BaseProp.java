@@ -171,7 +171,7 @@ public abstract class BaseProp extends EBase{
      */
     @JsonIgnore
     public boolean isAggregation() {
-        return getCon()!=null && getCon().getCountOp()!=null;
+        return false;
     }
     /**
      * set projection (projection & constraints are exclusives)

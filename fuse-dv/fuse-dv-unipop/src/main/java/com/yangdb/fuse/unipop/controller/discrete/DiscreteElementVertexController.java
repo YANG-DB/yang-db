@@ -134,9 +134,11 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         //convert hits to elements
         ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context,profiler);
 
-        return Stream.ofAll(searchHits)
+        javaslang.collection.Iterator<E> results = Stream.ofAll(searchHits)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
+
+        return results;
     }
 
     @Override

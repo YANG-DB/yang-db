@@ -42,8 +42,13 @@ class CypherTestUtils {
         whereExpressionStrategies.add(new CountExpression());
         whereExpressionStrategies.add(new LikeExpression());
 
+        returnExpressionStrategies = new ArrayList<>();
+        returnExpressionStrategies.add(new ReturnVariableExpression());
+        returnExpressionStrategies.add(new DistinctExpression());
+
         whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
-        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
+        returnClause = new ReturnClauseNodeCypherTranslator(returnExpressionStrategies);
+        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause, returnClause);
         return this;
     }
 
@@ -52,7 +57,9 @@ class CypherTestUtils {
     private Ontology.Accessor ont;
     private List<CypherElementTranslatorStrategy> translatorStrategies;
     private List<ExpressionStrategies> whereExpressionStrategies;
+    private List<ExpressionStrategies> returnExpressionStrategies;
 
+    private ReturnClauseNodeCypherTranslator returnClause;
     public MatchCypherTranslatorStrategy match;
     private WhereClauseNodeCypherTranslator whereClause;
 

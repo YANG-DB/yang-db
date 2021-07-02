@@ -160,10 +160,12 @@ public class DiscreteVertexController extends VertexControllerBase {
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context, this.profiler));
 
-        return Stream.ofAll(searchHits)
+        javaslang.collection.Iterator<Edge> results = Stream.ofAll(searchHits)
                 .map(SearchHitDataItem::new)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
+
+        return results;
     }
 
     private CompositeSearchAppender<CompositeControllerContext> getAppender() {

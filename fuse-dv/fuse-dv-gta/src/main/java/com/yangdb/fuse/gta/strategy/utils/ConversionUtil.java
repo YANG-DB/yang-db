@@ -25,7 +25,7 @@ import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.unipop.process.predicate.CountFilterP;
+import org.unipop.process.predicate.*;
 import org.unipop.process.predicate.ExistsP;
 import org.unipop.process.predicate.Text;
 
@@ -63,6 +63,8 @@ public class ConversionUtil {
         } else {
             if(constraint.getOp()!=null) {
                 switch (constraint.getOp()) {
+                    case distinct:
+                        return DistinctFilterP.distinct();
                     case eq:
                         return P.eq(cast(constraint.getExpr()));
                     case ne:
