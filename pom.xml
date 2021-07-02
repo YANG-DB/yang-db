@@ -125,7 +125,7 @@
         <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
-        <elasticsearch.version>6.5.4</elasticsearch.version>
+        <elasticsearch.version>6.8.15</elasticsearch.version>
         <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
 
         <!-- lucene -->
