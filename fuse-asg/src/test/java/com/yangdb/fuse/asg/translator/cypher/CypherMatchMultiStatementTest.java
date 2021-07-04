@@ -49,11 +49,11 @@ public class CypherMatchMultiStatementTest {
                             "                                                                                                                      └─?[301]:[stringValue<eq,Tom Hanks>], \n" +
                             "                                         └-> Rel(:relatedEntity tomActedIn#4), \n" +
                             "                                                                                                              └─?[..][400], \n" +
-                            "                                                                                                                      └─?[401]:[category<eq,ACTED_IN>], \n" +
+                            "                                                                                                                      └─?[402]:[category<eq,ACTED_IN>], \n" +
                             "                                                                                                                                                  └─Typ[:Entity otherPerson#6]──Q[600:all]:{7}, \n" +
                             "                                                                                                                                                                                          └-> Rel(:relatedEntity othersActedIn#7)──Typ[:Entity m2#8], \n" +
                             "                                                                                                                                                                                                                             └─?[..][700], \n" +
-                            "                                                                                                                                                                                                                                     └─?[701]:[category<eq,ACTED_IN>], \n" +
+                            "                                                                                                                                                                                                                                     └─?[702]:[category<eq,ACTED_IN>], \n" +
                             "                                                                                                                                                  └─?[..][801], \n" +
                             "                                                                                                                                                          └─?[801]:[name<eq,m2.name>]]";
         assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));

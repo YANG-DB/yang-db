@@ -1010,6 +1010,7 @@
                         </execution>
                     </executions>
                 </plugin>
+<!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -1026,6 +1027,7 @@
                         <additionalOptions>-Xdoclint:none</additionalOptions>
                     </configuration>
                 </plugin>
+-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>

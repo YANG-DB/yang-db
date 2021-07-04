@@ -71,6 +71,11 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
         }
 
         @Override
+        public boolean isEmpty() {
+            return bulkVertices.isEmpty();
+        }
+
+        @Override
         public Iterable<Vertex> getBulkVertices() {
             return bulkVertices.values();
         }

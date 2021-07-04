@@ -214,4 +214,11 @@ Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  
 ```
 
 
+We can also use the **distinct** keyword to dedup the edges between nodes - meaning that in the following example only one fire edge will be returned
+for every pair of dragons - if a dragon fired multiple times only one edge will be returned... 
+```
+Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2
+```
+
+
 

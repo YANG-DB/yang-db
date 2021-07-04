@@ -59,6 +59,7 @@ public class AggregationBuilder implements Cloneable {
         filters,
         filter,
         terms,
+        distinctFilter,
         countFilter,
         bucketFilter,
         min,

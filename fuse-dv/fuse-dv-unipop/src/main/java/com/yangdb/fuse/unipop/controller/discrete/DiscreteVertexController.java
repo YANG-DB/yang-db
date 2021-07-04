@@ -32,6 +32,7 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
+import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
@@ -50,6 +51,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.unipop.process.predicate.DistinctFilterP;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
@@ -123,10 +125,20 @@ public class DiscreteVertexController extends VertexControllerBase {
             ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                     new DiscreteEdgeConverter<>(context, profiler));
 
-            return Stream.ofAll(searchVertexQuery.getVertices())
+            javaslang.collection.Iterator<Edge> results = Stream.ofAll(searchVertexQuery.getVertices())
                     .map(VertexDataItem::new)
                     .flatMap(elementConverter::convert)
                     .filter(Objects::nonNull).iterator();
+
+            //dedupe for distinct operator
+            if (context.getConstraint().isPresent()) {
+                if (!Stream.ofAll(new TraversalHasStepFinder(DistinctFilterP::hasDistinct)
+                        .getValue(context.getConstraint().get().getTraversal()))
+                        .toJavaSet().isEmpty()) {
+                    results = results.distinct();
+                }
+            }
+            return results;
         }
 
         CompositeSearchAppender<CompositeControllerContext> searchAppender = getAppender();
@@ -160,10 +172,20 @@ public class DiscreteVertexController extends VertexControllerBase {
         ElementConverter<DataItem, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context, this.profiler));
 
-        return Stream.ofAll(searchHits)
+        javaslang.collection.Iterator<Edge> results = Stream.ofAll(searchHits)
                 .map(SearchHitDataItem::new)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
+        //dedupe for distinct operator
+        if (context.getConstraint().isPresent()) {
+            if (!Stream.ofAll(new TraversalHasStepFinder(DistinctFilterP::hasDistinct)
+                    .getValue(context.getConstraint().get().getTraversal()))
+                    .toJavaSet().isEmpty()) {
+                results = results.distinct();
+            }
+        }
+
+        return results;
     }
 
     private CompositeSearchAppender<CompositeControllerContext> getAppender() {

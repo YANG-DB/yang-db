@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.controller.discrete.converter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,7 @@ import com.yangdb.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.map.MapHelper;
+import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementPropertySchema;
@@ -40,8 +41,12 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.process.Profiler;
+import org.unipop.process.predicate.DistinctFilterP;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
+
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -58,7 +63,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         }
 
         //currently assuming a single vertex label in bulk
-        this.contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+        this.contextVertexLabel = getLabel(context, "?");
 
         Set<String> labels = this.context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(this.context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
@@ -69,7 +74,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         this.profiler = profiler;
         context.getStepDescriptor().getDescription()
-                .ifPresent(v->this.profiler.get().setCount(v,0));
+                .ifPresent(v -> this.profiler.get().setCount(v, 0));
     }
     //endregion
 
@@ -80,7 +85,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         Iterator<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel).iterator();
         if (!edgeSchemas.hasNext()) {
-                return null;
+            return null;
         }
 
         //currently assuming only one relevant edge schema
@@ -89,7 +94,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         Vertex outV = null;
         Vertex inV = null;
 
-        List<E> edges = new ArrayList<>();
+        Collection<E> edges = new ArrayList<>();
 
         if (edgeSchema.getDirection().equals(Direction.OUT)) {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();
@@ -159,10 +164,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             }
         }
         String stepName = context.getStepDescriptor().getDescription().orElse(contextEdgeLabel);
-        profiler.get().incrementCount(stepName,1);
+        profiler.get().incrementCount(stepName, 1);
 
         return edges;
     }
+
     //endregion
 
     //region Private Methods
@@ -170,7 +176,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         List<Object> idFieldValues = Collections.emptyList();
         boolean isfirst = true;
         boolean isSecond = false;
-        for(String idField : idFields) {
+        for (String idField : idFields) {
             if (isfirst) {
                 idFieldValues = getIdFieldValues(dataItem, idField);
                 isfirst = false;
@@ -240,8 +246,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     private Map<String, Object> createEdgeProperties(GraphEdgeSchema schema, Map<String, Object> properties) {
         Map<String, Object> edgeProperties = new HashMap<>();
         for (GraphElementPropertySchema property : schema.getProperties()) {
-            if(properties.containsKey(property.getName())) {
-                edgeProperties.put(property.getName(),properties.get(property.getName()));
+            if (properties.containsKey(property.getName())) {
+                edgeProperties.put(property.getName(), properties.get(property.getName()));
             }
         }
         return edgeProperties;
@@ -260,7 +266,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
 
     //region Fields
-    private Profiler profiler = Profiler.Noop.instance ;
+    private Profiler profiler = Profiler.Noop.instance;
     private VertexControllerContext context;
     private EdgeIdProvider<String> edgeIdProvider;
 

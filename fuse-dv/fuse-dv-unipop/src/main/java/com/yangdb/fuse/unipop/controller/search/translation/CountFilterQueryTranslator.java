@@ -22,11 +22,9 @@ package com.yangdb.fuse.unipop.controller.search.translation;
 
 import com.yangdb.fuse.unipop.controller.search.AggregationBuilder;
 import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
-import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.unipop.process.predicate.CountFilterP;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**

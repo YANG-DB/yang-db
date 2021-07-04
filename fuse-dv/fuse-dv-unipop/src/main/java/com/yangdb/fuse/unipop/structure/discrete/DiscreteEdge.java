@@ -36,5 +36,6 @@ public class DiscreteEdge extends UniEdge {
         this.id = id.toString();
         this.label = label;
     }
+
     //endregion
 }

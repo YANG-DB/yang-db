@@ -46,6 +46,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
+
 /**
  * Created by Elad on 4/26/2017.
  */
@@ -65,7 +67,7 @@ public class PromiseConstraintSearchAppender implements SearchAppender<Composite
                         .map(GraphElementSchema::getConstraint)
                         .toJavaList() :
                 Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
-                        Stream.ofAll(context.getBulkVertices()).get(0).label(),
+                        getLabel(context,"?"),
                         Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
                     .map(GraphElementSchema::getConstraint)
                     .toJavaList();

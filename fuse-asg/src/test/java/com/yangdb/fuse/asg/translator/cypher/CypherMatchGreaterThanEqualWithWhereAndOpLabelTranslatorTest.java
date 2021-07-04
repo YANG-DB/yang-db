@@ -192,7 +192,7 @@ public class CypherMatchGreaterThanEqualWithWhereAndOpLabelTranslatorTest {
         final AsgEBase<Quant1> quantA = quant1(100, all);
         quantA.addNext(rel(2, "*", Rel.Direction.RL,"c")
                 .below(relPropGroup(200,all,
-                        new RelProp(201,"size",of(gt, 50),0)))
+                        new RelProp(202,"size",of(gt, 50),0)))
                 .addNext(unTyped(3, "b")
                         .next(quant1(300, all)
                                 .addNext(

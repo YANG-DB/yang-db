@@ -9,9 +9,9 @@ package com.yangdb.fuse.asg.translator.cypher;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import com.yangdb.fuse.asg.translator.cypher.strategies.*;
 import com.yangdb.fuse.asg.translator.cypher.strategies.expressions.*;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar 
 
     //region Constructors
     @Inject
-    public M1CypherAsgStrategyRegistrar(OntologyProvider ontologyProvider,OntologyTransformerProvider transformerProvider) {
+    public M1CypherAsgStrategyRegistrar(OntologyProvider ontologyProvider, OntologyTransformerProvider transformerProvider) {
         this.ontologyProvider = ontologyProvider;
         this.transformerProvider = transformerProvider;
     }
@@ -69,18 +70,28 @@ public class M1CypherAsgStrategyRegistrar implements CypherAsgStrategyRegistrar 
         whereExpressionStrategies.add(new EndsWithExpression());
         whereExpressionStrategies.add(new InExpression());
         whereExpressionStrategies.add(new ContainsExpression());
+        whereExpressionStrategies.add(new ContainsExpression());
         whereExpressionStrategies.add(new CountExpression());
+        whereExpressionStrategies.add(new DistinctExpression());
         whereExpressionStrategies.add(new LikeExpression());
 
+        returnExpressionStrategies = new ArrayList<>();
+        returnExpressionStrategies.add(new DistinctExpression());
+        returnExpressionStrategies.add(new ReturnVariableExpression());
+
         whereClause = new WhereClauseNodeCypherTranslator(whereExpressionStrategies);
-        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause);
+        returnClause = new ReturnClauseNodeCypherTranslator(returnExpressionStrategies);
+        match = new MatchCypherTranslatorStrategy(translatorStrategies, whereClause, returnClause);
+
 
         return Collections.singleton(match);
     }
 
     private List<CypherElementTranslatorStrategy> translatorStrategies;
     private List<ExpressionStrategies> whereExpressionStrategies;
+    private List<ExpressionStrategies> returnExpressionStrategies;
 
     public MatchCypherTranslatorStrategy match;
     private WhereClauseNodeCypherTranslator whereClause;
+    private ReturnClauseNodeCypherTranslator returnClause;
 }

@@ -1,10 +1,10 @@
-package com.yangdb.fuse.unipop.controller.common.context;
+package com.yangdb.fuse.unipop.controller.common.appender;
 
 /*-
  * #%L
  * fuse-dv-unipop
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2021 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ package com.yangdb.fuse.unipop.controller.common.context;
  * #L%
  */
 
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import com.yangdb.fuse.unipop.controller.common.context.BulkContext;
+import javaslang.collection.Stream;
 
-/**
- * Created by roman.margolis on 13/09/2017.
- */
-public interface BulkContext {
-    boolean isEmpty();
-    Iterable<Vertex> getBulkVertices();
-    Vertex getVertex(Object id);
+public interface EdgeUtils {
+
+    static String getLabel(BulkContext context, String _default) {
+        if (context.isEmpty()) return _default;
+        return Stream.ofAll(context.getBulkVertices()).get(0).label();
+    }
+
 }

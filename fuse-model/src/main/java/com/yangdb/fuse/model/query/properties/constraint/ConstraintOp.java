@@ -95,6 +95,9 @@ public enum ConstraintOp {
     @JsonProperty("contains")
     contains,
 
+    @JsonProperty("distinct")
+    distinct,
+
     @JsonProperty("not contains")
     notContains,
 

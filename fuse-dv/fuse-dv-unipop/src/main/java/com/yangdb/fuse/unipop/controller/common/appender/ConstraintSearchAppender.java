@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,6 +30,7 @@ import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementConstraint;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -43,6 +44,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static com.yangdb.fuse.unipop.controller.common.appender.EdgeUtils.getLabel;
 
 /**
  * Created by Elad on 4/26/2017.
@@ -64,7 +67,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
                                     .map(p->p.getConstraint())
                                     .toJavaList() :
                             Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
-                                    Stream.ofAll(context.getBulkVertices()).get(0).label(),
+                                    getLabel(context,"?"),
                                     context.getDirection(),
                                     Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
                                     .map(p->p.getConstraint())
@@ -98,6 +101,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
         traversalQueryTranslator.visit(newConstraint);
         return true;
     }
+
     //endregion
 
     //region Private Methods

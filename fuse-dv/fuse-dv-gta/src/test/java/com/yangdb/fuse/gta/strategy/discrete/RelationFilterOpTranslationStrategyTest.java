@@ -12,6 +12,7 @@ import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.query.Rel;
 import com.yangdb.fuse.model.query.properties.EProp;
+import com.yangdb.fuse.model.query.properties.FunctionRelProp;
 import com.yangdb.fuse.model.query.properties.RelProp;
 import com.yangdb.fuse.model.query.properties.RelPropGroup;
 import com.yangdb.fuse.model.GlobalConstants;
@@ -67,7 +68,7 @@ public class RelationFilterOpTranslationStrategyTest {
                 .next(typed(1, "1"))
                 .next(rel(2, "1", R)
                         .below(relPropGroup(3, all,
-                                RelProp.of(4, "4", of(CountConstraintOp.ge, "100")))))
+                                FunctionRelProp.of(4, "4", of(CountConstraintOp.ge, "100")))))
                 .build();
     }
     static AsgQuery simpleQueryOr(String queryName, String ontologyName) {

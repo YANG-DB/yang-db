@@ -88,6 +88,8 @@ import com.yangdb.fuse.model.query.quant.Quant1;
         @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class),
         @JsonSubTypes.Type(name = "CountComp", value = CountComp.class),
         @JsonSubTypes.Type(name = "SchematicEProp", value = SchematicEProp.class),
+        @JsonSubTypes.Type(name = "FunctionRelProp", value = FunctionRelProp.class),
+        @JsonSubTypes.Type(name = "FunctionEProp", value = FunctionEProp.class),
         @JsonSubTypes.Type(name = "SchematicRankedEProp", value = SchematicRankedEProp.class),
         @JsonSubTypes.Type(name = "ScoreEProp", value = ScoreEProp.class),
         @JsonSubTypes.Type(name = "CalculatedEProp", value = CalculatedEProp.class)

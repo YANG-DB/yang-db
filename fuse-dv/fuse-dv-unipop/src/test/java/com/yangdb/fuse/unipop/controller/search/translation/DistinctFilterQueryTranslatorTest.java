@@ -9,9 +9,10 @@ import org.unipop.process.predicate.CountFilterP;
 
 import java.util.Collections;
 
-public class CountFilterQueryTranslatorTest extends TestCase {
+public class DistinctFilterQueryTranslatorTest extends TestCase {
 
     public static final String ENTITY_A_ID = "entityA.id";
+    public static final String ENTITY_B_ID = "entityB.id";
 
 
     @Test

@@ -152,7 +152,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
         } else {
             //aggregation based constraint -
             String foreignKeyName = GlobalConstants.EdgeSchema.SOURCE_ID;//todo take this from the schema
-            if (relProp.getClass().equals(RelProp.class)) {
+            if (relProp.getClass().equals(FunctionRelProp.class)) {
                 return Optional.of(__.start().has(foreignKeyName, ConversionUtil.convertConstraint(relProp.getCon())));
             } else if (SchematicRelProp.class.isAssignableFrom(relProp.getClass())) {
                 return Optional.of(__.start().has(((SchematicRelProp) relProp).getSchematicName(),
