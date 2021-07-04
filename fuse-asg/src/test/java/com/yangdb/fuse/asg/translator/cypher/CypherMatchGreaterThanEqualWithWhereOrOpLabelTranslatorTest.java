@@ -334,7 +334,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
                 "                   └─UnTyp[:[] a#7], \n" +
                 "                               └<--Rel(:* c#8)──UnTyp[:[] b#9], \n" +
                 "                                          └─?[..][800], \n" +
-                "                                                  └─?[801]:[size<gt,50>]]";
+                "                                                  └─?[802]:[size<gt,50>]]";
         assertEquals(expected, print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
 

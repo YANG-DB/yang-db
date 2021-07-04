@@ -168,7 +168,7 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery>, GraphDescriptor
             } else if (element.geteBase() instanceof BasePropGroup) {
                 //print props
                 level = builder.size();
-                final List<EProp> props = ((BasePropGroup) element.geteBase()).getProps();
+                final List<BaseProp> props = ((BasePropGroup) element.geteBase()).getProps();
                 for (int i = 0; i < props.size(); i++) {
                     print(builder, Optional.of(new AsgEBase<>(props.get(i))), true, true, level, i, printId);
                 }
@@ -204,8 +204,12 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery>, GraphDescriptor
         else if (eBase instanceof RelPropGroup)
             joiner.add("?[..]" + "[" + id + "]" + ((eBase instanceof RankingProp) ?
                     "boost:" + ((RankingProp) eBase).getBoost() : ""));
+        else if (eBase instanceof FunctionEProp)
+            joiner.add("F(?)" + "[" + id + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) eBase)));
         else if (eBase instanceof EProp)
             joiner.add("?" + "[" + id + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) eBase)));
+        else if (eBase instanceof FunctionRelProp)
+            joiner.add("F(?)" + "[" + id + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) eBase)));
         else if (eBase instanceof RelProp)
             joiner.add("?" + "[" + id + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) eBase)));
         else
