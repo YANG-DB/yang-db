@@ -30,6 +30,7 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
+import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -43,13 +44,11 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 import org.unipop.process.Profiler;
+import org.unipop.process.predicate.DistinctFilterP;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
@@ -137,6 +136,15 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         javaslang.collection.Iterator<E> results = Stream.ofAll(searchHits)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
+
+        //dedupe for distinct operator
+        if (context.getConstraint().isPresent()) {
+            if (!Stream.ofAll(new TraversalHasStepFinder(DistinctFilterP::hasDistinct)
+                    .getValue(context.getConstraint().get().getTraversal()))
+                    .toJavaSet().isEmpty()) {
+                results = results.distinct();
+            }
+        }
 
         return results;
     }

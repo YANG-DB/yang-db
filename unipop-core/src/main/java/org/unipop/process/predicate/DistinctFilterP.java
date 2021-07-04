@@ -52,5 +52,9 @@ public class DistinctFilterP<V> extends P<V> {
         return toString().hashCode();
     }
 
+    public static boolean hasDistinct(org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep<?> step) {
+        return step.getHasContainers().stream().anyMatch(c->DistinctFilterP.class.isAssignableFrom(c.getPredicate().getClass()));
+    }
+
 //endregion
 }
