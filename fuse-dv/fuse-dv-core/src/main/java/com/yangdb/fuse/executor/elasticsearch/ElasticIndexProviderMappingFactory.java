@@ -21,12 +21,14 @@ package com.yangdb.fuse.executor.elasticsearch;
  */
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.executor.ontology.schema.OntologyIndexGenerator;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.BaseElement;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.RelationshipType;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.*;
 import javaslang.Tuple2;
@@ -47,7 +49,7 @@ import static java.util.Collections.singletonMap;
  * generate elastic mapping template according to ontology and index provider schema
  * generate the indices according to the index provider partitions
  */
-public class ElasticIndexProviderMappingFactory {
+public class ElasticIndexProviderMappingFactory implements  OntologyIndexGenerator {
 
     public static final String ID = "id";
     public static final String TYPE = "type";
@@ -102,6 +104,46 @@ public class ElasticIndexProviderMappingFactory {
         return responses;
     }
 
+    /**
+     * create indices according to a given query
+     *
+     * @return
+     */
+    public List<Tuple2<Boolean, String>> createIndices(Query query) {
+        List<Tuple2<Boolean, String>> responses = new ArrayList<>();
+        StreamSupport.stream(schema.indices().spliterator(), false).forEach(name -> {
+            try {
+                CreateIndexRequest request = new CreateIndexRequest(name);
+                responses.add(new Tuple2<>(true, client.admin().indices().create(request).actionGet().index()));
+            } catch (ResourceAlreadyExistsException e) {
+                responses.add(new Tuple2<>(false, e.getIndex().getName()));
+            } catch (Throwable t) {
+                throw new FuseError.FuseErrorException("Error Generating Indices for E/S ", t);
+            }
+        });
+        return responses;
+    }
+
+    /**
+     * generate mapping according to a given query
+     * @param query
+     * @return
+     */
+    public List<Tuple2<String, Boolean>> generateMappings(Query query) {
+        List<Tuple2<String, Boolean>> responses = new ArrayList<>();
+        // todo
+        // query tree is flatten to an assignment list (flattening is done in-order),
+        // go over all parts of the flattened query, generate mapping properties for each entity (using its tag name)
+        // populate each entity (relation) mapping with relevant fields (include all)
+        // (a)-[b]-(c)
+
+        return responses;
+    }
+
+    /**
+     *  generate mapping according to ontology
+     * @return
+     */
     public List<Tuple2<String, Boolean>> generateMappings() {
         List<Tuple2<String, AcknowledgedResponse>> responses = new ArrayList<>();
         try {
