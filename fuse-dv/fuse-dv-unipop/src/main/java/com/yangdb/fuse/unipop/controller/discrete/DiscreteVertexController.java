@@ -218,6 +218,7 @@ public class DiscreteVertexController extends VertexControllerBase {
      */
     private CompositeControllerContext.Impl filterByAggregation(CompositeControllerContext context, SearchBuilder searchBuilder, SearchVertexQuery searchVertexQuery) {
         searchBuilder.setLimit(0);//agg needs no actual hits returned only the agg buckets themselves
+        searchBuilder.setSize(context.getBulkSize());//set size for aggregation max buckets (according to bulk size)
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true);
         //execute agg query
         SearchResponse searchResponse = searchRequest.execute().actionGet();

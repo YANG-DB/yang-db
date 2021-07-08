@@ -64,6 +64,14 @@ public class SearchBuilder {
         this.aggregationBuilder = aggregationBuilder;
     }
 
+    public long getSize() {
+        return this.size;
+    }
+
+    public void setSize(long value) {
+        this.size = value;
+    }
+
     public long getLimit() {
         return this.limit;
     }
@@ -135,7 +143,7 @@ public class SearchBuilder {
         if (includeAggregations) {
             aggregationBuilder.getAggregations()
                     .forEach(agg -> {
-                        enforceSize(agg,(int) getLimit());
+                        enforceSize(agg, (int) getSize());
                         searchRequestBuilder.addAggregation(agg);
 
                     });
@@ -146,17 +154,20 @@ public class SearchBuilder {
 
     /**
      * enforce size for different potential aggs types
+     *
      * @param agg
-     * @param limit
+     * @param size
      */
-    private void enforceSize(org.elasticsearch.search.aggregations.AggregationBuilder agg, int limit) {
-        if(TermsAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
-            ((TermsAggregationBuilder) agg).size(limit);
-            return;
-        }
-        if(CompositeAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
-            ((TermsAggregationBuilder) agg).size(limit);
-            return;
+    private void enforceSize(org.elasticsearch.search.aggregations.AggregationBuilder agg, int size) {
+        if (size > 0) {
+            if (TermsAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
+                ((TermsAggregationBuilder) agg).size(size);
+                return;
+            }
+            if (CompositeAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
+                ((TermsAggregationBuilder) agg).size(size);
+                return;
+            }
         }
         //todo add any size supported aggregation here
     }
@@ -173,6 +184,7 @@ public class SearchBuilder {
     private QueryBuilder queryBuilder;
     private AggregationBuilder aggregationBuilder;
 
+    private long size;
     private long limit;
     private int scrollSize;
     private int scrollTime;
