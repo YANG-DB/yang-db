@@ -158,4 +158,22 @@ public class Relation implements BaseTypeElement<Relation> {
         return getRedundant().stream().filter(r->r.getSide().contains(side)).collect(Collectors.toList());
     }
 
+    @JsonIgnore
+    public Relation withMapping(String mapping) {
+        this.mapping = mapping;
+        return this;
+    }
+
+    @JsonIgnore
+    public Relation withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    @JsonIgnore
+    public Relation withPartition(String partition) {
+        this.partition = partition;
+        return this;
+    }
+
 }

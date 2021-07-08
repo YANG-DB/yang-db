@@ -123,4 +123,21 @@ public class Entity implements BaseTypeElement<Entity> {
         this.additionalProperties.put(name, value);
     }
 
+    @JsonIgnore
+    public Entity withMapping(String mapping) {
+        this.mapping = mapping;
+        return this;
+    }
+
+    @JsonIgnore
+    public Entity withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    @JsonIgnore
+    public Entity withPartition(String partition) {
+        this.partition = partition;
+        return this;
+    }
 }

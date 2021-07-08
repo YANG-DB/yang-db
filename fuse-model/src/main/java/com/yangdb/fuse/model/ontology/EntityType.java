@@ -89,6 +89,12 @@ public class EntityType implements BaseElement {
         this.metadata = metadata;
     }
 
+    @JsonIgnore
+    public EntityType withMetadata(List<String> metadata) {
+        this.metadata.addAll(metadata);
+        return this;
+    }
+
     public String geteType() {
         return eType;
     }
@@ -107,6 +113,12 @@ public class EntityType implements BaseElement {
 
     public List<String> getProperties() {
         return properties != null ? properties : Collections.emptyList();
+    }
+
+    @JsonIgnore
+    public EntityType withProperties(List<String> properties) {
+        this.properties.addAll(properties);
+        return this;
     }
 
     public List<String> getParentType() {

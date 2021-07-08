@@ -140,6 +140,12 @@ public class RelationshipType implements BaseElement {
         return metadata != null ? metadata : Collections.emptyList();
     }
 
+    @JsonIgnore
+    public RelationshipType withMetadata(List<String> metadata) {
+        this.metadata.addAll(metadata);
+        return this;
+    }
+
     public List<String> getIdField() {
         return idField;
     }
@@ -154,6 +160,12 @@ public class RelationshipType implements BaseElement {
 
     public List<String> getProperties() {
         return properties != null ? properties : Collections.emptyList();
+    }
+
+    @JsonIgnore
+    public RelationshipType withProperties(List<String> properties) {
+        this.properties.addAll(properties);
+        return this;
     }
 
     public List<String> getMandatory() {

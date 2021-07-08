@@ -145,7 +145,6 @@ public class SearchBuilder {
                     .forEach(agg -> {
                         enforceSize(agg, (int) getSize());
                         searchRequestBuilder.addAggregation(agg);
-
                     });
         }
 

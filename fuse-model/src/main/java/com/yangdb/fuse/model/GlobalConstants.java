@@ -34,6 +34,7 @@ public class GlobalConstants {
 
     public static String _ALL = "_all";
     public static String _ID = "_id";
+    public static String _DOC = "_doc";
     public static final String RAW = "raw";
     public static final String TYPE = "type";
 

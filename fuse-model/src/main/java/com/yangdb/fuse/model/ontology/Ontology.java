@@ -68,16 +68,36 @@ import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
+
+    public Ontology(Ontology source) {
+        this();
+        //copy
+        entityTypes.addAll(source.getEntityTypes());
+        directives.addAll(source.getDirectives());
+        relationshipTypes.addAll(source.getRelationshipTypes());
+        enumeratedTypes.addAll(source.getEnumeratedTypes());
+        properties.addAll(source.getProperties());
+        compositeTypes.addAll(source.getCompositeTypes());
+        metadata.addAll(source.metadata);
+    }
+
     public Ontology() {
+        initCollections();
+        initPrimitives();
+    }
+
+    private void initCollections() {
         directives = new ArrayList<>();
-        primitiveTypes = new ArrayList<>();
         entityTypes = new ArrayList<>();
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
         properties = new HashSet<>();
         metadata = new ArrayList<>();
         compositeTypes = new ArrayList<>();
+    }
 
+    private void initPrimitives() {
+        primitiveTypes = new ArrayList<>();
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
         primitiveTypes.add(new PrimitiveType("text", String.class));
@@ -150,7 +170,7 @@ public class Ontology {
         return primitiveTypes;
     }
 
-    //endregion
+//endregion
 
     //region Public Methods
 
