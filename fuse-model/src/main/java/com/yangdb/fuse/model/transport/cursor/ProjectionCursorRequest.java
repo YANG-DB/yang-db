@@ -24,7 +24,7 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 
 public class ProjectionCursorRequest extends CreateCursorRequest {
 
-    public static final String CursorType = "projectionCursor";
+    public static final String CursorType = "projection";
     //region Constructors
     public ProjectionCursorRequest() {
         super(CursorType);

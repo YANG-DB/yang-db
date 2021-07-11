@@ -51,7 +51,7 @@ import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
-import com.yangdb.fuse.executor.resource.PersistantResourceStore;
+import com.yangdb.fuse.executor.resource.PersistentResourceStore;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import javaslang.collection.Stream;
@@ -105,7 +105,7 @@ public class ExecutorModule extends ModuleBase {
         // resource store and persist processor
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(ResourceStoreFactory.injectionName))
-                .to(PersistantResourceStore.class)
+                .to(PersistentResourceStore.class)
                 .in(new SingletonScope());
         binder.bind(ResourceStore.class)
                 .annotatedWith(Names.named(LoggingResourceStore.injectionName))

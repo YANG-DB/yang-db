@@ -236,39 +236,39 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
      * every type of query result can be indexed and queried for slice & dice type of questions
      * <p>
      * "properties": {
-     * "entityA": {
-     * "type": "nested",
-     * "properties": {
-     * "entityA_id": {
-     * "type": "integer",
-     * },
-     * "relationA": {
-     * "type": "nested",
-     * "properties": {
-     * "relationA_id": {
-     * "type": "integer",
-     * }
-     * }
-     * }
-     * }
-     * },
-     * "entityB": {
-     * "type": "nested",
-     * "properties": {
-     * "entityB_id": {
-     * "type": "integer",
-     * },
-     * "relationB": {
-     * "type": "nested",
-     * "properties": {
-     * "relationB_id": {
-     * "type": "integer",
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
+     *   "entityA": {
+     *     "type": "nested",
+     *     "properties": {
+     *       "entityA_id": {
+     *         "type": "integer",
+     *       },
+     *       "relationA": {
+     *         "type": "nested",
+     *         "properties": {
+     *           "relationA_id": {
+     *             "type": "integer",
+     *           }
+     *         }
+     *       }
+     *     }
+     *   },
+     *   "entityB": {
+     *     "type": "nested",
+     *     "properties": {
+     *       "entityB_id": {
+     *         "type": "integer",
+     *       },
+     *       "relationB": {
+     *         "type": "nested",
+     *         "properties": {
+     *           "relationB_id": {
+     *             "type": "integer",
+     *           }
+     *         }
+     *       }
+     *     }
+     *   }
+     *   }
      *
      * @param client
      * @return
@@ -285,6 +285,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
 
         //populate the query id
         rootProperties.put("queryId", parseType(ontology, "string"));
+        rootProperties.put("cursorId", parseType(ontology, "string"));
         //populate index fields
         jsonMap.put("projection", rootMapping);
 

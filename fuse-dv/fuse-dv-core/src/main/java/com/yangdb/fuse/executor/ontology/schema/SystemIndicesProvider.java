@@ -22,12 +22,13 @@ package com.yangdb.fuse.executor.ontology.schema;
 
 import java.util.Arrays;
 
-import static com.yangdb.fuse.executor.resource.PersistantResourceStore.SYSTEM;
+import static com.yangdb.fuse.executor.resource.PersistentResourceStore.PROJECTION;
+import static com.yangdb.fuse.executor.resource.PersistentResourceStore.SYSTEM;
 
 public class SystemIndicesProvider implements IndicesProvider{
     @Override
     public Iterable<String> indices() {
-        return Arrays.asList(SYSTEM);
+        return Arrays.asList(SYSTEM,PROJECTION);
     }
 
 }

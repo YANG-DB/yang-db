@@ -534,7 +534,7 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths"]
+            "enum": ["graph","csv","forwardPaths","projection"]
           },
           {
             "name": "cypher",
