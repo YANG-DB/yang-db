@@ -148,7 +148,17 @@ public class RelationshipType implements BaseElement {
 
     @Override
     protected RelationshipType clone()  {
-        return new RelationshipType(this.rType,this.name,this.directional);
+        RelationshipType relationshipType = new RelationshipType();
+        relationshipType.directional = this.directional;
+        relationshipType.DBrName = this.DBrName;
+        relationshipType.rType = this.rType;
+        relationshipType.name = this.name;
+        relationshipType.properties = new ArrayList<>(this.properties);
+        relationshipType.mandatory = new ArrayList<>(this.mandatory);
+        relationshipType.metadata = new ArrayList<>(this.metadata);
+        relationshipType.idField = new ArrayList<>(this.idField);
+        relationshipType.ePairs = this.ePairs.stream().map(EPair::clone).collect(Collectors.toList());
+        return relationshipType;
     }
 
     public List<String> getIdField() {

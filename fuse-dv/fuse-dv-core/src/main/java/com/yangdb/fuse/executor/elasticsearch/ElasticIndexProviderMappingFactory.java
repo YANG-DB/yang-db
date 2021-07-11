@@ -524,7 +524,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         //assuming single value exists (this is the field name)
         //add mapping only if properties size > 0
         if (properties.size() > 0) {
-            parent.put(nest.getType(), mapping);
+            parent.put(nest.getType().toLowerCase(), mapping);
         }
     }
 
