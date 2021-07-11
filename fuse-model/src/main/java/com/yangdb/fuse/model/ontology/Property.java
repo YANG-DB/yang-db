@@ -122,6 +122,11 @@ public class Property {
     }
 
     @Override
+    protected Property clone()  {
+        return new Property(this);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || !Property.class.isAssignableFrom(o.getClass())) return false;

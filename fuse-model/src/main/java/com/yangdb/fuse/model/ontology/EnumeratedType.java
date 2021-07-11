@@ -111,6 +111,11 @@ public class EnumeratedType {
     }
 
     @Override
+    protected EnumeratedType clone()  {
+        return new EnumeratedType(this.eType,new ArrayList<>(this.values));
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(eType, values);
     }

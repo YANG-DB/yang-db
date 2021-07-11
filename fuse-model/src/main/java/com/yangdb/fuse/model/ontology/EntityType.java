@@ -121,6 +121,13 @@ public class EntityType implements BaseElement {
         return this;
     }
 
+    @Override
+    protected EntityType clone()  {
+        return new EntityType(this.eType,this.name,
+                new ArrayList<>(this.properties),new ArrayList<>(this.metadata),new ArrayList<>(this.mandatory),
+                new ArrayList<>(this.parentType));
+    }
+
     public List<String> getParentType() {
         return parentType != null ? parentType : Collections.emptyList();
     }

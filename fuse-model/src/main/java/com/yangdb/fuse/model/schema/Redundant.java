@@ -51,6 +51,15 @@ public class Redundant {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    public Redundant() {}
+
+    public Redundant(String redundantName, String name, String type, List<String> side, Map<String, Object> additionalProperties) {
+        this.redundantName = redundantName;
+        this.name = name;
+        this.type = type;
+        this.side = side;
+        this.additionalProperties = additionalProperties;
+    }
 
     @JsonProperty("side")
     public List<String> getSide() {
@@ -102,4 +111,8 @@ public class Redundant {
         this.additionalProperties.put(name, value);
     }
 
+    @Override
+    protected Redundant clone()  {
+        return new Redundant(this.redundantName,this.name,this.type,new ArrayList<>(this.side),new HashMap<>(this.additionalProperties));
+    }
 }

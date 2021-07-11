@@ -146,6 +146,11 @@ public class RelationshipType implements BaseElement {
         return this;
     }
 
+    @Override
+    protected RelationshipType clone()  {
+        return new RelationshipType(this.rType,this.name,this.directional);
+    }
+
     public List<String> getIdField() {
         return idField;
     }

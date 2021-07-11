@@ -176,4 +176,12 @@ public class Relation implements BaseTypeElement<Relation> {
         return this;
     }
 
+    @Override
+    protected Relation clone()  {
+        return new Relation(this.type,this.partition,this.mapping,this.symmetric,
+                this.nested.stream().map(Relation::clone).collect(Collectors.toList()),
+                this.props.clone(),this.redundant.stream().map(Redundant::clone).collect(Collectors.toList()),
+                new HashMap<>(this.additionalProperties));
+    }
+
 }

@@ -72,13 +72,13 @@ public class Ontology {
     public Ontology(Ontology source) {
         this();
         //copy
-        entityTypes.addAll(source.getEntityTypes());
+        entityTypes.addAll(source.getEntityTypes().stream().map(EntityType::clone).collect(Collectors.toList()));
+        relationshipTypes.addAll(source.getRelationshipTypes().stream().map(RelationshipType::clone).collect(Collectors.toList()));
+        enumeratedTypes.addAll(source.getEnumeratedTypes().stream().map(EnumeratedType::clone).collect(Collectors.toList()));
+        metadata.addAll(source.metadata.stream().map(Property::clone).collect(Collectors.toList()));
+        properties.addAll(source.getProperties().stream().map(Property::clone).collect(Collectors.toSet()));
         directives.addAll(source.getDirectives());
-        relationshipTypes.addAll(source.getRelationshipTypes());
-        enumeratedTypes.addAll(source.getEnumeratedTypes());
-        properties.addAll(source.getProperties());
         compositeTypes.addAll(source.getCompositeTypes());
-        metadata.addAll(source.metadata);
     }
 
     public Ontology() {

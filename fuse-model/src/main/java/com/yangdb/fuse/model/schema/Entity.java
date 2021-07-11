@@ -21,6 +21,7 @@ package com.yangdb.fuse.model.schema;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -50,7 +51,7 @@ public class Entity implements BaseTypeElement<Entity> {
     private List<Entity> nested = Collections.EMPTY_LIST;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public Entity() {}
 
@@ -127,6 +128,13 @@ public class Entity implements BaseTypeElement<Entity> {
     public Entity withMapping(String mapping) {
         this.mapping = mapping;
         return this;
+    }
+
+    @Override
+    protected Entity clone()  {
+        return new Entity(this.type,this.partition,this.mapping,this.props.clone(),
+                this.nested.stream().map(Entity::clone).collect(Collectors.toList()),
+                new HashMap<>(this.additionalProperties));
     }
 
     @JsonIgnore
