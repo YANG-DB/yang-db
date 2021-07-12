@@ -78,7 +78,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory, nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 
@@ -107,7 +107,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory,nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 

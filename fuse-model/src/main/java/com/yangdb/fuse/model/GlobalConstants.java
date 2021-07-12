@@ -37,6 +37,7 @@ public class GlobalConstants {
     public static String _DOC = "_doc";
     public static final String RAW = "raw";
     public static final String TYPE = "type";
+    public static final String PROJECTION = "projection";
 
     public static class FileSystemConfigs {
         public static final String QUERY_STORE_NAME = ".query_store_folder;";

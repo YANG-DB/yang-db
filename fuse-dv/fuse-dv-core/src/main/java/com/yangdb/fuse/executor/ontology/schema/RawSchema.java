@@ -30,9 +30,7 @@ import java.util.List;
  * Describing the elastic (raw) indices & indices partitions
  * each index has id formatting
  */
-public interface RawSchema extends IndicesProvider {
-
-    IndexPartitions getPartition(String type);
+public interface RawSchema extends IndicesProvider, PartitionResolver {
 
     String getIdFormat(String type);
 
@@ -40,7 +38,6 @@ public interface RawSchema extends IndicesProvider {
 
     String getIdPrefix(String type);
 
-    List<IndexPartitions.Partition> getPartitions(String type);
 
 
 }

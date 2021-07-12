@@ -20,20 +20,38 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.hash.Hashing;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
+import com.yangdb.fuse.executor.ontology.schema.PartitionResolver;
+import com.yangdb.fuse.executor.ontology.schema.ProjectionTransformer;
+import com.yangdb.fuse.executor.ontology.schema.load.*;
+import com.yangdb.fuse.model.GlobalConstants;
+import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.projection.ProjectionAssignment;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.Assignment;
 import com.yangdb.fuse.model.results.AssignmentCount;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import javaslang.Tuple2;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.client.Client;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.GlobalConstants.PROJECTION;
 import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -41,6 +59,7 @@ import static java.util.stream.Collectors.groupingBy;
  * this cursor will create a new Index which is the query result projection and populate this index with the query results as the arrive
  */
 public class IndexProjectionCursor extends PathsTraversalCursor {
+
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
         @Override
@@ -92,6 +111,8 @@ public class IndexProjectionCursor extends PathsTraversalCursor {
      */
     public IndexProjectionCursor(TraversalCursorContext context) {
         super(context);
+        resolver = new PartitionResolver.StaticPartitionResolver(PROJECTION);
+        transformer = new ProjectionTransformer(new Ontology.Accessor(context.getOntology()));
     }
 
     @Override
@@ -100,13 +121,33 @@ public class IndexProjectionCursor extends PathsTraversalCursor {
     }
 
     protected AssignmentsQueryResult toQuery(int numResults) {
-        AssignmentsQueryResult.Builder builder = instance();
         //since a projection index exists - we need to transform an assignment to a document with the projection mapping
         AssignmentsQueryResult result = super.toQuery(numResults);
-        //transform to document
-        BulkRequestBuilder bulk = context.getClient().prepareBulk();
-        return builder.build();
+        //transform assignments results to projection document
+        DataTransformerContext<List<ProjectionAssignment>> context = transformer.transform(result, GraphDataLoader.Directive.INSERT);
+        LoadResponse<String, FuseError> load = load(this.context.getClient(), context);
+        //todo register load results to log
+        //todo add results to AssignmentsQueryResult ??
+        return result;
     }
+
+    /**
+     * load data into E/S
+     *
+     * @param context
+     * @return
+     */
+    private LoadResponse<String, FuseError> load(Client client, DataTransformerContext context) {
+        //load bulk requests
+        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(resolver, client, context);
+        //submit bulk request
+        LoadUtils.submit(tuple._2(), tuple._1());
+        return new LoadResponseImpl().response(context.getTransformationResponse()).response(tuple._1());
+    }
+
+    // private region
+    private PartitionResolver.StaticPartitionResolver resolver;
+    private ProjectionTransformer transformer;
 
 
 }
