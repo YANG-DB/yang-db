@@ -105,6 +105,11 @@ public class ProjectionNode implements Vertex<ProjectionNode> {
         return properties;
     }
 
+    @JsonProperty("edges")
+    public List<ProjectionEdge> getProjectionEdge() {
+        return projectionEdge;
+    }
+
     @Override
     @JsonProperty("id")
     public String id() {

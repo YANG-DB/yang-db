@@ -53,6 +53,24 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(name = "csv", value = CsvQueryResult.class)
 })
 public abstract class QueryResultBase {
+    private String queryId;
+    private long timestamp;
     @JsonIgnore
     public abstract int getSize();
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setQueryId(String queryId) {
+        this.queryId = queryId;
+    }
+
+    public String getQueryId() {
+        return queryId;
+    }
 }

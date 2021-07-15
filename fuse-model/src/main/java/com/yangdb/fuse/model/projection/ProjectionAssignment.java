@@ -22,6 +22,7 @@ package com.yangdb.fuse.model.projection;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,9 +110,13 @@ import java.util.List;
 public class ProjectionAssignment {
     private List<ProjectionNode> nodes;
     private long id;
+    private String queryId;
+    private long timestamp;
 
-    public ProjectionAssignment(long id) {
+    public ProjectionAssignment(long id,String queryId,long timestamp) {
         this.id = id;
+        this.queryId = queryId;
+        this.timestamp = timestamp;
         this.nodes = new ArrayList<>();
     }
 
@@ -121,6 +126,18 @@ public class ProjectionAssignment {
 
     public long getId() {
         return id;
+    }
+
+    public String getQueryId() {
+        return queryId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getType() {
+        return GlobalConstants.ProjectionConfigs.PROJECTION;
     }
 
     public ProjectionAssignment with(ProjectionNode node) {

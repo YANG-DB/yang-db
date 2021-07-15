@@ -179,6 +179,8 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
         final Query pattern = getContext().getQueryResource().getQuery();
         return AssignmentsQueryResult.Builder.instance()
                 .withPattern(pattern)
+                .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
                 .withAssignment(assignment).build();
     }
 

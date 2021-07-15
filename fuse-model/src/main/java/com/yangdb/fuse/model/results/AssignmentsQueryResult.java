@@ -140,6 +140,16 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             return this;
         }
 
+        public Builder withTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public Builder withQueryId(String queryId) {
+            this.queryId = queryId;
+            return this;
+        }
+
         public Builder withAssignment(Assignment<E,R> assignments) {
             this.assignments.add(assignments);
             return this;
@@ -154,12 +164,16 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             AssignmentsQueryResult<E,R> assignmentsQueryResult = new AssignmentsQueryResult<>();
             assignmentsQueryResult.setPattern(pattern);
             assignmentsQueryResult.setAssignments(assignments);
+            assignmentsQueryResult.setQueryId(queryId);
+            assignmentsQueryResult.setTimestamp(timestamp);
             return assignmentsQueryResult;
         }
         //endregion
 
         //region Fields
         private Query pattern;
+        private String queryId;
+        private long timestamp;
         private List<Assignment<E,R>> assignments;
         //endregion
     }

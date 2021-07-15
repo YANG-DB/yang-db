@@ -20,40 +20,23 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.hash.Hashing;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.executor.ontology.schema.PartitionResolver;
 import com.yangdb.fuse.executor.ontology.schema.ProjectionTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.*;
-import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.projection.ProjectionAssignment;
-import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.results.Assignment;
-import com.yangdb.fuse.model.results.AssignmentCount;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.Tuple2;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.model.GlobalConstants.PROJECTION;
-import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
-import static java.util.stream.Collectors.groupingBy;
+import static com.yangdb.fuse.model.GlobalConstants.ProjectionConfigs.PROJECTION;
 
 /**
  * this cursor will create a new Index which is the query result projection and populate this index with the query results as the arrive

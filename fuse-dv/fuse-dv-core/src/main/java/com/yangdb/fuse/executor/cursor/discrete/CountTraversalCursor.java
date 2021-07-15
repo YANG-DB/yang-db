@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
         //region CursorFactory Implementation
         @Override
         public Cursor createCursor(Context context) {
-            return new CountTraversalCursor((TraversalCursorContext)context);
+            return new CountTraversalCursor((TraversalCursorContext) context);
         }
         //endregion
     }
@@ -63,7 +63,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
         AssignmentsQueryResult.Builder builder = instance();
         final Query pattern = getContext().getQueryResource().getQuery();
         builder.withPattern(pattern);
-        Map<String,AtomicLong> labelsCount = new HashMap<>();
+        Map<String, AtomicLong> labelsCount = new HashMap<>();
         //build assignments
         while (getContext().getTraversal().hasNext()) {
             (getContext().getTraversal().next(numResults)).forEach(path -> {
@@ -78,7 +78,8 @@ public class CountTraversalCursor extends PathsTraversalCursor {
                 });
             });
         }
-        builder.withAssignment(new AssignmentCount(labelsCount));
-        return builder.build();
+        return builder.withAssignment(new AssignmentCount(labelsCount))
+                .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .build();
     }
 }
