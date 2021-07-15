@@ -79,6 +79,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
             });
         }
         return builder.withAssignment(new AssignmentCount(labelsCount))
+                .withCursorId(context.getQueryResource().getCurrentCursorId())
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
                 .build();
     }

@@ -181,7 +181,6 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
                 .withPattern(pattern)
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
                 .withCursorId(context.getQueryResource().getCurrentCursorId())
-                .withCursorId(context.getQueryResource().getCurrentCursorId())
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
                 .withAssignment(assignment).build();
     }

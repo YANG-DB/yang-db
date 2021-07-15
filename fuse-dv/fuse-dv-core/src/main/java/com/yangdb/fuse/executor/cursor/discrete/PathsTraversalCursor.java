@@ -125,6 +125,7 @@ public class PathsTraversalCursor implements Cursor {
         final Query pattern = context.getQueryResource().getQuery();
         builder.withPattern(pattern)
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withCursorId(context.getQueryResource().getCurrentCursorId())
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime());
 
         //build assignments
