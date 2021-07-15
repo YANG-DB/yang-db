@@ -99,6 +99,7 @@ public class TraversalCursor implements Cursor {
         (context.getTraversal().next(numResults)).forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withCursorId(context.getQueryResource().getCurrentCursorId())
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
                 .build();
     }

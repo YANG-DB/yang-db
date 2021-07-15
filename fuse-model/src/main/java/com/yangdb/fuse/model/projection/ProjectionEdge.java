@@ -62,6 +62,7 @@ public class ProjectionEdge implements Edge {
 
     public ProjectionEdge(String id, String tag, String label, String targetLabel, String targetId, boolean directional) {
         this.id = id;
+        this.tag = tag;
         this.label = label;
         this.targetLabel = targetLabel;
         this.targetId = targetId;

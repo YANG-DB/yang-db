@@ -150,6 +150,11 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             return this;
         }
 
+        public Builder withCursorId(String cursorId) {
+            this.cursorId = cursorId;
+            return this;
+        }
+
         public Builder withAssignment(Assignment<E,R> assignments) {
             this.assignments.add(assignments);
             return this;
@@ -165,6 +170,7 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
             assignmentsQueryResult.setPattern(pattern);
             assignmentsQueryResult.setAssignments(assignments);
             assignmentsQueryResult.setQueryId(queryId);
+            assignmentsQueryResult.setCursorId(cursorId);
             assignmentsQueryResult.setTimestamp(timestamp);
             return assignmentsQueryResult;
         }
@@ -173,6 +179,7 @@ public class AssignmentsQueryResult<E extends Vertex,R extends Edge> extends Que
         //region Fields
         private Query pattern;
         private String queryId;
+        private String cursorId;
         private long timestamp;
         private List<Assignment<E,R>> assignments;
         //endregion

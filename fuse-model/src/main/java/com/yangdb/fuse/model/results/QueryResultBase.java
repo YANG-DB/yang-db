@@ -54,6 +54,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public abstract class QueryResultBase {
     private String queryId;
+    private String cursorId;
     private long timestamp;
     @JsonIgnore
     public abstract int getSize();
@@ -72,5 +73,13 @@ public abstract class QueryResultBase {
 
     public String getQueryId() {
         return queryId;
+    }
+
+    public String getCursorId() {
+        return cursorId;
+    }
+
+    public void setCursorId(String cursorId) {
+        this.cursorId = cursorId;
     }
 }

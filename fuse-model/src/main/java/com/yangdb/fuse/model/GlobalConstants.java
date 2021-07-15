@@ -42,6 +42,7 @@ public class GlobalConstants {
         public static final String PROJECTION = "projection";
         public static final String TAG = "tag";
         public static final String QUERY_ID = "queryId";
+        public static final String CURSOR_ID = "cursorId";
         public static final String EXECUTION_TIME = "timestamp";
 
     }

@@ -111,11 +111,13 @@ public class ProjectionAssignment {
     private List<ProjectionNode> nodes;
     private long id;
     private String queryId;
+    private String cursorId;
     private long timestamp;
 
-    public ProjectionAssignment(long id,String queryId,long timestamp) {
+    public ProjectionAssignment(long id,String queryId,String cursorId,long timestamp) {
         this.id = id;
         this.queryId = queryId;
+        this.cursorId = cursorId;
         this.timestamp = timestamp;
         this.nodes = new ArrayList<>();
     }
@@ -148,5 +150,9 @@ public class ProjectionAssignment {
     public ProjectionAssignment withAll(List<ProjectionNode> nodes) {
         this.nodes.addAll(nodes);
         return this;
+    }
+
+    public String getCursorId() {
+        return cursorId;
     }
 }

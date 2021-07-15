@@ -44,7 +44,7 @@ public class ProjectionTransformer implements DataTransformer<DataTransformerCon
     @Override
     public DataTransformerContext<List<ProjectionAssignment>> transform(AssignmentsQueryResult<Entity, Relationship> data, GraphDataLoader.Directive directive) {
         DataTransformerContext<List<ProjectionAssignment>> context = new DataTransformerContext<>(mapper);
-        context.withContainer(data.getAssignments().stream().map(a -> buildAssignment(data.getQueryId(), data.getTimestamp(), a)).collect(Collectors.toList()));
+        context.withContainer(data.getAssignments().stream().map(a -> buildAssignment(data.getQueryId(), data.getCursorId(), data.getTimestamp(), a)).collect(Collectors.toList()));
         translate(context);
         return context;
     }
@@ -60,6 +60,7 @@ public class ProjectionTransformer implements DataTransformer<DataTransformerCon
         //root level metadata
         rootEntity.put(TYPE, row.getType());
         rootEntity.put(GlobalConstants.ProjectionConfigs.QUERY_ID, row.getQueryId());
+        rootEntity.put(GlobalConstants.ProjectionConfigs.CURSOR_ID, row.getCursorId());
         rootEntity.put(GlobalConstants.ProjectionConfigs.EXECUTION_TIME, row.getTimestamp());
         row.getNodes().forEach(node -> translate(rootEntity, node));
 
@@ -98,7 +99,7 @@ public class ProjectionTransformer implements DataTransformer<DataTransformerCon
         element.put(TYPE, edge.getLabel());
         element.put(TAG, edge.tag());
         element.put(DEST_TYPE, edge.getTargetLabel());
-        element.put(DEST_ID, edge.getTargetLabel());
+        element.put(DEST_ID, edge.getTargetId());
         //edge properties
         edge.getProperties().getProperties().forEach((key, value) -> populateField(key, value, element));
         arrayEdge.add(element);
@@ -111,8 +112,8 @@ public class ProjectionTransformer implements DataTransformer<DataTransformerCon
         element.put(pType, result.toString());
     }
 
-    private ProjectionAssignment buildAssignment(String queryId, long timestamp, Assignment<Entity, Relationship> assignment) {
-        ProjectionAssignment projection = new ProjectionAssignment(assignment.getId(), queryId, timestamp);
+    private ProjectionAssignment buildAssignment(String queryId, String cursorId, long timestamp, Assignment<Entity, Relationship> assignment) {
+        ProjectionAssignment projection = new ProjectionAssignment(assignment.getId(), queryId, cursorId, timestamp);
         projection.withAll(assignment.getEntities().stream().map(a -> translate(a, assignment)).collect(Collectors.toList()));
         return projection;
     }

@@ -39,6 +39,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.yangdb.fuse.model.GlobalConstants.ProjectionConfigs.*;
 import static java.util.Collections.singletonMap;
 
 /**
@@ -220,7 +221,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
                     //add the request
-                    requests.put(relation.getType().toLowerCase(), request);
+                    requests.put(relation.getType(), request);
                     break;
                 default:
                     String result = "No mapping found";
@@ -276,7 +277,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
     private void mapProjection(Ontology.Accessor ontology, Client client, Map<String, ESPutIndexTemplateRequestBuilder> requests) {
         ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, "projection");
         request.setSettings(getSettings())
-                .setPatterns(Collections.singletonList("projection*"));
+                .setPatterns(Collections.singletonList(String.format("%s*",PROJECTION)));
 
         Map<String, Object> jsonMap = new HashMap<>();
         Map<String, Object> rootMapping = new HashMap<>();
@@ -284,10 +285,11 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         rootMapping.put(PROPERTIES, rootProperties);
 
         //populate the query id
-        rootProperties.put("queryId", parseType(ontology, "string"));
-        rootProperties.put("cursorId", parseType(ontology, "string"));
+        rootProperties.put(QUERY_ID, parseType(ontology, "string"));
+        rootProperties.put(CURSOR_ID, parseType(ontology, "string"));
+        rootProperties.put(EXECUTION_TIME, parseType(ontology, "date"));
         //populate index fields
-        jsonMap.put("projection", rootMapping);
+        jsonMap.put(PROJECTION, rootMapping);
 
         IndexProvider projection = new IndexProvider(this.indexProvider);
         //remove nested entities since we upgraded them to the root level
@@ -309,9 +311,9 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                         //log error
                     }
                 });
-        request.addMapping("projection", jsonMap);
+        request.addMapping(PROJECTION, jsonMap);
         //add response to list of responses
-        requests.put("projection", request);
+        requests.put(PROJECTION, request);
 
     }
 
@@ -525,7 +527,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         //assuming single value exists (this is the field name)
         //add mapping only if properties size > 0
         if (properties.size() > 0) {
-            parent.put(nest.getType().toLowerCase(), mapping);
+            parent.put(nest.getType(), mapping);
         }
     }
 
