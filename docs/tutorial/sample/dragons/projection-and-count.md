@@ -25,6 +25,10 @@ We can observe that result assignments contains the following lables:
                ]
 ```
 
+The downside of this API is that it counts exactly the amount of the resulting assignments - it may take a while to receive an answer.
+
+We would like to be able to estimate the amount of results according to some sampling technique that will be much faster and will give reasonable estimation errors
+This is a new feature that is under development and will be available soon...
 
 
 -----
