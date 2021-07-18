@@ -68,16 +68,36 @@ import static com.yangdb.fuse.model.ontology.DirectiveType.DirectiveClasses.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
+
+    public Ontology(Ontology source) {
+        this();
+        //copy
+        entityTypes.addAll(source.getEntityTypes().stream().map(EntityType::clone).collect(Collectors.toList()));
+        relationshipTypes.addAll(source.getRelationshipTypes().stream().map(RelationshipType::clone).collect(Collectors.toList()));
+        enumeratedTypes.addAll(source.getEnumeratedTypes().stream().map(EnumeratedType::clone).collect(Collectors.toList()));
+        metadata.addAll(source.metadata.stream().map(Property::clone).collect(Collectors.toList()));
+        properties.addAll(source.getProperties().stream().map(Property::clone).collect(Collectors.toSet()));
+        directives.addAll(source.getDirectives());
+        compositeTypes.addAll(source.getCompositeTypes());
+    }
+
     public Ontology() {
+        initCollections();
+        initPrimitives();
+    }
+
+    private void initCollections() {
         directives = new ArrayList<>();
-        primitiveTypes = new ArrayList<>();
         entityTypes = new ArrayList<>();
         relationshipTypes = new ArrayList<>();
         enumeratedTypes = new ArrayList<>();
         properties = new HashSet<>();
         metadata = new ArrayList<>();
         compositeTypes = new ArrayList<>();
+    }
 
+    private void initPrimitives() {
+        primitiveTypes = new ArrayList<>();
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
         primitiveTypes.add(new PrimitiveType("text", String.class));
@@ -150,7 +170,7 @@ public class Ontology {
         return primitiveTypes;
     }
 
-    //endregion
+//endregion
 
     //region Public Methods
 

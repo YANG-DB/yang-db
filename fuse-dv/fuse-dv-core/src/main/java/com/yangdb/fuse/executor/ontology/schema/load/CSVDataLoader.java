@@ -21,6 +21,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  */
 
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 
 import java.io.File;
 import java.io.IOException;

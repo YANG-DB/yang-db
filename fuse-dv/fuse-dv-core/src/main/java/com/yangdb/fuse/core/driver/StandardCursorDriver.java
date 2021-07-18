@@ -46,6 +46,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.elasticsearch.client.Client;
 import org.unipop.process.Profiler;
 import org.unipop.process.Profiler.Noop;
 
@@ -59,11 +60,13 @@ import static org.unipop.process.Profiler.PROFILER;
  * Created by lior.perry on 20/02/2017.
  */
 public class StandardCursorDriver extends CursorDriverBase {
+    private final Client client;
     private final GraphElementSchemaProviderFactory schemaProvider;
 
     //region Constructors
     @Inject
     public StandardCursorDriver(
+            Client client,
             ResourceStore resourceStore,
             PageDriver pageDriver,
             OntologyProvider ontologyProvider,
@@ -73,6 +76,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             UniGraphProvider uniGraphProvider,
             AppUrlSupplier urlSupplier) {
         super(resourceStore, urlSupplier);
+        this.client = client;
         this.schemaProvider = schemaProviderFactory;
         this.pageDriver = pageDriver;
         this.ontologyProvider = ontologyProvider;
@@ -111,6 +115,7 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
         TraversalCursorContext context = new TraversalCursorContext(
+                client,
                 schemaProvider.get(ontology),
                 ontologyProvider,
                 ontology,
@@ -122,6 +127,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             //first level (hierarchy) inner queries
             return new CompositeTraversalCursorContext(
                     new TraversalCursorContext(
+                            client,
                             schemaProvider.get(ontology),
                             ontologyProvider,
                             ontology,

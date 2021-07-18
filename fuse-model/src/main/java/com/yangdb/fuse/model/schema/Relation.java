@@ -158,4 +158,30 @@ public class Relation implements BaseTypeElement<Relation> {
         return getRedundant().stream().filter(r->r.getSide().contains(side)).collect(Collectors.toList());
     }
 
+    @JsonIgnore
+    public Relation withMapping(String mapping) {
+        this.mapping = mapping;
+        return this;
+    }
+
+    @JsonIgnore
+    public Relation withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    @JsonIgnore
+    public Relation withPartition(String partition) {
+        this.partition = partition;
+        return this;
+    }
+
+    @Override
+    protected Relation clone()  {
+        return new Relation(this.type,this.partition,this.mapping,this.symmetric,
+                this.nested.stream().map(Relation::clone).collect(Collectors.toList()),
+                this.props.clone(),this.redundant.stream().map(Redundant::clone).collect(Collectors.toList()),
+                new HashMap<>(this.additionalProperties));
+    }
+
 }

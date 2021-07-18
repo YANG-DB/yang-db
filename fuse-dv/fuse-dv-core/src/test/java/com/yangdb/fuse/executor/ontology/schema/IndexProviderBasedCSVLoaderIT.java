@@ -7,7 +7,7 @@ import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.IndexProviderBasedCSVLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
@@ -78,7 +78,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory, nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 
@@ -107,7 +107,7 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
 
         Assert.assertEquals(19,indices.length);
 
-        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,providerFactory,nestedSchema);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer,nestedSchema);
         // for stand alone test
 //        Assert.assertEquals(19,graphLoader.init());
 

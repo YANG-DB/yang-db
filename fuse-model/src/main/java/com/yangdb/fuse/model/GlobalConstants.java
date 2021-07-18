@@ -34,8 +34,18 @@ public class GlobalConstants {
 
     public static String _ALL = "_all";
     public static String _ID = "_id";
+    public static String _DOC = "_doc";
     public static final String RAW = "raw";
     public static final String TYPE = "type";
+
+    public static class ProjectionConfigs {
+        public static final String PROJECTION = "projection";
+        public static final String TAG = "tag";
+        public static final String QUERY_ID = "queryId";
+        public static final String CURSOR_ID = "cursorId";
+        public static final String EXECUTION_TIME = "timestamp";
+
+    }
 
     public static class FileSystemConfigs {
         public static final String QUERY_STORE_NAME = ".query_store_folder;";
@@ -62,6 +72,7 @@ public class GlobalConstants {
         public static final String ID_GENERATOR_INDEX_NAME_DEFUALT_VALUE = ".idgenerator";
 
     }
+
     public static class HasKeys {
         public static final String PROMISE = "promise";
         public static final String CONSTRAINT = "constraint";

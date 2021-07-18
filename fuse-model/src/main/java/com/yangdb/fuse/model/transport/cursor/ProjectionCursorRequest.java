@@ -22,19 +22,19 @@ package com.yangdb.fuse.model.transport.cursor;
 
 import com.yangdb.fuse.model.transport.CreatePageRequest;
 
-public class CountCursorRequest extends CreateCursorRequest {
+public class ProjectionCursorRequest extends CreateCursorRequest {
 
-    public static final String CursorType = "count";
+    public static final String CursorType = "projection";
     //region Constructors
-    public CountCursorRequest() {
+    public ProjectionCursorRequest() {
         super(CursorType);
     }
 
-    public CountCursorRequest(CreatePageRequest createPageRequest) {
+    public ProjectionCursorRequest(CreatePageRequest createPageRequest) {
         super(CursorType, createPageRequest);
     }
 
-    public CountCursorRequest(Include include, CreatePageRequest createPageRequest) {
+    public ProjectionCursorRequest(Include include, CreatePageRequest createPageRequest) {
         super(CursorType, include, createPageRequest);
     }
 }

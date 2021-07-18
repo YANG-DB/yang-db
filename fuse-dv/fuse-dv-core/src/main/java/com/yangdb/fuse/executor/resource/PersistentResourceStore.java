@@ -57,9 +57,10 @@ import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.Storage
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
-public class PersistantResourceStore implements ResourceStore {
+public class PersistentResourceStore implements ResourceStore {
 
     public static final String SYSTEM = "fuse_system";
+    public static final String PROJECTION = "projection";
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String TTL = "ttl";
@@ -73,7 +74,7 @@ public class PersistantResourceStore implements ResourceStore {
     private ObjectMapper mapper;
 
     @Inject
-    public PersistantResourceStore(Provider<Client> client,ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
+    public PersistentResourceStore(Provider<Client> client, ObjectMapper mapper, Set<CompositeCursorFactory.Binding> cursorBindings) {
         this.client = client.get();
         this.mapper = mapper;
         SimpleModule module = new SimpleModule();

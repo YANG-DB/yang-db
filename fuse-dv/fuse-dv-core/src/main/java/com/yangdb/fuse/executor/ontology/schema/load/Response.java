@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 
 import java.util.ArrayList;
 import java.util.List;

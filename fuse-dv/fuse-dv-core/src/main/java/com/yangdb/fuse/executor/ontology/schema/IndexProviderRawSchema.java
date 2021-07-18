@@ -29,6 +29,7 @@ import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class IndexProviderRawSchema implements RawSchema {
+public final class IndexProviderRawSchema extends SystemIndicesProvider implements RawSchema {
 
     private GraphElementSchemaProvider schemaProvider;
 
@@ -95,7 +96,8 @@ public class IndexProviderRawSchema implements RawSchema {
 
     @Override
     public Iterable<String> indices() {
-        return indices(schemaProvider);
+        return CollectionUtils.union(
+                super.indices(), indices(schemaProvider));
     }
 
     public static Iterable<String> indices(GraphElementSchemaProvider schemaProvider) {

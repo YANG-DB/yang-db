@@ -20,66 +20,44 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
-import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.schema.IndexProvider;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
+import com.yangdb.fuse.model.results.LoadResponse;
 import javaslang.Tuple2;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
+import static com.yangdb.fuse.model.results.LoadResponse.*;
 
 /**
  * Loader for CSV Data Model to E/S
  * - load with file
  */
 public class IndexProviderBasedCSVLoader implements CSVDataLoader {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat(GlobalConstants.DEFAULT_DATE_FORMAT);
     private static Map<String, Range.StatefulRange> ranges = new HashMap<>();
-
-    static {
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
 
     private Client client;
     private CSVTransformer transformer;
-    private IndexProviderFactory indexProviderFactory;
     private RawSchema schema;
-    private ObjectMapper mapper;
-
 
     @Inject
     public IndexProviderBasedCSVLoader(Client client,
                                        CSVTransformer transformer,
-                                       IndexProviderFactory indexProvider,
                                        RawSchema schema) {
         this.client = client;
         this.transformer = transformer;
-        this.indexProviderFactory = indexProvider;
         this.schema = schema;
-        this.mapper = new ObjectMapper();
-
     }
 
     @Override
@@ -98,11 +76,11 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
             }
 
             ByteArrayOutputStream finalStream = stream;
-            context = transformer.transform(readCsv(type,label, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(finalStream.toByteArray())))), directive);
+            context = transformer.transform(readCsv(type, label, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(finalStream.toByteArray())))), directive);
             return load(context, directive);
         }
 
-        context = transformer.transform(readCsv(type, label,new FileReader(data.getAbsoluteFile())), directive);
+        context = transformer.transform(readCsv(type, label, new FileReader(data.getAbsoluteFile())), directive);
         return load(context, directive);
     }
 
@@ -136,98 +114,14 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
      * @return
      */
     private LoadResponse<String, FuseError> load(DataTransformerContext context, GraphDataLoader.Directive directive) {
-        BulkRequestBuilder bulk = client.prepareBulk();
-        Response upload = new Response("Upload");
         //load bulk requests
-        load(bulk, upload, context);
+        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(schema, client, context);
         //submit bulk request
-        submit(bulk, upload);
-
-        return new LoadResponseImpl().response(context.getTransformationResponse()).response(upload);
-
+        LoadUtils.submit(tuple._2(), tuple._1());
+        return new LoadResponseImpl().response(context.getTransformationResponse()).response(tuple._1());
     }
 
-    private void submit(BulkRequestBuilder bulk, Response upload) {
-        //bulk index data
-        try {
-            BulkResponse responses = bulk.get();
-            final BulkItemResponse[] items = responses.getItems();
-            for (BulkItemResponse item : items) {
-                if (!item.isFailed()) {
-                    upload.success(item.getId());
-                } else {
-                    //log error
-                    BulkItemResponse.Failure failure = item.getFailure();
-                    DocWriteRequest<?> request = bulk.request().requests().get(item.getItemId());
-                    //todo - get additional information from request
-                    upload.failure(new FuseError("commit failed", failure.toString()));
-                }
-
-            }
-        } catch (Exception err) {
-            upload.failure(new FuseError("commit failed", err.toString()));
-        }
-    }
-
-    private void load(BulkRequestBuilder bulk, Response upload, DataTransformerContext<Object> context) {
-        //populate bulk entities documents index requests
-        for (DocumentBuilder documentBuilder : context.getEntities()) {
-            try {
-                if(documentBuilder.isSuccess())
-                    buildIndexRequest(bulk, documentBuilder);
-            } catch (FuseError.FuseErrorException e) {
-                upload.failure(e.getError());
-            }
-        }
-        //populate bulk relations document index requests
-        for (DocumentBuilder e : context.getRelations()) {
-            try {
-                if(e.isSuccess())
-                    buildIndexRequest(bulk, e);
-            } catch (FuseError.FuseErrorException err) {
-                upload.failure(err.getError());
-            }
-        }
-    }
-
-    private IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node) {
-        try {
-            String index = resolveIndex(node);
-            IndexRequestBuilder request = client.prepareIndex()
-                    .setIndex(index.toLowerCase())
-                    .setType(node.getType())
-                    .setId(node.getId())
-                    .setOpType(IndexRequest.OpType.INDEX)
-                    .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);
-            node.getRouting().ifPresent(request::setRouting);
-            bulk.add(request);
-            return request;
-        } catch (Throwable err) {
-            throw new FuseError.FuseErrorException("Error while building Index request", err,
-                    new FuseError("Error while building Index request", err.getMessage()));
-        }
-    }
-
-    /**
-     * resolve index name according to schema and in case of range partitioned index - according to the partitioning field value
-     *
-     * @param node
-     * @return
-     */
-    private String resolveIndex(DocumentBuilder node) throws ParseException {
-        String nodeType = node.getType();
-        Optional<Tuple2<String, String>> field = node.getPartitionField();
-        IndexPartitions partitions = schema.getPartition(nodeType);
-        //todo validate the partitioned field is indeed the correct time field
-        if ((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
-            String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
-            if (indexName != null) return indexName;
-        }
-        return partitions.getPartitions().iterator().next().getIndices().iterator().next();
-    }
-
-
-    private CSVTransformer.CsvElement readCsv(String type,String label, Reader reader) {
+    private CSVTransformer.CsvElement readCsv(String type, String label, Reader reader) {
         return new CSVTransformer.CsvElement() {
             @Override
             public String type() {

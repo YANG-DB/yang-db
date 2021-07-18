@@ -106,6 +106,11 @@ public interface CompositeControllerContext extends VertexControllerContext{
         }
 
         @Override
+        public long getBulkSize() {
+            return this.vertexControllerContext.get().getBulkSize();
+        }
+
+        @Override
         public Iterable<Vertex> getBulkVertices() {
             return this.vertexControllerContext
                     .map(BulkContext::getBulkVertices)

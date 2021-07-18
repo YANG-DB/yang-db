@@ -12,9 +12,9 @@ package com.yangdb.fuse.model.results;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,11 +28,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.collection.Stream;
+import org.antlr.v4.runtime.misc.MurmurHash;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -42,7 +46,9 @@ import java.util.*;
         @JsonSubTypes.Type(name = "Assignment", value = AssignmentCount.class)})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Assignment<E extends Vertex,R extends Edge> {
+public class Assignment<E extends Vertex, R extends Edge> {
+    private static HashFunction hashFunction = Hashing.murmur3_128();
+
     //region Constructors
     public Assignment() {
         this.entities = Collections.emptyList();
@@ -51,33 +57,33 @@ public class Assignment<E extends Vertex,R extends Edge> {
     //endregion
 
     //region Properties
-    public List<R> getRelationships ()
-    {
+    public long getId() {
+        return hashFunction.hashBytes(toString().getBytes()).asLong();
+    }
+
+    public List<R> getRelationships() {
         return relationships;
     }
 
-    public void setRelationships (List<R> relationships)
-    {
+    public void setRelationships(List<R> relationships) {
         this.relationships = relationships;
     }
 
-    public List<E> getEntities ()
-    {
+    public List<E> getEntities() {
         return entities;
     }
 
-    public void setEntities (List<E> entities)
-    {
+    public void setEntities(List<E> entities) {
         this.entities = entities;
     }
     //endregion
 
     //region Override Methods
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
+
     //endregion
 
     //region Fields
@@ -85,17 +91,32 @@ public class Assignment<E extends Vertex,R extends Edge> {
     private List<R> relationships;
 
     @JsonIgnore
+    public Optional<E> getEntityById(String id) {
+        return entities.stream().filter(e -> e.id().equals(id)).findAny();
+    }
+
+    @JsonIgnore
     public Optional<E> getEntityByTag(String tag) {
-        return entities.stream().filter(e->e.tag().equals(tag)).findAny();
+        return entities.stream().filter(e -> e.tag().equals(tag)).findAny();
     }
 
     @JsonIgnore
     public Optional<R> getRelationByTag(String tag) {
-        return relationships.stream().filter(e->e.tag().equals(tag)).findAny();
+        return relationships.stream().filter(e -> e.tag().equals(tag)).findAny();
+    }
+
+    @JsonIgnore
+    public List<R> getRelationBySource(String source) {
+        return relationships.stream().filter(e -> e.source().equals(source)).collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<R> getRelationByTarget(String target) {
+        return relationships.stream().filter(e -> e.target().equals(target)).collect(Collectors.toList());
     }
     //endregion
 
-    public static final class Builder<E extends Vertex,R extends Edge> {
+    public static final class Builder<E extends Vertex, R extends Edge> {
         private E currentNode;
         private R currentEdge;
 
@@ -130,7 +151,7 @@ public class Assignment<E extends Vertex,R extends Edge> {
             return this;
         }
 
-        public Builder withEntity(E entity,String tag) {
+        public Builder withEntity(E entity, String tag) {
             E currentEntity = this.entities.get(entity.id());
             if (currentEntity != null) {
                 entity.merge(currentEntity);
@@ -161,8 +182,8 @@ public class Assignment<E extends Vertex,R extends Edge> {
             return currentEdge;
         }
 
-        public Assignment<E,R> build() {
-            Assignment<E,R> assignment = new Assignment<>();
+        public Assignment<E, R> build() {
+            Assignment<E, R> assignment = new Assignment<>();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(E::label).toJavaList());
             assignment.setRelationships(this.relationships);
@@ -176,7 +197,6 @@ public class Assignment<E extends Vertex,R extends Edge> {
 
         //endregion
     }
-
 
 
 }

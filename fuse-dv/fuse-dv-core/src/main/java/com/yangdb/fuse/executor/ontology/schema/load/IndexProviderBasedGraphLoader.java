@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
@@ -51,6 +52,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
+import static com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 
 /**
  * Loader for Graph Data Model to E/S

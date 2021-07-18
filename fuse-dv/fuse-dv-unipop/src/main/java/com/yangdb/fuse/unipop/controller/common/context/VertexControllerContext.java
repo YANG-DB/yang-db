@@ -76,6 +76,11 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
         }
 
         @Override
+        public long getBulkSize() {
+            return bulkVertices.size();
+        }
+
+        @Override
         public Iterable<Vertex> getBulkVertices() {
             return bulkVertices.values();
         }

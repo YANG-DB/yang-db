@@ -155,6 +155,8 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
         final Query pattern = getContext().getQueryResource().getQuery();
         return AssignmentsQueryResult.Builder.instance()
                 .withPattern(pattern)
+                .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
                 .withAssignment(builder.build()).build();
     }
     //endregion

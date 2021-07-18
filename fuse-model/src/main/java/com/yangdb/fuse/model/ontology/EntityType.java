@@ -61,6 +61,16 @@ import static java.util.Collections.singletonList;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EntityType implements BaseElement {
+    //region Fields
+    private List<String> idField = singletonList(GlobalConstants.ID);
+    private String eType;
+    private String name;
+    private List<String> mandatory = new ArrayList<>();
+    private List<String> properties = new ArrayList<>();
+    private List<String> metadata = new ArrayList<>();
+    private List<String> display = new ArrayList<>();
+    private List<String> parentType = new ArrayList<>();
+
     public EntityType() {
     }
 
@@ -89,6 +99,12 @@ public class EntityType implements BaseElement {
         this.metadata = metadata;
     }
 
+    @JsonIgnore
+    public EntityType withMetadata(List<String> metadata) {
+        this.metadata.addAll(metadata);
+        return this;
+    }
+
     public String geteType() {
         return eType;
     }
@@ -107,6 +123,26 @@ public class EntityType implements BaseElement {
 
     public List<String> getProperties() {
         return properties != null ? properties : Collections.emptyList();
+    }
+
+    @JsonIgnore
+    public EntityType withProperties(List<String> properties) {
+        this.properties.addAll(properties);
+        return this;
+    }
+
+    @Override
+    protected EntityType clone()  {
+        EntityType entityType = new EntityType();
+        entityType.eType = this.eType;
+        entityType.name = this.name;
+        entityType.properties = new ArrayList<>(this.properties);
+        entityType.mandatory = new ArrayList<>(this.mandatory);
+        entityType.metadata = new ArrayList<>(this.metadata);
+        entityType.idField = new ArrayList<>(this.idField);
+        entityType.display = new ArrayList<>(this.display);
+        entityType.parentType = new ArrayList<>(this.parentType);
+        return entityType;
     }
 
     public List<String> getParentType() {
@@ -179,15 +215,6 @@ public class EntityType implements BaseElement {
         return Objects.hash(idField,eType, parentType, name, properties, metadata, display);
     }
 
-    //region Fields
-    private List<String> idField = singletonList(GlobalConstants.ID);
-    private String eType;
-    private String name;
-    private List<String> mandatory = new ArrayList<>();
-    private List<String> properties = new ArrayList<>();
-    private List<String> metadata = new ArrayList<>();
-    private List<String> display = new ArrayList<>();
-    private List<String> parentType = new ArrayList<>();
 
     @JsonIgnore
     public boolean containsMetadata(String key) {

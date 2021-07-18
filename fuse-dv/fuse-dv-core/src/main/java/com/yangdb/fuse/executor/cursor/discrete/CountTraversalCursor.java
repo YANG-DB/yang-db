@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.cursor.discrete;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class CountTraversalCursor extends PathsTraversalCursor {
         //region CursorFactory Implementation
         @Override
         public Cursor createCursor(Context context) {
-            return new CountTraversalCursor((TraversalCursorContext)context);
+            return new CountTraversalCursor((TraversalCursorContext) context);
         }
         //endregion
     }
@@ -63,22 +63,30 @@ public class CountTraversalCursor extends PathsTraversalCursor {
         AssignmentsQueryResult.Builder builder = instance();
         final Query pattern = getContext().getQueryResource().getQuery();
         builder.withPattern(pattern);
-        Map<String,AtomicLong> labelsCount = new HashMap<>();
+        Map<String, AtomicLong> labelsCount = new HashMap<>();
         //build assignments
-        while (getContext().getTraversal().hasNext()) {
-            (getContext().getTraversal().next(numResults)).forEach(path -> {
-                Map<String, Long> collect = path.objects().stream().map(e -> (Element) e)
-                        .collect(groupingBy(Element::label, Collectors.counting()));
+        if (!getContext().getTraversal().hasNext()) {
+            labelsCount.put("Elements",new AtomicLong(0));
+        } else {
+            while (getContext().getTraversal().hasNext()) {
+                (getContext().getTraversal().next(numResults)).forEach(path -> {
+                    Map<String, Long> collect = path.objects().stream().map(e -> (Element) e)
+                            .collect(groupingBy(Element::label, Collectors.counting()));
 
-                collect.forEach((key, value) -> {
-                    if (labelsCount.containsKey(key))
-                        labelsCount.get(key).addAndGet(value);
-                    else
-                        labelsCount.put(key, new AtomicLong(value));
+                    collect.forEach((key, value) -> {
+                        if (labelsCount.containsKey(key))
+                            labelsCount.get(key).addAndGet(value);
+                        else
+                            labelsCount.put(key, new AtomicLong(value));
+                    });
                 });
-            });
+            }
         }
-        builder.withAssignment(new AssignmentCount(labelsCount));
-        return builder.build();
+        return builder.withAssignment(new AssignmentCount(labelsCount))
+                .withPattern(context.getQueryResource().getQuery())
+                .withCursorId(context.getQueryResource().getCurrentCursorId())
+                .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
+                .build();
     }
 }

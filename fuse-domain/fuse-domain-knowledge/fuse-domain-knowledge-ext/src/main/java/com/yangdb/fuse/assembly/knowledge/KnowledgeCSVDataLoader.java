@@ -36,6 +36,7 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.transformer.OntologyTransformer;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 import org.elasticsearch.client.Client;
 
 import java.io.*;

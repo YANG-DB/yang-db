@@ -140,6 +140,27 @@ public class RelationshipType implements BaseElement {
         return metadata != null ? metadata : Collections.emptyList();
     }
 
+    @JsonIgnore
+    public RelationshipType withMetadata(List<String> metadata) {
+        this.metadata.addAll(metadata);
+        return this;
+    }
+
+    @Override
+    protected RelationshipType clone()  {
+        RelationshipType relationshipType = new RelationshipType();
+        relationshipType.directional = this.directional;
+        relationshipType.DBrName = this.DBrName;
+        relationshipType.rType = this.rType;
+        relationshipType.name = this.name;
+        relationshipType.properties = new ArrayList<>(this.properties);
+        relationshipType.mandatory = new ArrayList<>(this.mandatory);
+        relationshipType.metadata = new ArrayList<>(this.metadata);
+        relationshipType.idField = new ArrayList<>(this.idField);
+        relationshipType.ePairs = this.ePairs.stream().map(EPair::clone).collect(Collectors.toList());
+        return relationshipType;
+    }
+
     public List<String> getIdField() {
         return idField;
     }
@@ -154,6 +175,12 @@ public class RelationshipType implements BaseElement {
 
     public List<String> getProperties() {
         return properties != null ? properties : Collections.emptyList();
+    }
+
+    @JsonIgnore
+    public RelationshipType withProperties(List<String> properties) {
+        this.properties.addAll(properties);
+        return this;
     }
 
     public List<String> getMandatory() {

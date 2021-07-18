@@ -38,6 +38,9 @@ import java.util.Set;
  * Created by Roman on 02/04/2017.
  */
 public interface CursorFactory {
+
+    String CURSOR_TYPE = "CursorType";
+
     interface Context<T> {
         T getSchemaProvider();
 
@@ -100,7 +103,7 @@ public interface CursorFactory {
         Optional<Class<? extends CreateCursorRequest>> cursorType = allClasses.stream().filter(clazz -> {
             try {
                 //get value of static field member
-                return clazz.getField("CursorType").get(null).equals(cursorTypeName);
+                return clazz.getField(CURSOR_TYPE).get(null).equals(cursorTypeName);
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
             }

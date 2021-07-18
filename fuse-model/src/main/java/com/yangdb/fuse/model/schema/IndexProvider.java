@@ -68,7 +68,16 @@ public class IndexProvider {
     @JsonProperty("relations")
     private List<Relation> relations = new ArrayList<>();
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    public IndexProvider() {}
+
+    public IndexProvider(IndexProvider source) {
+        this.ontology = source.ontology;
+        this.additionalProperties.putAll(source.additionalProperties);
+        this.entities.addAll(source.getEntities().stream().map(Entity::clone).collect(Collectors.toList()));
+        this.relations.addAll(source.getRelations().stream().map(Relation::clone).collect(Collectors.toList()));
+    }
 
     @JsonProperty("entities")
     public List<Entity> getEntities() {

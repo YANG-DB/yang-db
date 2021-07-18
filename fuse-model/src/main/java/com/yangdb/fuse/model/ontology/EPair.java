@@ -167,6 +167,11 @@ public class EPair {
         return "EPair [name= " + name + ",eTypeA= " + eTypeA + ",sideAId= " + sideAIdField + ", eTypeB = " + eTypeB + ", sideAId = " + sideBIdField + "]";
     }
 
+    @Override
+    public EPair clone()  {
+        return new EPair(name,eTypeA,sideAIdField,eTypeB,sideBIdField);
+    }
+
     //region Fields
     private String name;
     private String eTypeA;

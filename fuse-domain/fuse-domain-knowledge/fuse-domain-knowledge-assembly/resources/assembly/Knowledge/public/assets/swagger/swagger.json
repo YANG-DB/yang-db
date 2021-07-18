@@ -22,7 +22,6 @@
     "application/xml",
     "image/*",
     "text/csv"
-
   ],
   "paths": {
     "/": {
@@ -65,7 +64,6 @@
         }
       }
     },
-
     "/internal/version": {
       "get": {
         "tags": [
@@ -96,7 +94,6 @@
         }
       }
     },
-
     "/catalog/ontology": {
       "post": {
         "tags": [
@@ -229,14 +226,13 @@
         }
       }
     },
-
     "/graphql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
         ],
         "summary": "graphQL IDL into Ontology",
-        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
+        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/",
         "parameters": [
           {
             "name": "id",
@@ -264,14 +260,13 @@
         }
       }
     },
-
     "/sparql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
         ],
         "summary": "OWL IDL into Ontology",
-        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/" ,
+        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/",
         "parameters": [
           {
             "name": "id",
@@ -299,14 +294,13 @@
         }
       }
     },
-
     "/sql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
         ],
         "summary": "SQL DDL into Ontology",
-        "description": "Transform a SQL DDL into V1 Ontology " ,
+        "description": "Transform a SQL DDL into V1 Ontology ",
         "parameters": [
           {
             "name": "id",
@@ -334,7 +328,6 @@
         }
       }
     },
-
     "/query/graph/api/getVertex": {
       "get": {
         "tags": [
@@ -415,7 +408,6 @@
         }
       }
     },
-
     "/query/graph/api/findPath": {
       "get": {
         "tags": [
@@ -470,7 +462,6 @@
             "required": true,
             "type": "integer"
           }
-
         ],
         "responses": {
           "200": {
@@ -482,7 +473,6 @@
         }
       }
     },
-
     "/query/cypher": {
       "post": {
         "tags": [
@@ -559,7 +549,6 @@
         }
       }
     },
-
     "/query/graphQL": {
       "post": {
         "tags": [
@@ -636,7 +625,6 @@
         }
       }
     },
-
     "/query/sparql": {
       "post": {
         "tags": [
@@ -713,7 +701,6 @@
         }
       }
     },
-
     "/query/{id}/profile": {
       "get": {
         "tags": [
@@ -918,7 +905,6 @@
         }
       }
     },
-
     "/query/{id}": {
       "get": {
         "tags": [
@@ -1077,6 +1063,63 @@
         "responses": {
           "200": {
             "content": "image/*",
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor": {
+      "post": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Create cursor ",
+        "description": "Create cursor for query Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "required": false,
+            "enum": [
+              "graph",
+              "csv",
+              "forwardPaths",
+              "projection"
+            ]
+          },
+          {
+            "in": "body",
+            "name": "<body>",
+            "description": "Create Cursor request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateCursorRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Returns <code>200</code> with a single query info or <code>404</code>",
             "schema": {
               "$ref": "#/definitions/QueryInfo"
@@ -1404,7 +1447,6 @@
         }
       }
     },
-
     "/dashboard/entities": {
       "get": {
         "tags": [
@@ -1473,7 +1515,6 @@
         }
       }
     },
-
     "/load/ontology/{id}/indices": {
       "get": {
         "tags": [
@@ -1674,7 +1715,6 @@
         }
       }
     },
-
     "/load/ontology/{id}/graph/upload": {
       "post": {
         "tags": [
@@ -1778,7 +1818,6 @@
       }
     }
   },
-
   "definitions": {
     "SequenceNames": {
       "type": "string",
@@ -1896,7 +1935,8 @@
         "id": "1",
         "name": "Q1",
         "ontology": "Knowledge",
-        "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *"
+        "query": "match (e:Entity)-[hasEv:hasEvalue]->(v:Evalue), (e:Entity)-[hasRelEn:relatedEntity]->(e2:Entity) return *",
+        "type": "cypher"
       }
     },
     "SparqlQueryRequest": {

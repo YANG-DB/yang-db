@@ -85,6 +85,11 @@ public class CursorsModule extends ModuleBase {
                 CreateCsvCursorRequest.CursorType,
                 CreateCsvCursorRequest.class,
                 new CsvTraversalCursor.Factory()));
+
+        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
+                ProjectionCursorRequest.CursorType,
+                ProjectionCursorRequest.class,
+                new IndexProjectionCursor.Factory()));
     }
     //endregion
 }

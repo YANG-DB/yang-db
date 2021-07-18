@@ -30,14 +30,14 @@ public class CompositeTraversalCursorContext extends TraversalCursorContext {
     private final List<QueryResource> inner;
 
     public CompositeTraversalCursorContext(TraversalCursorContext outer, List<QueryResource> inner) {
-        super(outer.getSchemaProvider(), outer.getOntologyProvider(), outer.getOntology(), outer.getQueryResource(), outer.getCursorRequest(), outer.getTraversal());
+        super(outer.getClient(),outer.getSchemaProvider(), outer.getOntologyProvider(), outer.getOntology(), outer.getQueryResource(), outer.getCursorRequest(), outer.getTraversal());
         this.inner = inner;
     }
 
     @Override
     public CompositeTraversalCursorContext clone() {
         return new CompositeTraversalCursorContext(
-                new TraversalCursorContext(getSchemaProvider(), getOntologyProvider(), getOntology(), getQueryResource(), getCursorRequest(), getTraversal()), getInner());
+                new TraversalCursorContext(getClient(),getSchemaProvider(), getOntologyProvider(), getOntology(), getQueryResource(), getCursorRequest(), getTraversal()), getInner());
     }
 
     public List<QueryResource> getInner() {

@@ -28,6 +28,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.elasticsearch.client.Client;
 
 /**
  * Created by Roman on 05/04/2017.
@@ -35,12 +36,14 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 public class TraversalCursorContext implements CursorFactory.Context<GraphElementSchemaProvider> {
     //region Constructor
     public TraversalCursorContext(
+            Client client,
             GraphElementSchemaProvider schemaProvider,
             OntologyProvider ontologyProvider,
             Ontology ontology,
             QueryResource queryResource,
             CreateCursorRequest cursorRequest,
             Traversal<?, Path> traversal) {
+        this.client = client;
         this.schemaProvider = schemaProvider;
         this.ontologyProvider = ontologyProvider;
         this.ontology = ontology;
@@ -50,6 +53,10 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
     }
     //endregion
 
+
+    public Client getClient() {
+        return client;
+    }
 
     public GraphElementSchemaProvider getSchemaProvider() {
         return schemaProvider;
@@ -102,9 +109,10 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
 
     @Override
     public TraversalCursorContext clone()  {
-        return new TraversalCursorContext(schemaProvider,ontologyProvider,ontology,queryResource,cursorRequest,traversal);
+        return new TraversalCursorContext(client,schemaProvider,ontologyProvider,ontology,queryResource,cursorRequest,traversal);
     }
 
+    private Client client;
     private GraphElementSchemaProvider schemaProvider;
     private OntologyProvider ontologyProvider;
     //region Fields
