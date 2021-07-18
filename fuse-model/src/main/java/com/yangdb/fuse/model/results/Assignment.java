@@ -58,7 +58,7 @@ public class Assignment<E extends Vertex, R extends Edge> {
 
     //region Properties
     public long getId() {
-        return hashFunction.hashBytes(toString().getBytes()).hashCode();
+        return hashFunction.hashBytes(toString().getBytes()).asLong();
     }
 
     public List<R> getRelationships() {
@@ -83,6 +83,7 @@ public class Assignment<E extends Vertex, R extends Edge> {
     public String toString() {
         return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
+
     //endregion
 
     //region Fields

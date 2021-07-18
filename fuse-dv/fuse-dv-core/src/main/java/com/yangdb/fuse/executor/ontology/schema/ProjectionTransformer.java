@@ -3,6 +3,9 @@ package com.yangdb.fuse.executor.ontology.schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.DataTransformerContext;
 import com.yangdb.fuse.executor.ontology.schema.load.DocumentBuilder;
@@ -18,6 +21,7 @@ import com.yangdb.fuse.model.results.Entity;
 import com.yangdb.fuse.model.results.Relationship;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ import static com.yangdb.fuse.model.GlobalConstants.TYPE;
 public class ProjectionTransformer implements DataTransformer<DataTransformerContext<List<ProjectionAssignment>>, AssignmentsQueryResult<Entity, Relationship>> {
     private static ObjectMapper mapper = new ObjectMapper();
     private final Ontology.Accessor accessor;
+    private static HashFunction hashFunction = Hashing.murmur3_128();
 
 
     public ProjectionTransformer(Ontology.Accessor accessor) {
@@ -113,7 +118,8 @@ public class ProjectionTransformer implements DataTransformer<DataTransformerCon
     }
 
     private ProjectionAssignment buildAssignment(String queryId, String cursorId, long timestamp, Assignment<Entity, Relationship> assignment) {
-        ProjectionAssignment projection = new ProjectionAssignment(assignment.getId(), queryId, cursorId, timestamp);
+        HashCode hashCode = hashFunction.hashBytes((queryId + cursorId + assignment.toString()).getBytes());
+        ProjectionAssignment projection = new ProjectionAssignment(hashCode.asLong(), queryId, cursorId, timestamp);
         projection.withAll(assignment.getEntities().stream().map(a -> translate(a, assignment)).collect(Collectors.toList()));
         return projection;
     }
