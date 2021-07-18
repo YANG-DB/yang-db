@@ -23,28 +23,8 @@ package com.yangdb.fuse.executor.ontology.schema.load;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class LoadResponseImpl implements LoadResponse<String, FuseError> {
-
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<CommitResponse<String, FuseError>> responses;
-
-    public LoadResponseImpl() {
-        this.responses = new ArrayList<>();
-    }
-
-    public LoadResponse response(CommitResponse<String, FuseError> response) {
-        this.responses.add(response);
-        return this;
-    }
-
-    @Override
-    public List<CommitResponse<String, FuseError>> getResponses() {
-        return responses;
-    }
-}

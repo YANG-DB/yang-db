@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.ontology.schema.load;
+package com.yangdb.fuse.model.results;
 
 /*-
  * #%L
@@ -20,10 +20,12 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public interface LoadResponse<S, F> {
     LoadResponse EMPTY = new LoadResponse() {
@@ -60,5 +62,43 @@ public interface LoadResponse<S, F> {
         List<F> getFailures();
 
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    class LoadResponseImpl implements LoadResponse<String, FuseError> {
+
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<CommitResponse<String, FuseError>> responses;
+
+        public LoadResponseImpl() {
+            this.responses = new ArrayList<>();
+        }
+
+        public LoadResponse response(CommitResponse<String, FuseError> response) {
+            this.responses.add(response);
+            return this;
+        }
+
+        @Override
+        public List<CommitResponse<String, FuseError>> getResponses() {
+            return responses;
+        }
+    }
+
+    /**
+     * create an assignment entity to repost the loading results
+     * @param load
+     * @return
+     */
+    static AssignmentCount buildAssignment(LoadResponse<String, FuseError> load) {
+        Long success = load.getResponses().stream().map(r -> r.getSuccesses().size()).count();
+        Long failed = load.getResponses().stream().map(r -> r.getFailures().size()).count();
+        Map<String, AtomicLong> results = new HashMap<>();
+        results.put("Success",new AtomicLong(success));
+        results.put("Failed",new AtomicLong(failed));
+        AssignmentCount assignmentCount = new AssignmentCount(results);
+        return assignmentCount;
+    }
+
 
 }

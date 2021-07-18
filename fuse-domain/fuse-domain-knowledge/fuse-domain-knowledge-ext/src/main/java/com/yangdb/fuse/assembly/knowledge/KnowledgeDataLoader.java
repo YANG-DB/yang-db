@@ -32,7 +32,7 @@ import com.yangdb.fuse.dispatcher.ontology.OntologyTransformerProvider;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.load.Response;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.Range;

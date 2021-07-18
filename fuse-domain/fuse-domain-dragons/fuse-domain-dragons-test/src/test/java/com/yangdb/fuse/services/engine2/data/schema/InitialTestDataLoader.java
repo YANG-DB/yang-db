@@ -3,7 +3,7 @@ package com.yangdb.fuse.services.engine2.data.schema;
 import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
-import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.typesafe.config.Config;

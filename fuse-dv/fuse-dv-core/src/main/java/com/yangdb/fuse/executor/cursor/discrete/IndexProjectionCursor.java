@@ -28,15 +28,22 @@ import com.yangdb.fuse.executor.ontology.schema.ProjectionTransformer;
 import com.yangdb.fuse.executor.ontology.schema.load.*;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.projection.ProjectionAssignment;
+import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.AssignmentsProjectionResult;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
+import com.yangdb.fuse.model.results.LoadResponse;
+import com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 import javaslang.Tuple2;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.yangdb.fuse.model.GlobalConstants.ProjectionConfigs.PROJECTION;
+import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.instance;
+import static com.yangdb.fuse.model.results.LoadResponse.buildAssignment;
 
 /**
  * this cursor will create a new Index which is the query result projection and populate this index with the query results as the arrive
@@ -100,18 +107,43 @@ public class IndexProjectionCursor extends PathsTraversalCursor {
 
     @Override
     public AssignmentsQueryResult getNextResults(int numResults) {
-        return super.getNextResults(numResults);
+        AssignmentsQueryResult.Builder builder = instance();
+        final Query pattern = context.getQueryResource().getQuery();
+        builder.withPattern(pattern)
+                .withQueryId(context.getQueryResource().getQueryMetadata().getId())
+                .withCursorId(context.getQueryResource().getCurrentCursorId())
+                .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime());
+
+        boolean empty = false;
+        do {
+            //todo run this via async thread pool
+            AssignmentsQueryResult results = super.getNextResults(numResults);
+            empty = results.getAssignments().isEmpty();
+        } while (!empty);
+
+        return builder.build();
     }
 
     protected AssignmentsQueryResult toQuery(int numResults) {
         //since a projection index exists - we need to transform an assignment to a document with the projection mapping
         AssignmentsQueryResult result = super.toQuery(numResults);
         //transform assignments results to projection document
+        AssignmentsProjectionResult projectionResult = new AssignmentsProjectionResult();
+        projectionResult.setPattern(result.getPattern());
+        projectionResult.setQueryId(result.getQueryId());
+        projectionResult.setCursorId(result.getCursorId());
+        projectionResult.setTimestamp(result.getTimestamp());
+
+        if(result.getAssignments().isEmpty()) {
+            projectionResult.setAssignments(Collections.emptyList());
+            return projectionResult;
+        }
+
         DataTransformerContext<List<ProjectionAssignment>> context = transformer.transform(result, GraphDataLoader.Directive.INSERT);
         LoadResponse<String, FuseError> load = load(this.context.getClient(), context);
-        //todo register load results to log
-        //todo add results to AssignmentsQueryResult ??
-        return result;
+        //report back the projection results
+        projectionResult.setAssignments(Collections.singletonList(buildAssignment(load)));
+        return projectionResult;
     }
 
     /**

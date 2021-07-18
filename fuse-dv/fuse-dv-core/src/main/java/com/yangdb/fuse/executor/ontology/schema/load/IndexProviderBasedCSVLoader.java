@@ -21,10 +21,10 @@ package com.yangdb.fuse.executor.ontology.schema.load;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.LoadResponse;
 import javaslang.Tuple2;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -38,6 +38,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
+import static com.yangdb.fuse.model.results.LoadResponse.*;
 
 /**
  * Loader for CSV Data Model to E/S

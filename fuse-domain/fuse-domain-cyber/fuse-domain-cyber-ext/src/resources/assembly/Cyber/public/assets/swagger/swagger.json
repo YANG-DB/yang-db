@@ -502,7 +502,7 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths","projection"]
+            "enum": ["graph","csv","forwardPaths","projection","count"]
           },
           {
             "name": "cypher",
@@ -579,7 +579,7 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths","projection"]
+            "enum": ["graph","csv","forwardPaths","projection","count"]
           },
           {
             "name": "graphQL",
@@ -656,7 +656,7 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths","projection"]
+            "enum": ["graph","csv","forwardPaths","projection","count"]
           },
           {
             "name": "sparql",
@@ -817,7 +817,7 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths","projection"]
+            "enum": ["graph","csv","forwardPaths","projection","count"]
           },
           {
             "in": "body",

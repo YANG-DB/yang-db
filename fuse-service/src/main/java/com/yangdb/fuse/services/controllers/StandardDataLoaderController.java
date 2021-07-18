@@ -25,7 +25,7 @@ import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
-import com.yangdb.fuse.executor.ontology.schema.load.LoadResponse;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;

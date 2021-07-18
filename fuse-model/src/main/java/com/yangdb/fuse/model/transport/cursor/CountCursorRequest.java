@@ -24,7 +24,7 @@ import com.yangdb.fuse.model.transport.CreatePageRequest;
 
 public class CountCursorRequest extends CreateCursorRequest {
 
-    public static final String CursorType = "countCursor";
+    public static final String CursorType = "count";
     //region Constructors
     public CountCursorRequest() {
         super(CursorType);

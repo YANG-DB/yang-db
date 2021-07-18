@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.executor.ontology.schema.PartitionResolver;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.results.AssignmentCount;
+import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.Tuple2;
@@ -18,8 +20,11 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * documents bulk loading utilities
