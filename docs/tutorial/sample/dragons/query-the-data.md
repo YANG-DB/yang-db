@@ -220,5 +220,7 @@ for every pair of dragons - if a dragon fired multiple times only one edge will 
 Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2
 ```
 
+### What's Next
+For the next part - in the next tutorial we will review different type of cursors that enable us to materialize queries and count results
 
 
