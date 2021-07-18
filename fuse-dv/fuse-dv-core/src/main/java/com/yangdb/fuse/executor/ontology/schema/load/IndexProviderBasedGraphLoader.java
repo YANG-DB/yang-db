@@ -52,7 +52,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
-import static com.yangdb.fuse.model.results.LoadResponse.*;
+import static com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 
 /**
  * Loader for Graph Data Model to E/S
