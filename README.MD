@@ -289,3 +289,8 @@ Query the Graph tutorial:
 
  - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/query-the-data.md
 
+Projection materialization & count tutorial:
+
+ - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/projection-and-count.md
+
+
