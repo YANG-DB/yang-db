@@ -1,7 +1,8 @@
-#Projection & Count Cursors
+# Projection & Count Cursors
+
 In this tutorial we will review different type of cursors that enable us to materialize queries and count results
 
-###Count
+### Count
 The purpose of this cursor is to supply a way to exactly count the amount of labels a given query is returning without actually fetching the entire documents into memory:
 
 We should use this cursor in the case that we need to understand the amount of results (assignments) returning from a query.
@@ -28,7 +29,7 @@ We can observe that result assignments contains the following lables:
 
 
 -----
-###Projection (Materialization)
+### Projection (Materialization)
 
 The purpose of this cursor is to provide a consistent and general way to project a (general) query results into a dedicated projection index
 This index will be used to store the returning query-results assignments inside a single index, it will also be able to efficiently perform slice & dice over the resulting assignments using
@@ -37,10 +38,10 @@ the efficient E/S aggregation DSL.
 For additional details refer to [index-projection-details](../../../docs/branch/indexProjection.md)
 
 
-###Usage
+### Usage
 Since we concluded that want to project the query results - lets actually run the query with the projection cursor and see what happens:
 
-####Swagger
+#### Swagger
 The regular API can be called with the following query:
 
 
@@ -56,7 +57,7 @@ depends on the amount of results the query returns.
 
 If you want to get notified when the projection completes - this API will soon be available under notification...
 
-###Consumption API
+### Consumption API
 Once the query has started materialization of the results into the projection index - we can see the amount of results (assignments) mounting up
 as shown here of the projection index aggregation of different documents per projected-query.
 
