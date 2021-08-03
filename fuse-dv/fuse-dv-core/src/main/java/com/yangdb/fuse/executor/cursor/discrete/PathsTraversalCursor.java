@@ -129,7 +129,7 @@ public class PathsTraversalCursor implements Cursor {
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime());
 
         //build assignments
-        List<Path> paths = context.getTraversal().next(numResults);
+        List<Path> paths = context.next(numResults);
         paths.forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder.build();
     }

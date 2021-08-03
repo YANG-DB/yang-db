@@ -113,7 +113,7 @@ public class KnowledgeGraphHierarchyTraversalCursor implements Cursor<TraversalC
 
         try {
             while(this.distinctIds.size() < numResults) {
-                Path path = context.getTraversal().next();
+                Path path = context.next();
                 List<Object> pathObjects = path.objects();
                 List<Set<String>> pathLabels = path.labels();
                 Set<String> addedIds = new HashSet<>();

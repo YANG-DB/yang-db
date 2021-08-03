@@ -96,7 +96,8 @@ public class TraversalCursor implements Cursor {
         AssignmentsQueryResult.Builder builder = instance();
         builder.withPattern(context.getQueryResource().getQuery());
         //build assignments
-        (context.getTraversal().next(numResults)).forEach(path -> builder.withAssignment(toAssignment(path)));
+        context.next(numResults)
+                .forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
                 .withCursorId(context.getQueryResource().getCurrentCursorId())

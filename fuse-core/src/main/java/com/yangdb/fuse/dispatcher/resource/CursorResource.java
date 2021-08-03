@@ -41,6 +41,7 @@ public class CursorResource {
         this.cursorId = cursorId;
         this.profileInfo = profileInfo;
         this.pageResources = new HashMap<>();
+        this.pageStatus = new HashMap<>();
         this.cursor = cursor;
         this.cursorRequest = cursorRequest;
         this.timeCreated = new Date(System.currentTimeMillis());
@@ -61,16 +62,22 @@ public class CursorResource {
         return this.pageResources.values();
     }
 
+    public Map<String, PageState> getPageStatus() {
+        return pageStatus;
+    }
+
     public Optional<PageResource> getPageResource(String pageId) {
         return Optional.ofNullable(this.pageResources.get(pageId));
     }
 
     public void addPageResource(String pageId, PageResource pageResource) {
         this.pageResources.put(pageId, pageResource);
+        this.pageStatus.put(pageId, pageResource.getState());
     }
 
     public void deletePageResource(String pageId) {
         this.pageResources.remove(pageId);
+        this.pageStatus.put(pageId,PageState.DELETED);
     }
 
     public String getNextPageId() {
@@ -106,6 +113,8 @@ public class CursorResource {
     private Date timeCreated;
 
     private Map<String, PageResource> pageResources;
+    private Map<String, PageState> pageStatus;
+    //
     private AtomicInteger pageSequence = new AtomicInteger();
     //endregion
 }

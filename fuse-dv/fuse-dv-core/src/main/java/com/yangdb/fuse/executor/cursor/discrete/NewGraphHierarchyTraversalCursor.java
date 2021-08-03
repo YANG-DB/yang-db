@@ -112,7 +112,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
         try {
             while(this.distinctIds.size() < numResults) {
-                Path path = context.getTraversal().next();
+                Path path = context.next(1).get(0);
                 List<Object> pathObjects = path.objects();
                 List<Set<String>> pathLabels = path.labels();
                 for (int objectIndex = 0; objectIndex < path.objects().size(); objectIndex++) {

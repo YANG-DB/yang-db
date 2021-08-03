@@ -30,6 +30,13 @@ import java.util.Date;
 public class PageResource<T> {
 
     //region Constructors
+    public PageResource(String pageId, int requestedSize) {
+        this.pageId = pageId;
+        this.timeCreated = new Date(System.currentTimeMillis());
+        this.requestedSize = requestedSize;
+        this.isAvailable = false;
+    }
+
     public PageResource(String pageId, T data, int requestedSize, long executionTime) {
         this.pageId = pageId;
         this.timeCreated = new Date(System.currentTimeMillis());
@@ -41,6 +48,12 @@ public class PageResource<T> {
     //endregion
 
     //region Public Methods
+    public PageResource<T> withResults(T data) {
+        PageResource<T> clone = this.cloneImpl();
+        clone.data = data;
+        return clone;
+    }
+
     public PageResource<T> withActualSize(int actualSize) {
         PageResource<T> clone = this.cloneImpl();
         clone.actualSize = actualSize;
@@ -81,6 +94,10 @@ public class PageResource<T> {
 
     public boolean isAvailable() {
         return this.isAvailable;
+    }
+
+    public PageState getState() {
+        return isAvailable?PageState.ACTIVE:PageState.PREPARING;
     }
     //endregion
 

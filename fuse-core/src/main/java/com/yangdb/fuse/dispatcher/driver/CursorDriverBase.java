@@ -110,7 +110,7 @@ public abstract class CursorDriverBase implements CursorDriver {
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorId,
                 cursorResource.get().getCursorRequest(),
-                cursorResource.get().getProfileInfo().infoData(),
+                cursorResource.get().getProfileInfo().infoData(cursorResource.get().getCursorRequest()),
                 urlSupplier.pageStoreUrl(queryId, cursorId),
                 resourceStore.getPageResource(queryId,cursorId,cursorResource.get().getCurrentPageId()).isPresent() ?
                         Collections.singletonList(

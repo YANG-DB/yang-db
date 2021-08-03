@@ -30,6 +30,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Created by Roman on 05/04/2017.
  */
@@ -50,6 +53,7 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
         this.queryResource = queryResource;
         this.cursorRequest = cursorRequest;
         this.traversal = traversal;
+        this.hitsCounter = new AtomicLong(0);
     }
     //endregion
 
@@ -106,6 +110,25 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
 
 //endregion
 
+    /**
+     * traverse next numResults on the storage
+     * @param numResults
+     * @return
+     */
+    public List<Path> next(int numResults) {
+        List<Path> paths = getTraversal().next(numResults);
+        incrementHit(paths.size());
+        return paths;
+    }
+
+    /**
+     * increment the hits consumed by the cursor
+     * @return
+     */
+    private TraversalCursorContext incrementHit(long size) {
+        hitsCounter.accumulateAndGet(size, Long::sum);
+        return this;
+    }
 
     @Override
     public TraversalCursorContext clone()  {
@@ -119,6 +142,7 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
     private Ontology ontology;
     private QueryResource queryResource;
     private CreateCursorRequest cursorRequest;
+    private AtomicLong hitsCounter;
     private Traversal<?, Path> traversal;
     //endregion
 }
