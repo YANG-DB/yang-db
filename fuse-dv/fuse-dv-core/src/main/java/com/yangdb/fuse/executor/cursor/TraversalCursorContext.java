@@ -111,6 +111,14 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
 //endregion
 
     /**
+     * traverse next result on the storage
+y     * @return
+     */
+    public List<Path> next() {
+        return next(1);
+    }
+
+    /**
      * traverse next numResults on the storage
      * @param numResults
      * @return

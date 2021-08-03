@@ -109,10 +109,17 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
     public QueryResultBase getNextResults(int numResults) {
         Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
         Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
+        final Query pattern = getContext().getQueryResource().getQuery();
+        final Assignment.Builder builder = Assignment.Builder.instance();
 
         try {
             while(this.distinctIds.size() < numResults) {
-                Path path = context.next(1).get(0);
+                List<Path> paths = context.next();
+                if(paths.isEmpty()) {
+                    break;
+                }
+
+                Path path = paths.get(0);
                 List<Object> pathObjects = path.objects();
                 List<Set<String>> pathLabels = path.labels();
                 for (int objectIndex = 0; objectIndex < path.objects().size(); objectIndex++) {
@@ -135,8 +142,6 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
         }
 
-        Assignment.Builder builder = Assignment.Builder.instance();
-
         for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
             Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
             Set<String> etags = Stream.ofAll(idVertexEtagsEntry.getValue().values()).flatMap(etags1 -> etags1).toJavaSet();
@@ -152,7 +157,10 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
                     relTuple._3()));
         }
 
-        final Query pattern = getContext().getQueryResource().getQuery();
+        return returnResults(pattern, builder);
+    }
+
+    private AssignmentsQueryResult returnResults(Query pattern, Assignment.Builder builder) {
         return AssignmentsQueryResult.Builder.instance()
                 .withPattern(pattern)
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
