@@ -34,9 +34,14 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import org.elasticsearch.search.aggregations.support.ValueType;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.model.GlobalConstants.DEFAULT_DATE_FORMAT;
+import static com.yangdb.fuse.model.GlobalConstants.TYPE;
+import static com.yangdb.fuse.model.ontology.Ontology.Accessor.NodeType.ENTITY;
+import static com.yangdb.fuse.model.ontology.Ontology.Accessor.NodeType.RELATION;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
@@ -44,6 +49,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
  */
 public class StandardDashboardDriver implements DashboardDriver {
 
+    public static final String CREATION_TIME = "creationTime";
     private Client client;
 
     //region Constructors
@@ -58,7 +64,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
         final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
-        aggregation.field("type");
+        aggregation.field(TYPE);
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
                 .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
@@ -71,32 +77,16 @@ public class StandardDashboardDriver implements DashboardDriver {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
         builder.setQuery(boolQuery()
-                .should(termQuery("type", "entity"))
-                .should(termQuery("type", "relation")));
+                .should(termQuery(TYPE, ENTITY.toString().toLowerCase()))
+                .should(termQuery(TYPE, RELATION.toString().toLowerCase())));
         final DateHistogramAggregationBuilder aggregation = new DateHistogramAggregationBuilder("graphElementCreatedOverTime");
-        aggregation.field("creationTime");
+        aggregation.field(CREATION_TIME);
         aggregation.interval(1000*60*60*24);
-        aggregation.format("DD-MM-YYYY");
+        aggregation.format(DEFAULT_DATE_FORMAT);
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((InternalDateHistogram) response.getAggregations().get("graphElementCreatedOverTime")).getBuckets().stream()
                 .collect(Collectors.toMap(InternalDateHistogram.Bucket::getKey, InternalDateHistogram.Bucket::getDocCount));
 
-        return elementCount;
-    }
-
-    @Override
-    //todo - fix this to be Ontology depended
-    public Map graphFieldValuesCount() {
-        final SearchRequestBuilder builder = client.prepareSearch();
-        builder.setSize(0);
-        builder.setQuery(boolQuery()
-                .should(termQuery("type", "e.value"))
-                .should(termQuery("type", "r.value")));
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
-        aggregation.field("fieldId");
-        final SearchResponse response = builder.addAggregation(aggregation).get();
-        final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
-                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
         return elementCount;
     }
 

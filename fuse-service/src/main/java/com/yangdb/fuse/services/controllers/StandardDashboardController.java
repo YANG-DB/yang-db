@@ -67,13 +67,6 @@ public class StandardDashboardController implements DashboardController<Standard
     }
 
     @Override
-    public ContentResponse<Map> graphFieldValuesCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphFieldValuesCount()))
-                .compose();
-    }
-
-    @Override
     public ContentResponse<Map> cursorCount() {
         return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
                 .data(Optional.of(driver().cursorCount()))

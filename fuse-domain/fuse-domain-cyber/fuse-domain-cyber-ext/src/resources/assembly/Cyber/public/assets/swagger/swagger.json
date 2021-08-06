@@ -1291,23 +1291,6 @@
         }
       }
     },
-    "/dashboard/fields": {
-      "get": {
-        "tags": [
-          "dashboard"
-        ],
-        "summary": "Show summery of DB existing fields types and histogram",
-        "description": "summery of DB fields",
-        "responses": {
-          "200": {
-            "description": "Returns <code>200</code> summery of db fields types (histogram) or <code>404</code>"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
     "/dashboard/created": {
       "get": {
         "tags": [

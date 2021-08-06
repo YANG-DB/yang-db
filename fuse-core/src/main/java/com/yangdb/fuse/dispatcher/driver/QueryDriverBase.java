@@ -319,16 +319,19 @@ public abstract class QueryDriverBase implements QueryDriver {
         //activate profile flag
         queryResource.getRequest().getCreateCursorRequest().withProfile(true);
         //execute query
-        Optional<QueryResourceInfo> resourceInfo = this.getQueryResourceInfo(queryResource.getRequest(), this.getInfo(queryId));
+        this.getQueryResourceInfo(queryResource.getRequest(), this.getInfo(queryId));
 
-        //return data
-        if (!resourceInfo.isPresent())
+        if(this.getInfo(queryId).get().getError()!=null)
+            return Optional.of(this.getInfo(queryId).get().getError());
+
+        if(this.getInfo(queryId).get().getCursorResourceInfos().isEmpty())
             return Optional.empty();
 
-        if (resourceInfo.get().getError() != null)
-            return Optional.of(resourceInfo.get().getError());
+        if (this.getInfo(queryId).get().getCursorResourceInfos().get(0).getProfileInfo().isEmpty())
+            return Optional.of("Profile Information Was Not Generated  -  Check Logs for Additional Information");
 
-        return Optional.of(resourceInfo.get());
+        //return only the profiling info
+        return Optional.of(this.getInfo(queryId).get().getCursorResourceInfos().get(0).getProfileInfo());
 
     }
 

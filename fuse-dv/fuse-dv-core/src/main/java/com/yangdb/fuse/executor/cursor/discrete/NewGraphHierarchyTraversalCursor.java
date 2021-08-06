@@ -139,7 +139,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
                 }
             }
         } catch (NoSuchElementException ex) {
-
+            //
         }
 
         for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {

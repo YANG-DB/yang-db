@@ -33,7 +33,5 @@ public interface DashboardController<C,D> extends Controller<C,D>{
 
     ContentResponse<Map> graphElementCreatedOverTime();
 
-    ContentResponse<Map> graphFieldValuesCount();
-
     ContentResponse<Map> cursorCount();
 }
