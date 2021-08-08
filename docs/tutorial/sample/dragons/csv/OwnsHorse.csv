@@ -1,4 +1,4 @@
-"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"
+"id","entityB.id","entityB.type","entityA.id","entityA.type","since","until"
 "44_478","44","HORSE","478","Person","-1635659976756","-946847091791"
 "44_51","44","HORSE","51","Person","-239777821509","113547257169"
 "44_33","44","HORSE","33","Person","-797616556049","903878944160"

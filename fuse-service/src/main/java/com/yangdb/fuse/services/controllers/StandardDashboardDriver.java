@@ -68,6 +68,8 @@ public class StandardDashboardDriver implements DashboardDriver {
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
                 .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+
+        //calculate cardinality for every relationship type
         return elementCount;
     }
 
