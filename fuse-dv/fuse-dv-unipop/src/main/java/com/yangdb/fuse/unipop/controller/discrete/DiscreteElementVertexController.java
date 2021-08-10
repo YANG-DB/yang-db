@@ -20,13 +20,15 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
 import com.yangdb.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
 import com.yangdb.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
-import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
@@ -48,9 +50,11 @@ import org.unipop.process.predicate.DistinctFilterP;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
@@ -64,13 +68,15 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
             ElasticGraphConfiguration configuration,
             UniGraph graph,
             GraphElementSchemaProvider schemaProvider,
-            SearchOrderProviderFactory orderProviderFactory) {
+            SearchOrderProviderFactory orderProviderFactory,
+            MetricRegistry metricRegistry) {
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.orderProviderFactory = orderProviderFactory;
         this.schemaProvider = schemaProvider;
+        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
     }
     //endregion
 
@@ -122,7 +128,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                INSTANCE,
+                scrollProvisioning,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -164,6 +170,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
     //region Fields
     private Client client;
+    private ScrollProvisioning scrollProvisioning;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private SearchOrderProviderFactory orderProviderFactory;

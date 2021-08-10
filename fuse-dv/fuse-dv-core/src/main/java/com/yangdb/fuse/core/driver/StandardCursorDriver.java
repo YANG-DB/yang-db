@@ -28,6 +28,7 @@ import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.yangdb.fuse.dispatcher.gta.TranslationContext;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
@@ -62,6 +63,7 @@ import static org.unipop.process.Profiler.PROFILER;
 public class StandardCursorDriver extends CursorDriverBase {
     private final Client client;
     private final GraphElementSchemaProviderFactory schemaProvider;
+    private final CursorRuntimeProvision runtimeProvision;
 
     //region Constructors
     @Inject
@@ -76,6 +78,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             UniGraphProvider uniGraphProvider,
             AppUrlSupplier urlSupplier) {
         super(resourceStore, urlSupplier);
+        this.runtimeProvision = CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE;
         this.client = client;
         this.schemaProvider = schemaProviderFactory;
         this.pageDriver = pageDriver;

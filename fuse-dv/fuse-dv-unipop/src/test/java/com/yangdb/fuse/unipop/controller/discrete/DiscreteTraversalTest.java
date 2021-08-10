@@ -1,5 +1,6 @@
 package com.yangdb.fuse.unipop.controller.discrete;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.yangdb.fuse.model.GlobalConstants;
@@ -90,6 +91,8 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
+        MetricRegistry registry = new MetricRegistry();
+
         client = getClient(CLUSTER_NAME, 9300);
         graph = new FuseUniGraph(
                 uniGraphConfiguration,
@@ -103,7 +106,8 @@ public class DiscreteTraversalTest {
                                                 elasticGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
-                                                orderProvider),
+                                                orderProvider,
+                                                registry ),
                                         null
                                 ),
                                 new DiscreteVertexController(
@@ -111,12 +115,14 @@ public class DiscreteTraversalTest {
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
-                                        orderProvider),
+                                        orderProvider,
+                                        registry),
                                 new DiscreteElementReduceController(
                                         client,
                                         elasticGraphConfiguration,
                                         uniGraph,
-                                        schemaProvider)
+                                        schemaProvider,
+                                        registry)
                         );
                     }
 

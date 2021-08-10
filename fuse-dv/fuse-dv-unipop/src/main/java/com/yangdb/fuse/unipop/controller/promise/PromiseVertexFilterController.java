@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
@@ -54,7 +56,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
@@ -67,7 +68,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexFilterController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -76,6 +77,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
     }
 
     //endregion
@@ -141,7 +143,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                INSTANCE,
+                scrollProvisioning,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -158,6 +160,8 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     //endregion
 
     //region Fields
+    private ScrollProvisioning scrollProvisioning;
+
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;

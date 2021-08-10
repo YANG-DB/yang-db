@@ -1,5 +1,6 @@
 package com.yangdb.fuse.unipop.controller.discrete;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.yangdb.fuse.model.GlobalConstants;
@@ -69,6 +70,8 @@ public class DiscreteElementReduceControllerTests {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
+        MetricRegistry metricRegistry = new MetricRegistry();
+
         graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {
@@ -81,7 +84,7 @@ public class DiscreteElementReduceControllerTests {
                                                 elasticGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
-                                                new DefaultSearchOrderProvider()),
+                                                new DefaultSearchOrderProvider(),metricRegistry ),
                                         null
                                 ),
                                 new DiscreteVertexController(
@@ -89,12 +92,15 @@ public class DiscreteElementReduceControllerTests {
                                         elasticGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
-                                        new DefaultSearchOrderProvider()),
+                                        new DefaultSearchOrderProvider(),
+                                        metricRegistry),
                                 new DiscreteElementReduceController(
                                         ElasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
-                                        schemaProvider)
+                                        schemaProvider,
+                                        metricRegistry
+                                )
                         );
                     }
 

@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.CompositeSearchAppender;
@@ -58,7 +60,6 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
@@ -67,12 +68,14 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
+
     }
     //endregion
 
@@ -190,7 +193,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                INSTANCE,
+                scrollProvisioning,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -211,6 +214,8 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     //endregion
 
     //region Fields
+    private ScrollProvisioning scrollProvisioning;
+
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;

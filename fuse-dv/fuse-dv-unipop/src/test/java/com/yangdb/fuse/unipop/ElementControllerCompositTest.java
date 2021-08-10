@@ -100,7 +100,7 @@ public class ElementControllerCompositTest {
         SearchOrderProviderFactory orderProvider = context -> {
             return SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
         };
-
+        MetricRegistry metricRegistry = new MetricRegistry();
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Collections.emptyList());
 
@@ -112,10 +112,10 @@ public class ElementControllerCompositTest {
         SearchQuery.SearchController elementController =
                 new ElementController(
                         new LoggingSearchController(
-                                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider)
+                                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),orderProvider,metricRegistry)
                                 , registry),
                         new LoggingSearchController(
-                                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
+                                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), metricRegistry),
                                 registry));
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>) elementController.search(searchQuery)).toJavaList();
 

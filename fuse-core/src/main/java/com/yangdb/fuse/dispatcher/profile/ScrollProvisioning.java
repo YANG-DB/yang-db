@@ -1,5 +1,6 @@
 package com.yangdb.fuse.dispatcher.profile;
 
+import com.codahale.metrics.MetricRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,34 @@ public interface ScrollProvisioning {
         @Override
         public List<String> getActiveScrolls() {
             return Collections.emptyList();
+        }
+
+        @Override
+        public int clearScrolls() {
+            return 0;
+        }
+    }
+
+    class MetricRegistryScrollProvisioning implements ScrollProvisioning {
+        private MetricRegistry metricRegistry;
+
+        public MetricRegistryScrollProvisioning(MetricRegistry metricRegistry) {
+            this.metricRegistry = metricRegistry;
+        }
+
+        @Override
+        public boolean addScroll(String scrollId, long timeout) {
+            return false;
+        }
+
+        @Override
+        public boolean clearScroll(String scrollId) {
+            return false;
+        }
+
+        @Override
+        public List<String> getActiveScrolls() {
+            return null;
         }
 
         @Override
