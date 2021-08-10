@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.converter;
  * #L%
  */
 
+import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -39,11 +40,13 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     //region Constructor
     public SearchHitScrollIterable(
             Client client,
+            ScrollProvisioning scrollProvision,
             SearchRequestBuilder searchRequestBuilder,
             SearchOrderProvider orderProvider,
             long limit,
             int scrollSize,
             int scrollTime) {
+        this.scrollProvision = scrollProvision;
         this.searchRequestBuilder = searchRequestBuilder;
         this.orderProvider = orderProvider;
         this.limit = limit;
@@ -86,6 +89,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     }
     //endregion
 
+    private ScrollProvisioning scrollProvision;
     //region Fields
     private SearchRequestBuilder searchRequestBuilder;
     private SearchOrderProvider orderProvider;
@@ -147,14 +151,21 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             if (counter >= this.iterable.getLimit()) {
                 return;
             }
-            SearchResponse response = this.scrollId == null ?
-                    getSearchResponse() :
-                    this.iterable.getClient().prepareSearchScroll(this.scrollId)
-                            .setScroll(new TimeValue(this.iterable.getScrollTime()))
-                            .execute()
-                            .actionGet();
+
+            SearchResponse response;
+            if( this.scrollId != null) {
+                response = this.iterable.getClient().prepareSearchScroll(this.scrollId)
+                        .setScroll(new TimeValue(this.iterable.getScrollTime()))
+                        .execute()
+                        .actionGet();
+            } else {
+                response = getSearchResponse();
+            }
 
             this.scrollId = response.getScrollId();
+            //register scroll in the provisioning
+            this.iterable.scrollProvision.addScroll(scrollId,iterable.getScrollTime());
+
             for (SearchHit hit : response.getHits().getHits()) {
                 if (counter < this.iterable.getLimit()) {
                     this.searchHits.add(hit);
@@ -163,14 +174,18 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             }
 
             if (response.getHits().getHits().length == 0) {
-                this.iterable.getClient().prepareClearScroll().addScrollId(this.scrollId).execute().actionGet();
+                //unregister scroll in the provisioning
+                this.iterable.scrollProvision.clearScroll(scrollId);
+                this.iterable.getClient().prepareClearScroll()
+                        .addScrollId(this.scrollId)
+                        .execute()
+                        .actionGet();
             }
         }
 
         private SearchResponse getSearchResponse() {
             SearchOrderProvider.Sort sort = getOrderProvider().getSort(this.iterable.getSearchRequestBuilder());
             SearchType searchType = getOrderProvider().getSearchType(this.iterable.getSearchRequestBuilder());
-
             return sort !=SearchOrderProvider.EMPTY  ?
                 this.iterable.getSearchRequestBuilder()
                         .addSort(sort.getSortField(), sort.getSortOrder())

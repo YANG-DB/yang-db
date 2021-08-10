@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
@@ -137,6 +138,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                INSTANCE,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),

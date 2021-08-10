@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,8 +28,6 @@ import com.yangdb.fuse.dispatcher.driver.DashboardDriver;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Set;
@@ -41,7 +39,7 @@ import static org.jooby.Status.NOT_FOUND;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardDashboardController implements DashboardController<StandardDashboardController,DashboardDriver> {
+public class StandardDashboardController implements DashboardController<StandardDashboardController, DashboardDriver> {
     //region Constructors
     @Inject
     public StandardDashboardController(
@@ -64,7 +62,7 @@ public class StandardDashboardController implements DashboardController<Standard
     @Override
     public ContentResponse<ObjectNode> graphElementCreatedOverTime(String ontology) {
         return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphElementCreated( ontology)))
+                .data(Optional.of(driver().graphElementCreated(ontology)))
                 .compose();
     }
 

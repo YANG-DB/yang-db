@@ -23,6 +23,7 @@ package com.yangdb.fuse.dispatcher.driver;
 
 
 import com.google.inject.Inject;
+import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
@@ -40,7 +41,7 @@ import java.util.Optional;
 /**
  * Created by Roman on 12/15/2017.
  */
-public abstract class CursorDriverBase implements CursorDriver {
+public abstract class CursorDriverBase implements CursorDriver, CursorRuntimeProvision {
     //region Constructors
     @Inject
     public CursorDriverBase(ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
@@ -130,7 +131,20 @@ public abstract class CursorDriverBase implements CursorDriver {
         queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
         //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
+        //remove any existing underlying open scrolls
+        clearScrolls();
         return Optional.of(true);
+    }
+
+
+    @Override
+    public int getActiveScrolls() {
+        return 0;
+    }
+
+    @Override
+    public int clearScrolls() {
+        return 0;
     }
     //endregion
 

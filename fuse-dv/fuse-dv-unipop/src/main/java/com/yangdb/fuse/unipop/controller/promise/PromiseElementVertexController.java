@@ -58,6 +58,7 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 import java.util.function.BiPredicate;
 
+import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
@@ -189,6 +190,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                INSTANCE,
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),

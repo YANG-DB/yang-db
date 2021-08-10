@@ -23,6 +23,7 @@ package com.yangdb.fuse.epb.plan.statistics.provider;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
@@ -34,6 +35,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.Map;
+
+import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
 
 /**
  * Created by Roman on 21/06/2017.
@@ -71,6 +74,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 this.client.get(),
+                INSTANCE,
                 searchBuilder.build(this.client.get(), GlobalConstants.INCLUDE_AGGREGATION), SearchOrderProvider.of(SearchOrderProvider.EMPTY,SearchType.DEFAULT) ,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(), searchBuilder.getScrollTime());
