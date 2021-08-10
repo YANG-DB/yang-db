@@ -1460,13 +1460,22 @@
       }
     },
 
-    "/dashboard/entities": {
+    "/dashboard/entities/{id}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of DB existing entities",
         "description": "summery of DB entities",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
@@ -1477,13 +1486,22 @@
         }
       }
     },
-    "/dashboard/created": {
+    "/dashboard/created/{id}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of created DB elements by creation time ",
         "description": "summery of time bases created DB elements ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"

@@ -20,6 +20,7 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.util.Map;
@@ -29,9 +30,9 @@ import java.util.Map;
  */
 public interface DashboardController<C,D> extends Controller<C,D>{
 
-    ContentResponse<Map> graphElementCount();
+    ContentResponse<ObjectNode> graphElementCount(String ontology);
 
-    ContentResponse<Map> graphElementCreatedOverTime();
+    ContentResponse<ObjectNode> graphElementCreatedOverTime(String ontology);
 
-    ContentResponse<Map> cursorCount();
+    ContentResponse<ObjectNode> cursorCount();
 }
