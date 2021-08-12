@@ -66,10 +66,14 @@ public class SearchVertexQuery extends SearchQuery<Edge> implements VertexQuery 
     private final List<Vertex> vertices;
     private final Direction direction;
 
-    public SearchVertexQuery(Class<Edge> returnType, List<Vertex> vertices, Direction direction, PredicatesHolder predicates, int limit, Set<String> propertyKeys, List<Pair<String, Order>> orders, StepDescriptor stepDescriptor) {
-        super(returnType, predicates, limit, propertyKeys, orders, stepDescriptor);
+    public SearchVertexQuery(Class<Edge> returnType, List<Vertex> vertices, Direction direction, PredicatesHolder predicates, int limit, Set<String> propertyKeys, List<Pair<String, Order>> orders,String context, StepDescriptor stepDescriptor) {
+        super(returnType, predicates, limit, propertyKeys, orders,context, stepDescriptor);
         this.vertices = vertices;
         this.direction = direction;
+    }
+
+    public SearchVertexQuery(Class<Edge> returnType, List<Vertex> vertices, Direction direction, PredicatesHolder predicates, int limit, Set<String> propertyKeys, List<Pair<String, Order>> orders, StepDescriptor stepDescriptor) {
+        this(returnType,vertices,direction,predicates,limit,propertyKeys,orders,"Generic",stepDescriptor);
     }
 
     @Override

@@ -76,7 +76,8 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         this.graph = graph;
         this.orderProviderFactory = orderProviderFactory;
         this.schemaProvider = schemaProvider;
-        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
+        this.metricRegistry = metricRegistry;
+
     }
     //endregion
 
@@ -128,7 +129,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                scrollProvisioning,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -170,12 +171,11 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
     //region Fields
     private Client client;
-    private ScrollProvisioning scrollProvisioning;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private SearchOrderProviderFactory orderProviderFactory;
     private GraphElementSchemaProvider schemaProvider;
-
+    private MetricRegistry metricRegistry;
     private Profiler profiler = Profiler.Noop.instance ;
     //endregion
 }

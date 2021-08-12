@@ -23,6 +23,7 @@ package com.yangdb.fuse.dispatcher.resource;
 
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
+import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by lior.perry on 06/03/2017.
  */
-public class CursorResource {
+public class CursorResource implements CursorRuntimeProvision {
     //region Constructors
     public CursorResource(String cursorId, Cursor cursor, QueryProfileInfo profileInfo, CreateCursorRequest cursorRequest) {
         this.cursorId = cursorId;
@@ -103,6 +104,17 @@ public class CursorResource {
     public CreateCursorRequest getCursorRequest() {
         return this.cursorRequest;
     }
+
+
+    @Override
+    public int getActiveScrolls() {
+        return getCursor().getActiveScrolls();
+    }
+
+    @Override
+    public boolean clearScrolls() {
+        return getCursor().clearScrolls();
+    }
     //endregion
 
     //region Fields
@@ -116,5 +128,6 @@ public class CursorResource {
     private Map<String, PageState> pageStatus;
     //
     private AtomicInteger pageSequence = new AtomicInteger();
+
     //endregion
 }

@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.executor.utils.ConversionUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -46,7 +47,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
+public class NewGraphHierarchyTraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -61,6 +62,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
     //region Constructors
     public NewGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
+        super(context);
         this.countTags = Stream.ofAll(countTags).toJavaSet();
         this.distinctIds = new HashSet<>();
 
@@ -236,18 +238,12 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
         return firstVertex;
     }
 
-    @Override
-    public TraversalCursorContext getContext() {
-        return context;
-    }
-
     private Edge mergeEdges(List<Edge> edges) {
         return edges.get(0);
     }
     //endregion
 
     //region Fields
-    private TraversalCursorContext context;
     private Set<String> countTags;
     private Set<String> distinctIds;
     private Ontology.Accessor ont;

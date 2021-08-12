@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.driver;
 
 
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
@@ -41,12 +42,15 @@ import java.util.Optional;
 /**
  * Created by Roman on 12/15/2017.
  */
-public abstract class CursorDriverBase implements CursorDriver, CursorRuntimeProvision {
+public abstract class CursorDriverBase implements CursorDriver {
+    public static final String CONTEXT = "context";
     //region Constructors
     @Inject
-    public CursorDriverBase(ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
+    public CursorDriverBase(MetricRegistry registry, ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
+        this.registry = registry;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
+
     }
     //endregion
 
@@ -129,23 +133,14 @@ public abstract class CursorDriverBase implements CursorDriver, CursorRuntimePro
         }
         //try delete inner cursors
         queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
+        //remove any existing underlying open scrolls
+        queryResource.get().getCursorResource(cursorId).get().clearScrolls();
         //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
-        //remove any existing underlying open scrolls
-        clearScrolls();
         return Optional.of(true);
     }
 
 
-    @Override
-    public int getActiveScrolls() {
-        return 0;
-    }
-
-    @Override
-    public int clearScrolls() {
-        return 0;
-    }
     //endregion
 
     //region Protected Abstract Methods
@@ -154,6 +149,7 @@ public abstract class CursorDriverBase implements CursorDriver, CursorRuntimePro
 
     //region Fields
     protected PageDriver pageDriver;
+    protected MetricRegistry registry;
     protected ResourceStore resourceStore;
     protected AppUrlSupplier urlSupplier;
     //endregion

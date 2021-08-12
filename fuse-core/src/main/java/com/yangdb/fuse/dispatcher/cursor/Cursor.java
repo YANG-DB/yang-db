@@ -22,12 +22,13 @@ package com.yangdb.fuse.dispatcher.cursor;
 
 
 
+import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.model.results.QueryResultBase;
 
 /**
  * Created by lior.perry on 06/03/2017.
  */
-public interface Cursor<T> {
+public interface Cursor<T> extends CursorRuntimeProvision {
     QueryResultBase getNextResults(int numResults);
     T getContext();
 

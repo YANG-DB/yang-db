@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.cursor;
 
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
@@ -45,6 +46,7 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
             Ontology ontology,
             QueryResource queryResource,
             CreateCursorRequest cursorRequest,
+            CursorRuntimeProvision runtimeProvision,
             Traversal<?, Path> traversal) {
         this.client = client;
         this.schemaProvider = schemaProvider;
@@ -52,11 +54,16 @@ public class TraversalCursorContext implements CursorFactory.Context<GraphElemen
         this.ontology = ontology;
         this.queryResource = queryResource;
         this.cursorRequest = cursorRequest;
+        this.runtimeProvision = runtimeProvision;
         this.traversal = traversal;
         this.hitsCounter = new AtomicLong(0);
     }
     //endregion
 
+
+    public CursorRuntimeProvision getRuntimeProvision() {
+        return runtimeProvision;
+    }
 
     public Client getClient() {
         return client;
@@ -140,7 +147,7 @@ y     * @return
 
     @Override
     public TraversalCursorContext clone()  {
-        return new TraversalCursorContext(client,schemaProvider,ontologyProvider,ontology,queryResource,cursorRequest,traversal);
+        return new TraversalCursorContext(client,schemaProvider,ontologyProvider,ontology,queryResource,cursorRequest,runtimeProvision,traversal);
     }
 
     private Client client;
@@ -151,6 +158,7 @@ y     * @return
     private QueryResource queryResource;
     private CreateCursorRequest cursorRequest;
     private AtomicLong hitsCounter;
+    private CursorRuntimeProvision runtimeProvision;
     private Traversal<?, Path> traversal;
     //endregion
 }

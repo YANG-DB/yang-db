@@ -84,6 +84,15 @@ public class InnerQueryCursor implements Cursor {
         return innerCursor.getContext();
     }
 
+    @Override
+    public int getActiveScrolls() {
+        return innerCursor.getActiveScrolls();
+    }
+
+    @Override
+    public boolean clearScrolls() {
+        return innerCursor.clearScrolls();
+    }
 
     public CreateInnerQueryCursorRequest getCursorRequest() {
         return cursorRequest;

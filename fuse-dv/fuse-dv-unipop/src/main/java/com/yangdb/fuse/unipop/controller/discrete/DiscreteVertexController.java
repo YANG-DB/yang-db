@@ -79,8 +79,7 @@ public class DiscreteVertexController extends VertexControllerBase {
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
-        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
-
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -162,7 +161,7 @@ public class DiscreteVertexController extends VertexControllerBase {
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                scrollProvisioning,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchVertexQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -297,11 +296,11 @@ public class DiscreteVertexController extends VertexControllerBase {
     //endregion
 
     //region Fields
-    private ScrollProvisioning scrollProvisioning;
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     //endregion
 }

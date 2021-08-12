@@ -19,14 +19,10 @@ package com.yangdb.fuse.executor.cursor.promise;
  * limitations under the License.
  * #L%
  */
-
-/**
- * Created by roman.margolis on 02/10/2017.
- */
-
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
@@ -57,7 +53,7 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
 /**
  * Created by lior.perry on 3/20/2017.
  */
-public class TraversalCursor implements Cursor {
+public class TraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -71,7 +67,7 @@ public class TraversalCursor implements Cursor {
 
     //region Constructors
     public TraversalCursor(TraversalCursorContext context) {
-        this.context = context;
+        super(context);
         this.ont = new Ontology.Accessor(context.getOntology());
         this.flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
         this.typeProperty = ont.property$("type");
@@ -82,12 +78,6 @@ public class TraversalCursor implements Cursor {
     @Override
     public AssignmentsQueryResult getNextResults(int numResults) {
         return toQuery(numResults);
-    }
-    //endregion
-
-    //region Properties
-    public TraversalCursorContext getContext() {
-        return context;
     }
     //endregion
 
@@ -213,7 +203,6 @@ public class TraversalCursor implements Cursor {
     //endregion
 
     //region Fields
-    private TraversalCursorContext context;
     private Ontology.Accessor ont;
     private final CompositePlanOp flatPlan;
 

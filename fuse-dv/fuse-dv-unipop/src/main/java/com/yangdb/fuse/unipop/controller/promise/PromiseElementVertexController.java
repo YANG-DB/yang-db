@@ -74,8 +74,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
-        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
-
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -193,7 +192,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
-                scrollProvisioning,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -214,12 +213,11 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     //endregion
 
     //region Fields
-    private ScrollProvisioning scrollProvisioning;
-
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     //endregion
 }

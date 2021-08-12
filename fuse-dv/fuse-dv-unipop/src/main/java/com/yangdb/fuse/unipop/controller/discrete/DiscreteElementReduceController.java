@@ -76,8 +76,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.scrollProvisioning = new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry);
-
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -256,12 +255,11 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     }
 
     //region Fields
-    private ScrollProvisioning scrollProvisioning;
-
     private Profiler profiler = Profiler.Noop.instance  ;
     private Client client;
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private MetricRegistry metricRegistry;
     //endregion
 }

@@ -9,9 +9,9 @@ package org.unipop.process.vertex;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ package org.unipop.process.vertex;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,7 +73,7 @@ import org.unipop.structure.UniVertex;
 
 import java.util.*;
 
-public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Vertex, E> implements ReceivesPredicatesHolder<Vertex, E>, Orderable, Profiling{
+public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Vertex, E> implements ReceivesPredicatesHolder<Vertex, E>, Orderable, Profiling {
     private static final Logger logger = LoggerFactory.getLogger(UniGraphVertexStep.class);
 
     private final boolean returnsVertex;
@@ -126,10 +126,12 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
         List<Vertex> uniqueVertices = Stream.ofAll(vertices.values()).toJavaList();
 
         SearchVertexQuery vertexQuery;
+        String context = this.traversal.asAdmin().getSideEffects().getOrCreate("context", () -> "Generic");
+
         if (!returnsVertex)
-            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, limit, propertyKeys, orders, stepDescriptor);
+            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, limit, propertyKeys, orders, context, stepDescriptor);
         else
-            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, -1, propertyKeys, null, stepDescriptor);
+            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, -1, propertyKeys, null, context, stepDescriptor);
         //logger.debug("Executing query: ", vertexQuery);
 
         Iterator<Traverser.Admin<E>> traversersIterator = Stream.ofAll(this.controllers)
@@ -149,7 +151,7 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
         List<DeferredVertex> deferredVertices = Stream.ofAll(copyTraversers)
                 .map(Attachable::get)
                 .filter(vertex -> vertex instanceof DeferredVertex)
-                .map(vertex -> ((DeferredVertex)vertex))
+                .map(vertex -> ((DeferredVertex) vertex))
                 .filter(DeferredVertex::isDeferred)
                 .toJavaList();
 

@@ -20,6 +20,7 @@ package com.yangdb.fuse.core.driver;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
@@ -63,7 +64,6 @@ import static org.unipop.process.Profiler.PROFILER;
 public class StandardCursorDriver extends CursorDriverBase {
     private final Client client;
     private final GraphElementSchemaProviderFactory schemaProvider;
-    private final CursorRuntimeProvision runtimeProvision;
 
     //region Constructors
     @Inject
@@ -76,9 +76,9 @@ public class StandardCursorDriver extends CursorDriverBase {
             PlanTraversalTranslator planTraversalTranslator,
             CursorFactory cursorFactory,
             UniGraphProvider uniGraphProvider,
-            AppUrlSupplier urlSupplier) {
-        super(resourceStore, urlSupplier);
-        this.runtimeProvision = CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE;
+            AppUrlSupplier urlSupplier,
+            MetricRegistry registry) {
+        super(registry, resourceStore, urlSupplier);
         this.client = client;
         this.schemaProvider = schemaProviderFactory;
         this.pageDriver = pageDriver;
@@ -99,6 +99,10 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         GraphTraversal<?, ?> traversal = createTraversal(executionPlan, ontology);
 
+        //execution context
+        String prefix = String.format("%s.%s", queryResource.getQueryMetadata().getId(), cursorId);
+        traversal.asAdmin().getSideEffects().register(CONTEXT, () -> prefix, null);
+
         //default no operation profiler - no memory footprint or activity
         traversal.asAdmin().getSideEffects().register(PROFILER, () -> Noop.instance, null);
 
@@ -109,14 +113,15 @@ public class StandardCursorDriver extends CursorDriverBase {
 
         //todo in case of composite cursor -> add depended cursors for query
         //if query has inner queries -> create new CreateInnerQueryCursorRequest(cursorRequest)
-        TraversalCursorContext context = createContext(queryResource, cursorRequest, ontology, traversal);
+        TraversalCursorContext context = createContext(queryResource, cursorRequest, cursorId, ontology, traversal);
         Cursor cursor = this.cursorFactory.createCursor(context);
         Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
 
         return new CursorResource(cursorId, cursor, new QueryProfileInfo.QueryProfileInfoImpl(profiler.get()), cursorRequest);
     }
 
-    protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, Ontology ontology, GraphTraversal<?, ?> traversal) {
+    protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, String cursorId, Ontology ontology, GraphTraversal<?, ?> traversal) {
+        String prefix = String.format("%s.%s", queryResource.getQueryMetadata().getId(), cursorId);
         TraversalCursorContext context = new TraversalCursorContext(
                 client,
                 schemaProvider.get(ontology),
@@ -124,6 +129,7 @@ public class StandardCursorDriver extends CursorDriverBase {
                 ontology,
                 queryResource,
                 cursorRequest,
+                new CursorRuntimeProvision.MetricRegistryCursorRuntimeProvision(prefix, registry),
                 traversal.path());
         if (hasInnerQuery(queryResource.getAsgQuery())) {
             List<QueryResource> queryResources = Stream.ofAll(queryResource.getInnerQueryResources()).toJavaList();
@@ -136,6 +142,7 @@ public class StandardCursorDriver extends CursorDriverBase {
                             ontology,
                             queryResource,
                             new CreateInnerQueryCursorRequest(cursorRequest),
+                            new CursorRuntimeProvision.MetricRegistryCursorRuntimeProvision(prefix, registry),
                             traversal.path()), queryResources);
         }
         return context;
