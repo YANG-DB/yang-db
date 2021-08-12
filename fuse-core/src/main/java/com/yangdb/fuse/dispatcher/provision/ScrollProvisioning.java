@@ -1,4 +1,4 @@
-package com.yangdb.fuse.dispatcher.profile;
+package com.yangdb.fuse.dispatcher.provision;
 
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * scroll provisioning API for a single traversal
+ * scroll provisioning API for a traversal
  */
 public interface ScrollProvisioning {
 

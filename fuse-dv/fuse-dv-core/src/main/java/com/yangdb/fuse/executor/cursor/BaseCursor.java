@@ -1,7 +1,7 @@
 package com.yangdb.fuse.executor.cursor;
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
 
 public abstract class BaseCursor implements Cursor<TraversalCursorContext> {
     protected TraversalCursorContext context;

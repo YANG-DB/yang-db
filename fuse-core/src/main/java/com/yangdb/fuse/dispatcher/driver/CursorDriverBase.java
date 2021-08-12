@@ -24,7 +24,6 @@ package com.yangdb.fuse.dispatcher.driver;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;

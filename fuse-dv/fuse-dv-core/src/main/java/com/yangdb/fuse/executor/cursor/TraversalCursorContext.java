@@ -22,7 +22,7 @@ package com.yangdb.fuse.executor.cursor;
 
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;

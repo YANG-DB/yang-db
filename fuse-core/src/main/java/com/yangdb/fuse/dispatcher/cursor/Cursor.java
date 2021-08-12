@@ -22,7 +22,7 @@ package com.yangdb.fuse.dispatcher.cursor;
 
 
 
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
 import com.yangdb.fuse.model.results.QueryResultBase;
 
 /**

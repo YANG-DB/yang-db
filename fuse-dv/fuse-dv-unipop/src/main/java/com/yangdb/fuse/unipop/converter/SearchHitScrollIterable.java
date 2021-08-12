@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.converter;
  * #L%
  */
 
-import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
+import com.yangdb.fuse.dispatcher.provision.ScrollProvisioning;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;

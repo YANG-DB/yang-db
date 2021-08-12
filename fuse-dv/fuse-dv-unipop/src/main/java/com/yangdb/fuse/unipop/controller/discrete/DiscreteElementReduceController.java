@@ -21,7 +21,6 @@ package com.yangdb.fuse.unipop.controller.discrete;
  */
 
 import com.codahale.metrics.MetricRegistry;
-import com.yangdb.fuse.dispatcher.profile.ScrollProvisioning;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;

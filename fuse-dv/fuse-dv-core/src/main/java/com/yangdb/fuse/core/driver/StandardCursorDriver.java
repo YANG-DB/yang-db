@@ -29,7 +29,7 @@ import com.yangdb.fuse.dispatcher.driver.PageDriver;
 import com.yangdb.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.yangdb.fuse.dispatcher.gta.TranslationContext;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;

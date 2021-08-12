@@ -1,8 +1,8 @@
-package com.yangdb.fuse.dispatcher.profile;
+package com.yangdb.fuse.dispatcher.provision;
 
 import com.codahale.metrics.MetricRegistry;
 
-import static com.yangdb.fuse.dispatcher.profile.ScrollProvisioning.SCROLLS_REGISTRY;
+import static com.yangdb.fuse.dispatcher.provision.ScrollProvisioning.SCROLLS_REGISTRY;
 
 /**
  * add provisioning capability for query cursor runtime

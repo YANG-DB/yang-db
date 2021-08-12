@@ -23,7 +23,7 @@ package com.yangdb.fuse.dispatcher.resource;
 
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
-import com.yangdb.fuse.dispatcher.profile.CursorRuntimeProvision;
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
 import com.yangdb.fuse.dispatcher.profile.QueryProfileInfo;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
