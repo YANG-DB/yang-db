@@ -47,6 +47,8 @@ import java.util.stream.IntStream;
  */
 public class GuildsGraphGenerator {
 
+    public static final String[] GUILDS_HEADER = {"id", "name", "description", "iconId", "url", "establishDate"};
+    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since", "until"};
     private final Logger logger = LoggerFactory.getLogger(GuildsGraphGenerator.class);
     //Not all of the population is member of guild
     private final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;
@@ -66,7 +68,7 @@ public class GuildsGraphGenerator {
     public List<Guild> generateGuilds() {
         List<Guild> guildsList = new ArrayList<>();
         List<String[]> guildsRecords = new ArrayList<>();
-        guildsRecords.add(0,new String[]{"id","name","description","iconId","url","establishDate"});
+        guildsRecords.add(0, GUILDS_HEADER);
         try {
             GuildGenerator generator = new GuildGenerator(guildConf);
             int guildsSize = guildConf.getNumberOfNodes();
@@ -137,7 +139,7 @@ public class GuildsGraphGenerator {
 
     private void printPersonsToGuild(Map<String, List<String>> personsToGuild, EntityType entityType) {
         List<String[]> p2gRecords = new ArrayList<>();
-        p2gRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"});
+        p2gRecords.add(0, PERSON_TO_GUILD_HEADER);
 
         for (Map.Entry<String, List<String>> p2g : personsToGuild.entrySet()) {
             String guildId = p2g.getKey();

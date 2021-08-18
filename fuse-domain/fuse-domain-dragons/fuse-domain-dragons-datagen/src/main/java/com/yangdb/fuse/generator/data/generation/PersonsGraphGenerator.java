@@ -56,6 +56,9 @@ import static com.yangdb.fuse.generator.util.CsvUtil.appendResults;
  */
 public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguration, Person> {
 
+    public static final String[] PERSON_HEADER = {"id", "firstName", "lastName", "gender", "birthDate", "deathDate", "height"};
+    public static final String[] PERSON_KNOWS_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since"};
+
     private final Logger logger = LoggerFactory.getLogger(PersonsGraphGenerator.class);
 
     //region Ctrs
@@ -167,8 +170,8 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
     protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
         List<String[]> personsRecords = new ArrayList<>();
         List<String[]> personsKnowsRecords = new ArrayList<>();
-        personsRecords.add(0,new String[]{"id","firstName","lastName","gender","birthDate","deathDate","height"});
-        personsKnowsRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since"});
+        personsRecords.add(0, PERSON_HEADER);
+        personsKnowsRecords.add(0, PERSON_KNOWS_HEADER);
 
         String knowsRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.KNOWS + ".csv";
         String entitiesFile = configuration.getEntitiesFilePath();

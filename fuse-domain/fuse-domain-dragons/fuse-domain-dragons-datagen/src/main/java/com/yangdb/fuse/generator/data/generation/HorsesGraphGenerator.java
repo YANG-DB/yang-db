@@ -39,6 +39,7 @@ import java.util.List;
  */
 public class HorsesGraphGenerator {
 
+    public static final String[] HORSE_HEADER = {"id", "name", "color", "weight", "maxSpeed", "maxDistance"};
     private final Logger logger = LoggerFactory.getLogger(HorsesGraphGenerator.class);
 
     public HorsesGraphGenerator(final HorseConfiguration configuration) {
@@ -53,7 +54,7 @@ public class HorsesGraphGenerator {
     public List<Horse> generateHorses() {
         List<Horse> guildsList = new ArrayList<>();
         List<String[]> horsesRecords = new ArrayList<>();
-        horsesRecords.add(0,new String[]{"id","name","color","weight","maxSpeed","maxDistance"});
+        horsesRecords.add(0, HORSE_HEADER);
         try {
             HorseGenerator generator = new HorseGenerator(horseConf);
             int guildsSize = horseConf.getNumberOfNodes();

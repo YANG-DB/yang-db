@@ -53,6 +53,8 @@ public class KingdomsGraphGenerator {
     private static final Logger logger = LoggerFactory.getLogger(KingdomsGraphGenerator.class);
     //Used to skew the results
     private static final double LARGEST_KINGDOM_RATIO = 0.3;
+    public static final String[] KINGDOM_HEADER = {"id", "name", "king", "queen", "independenceDay", "funds"};
+    public static final String[] ENTITY_TO_KINGDOM_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since"};
 
     public KingdomsGraphGenerator(final KingdomConfiguration configuration) {
         this.kingdomConf = configuration;
@@ -65,7 +67,7 @@ public class KingdomsGraphGenerator {
     public List<Kingdom> generateKingdoms() {
         List<Kingdom> kingdomsList = new ArrayList<>();
         List<String[]> kingdomsRecords = new ArrayList<>();
-        kingdomsRecords.add(0,new String[]{"id","name","king","queen","independenceDay","funds"});
+        kingdomsRecords.add(0, KINGDOM_HEADER);
 
         try {
             KingdomGenerator generator = new KingdomGenerator(kingdomConf);
@@ -153,7 +155,7 @@ public class KingdomsGraphGenerator {
 
     private void printEntityToKingdom(List<Tuple2> entitiesToKingdom, EntityType entityType) {
         List<String[]> e2kRecords = new ArrayList<>();
-        e2kRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since"});
+        e2kRecords.add(0, ENTITY_TO_KINGDOM_HEADER);
 
         for (Tuple2 e2k : entitiesToKingdom) {
             String entityId = e2k._1().toString();
