@@ -44,9 +44,6 @@
             <organization>www.yangdb.org</organization>
         </developer>
     </developers>
-
-
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>

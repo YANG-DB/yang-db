@@ -1,11 +1,12 @@
 package com.yangdb.fuse.executor.cursor.discrete;
 
+import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
+import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.results.*;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,9 @@ public class HierarchyFlattenCursorTest {
                                 withEntity(Entity.Builder.instance().withEID("123").withETag(Stream.of("Child").toJavaSet()).withEType("Entity").build()).build()).build();
 
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
         CsvQueryResult nextResults = (CsvQueryResult) cursor.getNextResults(1000);
@@ -44,6 +48,9 @@ public class HierarchyFlattenCursorTest {
                                 withEntity(Entity.Builder.instance().withEID("124").withETag(Stream.of("Child").toJavaSet()).withEType("Entity").build()).build()).build();
 
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, res2, AssignmentsQueryResult.Builder.instance().build());
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
         CsvQueryResult nextResults = (CsvQueryResult) cursor.getNextResults(1000);
@@ -66,6 +73,9 @@ public class HierarchyFlattenCursorTest {
 
 
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
         CsvQueryResult nextResults = (CsvQueryResult) cursor.getNextResults(1000);
@@ -97,6 +107,9 @@ public class HierarchyFlattenCursorTest {
                 .build();
 
 
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
@@ -122,6 +135,9 @@ public class HierarchyFlattenCursorTest {
                 .build();
 
 
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
@@ -147,6 +163,9 @@ public class HierarchyFlattenCursorTest {
                 .build();
 
 
+        TraversalCursorContext context = Mockito.mock(TraversalCursorContext.class);
+        when(cursorMock.getContext()).thenReturn(context);
+        when(context.getRuntimeProvision()).thenReturn(CursorRuntimeProvision.NoOpCursorRuntimeProvision.INSTANCE);
         when(cursorMock.getNextResults(anyInt())).thenReturn(res1, AssignmentsQueryResult.Builder.instance().build());
 
         HierarchyFlattenCursor cursor = new HierarchyFlattenCursor(cursorMock, null);
