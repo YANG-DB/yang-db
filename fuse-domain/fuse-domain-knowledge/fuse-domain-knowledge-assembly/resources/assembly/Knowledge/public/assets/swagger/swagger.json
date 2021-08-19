@@ -21,7 +21,8 @@
     "application/json",
     "application/xml",
     "image/*",
-    "text/csv"
+    "text/csv",
+    "application/gzip"
   ],
   "paths": {
     "/": {

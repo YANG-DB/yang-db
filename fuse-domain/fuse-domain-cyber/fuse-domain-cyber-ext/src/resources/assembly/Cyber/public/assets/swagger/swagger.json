@@ -20,7 +20,8 @@
   "produces": [
     "application/json",
     "application/xml",
-    "text/csv"
+    "text/csv",
+    "application/gzip"
 
   ],
   "paths": {

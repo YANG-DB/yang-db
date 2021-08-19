@@ -114,7 +114,7 @@ public class KnowledgeDataLoader implements GraphDataLoader<String, FuseError> {
     @Override
     public LoadResponse<String, FuseError> load(String ontology, File data, Directive directive) throws IOException {
         String contentType = Files.probeContentType(data.toPath());
-        if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
+        if (contentType!=null ? Arrays.asList("application/gzip", "application/zip").contains(contentType) : isZipFile(data)) {
             ByteArrayOutputStream stream = null; //unzip
             switch (contentType) {
                 case "application/gzip":
