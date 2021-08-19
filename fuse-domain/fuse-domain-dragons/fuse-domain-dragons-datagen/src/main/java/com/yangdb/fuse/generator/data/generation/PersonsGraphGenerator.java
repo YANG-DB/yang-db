@@ -179,6 +179,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         for (String nodeId : nodesList) {
             personsRecords.add(buildEntityNode(nodeId).getRecord());
             if (personsRecords.size() % BUFFER == 0) { //BUFFER
+                logger.info("writing to file ... "+ BUFFER +" elements");
                 appendResults(personsRecords, entitiesFile);
                 personsRecords.clear();
             }
@@ -191,6 +192,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
             RelationBase rel = buildEntityRelation(sourceId, targetId, edgeId);
             personsKnowsRecords.add(rel.getRecord());
             if ((personsKnowsRecords.size()) % BUFFER == 0) { //BUFFER
+                logger.info("writing to file ... "+ BUFFER +" elements");
                 appendResults(personsKnowsRecords, knowsRelationsFile);
                 personsKnowsRecords.clear();
             }

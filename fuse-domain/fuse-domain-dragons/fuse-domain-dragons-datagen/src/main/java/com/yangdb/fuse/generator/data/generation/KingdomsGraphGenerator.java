@@ -45,6 +45,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase.BUFFER;
+
 /**
  * Created by benishue on 05/06/2017.
  */
@@ -141,6 +143,11 @@ public class KingdomsGraphGenerator {
         int startEntityId = 0;
         for (int i = 0; i < kingdomsPopulationDist.size(); i++) {
             String kingdomId = kingdomsIdList.get(i);
+
+            if(entitiesToKingdomsSet.size() % BUFFER == 0) {
+                logger.info("Collecting to generate ... "+ BUFFER +" elements");
+            }
+
             int kingdomPopulationSize = Math.toIntExact(Math.round(kingdomsPopulationDist.get(i) * totalPopulationSize));
             for (int entityId = startEntityId; entityId < totalPopulationSize; entityId++) {
                 entitiesToKingdomsSet.add(new Tuple2<>(Integer.toString(entityId), kingdomId));

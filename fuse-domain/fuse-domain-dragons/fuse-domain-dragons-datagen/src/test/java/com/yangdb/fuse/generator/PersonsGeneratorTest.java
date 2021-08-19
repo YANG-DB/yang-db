@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class PersonsGeneratorTest {
 
     static String CONFIGURATION_SMALL_FILE_PATH = "test.generator.properties";
-    static String CONFIGURATION_MASSIVE_FILE_PATH = "test.generator.massive.properties";
+    static String CONFIGURATION_MASSIVE_FILE_PATH = "test.massive.generator.properties";
 
     private final static int NUM_OF_PERSONS = 1000;
     private final static int NUM_OF_DRAGONS = 10000;

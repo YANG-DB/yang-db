@@ -201,7 +201,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         for (String nodeId : nodesList) {
             dragonsRecords.add(buildEntityNode(nodeId).getRecord());
             if (dragonsRecords.size() % BUFFER == 0) { //BUFFER
-                System.out.println(".");
+                logger.info("writing to file ... "+ BUFFER +" elements");
                 appendResults(dragonsRecords, entitiesFile);
                 dragonsRecords.clear();
             }
@@ -224,6 +224,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 if ((dragonsFiresRecords.size() + dragonsFreezeRecords.size()) % BUFFER == 0) { //BUFFER
                     appendResults(dragonsFiresRecords, fireRelationsFile);
                     appendResults(dragonsFreezeRecords, freezeRelationsFile);
+                    logger.info("writing to file ... "+ BUFFER +" elements");
                     dragonsFreezeRecords.clear();
                     dragonsFiresRecords.clear();
                 }

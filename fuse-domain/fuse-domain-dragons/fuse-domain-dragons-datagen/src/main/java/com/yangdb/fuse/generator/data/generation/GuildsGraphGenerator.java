@@ -42,6 +42,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase.BUFFER;
+
 /**
  * Created by benishue on 05/06/2017.
  */
@@ -118,6 +120,9 @@ public class GuildsGraphGenerator {
                 for (int j = startIndex; j < membersPopulationSize; j++) {
                     String personId = shuffledPersonsIds.get(j);
 
+                    if(guildToPersonsSet.size() % BUFFER == 0)
+                        logger.info("Collecting to generate ... "+ BUFFER +" elements");
+
                     if (guildToPersonsSet.get(guildId) == null) {
                         guildToPersonsSet.put(guildId, new ArrayList<>(Arrays.asList(personId)));
                     } else {
@@ -150,6 +155,9 @@ public class GuildsGraphGenerator {
                 Date till = RandomUtil.randomDate(since, guildConf.getEndDateOfStory());
                 RelationBase personMemberOfGuildsRel = new MemberOf(edgeId, guildId, personId, since, till);
                 p2gRecords.add(personMemberOfGuildsRel.getRecord());
+                if(p2gRecords.size() % BUFFER == 0)
+                    logger.info("Collecting to generate ... "+ BUFFER +" elements");
+
             }
         }
         //Write graph

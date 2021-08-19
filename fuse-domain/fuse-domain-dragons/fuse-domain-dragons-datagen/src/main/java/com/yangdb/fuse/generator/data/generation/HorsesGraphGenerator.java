@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase.BUFFER;
+
 /**
  * Created by benishue on 05/06/2017.
  */
@@ -52,18 +54,20 @@ public class HorsesGraphGenerator {
     }
 
     public List<Horse> generateHorses() {
-        List<Horse> guildsList = new ArrayList<>();
+        List<Horse> horses = new ArrayList<>();
         List<String[]> horsesRecords = new ArrayList<>();
         horsesRecords.add(0, HORSE_HEADER);
         try {
             HorseGenerator generator = new HorseGenerator(horseConf);
-            int guildsSize = horseConf.getNumberOfNodes();
+            int elements = horseConf.getNumberOfNodes();
 
-            for (int i = 0; i < guildsSize; i++) {
+            for (int i = 0; i < elements; i++) {
                 Horse horse = generator.generate();
                 horse.setId(Integer.toString(i));
-                guildsList.add(horse);
+                horses.add(horse);
                 horsesRecords.add(horse.getRecord());
+                if(elements % BUFFER == 0)
+                    logger.info("writing to file ... "+ BUFFER +" elements");
             }
             //Write graph
             CsvUtil.appendResults(horsesRecords, horseConf.getEntitiesFilePath());
@@ -71,7 +75,7 @@ public class HorsesGraphGenerator {
         } catch (Exception e) {
             logger.error(e.toString(), e);
         }
-        return guildsList;
+        return horses;
     }
 
     //region Fields

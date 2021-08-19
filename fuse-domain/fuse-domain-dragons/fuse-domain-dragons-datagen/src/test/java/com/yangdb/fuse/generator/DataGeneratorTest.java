@@ -8,7 +8,7 @@ import org.junit.Test;
  */
 public class DataGeneratorTest {
 
-    static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
+    static final String CONFIGURATION_FILE_PATH = "test.small.generator.properties";
 
     @Test
     public void dataGenerationTest() throws Exception {
