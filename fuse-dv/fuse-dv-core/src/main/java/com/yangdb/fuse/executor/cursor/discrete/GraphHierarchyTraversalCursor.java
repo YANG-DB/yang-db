@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.results.Assignment;
@@ -39,7 +40,7 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
 /**
  * Created by roman.margolis on 11/03/2018.
  */
-public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
+public class GraphHierarchyTraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -54,7 +55,8 @@ public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorCont
     //endregion
 
     //region Constructors
-    public GraphHierarchyTraversalCursor(Cursor<TraversalCursorContext> cursor, Iterable<String> countTags) {
+    public GraphHierarchyTraversalCursor(BaseCursor cursor, Iterable<String> countTags) {
+        super(cursor.getContext());
         this.cursor = cursor;
 
         this.fullGraph = new AssignmentsQueryResult();
@@ -134,16 +136,10 @@ public class GraphHierarchyTraversalCursor implements Cursor<TraversalCursorCont
         this.entityIds.addAll(newEntities.keySet());
         this.relationshipIds.addAll(newRelationships.keySet());
     }
-
-    @Override
-    public TraversalCursorContext getContext() {
-        return cursor.getContext();
-    }
-
-    //endregion
+   //endregion
 
     //region Fields
-    private Cursor<TraversalCursorContext> cursor;
+    private BaseCursor cursor;
     private AssignmentsQueryResult<Entity,Relationship> fullGraph;
 
     private Set<String> entityIds;

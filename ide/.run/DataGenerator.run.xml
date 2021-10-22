@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="DataGenerator" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="DataGenerator-massive-graph" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.yangdb.fuse.generator.DataGenerator" />
     <module name="fuse-domain-dragons-datagen" />
+    <option name="PROGRAM_PARAMETERS" value="test.massive.generator.properties" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.yangdb.fuse.generator.*" />

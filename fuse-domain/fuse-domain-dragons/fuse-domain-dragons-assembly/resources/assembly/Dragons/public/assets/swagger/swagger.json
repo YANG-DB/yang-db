@@ -21,7 +21,8 @@
     "application/json",
     "application/xml",
     "image/*",
-    "text/csv"
+    "text/csv",
+    "application/gzip"
 
   ],
   "paths": {
@@ -1460,13 +1461,22 @@
       }
     },
 
-    "/dashboard/entities": {
+    "/dashboard/entities/{id}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of DB existing entities",
         "description": "summery of DB entities",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
@@ -1477,30 +1487,22 @@
         }
       }
     },
-    "/dashboard/fields": {
-      "get": {
-        "tags": [
-          "dashboard"
-        ],
-        "summary": "Show summery of DB existing fields types and histogram",
-        "description": "summery of DB fields",
-        "responses": {
-          "200": {
-            "description": "Returns <code>200</code> summery of db fields types (histogram) or <code>404</code>"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/dashboard/created": {
+    "/dashboard/created/{id}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of created DB elements by creation time ",
         "description": "summery of time bases created DB elements ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"
@@ -1645,7 +1647,8 @@
             "in": "query",
             "description": "Directive [UPSERT/INSERT] ",
             "required": true,
-            "type": "string"
+            "enum": ["UPSERT","INSERT"]
+
           },
           {
             "name": "id",
@@ -1687,7 +1690,8 @@
             "in": "query",
             "description": "Directive [UPSERT/INSERT] ",
             "required": true,
-            "type": "string"
+            "enum": ["UPSERT","INSERT"]
+
           },
           {
             "name": "id",
@@ -1701,7 +1705,8 @@
             "in": "query",
             "description": "File Ontological type - edge / vertex",
             "required": true,
-            "type": "string"
+            "enum": ["edge"," vertex"]
+
           },
           {
             "name": "label",
@@ -1746,7 +1751,8 @@
             "in": "query",
             "description": "Directive [UPSERT/INSERT] ",
             "required": true,
-            "type": "string"
+            "enum": ["UPSERT","INSERT"]
+
           },
           {
             "name": "id",
@@ -1790,7 +1796,8 @@
             "in": "query",
             "description": "Directive [UPSERT/INSERT] ",
             "required": true,
-            "type": "string"
+            "enum": ["UPSERT","INSERT"]
+
           },
           {
             "name": "id",
@@ -1804,7 +1811,7 @@
             "in": "query",
             "description": "File Ontological type - edge / vertex",
             "required": true,
-            "type": "string"
+            "enum": ["edge"," vertex"]
           },
           {
             "name": "label",

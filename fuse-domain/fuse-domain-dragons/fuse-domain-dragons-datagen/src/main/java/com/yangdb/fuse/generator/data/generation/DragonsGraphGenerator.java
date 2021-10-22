@@ -57,6 +57,9 @@ import static com.yangdb.fuse.generator.util.CsvUtil.appendResults;
  */
 public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguration, Dragon> {
 
+    public static final String[] DRAGON_HEADER = {"id", "name", "birthDate", "power", "gender", "color"};
+    public static final String[] DRAGONS_FIRE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "date", "temp"};
+    public static final String[] DRAGON_FREEZE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "from", "to"};
     private final Logger logger = LoggerFactory.getLogger(DragonsGraphGenerator.class);
 
     //region Ctrs
@@ -186,10 +189,10 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         List<String[]> dragonsFreezeRecords = new ArrayList<>();
 
         //add headers
-        peopleRecords.add(0,new String[]{"id","name","birthDate","power","gender","color"});
-        dragonsRecords.add(0,new String[]{"id","name","birthDate","power","gender","color"});
-        dragonsFiresRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","date","temp"});
-        dragonsFreezeRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","from","to"});
+        peopleRecords.add(0, DRAGON_HEADER);
+        dragonsRecords.add(0,DRAGON_HEADER);
+        dragonsFiresRecords.add(0, DRAGONS_FIRE_HEADER);
+        dragonsFreezeRecords.add(0, DRAGON_FREEZE_HEADER);
 
         String fireRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FIRES + ".csv";
         String freezeRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FREEZES + ".csv";
@@ -198,7 +201,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         for (String nodeId : nodesList) {
             dragonsRecords.add(buildEntityNode(nodeId).getRecord());
             if (dragonsRecords.size() % BUFFER == 0) { //BUFFER
-                //add header
+                logger.info("writing to file ... "+ BUFFER +" elements");
                 appendResults(dragonsRecords, entitiesFile);
                 dragonsRecords.clear();
             }
@@ -221,6 +224,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 if ((dragonsFiresRecords.size() + dragonsFreezeRecords.size()) % BUFFER == 0) { //BUFFER
                     appendResults(dragonsFiresRecords, fireRelationsFile);
                     appendResults(dragonsFreezeRecords, freezeRelationsFile);
+                    logger.info("writing to file ... "+ BUFFER +" elements");
                     dragonsFreezeRecords.clear();
                     dragonsFiresRecords.clear();
                 }

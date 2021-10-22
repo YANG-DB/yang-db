@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
@@ -67,12 +68,14 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
             Client client,
             ElasticGraphConfiguration configuration,
             UniGraph graph,
-            GraphElementSchemaProvider schemaProvider) {
+            GraphElementSchemaProvider schemaProvider,
+            MetricRegistry metricRegistry) {
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -256,5 +259,6 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private MetricRegistry metricRegistry;
     //endregion
 }

@@ -75,6 +75,31 @@ public class LoggingCursor implements Cursor {
     public Object getContext() {
         return cursor.getContext();
     }
+
+    @Override
+    public int getActiveScrolls() {
+        return cursor.getActiveScrolls();
+    }
+
+
+    @Override
+    public boolean clearScrolls() {
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start cleanResources", sequence, LogType.of(start), cleanResources, ElapsedFrom.now()).log();
+            return this.cursor.clearScrolls();
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.logger, error, "failed cleanResources", sequence, LogType.of(failure), cleanResources, ElapsedFrom.now())
+                    .with(ex).log();
+            throw new FuseError.FuseErrorException(new FuseError("Cursor Error",ex));
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.logger, trace, "finish cleanResources", sequence, LogType.of(success), cleanResources, ElapsedFrom.now()).log();
+            }
+        }
+    }
     //endregion
 
     //region Fields
@@ -83,6 +108,8 @@ public class LoggingCursor implements Cursor {
     private MetricRegistry metricRegistry;
 
     private static MethodName.MDCWriter getNextResults = MethodName.of("getNextResults");
+    private static MethodName.MDCWriter cleanResources = MethodName.of("cleanResources");
     private static LogMessage.MDCWriter sequence = Sequence.incr();
+
     //endregion
 }

@@ -84,7 +84,7 @@ public class KnowledgeCSVDataLoader implements CSVDataLoader {
     @Override
     public LoadResponse<String, FuseError> load(String type, String label, File data, GraphDataLoader.Directive directive) throws IOException {
         String contentType = Files.probeContentType(data.toPath());
-        if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
+        if (contentType!=null ? Arrays.asList("application/gzip", "application/zip").contains(contentType) : isZipFile(data)) {
             ByteArrayOutputStream stream = null; //unzip
             switch (contentType) {
                 case "application/gzip":

@@ -54,6 +54,7 @@ import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.validateValue;
+import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.DEST_TYPE;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
     private final Ontology.Accessor accessor;
@@ -118,7 +119,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + entityType.geteType())));
             //put id (take according to ontology id field mapping or generate UUID of none found)
             StringJoiner joiner = new StringJoiner(".");
-            entityType.getIdField().forEach(field->joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
+            entityType.getIdField().forEach(field -> joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
             //put classifiers
             element.put(entityType.idFieldName(), joiner.toString());
             element.put(TYPE, entity.getType());
@@ -147,7 +148,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                     .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error", "No matching node found with label " + relType.getrType())));
             //put id (take according to ontology id field mapping or generate UUID of none found)
             StringJoiner joiner = new StringJoiner(".");
-            relType.getIdField().forEach(field->joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
+            relType.getIdField().forEach(field -> joiner.add(node.getOrDefault(field, UUID.randomUUID().toString())));
             //put classifiers
             String id = String.format("%s.%s", joiner.toString(), direction);
             //put classifiers
@@ -186,7 +187,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsMetadata(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                         parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
@@ -203,7 +204,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$relation$(relation.getType()).containsProperty(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
                         parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
@@ -211,19 +212,19 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
         switch (direction) {
             case "out":
                 //for each pair do:
-                relationshipType.getePairs().forEach(pair -> {
-                    element.put(ENTITY_A, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
-                    //populate redundant fields B
-                    element.put(ENTITY_B, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
-                });
+                relationshipType.getePairs().stream().filter(pair -> pair.geteTypeB().equalsIgnoreCase(node.get(DEST_TYPE)))
+                        .forEach(pair -> {
+                            element.put(ENTITY_A, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                            element.put(ENTITY_B, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
+                        });
                 break;
             case "in":
                 //for each pair do:
-                relationshipType.getePairs().forEach(pair -> {
-                    element.put(ENTITY_B, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
-                    //populate redundant fields B
-                    element.put(ENTITY_A, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
-                });
+                relationshipType.getePairs().stream().filter(pair -> pair.geteTypeB().equalsIgnoreCase(node.get(DEST_TYPE)))
+                        .forEach(pair -> {
+                            element.put(ENTITY_B, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                            element.put(ENTITY_A, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
+                        });
                 break;
         }
     }
@@ -272,8 +273,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsMetadata(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                            parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
 
@@ -288,8 +289,8 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                 .stream()
                 .filter(m -> accessor.$entity$(entity.getType()).containsProperty(m.getKey()))
                 .filter(m -> validateValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf))
-                    .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
-                            parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
+                .forEach(m -> element.put(accessor.property$(m.getKey()).getpType(),
+                        parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
     }
 
 
@@ -301,6 +302,7 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
 
         /**
          * todo - calculate the type according to the ontology
+         *
          * @return
          */
         String type();

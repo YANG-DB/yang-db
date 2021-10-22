@@ -77,6 +77,7 @@ import static org.jooby.Status.NOT_FOUND;
 import static org.jooby.Status.OK;
 
 public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryController> {
+
     /**
      * todo get this from application.conf
      */
@@ -251,9 +252,9 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     }
 
     private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** create a cypher query */
+        /** create a graphQL query */
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL", req -> API.postGraphQL(app, req, this.getController(app)));
-        /** run a cypher query (support both get/post protocols) */
+        /** run a graphQL query (support both get/post protocols) */
         app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
         app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
     }

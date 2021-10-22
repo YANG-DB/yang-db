@@ -45,6 +45,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase.BUFFER;
+
 /**
  * Created by benishue on 05/06/2017.
  */
@@ -53,6 +55,8 @@ public class KingdomsGraphGenerator {
     private static final Logger logger = LoggerFactory.getLogger(KingdomsGraphGenerator.class);
     //Used to skew the results
     private static final double LARGEST_KINGDOM_RATIO = 0.3;
+    public static final String[] KINGDOM_HEADER = {"id", "name", "king", "queen", "independenceDay", "funds"};
+    public static final String[] ENTITY_TO_KINGDOM_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since"};
 
     public KingdomsGraphGenerator(final KingdomConfiguration configuration) {
         this.kingdomConf = configuration;
@@ -65,7 +69,7 @@ public class KingdomsGraphGenerator {
     public List<Kingdom> generateKingdoms() {
         List<Kingdom> kingdomsList = new ArrayList<>();
         List<String[]> kingdomsRecords = new ArrayList<>();
-        kingdomsRecords.add(0,new String[]{"id","name","king","queen","independenceDay","funds"});
+        kingdomsRecords.add(0, KINGDOM_HEADER);
 
         try {
             KingdomGenerator generator = new KingdomGenerator(kingdomConf);
@@ -139,6 +143,11 @@ public class KingdomsGraphGenerator {
         int startEntityId = 0;
         for (int i = 0; i < kingdomsPopulationDist.size(); i++) {
             String kingdomId = kingdomsIdList.get(i);
+
+            if(entitiesToKingdomsSet.size() % BUFFER == 0) {
+                logger.info("Collecting to generate ... "+ BUFFER +" elements");
+            }
+
             int kingdomPopulationSize = Math.toIntExact(Math.round(kingdomsPopulationDist.get(i) * totalPopulationSize));
             for (int entityId = startEntityId; entityId < totalPopulationSize; entityId++) {
                 entitiesToKingdomsSet.add(new Tuple2<>(Integer.toString(entityId), kingdomId));
@@ -153,7 +162,7 @@ public class KingdomsGraphGenerator {
 
     private void printEntityToKingdom(List<Tuple2> entitiesToKingdom, EntityType entityType) {
         List<String[]> e2kRecords = new ArrayList<>();
-        e2kRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since"});
+        e2kRecords.add(0, ENTITY_TO_KINGDOM_HEADER);
 
         for (Tuple2 e2k : entitiesToKingdom) {
             String entityId = e2k._1().toString();

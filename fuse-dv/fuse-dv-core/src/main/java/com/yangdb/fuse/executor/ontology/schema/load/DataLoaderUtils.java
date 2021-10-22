@@ -33,6 +33,7 @@ import com.yangdb.fuse.model.schema.IndexProvider;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -44,19 +45,14 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.geojson.Point;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.*;
 
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static java.lang.Double.parseDouble;
@@ -121,12 +117,59 @@ public interface DataLoaderUtils {
 
     }
 
-
     /**
-     * @param zipIn
+     * check is zip file
+     *
+     * @param file
      * @return
      * @throws IOException
      */
+    static String getZipType(java.io.File file) {
+        try (ZipInputStream zipFile = new ZipInputStream(Files.newInputStream(file.toPath()))) {
+            if (zipFile.available() == 1) {
+                zipFile.close();
+                return "application/zip";
+            }
+        } catch (IOException err1) {
+            try (final GZIPInputStream stream = new GZIPInputStream(Files.newInputStream(file.toPath()))) {
+                if (stream.available() == 1) {
+                    stream.close();
+                    return "application/gzip";
+                }
+            } catch (IOException err2) {
+                return "";
+            }
+        }
+        return "";
+    }
+
+    /**
+     * @param zipIn
+     * @return unzipped File
+     * @throws IOException
+     */
+    static List<File> extractFile(File zipIn) throws IOException {
+        List<File> files = new ArrayList<>();
+        try (java.util.zip.ZipFile zipFile = new ZipFile(zipIn)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                File entryDestination = new File(zipIn.getParent(), entry.getName());
+                files.add(entryDestination);
+                if (entry.isDirectory()) {
+                    entryDestination.mkdirs();
+                } else {
+                    entryDestination.getParentFile().mkdirs();
+                    try (InputStream in = zipFile.getInputStream(entry);
+                         OutputStream out = new FileOutputStream(entryDestination)) {
+                            IOUtils.copy(in, out);
+                    }
+                }
+            }
+        }
+        return files;
+    }
+
     static ByteArrayOutputStream extractFile(InflaterInputStream zipIn) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         BufferedOutputStream bos = new BufferedOutputStream(stream);
@@ -238,7 +281,7 @@ public interface DataLoaderUtils {
                         try {
                             parser.parseDate(value.toString());
                             return true;
-                        }catch (Throwable err) {
+                        } catch (Throwable err) {
                             return false;
                         }
                     }
@@ -257,8 +300,6 @@ public interface DataLoaderUtils {
         }
         return false;
     }
-
-
 
 
 }

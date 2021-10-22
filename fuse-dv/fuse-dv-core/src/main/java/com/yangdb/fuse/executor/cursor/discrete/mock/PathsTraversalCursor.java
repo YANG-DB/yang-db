@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 
@@ -33,7 +34,7 @@ import java.nio.file.Paths;
 /**
  * Created by roman.margolis on 08/11/2017.
  */
-public class PathsTraversalCursor implements Cursor<TraversalCursorContext> {
+public class PathsTraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -49,7 +50,7 @@ public class PathsTraversalCursor implements Cursor<TraversalCursorContext> {
 
     //region Constructors
     public PathsTraversalCursor(TraversalCursorContext context, String mockResultsFolder) {
-        this.context = context;
+        super(context);
         this.mockResultsFolder = mockResultsFolder;
         this.mapper = new ObjectMapper();
     }
@@ -66,15 +67,9 @@ public class PathsTraversalCursor implements Cursor<TraversalCursorContext> {
             return new AssignmentsQueryResult();
         }
     }
-
-    @Override
-    public TraversalCursorContext getContext() {
-        return context;
-    }
     //endregion
 
     //region Fields
-    private TraversalCursorContext context;
     private String mockResultsFolder;
     private ObjectMapper mapper;
     //endregion

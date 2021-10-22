@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.executor.utils.ConversionUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -48,7 +49,7 @@ import static com.yangdb.fuse.model.results.AssignmentsQueryResult.Builder.insta
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class PathsTraversalCursor implements Cursor {
+public class PathsTraversalCursor extends BaseCursor {
 
     public static final String RAW = "raw";
 
@@ -65,7 +66,7 @@ public class PathsTraversalCursor implements Cursor {
 
     //region Constructors
     public PathsTraversalCursor(TraversalCursorContext context) {
-        this.context = context;
+        super(context);
         this.ont = new Ontology.Accessor(context.getOntology());
 
         this.includeEntities = context.getCursorRequest().getInclude().equals(CreateCursorRequest.Include.all) ||
@@ -113,10 +114,6 @@ public class PathsTraversalCursor implements Cursor {
     }
     //endregion
 
-    //region Properties
-    public TraversalCursorContext getContext() {
-        return context;
-    }
     //endregion
 
     //region Private Methods
@@ -129,7 +126,7 @@ public class PathsTraversalCursor implements Cursor {
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime());
 
         //build assignments
-        List<Path> paths = context.getTraversal().next(numResults);
+        List<Path> paths = context.next(numResults);
         paths.forEach(path -> builder.withAssignment(toAssignment(path)));
         return builder.build();
     }
@@ -219,7 +216,6 @@ public class PathsTraversalCursor implements Cursor {
     //endregion
 
     //region Fields
-    protected TraversalCursorContext context;
     protected Ontology.Accessor ont;
     protected Map<String, EEntityBase> eEntityBases;
     protected Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;

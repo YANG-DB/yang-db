@@ -20,6 +20,9 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.provision.ScrollProvisioning;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
@@ -27,7 +30,6 @@ import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerConte
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
 import com.yangdb.fuse.unipop.controller.discrete.context.DiscreteVertexFilterControllerContext;
 import com.yangdb.fuse.unipop.controller.discrete.converter.DiscreteVertexFilterConverter;
-import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
@@ -59,7 +61,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexFilterController extends VertexControllerBase {
     //region Constructors
-    public DiscreteVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public DiscreteVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -68,6 +70,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -137,6 +140,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchVertexQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -168,9 +172,11 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
 
 
     //region Fields
+
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     private Client client;
     private ElasticGraphConfiguration configuration;
     //endregion

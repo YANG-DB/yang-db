@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
@@ -28,7 +29,6 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ import static org.jooby.Status.NOT_FOUND;
 /**
  * Created by lior.perry on 19/02/2017.
  */
-public class StandardDashboardController implements DashboardController<StandardDashboardController,DashboardDriver> {
+public class StandardDashboardController implements DashboardController<StandardDashboardController, DashboardDriver> {
     //region Constructors
     @Inject
     public StandardDashboardController(
@@ -53,29 +53,22 @@ public class StandardDashboardController implements DashboardController<Standard
     //endregion
 
     @Override
-    public ContentResponse<Map> graphElementCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphElementCount()))
+    public ContentResponse<ObjectNode> graphElementCount(String ontology) {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(driver().graphElementCount(ontology)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<Map> graphElementCreatedOverTime() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphElementCreated()))
+    public ContentResponse<ObjectNode> graphElementCreatedOverTime(String ontology) {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(driver().graphElementCreated(ontology)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<Map> graphFieldValuesCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphFieldValuesCount()))
-                .compose();
-    }
-
-    @Override
-    public ContentResponse<Map> cursorCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
+    public ContentResponse<ObjectNode> cursorCount() {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
                 .data(Optional.of(driver().cursorCount()))
                 .compose();
     }

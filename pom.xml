@@ -44,9 +44,6 @@
             <organization>www.yangdb.org</organization>
         </developer>
     </developers>
-
-
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>
@@ -189,6 +186,7 @@
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <hamcrest.version>1.3</hamcrest.version>
         <hamcres-json.version>0.2</hamcres-json.version>
+        <json-ld.version>0.13.3</json-ld.version>
         <maven-pgp-plugin.version>1.6</maven-pgp-plugin.version>
         <test.containers.version>1.12.2</test.containers.version>
 
@@ -896,6 +894,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>${json-ld.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>uk.co.datumedge</groupId>
                 <artifactId>hamcrest-json</artifactId>
                 <version>${hamcres-json.version}</version>
@@ -1214,14 +1217,6 @@
         </pluginManagement>
 
     </build>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
 
     <distributionManagement>
         <site>

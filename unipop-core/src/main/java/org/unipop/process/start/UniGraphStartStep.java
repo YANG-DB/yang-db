@@ -80,6 +80,7 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
     private int limit;
     private List<Pair<String, Order>> orders;
 
+    private String context;
     private Profiler profiler = Noop.instance ;
 
     public UniGraphStartStep(GraphStep<S, E> originalStep, ControllerManager controllerManager) {
@@ -93,7 +94,7 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
         this.propertyKeys = new HashSet<>();
 
         this.profiler = this.traversal.getSideEffects().getOrCreate(PROFILER, Profiler.Impl::new) ;
-
+        this.context = traversal.asAdmin().getSideEffects().getOrCreate("context",()->"Generic");
         this.controllers.forEach(controller -> controller.setProfiler(this.profiler));
     }
 
@@ -105,7 +106,7 @@ public class UniGraphStartStep<S,E extends Element> extends GraphStep<S,E> imple
                         .flatMap(Collection::stream)
         ).map(HasContainer::getKey).forEach(this::addPropertyKey);
 
-        SearchQuery<E> searchQuery = new SearchQuery<>(returnClass, predicates, limit, propertyKeys, orders, stepDescriptor);
+        SearchQuery<E> searchQuery = new SearchQuery<>(returnClass, predicates, limit, propertyKeys, orders,context, stepDescriptor);
         //logger.debug("Executing query: ", searchQuery);
 
         return controllers.get(0).search(searchQuery);

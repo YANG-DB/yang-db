@@ -62,13 +62,19 @@ public class SearchQuery<E extends Element> extends PredicateQuery<E> {
     private final int limit;
     private Set<String> propertyKeys;
     private List<Pair<String, Order>> orders;
+    private String context;
 
     public SearchQuery(Class<E> returnType, PredicatesHolder predicates, int limit, Set<String> propertyKeys, List<Pair<String, Order>> orders, StepDescriptor stepDescriptor) {
+        this(returnType,predicates,limit,propertyKeys,orders,"Generic",stepDescriptor);
+    }
+
+    public SearchQuery(Class<E> returnType, PredicatesHolder predicates, int limit, Set<String> propertyKeys, List<Pair<String, Order>> orders,String context, StepDescriptor stepDescriptor) {
         super(predicates, stepDescriptor);
         this.returnType = returnType;
         this.limit = limit;
         this.propertyKeys = propertyKeys;
         this.orders = orders;
+        this.context = context;
     }
 
     public Class<E> getReturnType(){
@@ -83,6 +89,10 @@ public class SearchQuery<E extends Element> extends PredicateQuery<E> {
         return limit;
     }
 
+    public String getContext() {
+        return context;
+    }
+
     public List<Pair<String, Order>> getOrders() {
         return orders;
     }
@@ -95,6 +105,7 @@ public class SearchQuery<E extends Element> extends PredicateQuery<E> {
     public String toString() {
         return "SearchQuery{" +
                 "returnType=" + returnType +
+                ", context=" + context +
                 ", limit=" + limit +
                 '}';
     }

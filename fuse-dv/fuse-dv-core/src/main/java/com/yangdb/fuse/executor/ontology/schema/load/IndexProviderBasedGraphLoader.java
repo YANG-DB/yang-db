@@ -52,6 +52,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.getZipType;
 import static com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 
 /**
@@ -181,19 +182,22 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
     @Override
     public LoadResponse<String, FuseError> load(String ontology, File data, Directive directive) throws IOException {
         String contentType = Files.probeContentType(data.toPath());
+        if(Objects.isNull(contentType))
+            contentType = getZipType(data);
         if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
-            ByteArrayOutputStream stream = null; //unzip
+            List<File> files = Collections.EMPTY_LIST;
             switch (contentType) {
                 case "application/gzip":
-                    stream = extractFile(new GZIPInputStream(Files.newInputStream(data.toPath())));
+                    files = extractFile(data);
                     break;
                 case "application/zip":
-                    stream = extractFile(new ZipInputStream(Files.newInputStream(data.toPath())));
+                    files = extractFile(data);
                     break;
             }
-
-            String graph = new String(stream.toByteArray());
-            return load(ontology , mapper.readValue(graph, LogicalGraphModel.class), directive);
+            if(!files.isEmpty()) {
+                //currently assuming a single entry zip fle
+                data = files.get(0);
+            }
         }
         String graph = new String(Files.readAllBytes(data.toPath()));
         //read

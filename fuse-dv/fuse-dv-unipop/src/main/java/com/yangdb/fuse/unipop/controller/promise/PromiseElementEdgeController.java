@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -33,7 +34,7 @@ import java.util.Iterator;
  * Created by lior.perry on 4/2/2017.
  */ //region PromiseElementEdgeController Implementation
 public class PromiseElementEdgeController implements SearchQuery.SearchController {
-    public PromiseElementEdgeController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {}
+    public PromiseElementEdgeController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {}
 
     //region SearchQuery.SearchController Implementation
     @Override

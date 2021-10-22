@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.provision.ScrollProvisioning;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
@@ -66,7 +68,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexFilterController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -75,6 +77,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.metricRegistry = metricRegistry;
     }
 
     //endregion
@@ -140,6 +143,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchVertexQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -156,9 +160,11 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     //endregion
 
     //region Fields
+
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     private Client client;
     private ElasticGraphConfiguration configuration;
     //endregion

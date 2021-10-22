@@ -57,13 +57,13 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
     public static final String _ID = GlobalConstants._ID;
 
     public static final String ID = "id";
+    public static final String OUT = "out";
+    public static final String IN = "in";
     public static final String ENTITY_A = GlobalConstants.EdgeSchema.SOURCE;
     public static final String ENTITY_A_ID = GlobalConstants.EdgeSchema.SOURCE_ID;
     public static final String ENTITY_B = GlobalConstants.EdgeSchema.DEST;
     public static final String ENTITY_B_ID = GlobalConstants.EdgeSchema.DEST_ID;
     public static final String DIRECTION = GlobalConstants.EdgeSchema.DIRECTION;
-    public static final String OUT = "out";
-    public static final String IN = "in";
 
     private IndexProvider indexProvider;
     private Ontology.Accessor accessor;

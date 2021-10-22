@@ -132,6 +132,24 @@ public abstract class GraphApiUtils {
     }
 
     /**
+     * expend a concrete vertex in any direction with maxHops
+     *
+     * @param ontology
+     * @param maxHops
+     * @return
+     */
+    public static Query expandVertex(String ontology, String sourceEntity, String sourceId, int maxHops) {
+        return Query.Builder.instance().withName(UUID.randomUUID().toString())
+                .withOnt(ontology)
+                .withElements(Arrays.asList(
+                        new Start(0, 1),
+                        new EConcrete(1, sourceEntity + "_" + sourceId, sourceEntity, sourceId, sourceEntity + "_" + sourceId, 2),
+                        new RelUntyped(2, Collections.emptySet(), R,null, 3 ),
+                        new UnTypedEndPattern<>(new EUntyped(3, Tagged.tagSeq("AnyOf"), -1, 0))
+                )).build();
+    }
+
+    /**
      * generate findPath graph query between two concrete vertices id's
      *
      * @param ontology

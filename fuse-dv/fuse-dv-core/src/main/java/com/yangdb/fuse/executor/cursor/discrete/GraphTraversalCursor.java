@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.Query;
@@ -38,7 +39,7 @@ import static com.yangdb.fuse.executor.cursor.discrete.CalculatedFieldsUtil.find
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
+public class GraphTraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -52,6 +53,7 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
 
     //region Constructors
     public GraphTraversalCursor(Cursor<TraversalCursorContext> cursor) {
+        super(cursor.getContext());
         this.cursor = cursor;
 
         this.fullGraph = new AssignmentsQueryResult<>();
@@ -178,11 +180,6 @@ public class GraphTraversalCursor implements Cursor<TraversalCursorContext> {
             default:
                 return relationships.size();
         }
-    }
-
-    @Override
-    public TraversalCursorContext getContext() {
-        return cursor.getContext();
     }
 
 //endregion

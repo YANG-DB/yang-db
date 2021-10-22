@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
 import com.yangdb.fuse.dispatcher.utils.PlanUtil;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.executor.utils.ConversionUtil;
 import com.yangdb.fuse.model.execution.plan.composite.Plan;
@@ -46,7 +47,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.*;
 
-public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
+public class NewGraphHierarchyTraversalCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -61,6 +62,7 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
 
     //region Constructors
     public NewGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags) {
+        super(context);
         this.countTags = Stream.ofAll(countTags).toJavaSet();
         this.distinctIds = new HashSet<>();
 
@@ -109,10 +111,17 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
     public QueryResultBase getNextResults(int numResults) {
         Map<String, Map<Vertex, Set<String>>> idVertexEtagsMap = new HashMap<>();
         Map<String, Tuple2<Edge, String>> idEdgeEtagMap = new HashMap<>();
+        final Query pattern = getContext().getQueryResource().getQuery();
+        final Assignment.Builder builder = Assignment.Builder.instance();
 
         try {
             while(this.distinctIds.size() < numResults) {
-                Path path = context.getTraversal().next();
+                List<Path> paths = context.next();
+                if(paths.isEmpty()) {
+                    break;
+                }
+
+                Path path = paths.get(0);
                 List<Object> pathObjects = path.objects();
                 List<Set<String>> pathLabels = path.labels();
                 for (int objectIndex = 0; objectIndex < path.objects().size(); objectIndex++) {
@@ -132,10 +141,8 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
                 }
             }
         } catch (NoSuchElementException ex) {
-
+            //
         }
-
-        Assignment.Builder builder = Assignment.Builder.instance();
 
         for(Map.Entry<String, Map<Vertex, Set<String>>> idVertexEtagsEntry : idVertexEtagsMap.entrySet()) {
             Vertex mergedVertex = mergeVertices(Stream.ofAll(idVertexEtagsEntry.getValue().keySet()).toJavaList());
@@ -152,7 +159,10 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
                     relTuple._3()));
         }
 
-        final Query pattern = getContext().getQueryResource().getQuery();
+        return returnResults(pattern, builder);
+    }
+
+    private AssignmentsQueryResult returnResults(Query pattern, Assignment.Builder builder) {
         return AssignmentsQueryResult.Builder.instance()
                 .withPattern(pattern)
                 .withQueryId(context.getQueryResource().getQueryMetadata().getId())
@@ -228,18 +238,12 @@ public class NewGraphHierarchyTraversalCursor implements Cursor<TraversalCursorC
         return firstVertex;
     }
 
-    @Override
-    public TraversalCursorContext getContext() {
-        return context;
-    }
-
     private Edge mergeEdges(List<Edge> edges) {
         return edges.get(0);
     }
     //endregion
 
     //region Fields
-    private TraversalCursorContext context;
     private Set<String> countTags;
     private Set<String> distinctIds;
     private Ontology.Accessor ont;

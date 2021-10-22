@@ -20,7 +20,8 @@
   "produces": [
     "application/json",
     "application/xml",
-    "text/csv"
+    "text/csv",
+    "application/gzip"
 
   ],
   "paths": {
@@ -1284,23 +1285,6 @@
         "responses": {
           "200": {
             "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/dashboard/fields": {
-      "get": {
-        "tags": [
-          "dashboard"
-        ],
-        "summary": "Show summery of DB existing fields types and histogram",
-        "description": "summery of DB fields",
-        "responses": {
-          "200": {
-            "description": "Returns <code>200</code> summery of db fields types (histogram) or <code>404</code>"
           },
           "404": {
             "description": "Not Found"
