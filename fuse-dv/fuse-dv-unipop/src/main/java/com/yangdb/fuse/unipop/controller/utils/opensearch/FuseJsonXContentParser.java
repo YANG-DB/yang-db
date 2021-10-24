@@ -1,4 +1,4 @@
-package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
+package com.yangdb.fuse.unipop.controller.utils.opensearch;
 
 /*-
  * #%L

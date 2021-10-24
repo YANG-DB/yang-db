@@ -11,14 +11,14 @@
   <conversionRule conversionWord="route" converterClass="com.yangdb.fuse.logging.Route$Converter" />
   <conversionRule conversionWord="elapsed" converterClass="com.yangdb.fuse.dispatcher.logging.Elapsed$Converter" />
   <conversionRule conversionWord="elapsedFrom" converterClass="com.yangdb.fuse.dispatcher.logging.ElapsedFrom$Converter" />
-  <conversionRule conversionWord="elasticElapsed" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticElapsed$SingleConverter" />
-  <conversionRule conversionWord="elasticElapsedTotal" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticElapsed$TotalConverter" />
-  <conversionRule conversionWord="totalHits" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$TotalHitsConverter" />
-  <conversionRule conversionWord="hits" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$HitsConverter" />
-  <conversionRule conversionWord="totalShards" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$TotalShardsConverter" />
-  <conversionRule conversionWord="scrollId" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.ElasticResults$ScrollIdConverter" />
-  <conversionRule conversionWord="networkElasticElapsed" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$SingleConverter" />
-  <conversionRule conversionWord="networkElasticElapsedTotal" converterClass="com.yangdb.fuse.executor.elasticsearch.logging.NetworkElasticElapsed$TotalConverter" />
+  <conversionRule conversionWord="elasticElapsed" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticElapsed$SingleConverter" />
+  <conversionRule conversionWord="elasticElapsedTotal" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticElapsed$TotalConverter" />
+  <conversionRule conversionWord="totalHits" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticResults$TotalHitsConverter" />
+  <conversionRule conversionWord="hits" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticResults$HitsConverter" />
+  <conversionRule conversionWord="totalShards" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticResults$TotalShardsConverter" />
+  <conversionRule conversionWord="scrollId" converterClass="com.yangdb.fuse.executor.opensearch.logging.ElasticResults$ScrollIdConverter" />
+  <conversionRule conversionWord="networkElasticElapsed" converterClass="com.yangdb.fuse.executor.opensearch.logging.NetworkElasticElapsed$SingleConverter" />
+  <conversionRule conversionWord="networkElasticElapsedTotal" converterClass="com.yangdb.fuse.executor.opensearch.logging.NetworkElasticElapsed$TotalConverter" />
   <conversionRule conversionWord="responseLength" converterClass="com.yangdb.fuse.logging.ResponseLength$Converter" />
 
   <!-- appenders -->
@@ -171,11 +171,11 @@
 
   <!-- Ignore loggers -->
   <logger name="org.jooby" additivity="false"/>
-  <logger name="org.elasticsearch" additivity="true"/>
+  <logger name="org.opensearch" additivity="true"/>
   <logger name="io.netty" additivity="false"/>
   <logger name="org.unipop" additivity="false"/>
   <logger name="com.yangdb.fuse.dispatcher.resource" additivity="false"/>
-  <logger name="com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient.Verbose" additivity="true"/>
+  <logger name="com.yangdb.fuse.executor.opensearch.logging.LoggingClient.Verbose" additivity="true"/>
   <logger name="com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider.Verbose" additivity="false"/>
   <!-- Ignore loggers -->
 

@@ -21,7 +21,7 @@ package com.yangdb.fuse.unipop.controller.promise;
  */
 
 import com.yangdb.fuse.model.GlobalConstants;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
 import com.yangdb.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.yangdb.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
@@ -66,7 +66,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexFilterController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public PromiseVertexFilterController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -160,6 +160,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
     private Client client;
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     //endregion
 }

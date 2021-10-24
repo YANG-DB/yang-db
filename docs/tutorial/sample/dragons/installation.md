@@ -79,11 +79,11 @@ Disabling the in-process elasticsearch in the application.conf
 _This should be the final configuration for the elasticsearch connection_
 
         ...
-        elasticsearch.embedded = false
-        elasticsearch.delete_data_on_load = false
-        elasticsearch.hosts = [ "localhost" ]
-        elasticsearch.port = 9300
-        elasticsearch.cluster_name = Dragons
+        opensearch.embedded = false
+        opensearch.delete_data_on_load = false
+        opensearch.hosts = [ "localhost" ]
+        opensearch.port = 9300
+        opensearch.cluster_name = Dragons
         ...
 
 Once this is done we can start the yangDb server (using the script mentioned above)

@@ -61,7 +61,7 @@ public interface GraphInitiator {
     long drop() throws IOException;
 
     /**
-     * generate the elasticsearch index template according to ontology and index schema provider json instructions
+     * generate the opensearch index template according to ontology and index schema provider json instructions
      *
      * @param ontology
      * @param schemaProvider
@@ -70,7 +70,7 @@ public interface GraphInitiator {
     long createTemplate(String ontology, String schemaProvider) ;
 
     /**
-     * generate the elasticsearch index template according to ontology and index schema provider json instructions
+     * generate the opensearch index template according to ontology and index schema provider json instructions
      *
      * @param ontology
      * @return

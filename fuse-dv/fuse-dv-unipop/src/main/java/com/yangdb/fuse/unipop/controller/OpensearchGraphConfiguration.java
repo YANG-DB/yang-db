@@ -28,14 +28,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ElasticGraphConfiguration extends BaseConfiguration {
+public class OpensearchGraphConfiguration extends BaseConfiguration {
     //E/S cluster props
     private Map<String, String> clusterProps = new HashMap<>();
 
     //region Constructor
-    public ElasticGraphConfiguration() {}
+    public OpensearchGraphConfiguration() {}
 
-    public ElasticGraphConfiguration(final Configuration configuration) {
+    public OpensearchGraphConfiguration(final Configuration configuration) {
         configuration.getKeys().forEachRemaining(key -> addProperty(key, configuration.getProperty(key)));
     }
     //endregion
@@ -232,13 +232,13 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     //endregion
 
     //region Consts
-    public static final String CLUSTER_PREFIX = "elasticsearch.cluster";
-    public static final String CLUSTER_NAME = "elasticsearch.cluster.name";
-    public static final String CLUSTER_HOSTS = "elasticsearch.cluster.hosts";
-    public static final String CLUSTER_PORT = "elasticsearch.cluster.port";
-    public static final String CLUSTER_ADDRESS = "elasticsearch.cluster.address";
+    public static final String CLUSTER_PREFIX = "opensearch.cluster";
+    public static final String CLUSTER_NAME = "opensearch.cluster.name";
+    public static final String CLUSTER_HOSTS = "opensearch.cluster.hosts";
+    public static final String CLUSTER_PORT = "opensearch.cluster.port";
+    public static final String CLUSTER_ADDRESS = "opensearch.cluster.address";
 
-    public static final String CLIENT_TYPE = "elasticsearch.client";
+    public static final String CLIENT_TYPE = "opensearch.client";
     public static final String CLIENT_TRANSPORT_SNIFF = "client.transport.sniff";
     public static final String CLIENT_TRANSPORT_IGNORE_CLUSTER_NAME = "client.transport.ignore_cluster_name";
     public static final String CLIENT_TRANSPORT_PING_TIMEOUT = "client.transport.ping_timeout";
@@ -248,7 +248,7 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     public static final String ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY = "elastic.graph.schema_provider_factory";
     public static final String ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY_CLASS = "elastic.graph.schema_provider_factory.class";
     public static final String ELASTIC_GRAPH_SCROLL_TIME = "elastic.graph.scroll_time";
-    public static final String ELASTIC_SEARCH_SCROLL_MAX_OPEN = "elasticsearch.search.max_open_scroll_context";
+    public static final String ELASTIC_SEARCH_SCROLL_MAX_OPEN = "opensearch.search.max_open_scroll_context";
     public static final String ELASTIC_GRAPH_SCROLL_SIZE = "elastic.graph.scroll_size";
     public static final String ELASTIC_GRAPH_DEFAULT_SEARCH_SIZE = "elastic.graph.default_search_size";
     public static final String ELASTIC_GRAPH_MAX_SEARCH_SIZE = "elastic.graph.max_search_size";

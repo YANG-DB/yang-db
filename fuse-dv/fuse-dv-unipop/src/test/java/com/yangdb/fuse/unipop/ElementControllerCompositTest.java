@@ -1,7 +1,7 @@
 package com.yangdb.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.ElementController;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseElementEdgeController;
@@ -45,14 +45,14 @@ import static org.mockito.Mockito.when;
  */
 public class ElementControllerCompositTest {
     Client client;
-    ElasticGraphConfiguration configuration;
+    OpensearchGraphConfiguration configuration;
     MetricRegistry registry;
 
     @Before
     public void setUp() throws Exception {
         registry = new MetricRegistry();
         client = mock(Client.class);
-        configuration = mock(ElasticGraphConfiguration.class);
+        configuration = mock(OpensearchGraphConfiguration.class);
         when(configuration.getElasticGraphScrollSize()).thenReturn(1000);
         when(configuration.getElasticGraphScrollTime()).thenReturn(1000);
         when(configuration.getElasticGraphMaxSearchSize()).thenReturn(1000L);

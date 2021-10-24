@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise.appender;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.SearchAppender;
 import com.yangdb.fuse.unipop.controller.common.context.LimitContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
@@ -30,7 +30,7 @@ import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
  */
 public class SizeSearchAppender implements SearchAppender<LimitContext> {
     //region Constructors
-    public SizeSearchAppender(ElasticGraphConfiguration configuration) {
+    public SizeSearchAppender(OpensearchGraphConfiguration configuration) {
         this.configuration = configuration;
     }
     //endregion
@@ -50,6 +50,6 @@ public class SizeSearchAppender implements SearchAppender<LimitContext> {
     //endregion
 
     //region Fields
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     //endregion
 }

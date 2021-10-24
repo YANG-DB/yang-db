@@ -1,11 +1,11 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provider;
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
-import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
+import com.yangdb.fuse.executor.opensearch.logging.LoggingClient;
 import com.yangdb.fuse.model.transport.ExecutionScope;
 import com.typesafe.config.Config;
 import org.opensearch.action.ActionFuture;
@@ -37,7 +37,7 @@ public class TestExecutorModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
+                boolean createMock = conf.hasPath("fuse.opensearch.mock") && conf.getBoolean("fuse.opensearch.mock");
                 this.bindConstant()
                         .annotatedWith(named(ClientProvider.createMockParameter))
                         .to(createMock);

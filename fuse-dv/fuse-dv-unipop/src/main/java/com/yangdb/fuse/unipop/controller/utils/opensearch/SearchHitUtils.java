@@ -1,4 +1,4 @@
-package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
+package com.yangdb.fuse.unipop.controller.utils.opensearch;
 
 /*-
  * #%L
@@ -23,7 +23,6 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
 import org.opensearch.OpenSearchParseException;
 import org.opensearch.common.bytes.BytesReference;
 import org.opensearch.common.collect.Tuple;
-import org.opensearch.common.compress.Compressor;
 import org.opensearch.common.compress.CompressorFactory;
 import org.opensearch.common.compress.DeflateCompressor;
 import org.opensearch.common.xcontent.*;

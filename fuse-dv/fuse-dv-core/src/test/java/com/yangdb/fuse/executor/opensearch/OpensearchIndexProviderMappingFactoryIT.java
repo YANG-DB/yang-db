@@ -1,5 +1,5 @@
 
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
 
-public class ElasticIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
+public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
 
     @Test
     public void testGenerateNestedMapping() {

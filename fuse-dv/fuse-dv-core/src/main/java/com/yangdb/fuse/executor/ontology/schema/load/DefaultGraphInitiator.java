@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
+import com.yangdb.fuse.executor.opensearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.schema.GraphElementSchemaProviderJsonFactory;
 import com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;

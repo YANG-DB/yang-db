@@ -1,6 +1,6 @@
 package com.yangdb.fuse.unipop;
 
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.ElementController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseElementVertexController;
@@ -38,12 +38,12 @@ import static org.mockito.Mockito.when;
  */
 public class ElementControllerTest {
     Client client;
-    ElasticGraphConfiguration configuration;
+    OpensearchGraphConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
         client = mock(Client.class);
-        configuration = mock(ElasticGraphConfiguration.class);
+        configuration = mock(OpensearchGraphConfiguration.class);
     }
 
     @Test

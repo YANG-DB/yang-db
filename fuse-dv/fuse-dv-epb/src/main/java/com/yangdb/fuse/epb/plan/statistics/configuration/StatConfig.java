@@ -36,16 +36,16 @@ public class StatConfig {
 
     //region Ctrs
     public StatConfig(Config config) {
-        this.statClusterName = config.getString("elasticsearch.stat.cluster.name");
-        this.statNodesHosts = config.getStringList("elasticsearch.stat.hosts");
-        this.statTransportPort = config.getInt("elasticsearch.stat.port");
-        this.statIndexName = config.getString("elasticsearch.stat.index.name");
-        this.statTermTypeName = config.getString("elasticsearch.stat.type.term.name");
-        this.statStringTypeName = config.getString("elasticsearch.stat.type.string.name");
-        this.statNumericTypeName = config.getString("elasticsearch.stat.type.numeric.name");
-        this.statGlobalTypeName = config.getString("elasticsearch.stat.type.global.name");
-        this.statCountFieldName = config.getString("elasticsearch.stat.count.field");
-        this.statCardinalityFieldName = config.getString("elasticsearch.stat.cardinality.field");
+        this.statClusterName = config.getString("opensearch.stat.cluster.name");
+        this.statNodesHosts = config.getStringList("opensearch.stat.hosts");
+        this.statTransportPort = config.getInt("opensearch.stat.port");
+        this.statIndexName = config.getString("opensearch.stat.index.name");
+        this.statTermTypeName = config.getString("opensearch.stat.type.term.name");
+        this.statStringTypeName = config.getString("opensearch.stat.type.string.name");
+        this.statNumericTypeName = config.getString("opensearch.stat.type.numeric.name");
+        this.statGlobalTypeName = config.getString("opensearch.stat.type.global.name");
+        this.statCountFieldName = config.getString("opensearch.stat.count.field");
+        this.statCardinalityFieldName = config.getString("opensearch.stat.cardinality.field");
         //Hardcoded
         this.statFieldTermName = "term" ;
 
@@ -57,7 +57,7 @@ public class StatConfig {
         this.statFieldStringLowerName = "lower_bound_string";
         this.statFieldStringUpperName = "upper_bound_string";
 
-//        OptionalComp<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
+//        OptionalComp<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("opensearch.stat.configuration.file"));
 //        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 

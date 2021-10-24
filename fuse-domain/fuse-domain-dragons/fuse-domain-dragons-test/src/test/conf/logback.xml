@@ -10,7 +10,7 @@
 
   <!-- Ignore loggers -->
   <logger name="org.jooby" additivity="false"/>
-  <logger name="org.elasticsearch" additivity="false"/>
+  <logger name="org.opensearch" additivity="false"/>
   <logger name="io.netty" additivity="false"/>
   <logger name="org.unipop" additivity="false"/>
   <logger name="org.apache.http" additivity="false"/>

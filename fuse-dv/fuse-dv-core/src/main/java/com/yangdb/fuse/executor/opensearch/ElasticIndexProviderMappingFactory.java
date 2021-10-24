@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 /*-
  * #%L

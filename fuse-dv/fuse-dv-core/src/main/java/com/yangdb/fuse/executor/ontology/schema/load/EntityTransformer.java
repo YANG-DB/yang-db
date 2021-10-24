@@ -51,7 +51,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
+import static com.yangdb.fuse.executor.opensearch.ElasticIndexProviderMappingFactory.*;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.INDEX;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;

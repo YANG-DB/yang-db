@@ -12,9 +12,9 @@ do
     if [ "${argName}" = "" ]; then
         if [ "${var}" = "--heapSize" ]; then
             argName=heapSize
-        elif [ "${var}" = "--elasticsearch.hosts" ]; then
+        elif [ "${var}" = "--opensearch.hosts" ]; then
             argName=elasticsearchHosts
-        elif [ "${var}" = "--elasticsearch.cluster_name" ]; then
+        elif [ "${var}" = "--opensearch.cluster_name" ]; then
             argName=elasticsearchClusterName
         elif [ "${var}" = "--config" ]; then
             argName=configFile

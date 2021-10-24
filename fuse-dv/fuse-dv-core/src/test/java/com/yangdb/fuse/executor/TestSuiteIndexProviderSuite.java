@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactoryIT;
+import com.yangdb.fuse.executor.opensearch.OpensearchIndexProviderMappingFactoryIT;
 import com.yangdb.fuse.executor.ontology.schema.*;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
         GraphInitiatorIT.class,
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,
-        ElasticIndexProviderMappingFactoryIT.class
+        OpensearchIndexProviderMappingFactoryIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     private static ElasticEmbeddedNode elasticEmbeddedNode;

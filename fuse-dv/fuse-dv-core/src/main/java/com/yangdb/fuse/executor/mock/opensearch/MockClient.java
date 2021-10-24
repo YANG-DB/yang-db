@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.mock.elasticsearch;
+package com.yangdb.fuse.executor.mock.opensearch;
 
 /*-
  * #%L

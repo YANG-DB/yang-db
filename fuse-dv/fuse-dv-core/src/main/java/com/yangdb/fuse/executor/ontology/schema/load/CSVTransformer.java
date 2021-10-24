@@ -27,7 +27,7 @@ import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
-import com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory;
+import com.yangdb.fuse.executor.opensearch.ElasticIndexProviderMappingFactory;
 import com.yangdb.fuse.executor.ontology.DataTransformer;
 import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
-import static com.yangdb.fuse.executor.elasticsearch.ElasticIndexProviderMappingFactory.*;
+import static com.yangdb.fuse.executor.opensearch.ElasticIndexProviderMappingFactory.*;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.TYPE;
 import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;

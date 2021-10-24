@@ -2,7 +2,7 @@ package com.yangdb.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.ElementController;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseElementEdgeController;
@@ -40,13 +40,13 @@ import static org.mockito.Mockito.mock;
  */
 public class TraversalTest {
     Client client;
-    ElasticGraphConfiguration configuration;
+    OpensearchGraphConfiguration configuration;
     SearchOrderProviderFactory orderProvider;
 
     @Before
     public void setUp() throws Exception {
         client = mock(Client.class);
-        configuration = mock(ElasticGraphConfiguration.class);
+        configuration = mock(OpensearchGraphConfiguration.class);
         orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
     }

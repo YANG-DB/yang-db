@@ -4,7 +4,7 @@
 ## https://www.npmjs.com/package/elasticdump
 ## usage: npm i elasticdump
 
-## elasticdump works by sending an input to an output. Both can be either an elasticsearch URL or a File.
+## elasticdump works by sending an input to an output. Both can be either an opensearch URL or a File.
 
 ## Elasticsearch:
 ##     format: {protocol}://{host}:{port}/{index}

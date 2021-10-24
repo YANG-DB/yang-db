@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.UniGraphProvider;
 import com.yangdb.fuse.model.ontology.Ontology;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.ElementController;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingReduceController;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchController;
@@ -53,13 +53,13 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     @Inject
     public M1ElasticUniGraphProvider(
             Client client,
-            ElasticGraphConfiguration elasticGraphConfiguration,
+            OpensearchGraphConfiguration opensearchGraphConfiguration,
             UniGraphConfiguration uniGraphConfiguration,
             GraphElementSchemaProviderFactory schemaProviderFactory,
             SearchOrderProviderFactory orderProvider,
             MetricRegistry metricRegistry) {
         this.client = client;
-        this.elasticGraphConfiguration = elasticGraphConfiguration;
+        this.opensearchGraphConfiguration = opensearchGraphConfiguration;
         this.uniGraphConfiguration = uniGraphConfiguration;
         this.schemaProviderFactory = schemaProviderFactory;
         this.orderProvider = orderProvider;
@@ -89,18 +89,18 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new DiscreteElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                        new DiscreteElementVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                         metricRegistry),
                                 null
                         ),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                new DiscreteVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                 metricRegistry),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                new DiscreteVertexFilterController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
                                 metricRegistry),
                         new LoggingReduceController(
-                                new DiscreteElementReduceController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                                new DiscreteElementReduceController(client, opensearchGraphConfiguration, uniGraph, schemaProvider),
                                 metricRegistry)
                 );
             }
@@ -115,7 +115,7 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
 
     //region Fields
     private final Client client;
-    private final ElasticGraphConfiguration elasticGraphConfiguration;
+    private final OpensearchGraphConfiguration opensearchGraphConfiguration;
     private final UniGraphConfiguration uniGraphConfiguration;
     private final GraphElementSchemaProviderFactory schemaProviderFactory;
     private SearchOrderProviderFactory orderProvider;

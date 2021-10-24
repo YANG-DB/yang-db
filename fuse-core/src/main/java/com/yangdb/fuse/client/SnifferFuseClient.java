@@ -62,7 +62,7 @@ import java.util.concurrent.TimeUnit;
 import static com.typesafe.config.ConfigFactory.defaultApplication;
 
 /**
- * Fuse Cluster aware client which samples the elasticsearch 'fuse_node_info' index which holds the cluster
+ * Fuse Cluster aware client which samples the opensearch 'fuse_node_info' index which holds the cluster
  * status for all fuse nodes
  *
  * This client expects application.conf file in the classpath containing the next configurations:
@@ -71,9 +71,9 @@ import static com.typesafe.config.ConfigFactory.defaultApplication;
  * fuse.protocol = http
  * fuse.base.uri = /fuse
  *
- * elasticsearch.hosts = [ "127.0.0.1" ]
- * elasticsearch.port = 9300
- * elasticsearch.cluster_name = clusterName
+ * opensearch.hosts = [ "127.0.0.1" ]
+ * opensearch.port = 9300
+ * opensearch.cluster_name = clusterName
  */
 public class SnifferFuseClient implements FuseClient{
     public static final String SYSTEM = "fuse_node_info";
@@ -361,9 +361,9 @@ public class SnifferFuseClient implements FuseClient{
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
-        configuration.setClusterPort(conf.getInt("elasticsearch.port"));
-        configuration.setClusterName(conf.getString("elasticsearch.cluster_name"));
+        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts")).toJavaArray(String.class));
+        configuration.setClusterPort(conf.getInt("opensearch.port"));
+        configuration.setClusterName(conf.getString("opensearch.cluster_name"));
 
         configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
                 conf.getBoolean("client.transport.ignore_cluster_name"));

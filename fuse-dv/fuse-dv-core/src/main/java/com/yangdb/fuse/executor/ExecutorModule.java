@@ -39,9 +39,9 @@ import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.dispatcher.resource.store.LoggingResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStoreFactory;
-import com.yangdb.fuse.executor.elasticsearch.ClientProvider;
-import com.yangdb.fuse.executor.elasticsearch.TimeoutClientAdvisor;
-import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
+import com.yangdb.fuse.executor.opensearch.ClientProvider;
+import com.yangdb.fuse.executor.opensearch.TimeoutClientAdvisor;
+import com.yangdb.fuse.executor.opensearch.logging.LoggingClient;
 import com.yangdb.fuse.executor.logging.LoggingCursorFactory;
 import com.yangdb.fuse.executor.ontology.CachedGraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
@@ -52,7 +52,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphInitiator;
 import com.yangdb.fuse.executor.resource.PersistentResourceStore;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -229,11 +229,11 @@ public class ExecutorModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
-                ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
-                this.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
+                boolean createMock = conf.hasPath("fuse.opensearch.mock") && conf.getBoolean("fuse.opensearch.mock");
+                OpensearchGraphConfiguration opensearchGraphConfiguration = createElasticGraphConfiguration(conf);
+                this.bind(OpensearchGraphConfiguration.class).toInstance(opensearchGraphConfiguration);
 
-                ClientProvider provider = new ClientProvider(createMock, elasticGraphConfiguration);
+                ClientProvider provider = new ClientProvider(createMock, opensearchGraphConfiguration);
                 Client client = provider.get();
 
                 this.bindConstant()
@@ -258,7 +258,7 @@ public class ExecutorModule extends ModuleBase {
 
                 this.expose(Client.class);
                 this.expose(Client.class).annotatedWith(named(globalClient));
-                this.expose(ElasticGraphConfiguration.class);
+                this.expose(OpensearchGraphConfiguration.class);
             }
         });
     }
@@ -333,15 +333,15 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends SearchOrderProviderFactory>) (Class.forName(conf.getString(conf.getString("assembly") + ".search_order_provider")));
     }
 
-    private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
-        ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
-        configuration.setClusterPort(conf.getInt("elasticsearch.port"));
-        configuration.setClusterName(conf.getString("elasticsearch.cluster_name"));
-        configuration.setElasticGraphDefaultSearchSize(conf.getLong("elasticsearch.default_search_size"));
-        configuration.setElasticGraphMaxSearchSize(conf.getLong("elasticsearch.max_search_size"));
-        configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
-        configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
+    private OpensearchGraphConfiguration createElasticGraphConfiguration(Config conf) {
+        OpensearchGraphConfiguration configuration = new OpensearchGraphConfiguration();
+        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts")).toJavaArray(String.class));
+        configuration.setClusterPort(conf.getInt("opensearch.port"));
+        configuration.setClusterName(conf.getString("opensearch.cluster_name"));
+        configuration.setElasticGraphDefaultSearchSize(conf.getLong("opensearch.default_search_size"));
+        configuration.setElasticGraphMaxSearchSize(conf.getLong("opensearch.max_search_size"));
+        configuration.setElasticGraphScrollSize(conf.getInt("opensearch.scroll_size"));
+        configuration.setElasticGraphScrollTime(conf.getInt("opensearch.scroll_time"));
 
         configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
                 conf.getBoolean("client.transport.ignore_cluster_name"));

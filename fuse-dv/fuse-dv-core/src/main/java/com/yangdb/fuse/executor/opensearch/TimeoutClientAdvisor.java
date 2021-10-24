@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 /*-
  * #%L
@@ -21,7 +21,7 @@ package com.yangdb.fuse.executor.elasticsearch;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.executor.elasticsearch.logging.LoggingClient;
+import com.yangdb.fuse.executor.opensearch.logging.LoggingClient;
 import com.yangdb.fuse.model.transport.ExecutionScope;
 import org.opensearch.action.*;
 import org.opensearch.action.bulk.BulkRequest;

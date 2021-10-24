@@ -14,7 +14,7 @@ import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.executor.cursor.discrete.GraphQLTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.GraphTraversalCursor;
 import com.yangdb.fuse.executor.cursor.discrete.PathsTraversalCursor;
-import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
+import com.yangdb.fuse.executor.mock.opensearch.MockClient;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.ontology.schema.load.CSVDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;

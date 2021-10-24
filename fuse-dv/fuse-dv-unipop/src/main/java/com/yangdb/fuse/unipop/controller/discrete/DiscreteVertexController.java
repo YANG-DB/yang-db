@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
@@ -67,7 +67,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
-    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public DiscreteVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
         super(labels -> Stream.ofAll(labels).isEmpty() ||
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet().containsAll(Stream.ofAll(labels).toJavaSet()),
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet());
@@ -293,7 +293,7 @@ public class DiscreteVertexController extends VertexControllerBase {
 
     //region Fields
     private Client client;
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;

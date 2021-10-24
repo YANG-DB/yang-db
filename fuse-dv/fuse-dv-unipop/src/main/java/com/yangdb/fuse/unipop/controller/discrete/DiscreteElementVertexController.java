@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
@@ -60,7 +60,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     //region Constructors
     public DiscreteElementVertexController(
             Client client,
-            ElasticGraphConfiguration configuration,
+            OpensearchGraphConfiguration configuration,
             UniGraph graph,
             GraphElementSchemaProvider schemaProvider,
             SearchOrderProviderFactory orderProviderFactory) {
@@ -162,7 +162,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
     //region Fields
     private Client client;
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     private UniGraph graph;
     private SearchOrderProviderFactory orderProviderFactory;
     private GraphElementSchemaProvider schemaProvider;

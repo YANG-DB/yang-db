@@ -7,7 +7,7 @@ import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.Mappings;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.ElementController;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
@@ -64,7 +64,7 @@ public class DiscreteTraversalTest {
     //region Static Fields
     public static final String CLUSTER_NAME = "knowledge";
     public static ElasticEmbeddedNode elasticEmbeddedNode;
-    public static ElasticGraphConfiguration elasticGraphConfiguration;
+    public static OpensearchGraphConfiguration opensearchGraphConfiguration;
     public static UniGraphConfiguration uniGraphConfiguration;
     public static UniGraph graph;
     public static GraphElementSchemaProvider schemaProvider;
@@ -78,12 +78,12 @@ public class DiscreteTraversalTest {
     @BeforeClass
     public static void setup() throws Exception {
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(CLUSTER_NAME);
-        elasticGraphConfiguration = new ElasticGraphConfiguration();
-        elasticGraphConfiguration.setClusterName(CLUSTER_NAME);
-        elasticGraphConfiguration.setElasticGraphScrollSize(1000);
-        elasticGraphConfiguration.setElasticGraphMaxSearchSize(1000);
-        elasticGraphConfiguration.setElasticGraphDefaultSearchSize(1000);
-        elasticGraphConfiguration.setElasticGraphScrollTime(600000);
+        opensearchGraphConfiguration = new OpensearchGraphConfiguration();
+        opensearchGraphConfiguration.setClusterName(CLUSTER_NAME);
+        opensearchGraphConfiguration.setElasticGraphScrollSize(1000);
+        opensearchGraphConfiguration.setElasticGraphMaxSearchSize(1000);
+        opensearchGraphConfiguration.setElasticGraphDefaultSearchSize(1000);
+        opensearchGraphConfiguration.setElasticGraphScrollTime(600000);
 
         schemaProvider = getSchemaProvider();
 
@@ -100,7 +100,7 @@ public class DiscreteTraversalTest {
                                 new ElementController(
                                         new DiscreteElementVertexController(
                                                 client,
-                                                elasticGraphConfiguration,
+                                                opensearchGraphConfiguration,
                                                 uniGraph,
                                                 schemaProvider,
                                                 orderProvider),
@@ -108,13 +108,13 @@ public class DiscreteTraversalTest {
                                 ),
                                 new DiscreteVertexController(
                                         client,
-                                        elasticGraphConfiguration,
+                                        opensearchGraphConfiguration,
                                         uniGraph,
                                         schemaProvider,
                                         orderProvider),
                                 new DiscreteElementReduceController(
                                         client,
-                                        elasticGraphConfiguration,
+                                        opensearchGraphConfiguration,
                                         uniGraph,
                                         schemaProvider)
                         );

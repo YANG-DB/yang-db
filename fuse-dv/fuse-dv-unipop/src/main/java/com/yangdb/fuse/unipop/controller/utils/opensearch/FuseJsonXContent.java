@@ -1,4 +1,4 @@
-package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
+package com.yangdb.fuse.unipop.controller.utils.opensearch;
 
 /*-
  * #%L
@@ -40,7 +40,7 @@ public class FuseJsonXContent implements XContent {
     }
 
     private static final JsonFactory jsonFactory;
-    public static final String JSON_ALLOW_UNQUOTED_FIELD_NAMES = "elasticsearch.json.allow_unquoted_field_names";
+    public static final String JSON_ALLOW_UNQUOTED_FIELD_NAMES = "opensearch.json.allow_unquoted_field_names";
     public static final FuseJsonXContent fuseJsonXContent;
     public static final boolean unquotedFieldNamesSet;
 

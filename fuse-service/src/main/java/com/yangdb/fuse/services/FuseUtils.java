@@ -32,11 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FuseUtils {
-    public static final String ELASTICSEARCH_EMBEDDED = "elasticsearch.embedded";
-    public static final String ELASTICSEARCH_CLUSTER_NAME = "elasticsearch.cluster_name";
-    public static final String ELASTICSEARCH_DELETE_DATA_ON_LOAD = "elasticsearch.delete_data_on_load";
-    public static final String ELASTICSEARCH_PORT = "elasticsearch.port ";
-    public static final String ELASTICSEARCH_WORKING_DIR = "elasticsearch.workingDir";
+    public static final String OPENSEARCH_EMBEDDED = "opensearch.embedded";
+    public static final String OPENSEARCH_CLUSTER_NAME = "opensearch.cluster_name";
+    public static final String OPENSEARCH_DELETE_DATA_ON_LOAD = "opensearch.delete_data_on_load";
+    public static final String OPENSEARCH_PORT = "opensearch.port ";
+    public static final String OPENSEARCH_WORKING_DIR = "opensearch.workingDir";
 
     private static List<AutoCloseable> closeables = new ArrayList<>();
 
@@ -50,19 +50,19 @@ public abstract class FuseUtils {
     }
 
     public static boolean loadEmbedded(Config config) throws Exception {
-        if(config.hasPath(ELASTICSEARCH_EMBEDDED) &&
-            config.getBoolean(ELASTICSEARCH_EMBEDDED)) {
-            String nodeName = config.getString(ELASTICSEARCH_CLUSTER_NAME);
+        if(config.hasPath(OPENSEARCH_EMBEDDED) &&
+            config.getBoolean(OPENSEARCH_EMBEDDED)) {
+            String nodeName = config.getString(OPENSEARCH_CLUSTER_NAME);
             boolean deleteOnLoad = true;
-            if(config.hasPath(ELASTICSEARCH_DELETE_DATA_ON_LOAD)) {
-                deleteOnLoad = config.getBoolean(ELASTICSEARCH_DELETE_DATA_ON_LOAD);
+            if(config.hasPath(OPENSEARCH_DELETE_DATA_ON_LOAD)) {
+                deleteOnLoad = config.getBoolean(OPENSEARCH_DELETE_DATA_ON_LOAD);
             }
-            int nodePort = config.getInt(ELASTICSEARCH_PORT);
+            int nodePort = config.getInt(OPENSEARCH_PORT);
             String target =  "target/es";
-            if(config.hasPath(ELASTICSEARCH_WORKING_DIR))
-                target = config.getString(ELASTICSEARCH_WORKING_DIR);
+            if(config.hasPath(OPENSEARCH_WORKING_DIR))
+                target = config.getString(OPENSEARCH_WORKING_DIR);
 
-            System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
+            System.out.println(String.format("Loading opensearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("opensearch.embedded"),nodeName,nodePort,target));
             closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
             return true;
         }

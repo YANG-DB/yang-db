@@ -19,10 +19,9 @@ package com.yangdb.fuse.services.embedded;
  * limitations under the License.
  * #L%
  */
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 
 import org.opensearch.client.transport.TransportClient;
-import org.opensearch.common.logging.LogConfigurator;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
@@ -71,7 +70,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Constructors
 
-    public ElasticEmbeddedNode(ElasticGraphConfiguration configuration) throws Exception {
+    public ElasticEmbeddedNode(OpensearchGraphConfiguration configuration) throws Exception {
         this(TARGET_ES,HTTP_PORT,configuration.getClusterPort(),configuration.getClusterName(),1,false,configuration.getClusterProps());
     }
 

@@ -1,7 +1,7 @@
 package com.yangdb.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
 import com.yangdb.fuse.unipop.promise.Constraint;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
  */
 public class PromisePromiseElementVertexControllerTest {
     Client client;
-    ElasticGraphConfiguration configuration;
+    OpensearchGraphConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
@@ -99,7 +99,7 @@ public class PromisePromiseElementVertexControllerTest {
         when(searchRequestBuilderMock.execute()).thenReturn(futureMock);
         when(client.prepareSearch()).thenReturn(searchRequestBuilderMock);
 
-        configuration = mock(ElasticGraphConfiguration.class);
+        configuration = mock(OpensearchGraphConfiguration.class);
     }
 
     @Test

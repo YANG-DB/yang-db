@@ -3,11 +3,8 @@ package com.yangdb.fuse.services.engine2.data;
 import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.services.TestsConfiguration;
-import com.yangdb.fuse.services.engine2.NonRedundantTestSuite;
-import com.yangdb.fuse.services.mockEngine.TestSuiteAPISuite;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
-import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexController;
 import com.yangdb.fuse.unipop.controller.promise.PromiseVertexFilterController;
@@ -49,7 +46,7 @@ import static org.mockito.Mockito.when;
  */
 public class PromiseEdgeIT implements BaseITMarker {
     static TransportClient client;
-    static ElasticGraphConfiguration configuration;
+    static OpensearchGraphConfiguration configuration;
     static UniGraph graph;
     static MetricRegistry registry;
 
@@ -82,7 +79,7 @@ public class PromiseEdgeIT implements BaseITMarker {
 
         client.admin().indices().refresh(new RefreshRequest(INDEX_NAME)).actionGet();
 
-        configuration = mock(ElasticGraphConfiguration.class);
+        configuration = mock(OpensearchGraphConfiguration.class);
 
         graph = mock(UniGraph.class);
     }

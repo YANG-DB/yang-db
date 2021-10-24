@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.yangdb.fuse.unipop.controller.discrete.appender.DualEdgeDirectionSearchAppender;
@@ -65,7 +65,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     //region Constructors
     public DiscreteElementReduceController(
             Client client,
-            ElasticGraphConfiguration configuration,
+            OpensearchGraphConfiguration configuration,
             UniGraph graph,
             GraphElementSchemaProvider schemaProvider) {
 
@@ -253,7 +253,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     //region Fields
     private Profiler profiler = Profiler.Noop.instance  ;
     private Client client;
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     //endregion

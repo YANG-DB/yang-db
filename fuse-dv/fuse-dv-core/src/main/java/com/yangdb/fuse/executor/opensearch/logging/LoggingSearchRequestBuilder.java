@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.elasticsearch.logging;
+package com.yangdb.fuse.executor.opensearch.logging;
 
 /*-
  * #%L

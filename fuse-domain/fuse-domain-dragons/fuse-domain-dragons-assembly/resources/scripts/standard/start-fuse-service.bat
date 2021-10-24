@@ -13,9 +13,9 @@ for %%x in (%*) do (
 	if [!argName!]==[] (
 		if %%~x==--heapSize (
 			set argName=heapSize
-		) else if "%%~x"=="--elasticsearch.hosts" (
+		) else if "%%~x"=="--opensearch.hosts" (
 			set argName=elasticsearchHosts
-		) else if "%%~x"=="--elasticsearch.cluster_name" (
+		) else if "%%~x"=="--opensearch.cluster_name" (
 		    set argName=elasticsearchClusterName
 		) else if "%%~x"=="--config" (
             set argName=configFile

@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.yangdb.fuse.executor.elasticsearch;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.yangdb.fuse.executor.mock.elasticsearch.MockClient;
-import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.yangdb.fuse.executor.mock.opensearch.MockClient;
+import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import javaslang.collection.Stream;
 import org.opensearch.client.Client;
 import org.opensearch.client.transport.TransportClient;
@@ -45,7 +45,7 @@ public class ClientProvider implements Provider<Client> {
     //region Constructors
     public ClientProvider(
             @Named(createMockParameter) boolean createMock,
-            ElasticGraphConfiguration configuration) {
+            OpensearchGraphConfiguration configuration) {
         this.createMock = createMock;
         this.configuration = configuration;
     }
@@ -55,7 +55,7 @@ public class ClientProvider implements Provider<Client> {
     @Override
     public Client get() {
         if (this.createMock) {
-            System.out.println("Using mock elasticsearch client!");
+            System.out.println("Using mock opensearch client!");
             return new MockClient();
         }
 
@@ -78,6 +78,6 @@ public class ClientProvider implements Provider<Client> {
 
     //region Fields
     private boolean createMock;
-    private ElasticGraphConfiguration configuration;
+    private OpensearchGraphConfiguration configuration;
     //endregion
 }

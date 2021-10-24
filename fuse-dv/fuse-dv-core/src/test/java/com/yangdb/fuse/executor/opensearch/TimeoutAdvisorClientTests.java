@@ -1,4 +1,4 @@
-package com.yangdb.fuse.executor.elasticsearch;
+package com.yangdb.fuse.executor.opensearch;
 
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
