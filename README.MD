@@ -1,4 +1,4 @@
-From Graph to Elastic - A tail of a Yang-DB...
+From Graph to Open(Elastic)Search - A tail of a Yang-DB...
 =========================================================================================
 
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
@@ -61,6 +61,7 @@ Infrastructure Technologies
 -----------------------------------------------------------------------------------------------
 
 * [elasticsearch](https://www.elastic.co/)
+* [opensearch](https://opensearch.org/)
 * [jooby](https://jooby.org/)
 * [tinkerpop](http://tinkerpop.apache.org/)
 
@@ -132,7 +133,7 @@ One major difference in this model (compared to the strict relational schema) is
 Additional graph model is the Resource Description Framework (RDF) model.
 
 
-Why Elastic
+Why Elastic / Opensearch
 ===========
 ![](https://media.licdn.com/dms/image/C4E12AQFR7RVJvIIVxA/article-inline_image-shrink_1000_1488/0?e=1547683200&v=beta&t=thjzxR2XgRNw1ldZCaRXzn4K7Nuc-giG0zAdtUIW7XU)
 
@@ -146,12 +147,12 @@ social graph that must be frequently updated and available for both:
 All the read & write are made in concurrency with reasonable response
 time and ever growing throughput.
 
-The first requirement was fulfilled using Elasticsearch – a well
+The first requirement was fulfilled using the DB  – a well
 known and established NoSql document search and storage engine capable
 of containing very large volume of data.
 
 For the second requirement **we decided that our best solution would be to
-use elasticsearch as the non-native graph-DB storage layer**.
+use opensearch as the non-native graph-DB storage layer**.
 
 As mentioned before, a graph-DB storage layer can be implemented using a
 non-native storage such as NoSql storage.
@@ -166,11 +167,11 @@ Modeling data as graph
 
 The first issue on our plate is to design the data model representing the graph, as a set of vertices and edges.
 
-With elastic we can utilize its powerful search abilities to efficiently fetch node & relation documents according to the query filters.
+With opensearch we can utilize its powerful search abilities to efficiently fetch node & relation documents according to the query filters.
 
-##### Elastic Index
+##### opensearch Index
 
-In elasticsearch each index can be described as a table for a specific
+In opensearch each index can be described as a table for a specific
 schema, the index itself is partitioned into shared which allow scale
 and redundancy (with replicas) across the cluster.
 
@@ -179,9 +180,9 @@ following formula:
 
 *shard_num = hash(_routing) % num_primary_shards*
 
-Each index has a schema (called type in elastic) which defines the
-documents structure (called mapping in elastic). Each index can hold
-only a single type of mapping (since elastic 6)
+Each index has a schema (called type in opensearch) which defines the
+documents structure (called mapping in opensearch). Each index can hold
+only a single type of mapping 
 
 The vertices index will contain the vertices documents with the
 properties, the edges index will contain the edges documents with their
@@ -230,9 +231,9 @@ From logical to physical
 ------------------------
 
 Once a logical query is given we need to translate it to the physical layer
-of the data storage which is elasticsearch.
+of the data storage which is opensearch.
 
-Elastic has a query DSL which is focused on search and aggregations –
+opensearch has a query DSL which is focused on search and aggregations –
 not on traversing, we need an additional translation phase that will
 take into account the schematic structure of the graph (and the
 underlying indices).
@@ -244,7 +245,7 @@ steps:
 
 -   translating the labels into real schema entities (indices)
 
--   creating the physical elastic query
+-   creating the physical opensearch query
 
 This is the process in a high-level review, in practice - there will be
 more stages that optimize the logical query; in some cases it is
@@ -257,9 +258,9 @@ Conclusion
 ---------------
 We started with discussing the purpose of graphs DB in today’s business use cases and reviewed different models for representing a graph. Understanding the fundamental logical building blocks that a potential graph DB should consist and discussed an existing NoSql candidate to fulfill the storage layer requirements.
 
-Once we selected elasticsearch as the storage layer we took the LDBC Social Network Benchmark graph model and simplified it to be optimized in that specific storage. We discussed the actual storage schema with the redundant properties and reviewed cypher language to query the storage in an sql-like graph pattern language.
+Once we selected opensearch as the storage layer we took the LDBC Social Network Benchmark graph model and simplified it to be optimized in that specific storage. We discussed the actual storage schema with the redundant properties and reviewed cypher language to query the storage in an sql-like graph pattern language.
 
-We continued to see the actual transformation of the cypher query into a physical execution query that will run by Elasticsearch.
+We continued to see the actual transformation of the cypher query into a physical execution query that will run by opensearch.
 
 In the last section we took a simple graph query and drilled down into the details of the execution strategies and the bulking mechanism.
 
