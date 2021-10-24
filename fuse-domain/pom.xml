@@ -14,8 +14,6 @@
 
     <modules>
         <module>fuse-domain-dragons</module>
-        <module>fuse-domain-knowledge</module>
-        <module>fuse-domain-cyber</module>
     </modules>
 
     <properties>

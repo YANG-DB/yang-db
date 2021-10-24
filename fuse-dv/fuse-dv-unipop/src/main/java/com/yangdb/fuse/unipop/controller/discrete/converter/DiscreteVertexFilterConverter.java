@@ -32,7 +32,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 import org.unipop.process.Profiler;
 
 import java.util.Collections;

@@ -43,7 +43,7 @@ import javaslang.Tuple2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 
 import java.io.IOException;
 import java.io.Reader;

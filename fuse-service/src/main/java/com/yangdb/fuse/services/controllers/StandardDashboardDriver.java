@@ -23,21 +23,21 @@ package com.yangdb.fuse.services.controllers;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.DashboardDriver;
 import com.yangdb.fuse.executor.resource.PersistantNodeStatusResource;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.histogram.InternalDateHistogram;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.support.ValueType;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.Client;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.opensearch.search.aggregations.bucket.histogram.InternalDateHistogram;
+import org.opensearch.search.aggregations.bucket.terms.StringTerms;
+import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.opensearch.search.aggregations.support.ValueType;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.opensearch.index.query.QueryBuilders.*;
 
 /**
  * Created by lior.perry on 20/02/2017.
@@ -57,7 +57,7 @@ public class StandardDashboardDriver implements DashboardDriver {
     public Map graphElementCount() {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
         aggregation.field("type");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
@@ -92,7 +92,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         builder.setQuery(boolQuery()
                 .should(termQuery("type", "e.value"))
                 .should(termQuery("type", "r.value")));
-        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount",ValueType.STRING);
+        final TermsAggregationBuilder aggregation = new TermsAggregationBuilder("graphElementCount");
         aggregation.field("fieldId");
         final SearchResponse response = builder.addAggregation(aggregation).get();
         final Map<Object, Long> elementCount = ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()

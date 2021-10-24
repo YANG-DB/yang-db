@@ -46,7 +46,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateInnerQueryCursorRequest;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.unipop.process.Profiler;
 import org.unipop.process.Profiler.Noop;
 

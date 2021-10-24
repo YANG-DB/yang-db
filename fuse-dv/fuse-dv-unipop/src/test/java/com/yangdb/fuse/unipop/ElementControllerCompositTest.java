@@ -12,18 +12,19 @@ import com.yangdb.fuse.unipop.promise.IdPromise;
 import com.yangdb.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
+import org.apache.lucene.search.TotalHits;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.document.DocumentField;
-import org.elasticsearch.common.text.Text;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.ListenableActionFuture;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchScrollRequestBuilder;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.client.Client;
+import org.opensearch.common.document.DocumentField;
+import org.opensearch.common.text.Text;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -87,9 +88,9 @@ public class ElementControllerCompositTest {
         Map<String, DocumentField> fields = new HashMap<>();
         fields.put("name", new DocumentField("name", Collections.singletonList("myName")));
         fields.put("type", new DocumentField("type", Collections.singletonList("myType")));
-        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields)};
+        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields,null)};
 
-        SearchHits searchHits = new SearchHits(tests, 10, 1.0f);
+        SearchHits searchHits = new SearchHits(tests, new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO), 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);
     }
 

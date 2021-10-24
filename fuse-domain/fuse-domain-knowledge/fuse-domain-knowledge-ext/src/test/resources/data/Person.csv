@@ -1,4 +1,0 @@
-id,context,created,fName,lName,born,age,email,currentAddressLocation,address
-0,generic,01/10/2018,first name,last name,12/12/2000,19,myName@fuse.com,"43.06,-70.34",some json value
-1,generic,01/10/2018,another first name,another last name,1/1/1999,20,notMyName@fuse.com,"40.06,-71.34",some other json value
-2,generic,11/5/2008,another third name,another third name,1/1/1999,20,notMyThirdName@fuse.com,"43.06,-70.34",some third json value

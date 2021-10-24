@@ -22,7 +22,7 @@ package com.yangdb.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.elasticsearch.action.ActionListener;
+import org.opensearch.action.ActionListener;
 
 import java.io.Closeable;
 import java.io.IOException;

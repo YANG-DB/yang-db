@@ -20,32 +20,32 @@ package com.yangdb.fuse.executor.mock.elasticsearch;
  * #L%
  */
 
-import org.elasticsearch.action.*;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteRequestBuilder;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.explain.ExplainRequest;
-import org.elasticsearch.action.explain.ExplainRequestBuilder;
-import org.elasticsearch.action.explain.ExplainResponse;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequest;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequestBuilder;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesResponse;
-import org.elasticsearch.action.get.*;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.*;
-import org.elasticsearch.action.termvectors.*;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateRequestBuilder;
-import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.AdminClient;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.threadpool.ThreadPool;
+import org.opensearch.action.*;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.delete.DeleteRequest;
+import org.opensearch.action.delete.DeleteRequestBuilder;
+import org.opensearch.action.delete.DeleteResponse;
+import org.opensearch.action.explain.ExplainRequest;
+import org.opensearch.action.explain.ExplainRequestBuilder;
+import org.opensearch.action.explain.ExplainResponse;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesRequest;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesRequestBuilder;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesResponse;
+import org.opensearch.action.get.*;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.index.IndexRequestBuilder;
+import org.opensearch.action.index.IndexResponse;
+import org.opensearch.action.search.*;
+import org.opensearch.action.termvectors.*;
+import org.opensearch.action.update.UpdateRequest;
+import org.opensearch.action.update.UpdateRequestBuilder;
+import org.opensearch.action.update.UpdateResponse;
+import org.opensearch.client.AdminClient;
+import org.opensearch.client.Client;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.threadpool.ThreadPool;
 
 import java.util.Map;
 
@@ -154,6 +154,11 @@ public class MockClient implements Client {
     }
 
     @Override
+    public BulkRequestBuilder prepareBulk(String globalIndex, String globalType) {
+        return null;
+    }
+
+    @Override
     public ActionFuture<GetResponse> get(GetRequest getRequest) {
         return null;
     }
@@ -254,26 +259,6 @@ public class MockClient implements Client {
     }
 
     @Override
-    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
-        return null;
-    }
-
-    @Override
-    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
-
-    }
-
-    @Override
-    public TermVectorsRequestBuilder prepareTermVector() {
-        return null;
-    }
-
-    @Override
-    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
-        return null;
-    }
-
-    @Override
     public ActionFuture<MultiTermVectorsResponse> multiTermVectors(MultiTermVectorsRequest multiTermVectorsRequest) {
         return null;
     }
@@ -329,18 +314,13 @@ public class MockClient implements Client {
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> ActionFuture<Response> execute(Action<Request, Response, RequestBuilder> action, Request request) {
+    public <Request extends ActionRequest, Response extends ActionResponse> ActionFuture<Response> execute(ActionType<Response> action, Request request) {
         return null;
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> void execute(Action<Request, Response, RequestBuilder> action, Request request, ActionListener<Response> actionListener) {
+    public <Request extends ActionRequest, Response extends ActionResponse> void execute(ActionType<Response> action, Request request, ActionListener<Response> listener) {
 
-    }
-
-    @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> RequestBuilder prepareExecute(Action<Request, Response, RequestBuilder> action) {
-        return null;
     }
 
     @Override

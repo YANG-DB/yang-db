@@ -24,22 +24,22 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-import org.elasticsearch.script.Script;
-import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregator;
-import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.avg.AvgAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.scripted.ScriptedMetricAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
-import org.elasticsearch.search.aggregations.pipeline.PipelineAggregatorBuilders;
+import org.opensearch.script.Script;
+import org.opensearch.search.aggregations.AbstractAggregationBuilder;
+import org.opensearch.search.aggregations.AggregationBuilders;
+import org.opensearch.search.aggregations.Aggregator;
+import org.opensearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.opensearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.AvgAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.CardinalityAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.MaxAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.MinAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.ScriptedMetricAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.StatsAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.TopHitsAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.ValueCountAggregationBuilder;
+import org.opensearch.search.aggregations.PipelineAggregatorBuilders;
 import org.unipop.process.predicate.CountFilterP;
 
 import java.util.*;
@@ -441,8 +441,8 @@ public class AggregationBuilder implements Cloneable {
         return this;
     }
 
-    public Iterable<org.elasticsearch.search.aggregations.AggregationBuilder> getAggregations() {
-        return (Iterable< org.elasticsearch.search.aggregations.AggregationBuilder>)root.build();
+    public Iterable<org.opensearch.search.aggregations.AggregationBuilder> getAggregations() {
+        return (Iterable< org.opensearch.search.aggregations.AggregationBuilder>)root.build();
     }
 
     // The clone will return a deep clone of the aggregation builder (except leaf values: e.g the Object value in terms composite).
@@ -626,7 +626,7 @@ public class AggregationBuilder implements Cloneable {
         @Override
         public Object build() {
             return this.getChildren().stream()
-                    .map(child -> (org.elasticsearch.search.aggregations.AbstractAggregationBuilder) child.build()).collect(Collectors.toList());
+                    .map(child -> (org.opensearch.search.aggregations.AbstractAggregationBuilder) child.build()).collect(Collectors.toList());
         }
         //endregion
     }
@@ -639,7 +639,7 @@ public class AggregationBuilder implements Cloneable {
         //endregion
 
         //region Protected Methods
-        public void applySubAggregationFromChild(org.elasticsearch.search.aggregations.AggregationBuilder aggregationBuilder, AggregationBuilder.Composite childComposite) {
+        public void applySubAggregationFromChild(org.opensearch.search.aggregations.AggregationBuilder aggregationBuilder, AggregationBuilder.Composite childComposite) {
             Object childAggregation = childComposite.build();
 
             if (AbstractAggregationBuilder.class.isAssignableFrom(childAggregation.getClass())) {
@@ -669,12 +669,12 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            Map<String, org.elasticsearch.index.query.QueryBuilder> filterMap = new HashMap<>();
+            Map<String, org.opensearch.index.query.QueryBuilder> filterMap = new HashMap<>();
             for (FilterComposite filter : this.getChildren().stream()
                     .filter(child -> FilterComposite.class.isAssignableFrom(child.getClass()))
                     .map(child -> (FilterComposite) child).collect(Collectors.toList())) {
 
-                org.elasticsearch.index.query.QueryBuilder filterBuilder = (org.elasticsearch.index.query.QueryBuilder)filter.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build();
+                org.opensearch.index.query.QueryBuilder filterBuilder = (org.opensearch.index.query.QueryBuilder)filter.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build();
                 filterMap.put(filter.getName(), filterBuilder);
             }
 
@@ -708,7 +708,7 @@ public class AggregationBuilder implements Cloneable {
         @Override
         public Object build() {
             return AggregationBuilders.filter(this.getName(),
-                    (org.elasticsearch.index.query.QueryBuilder)this.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build());
+                    (org.opensearch.index.query.QueryBuilder)this.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build());
         }
 
         @Override

@@ -21,10 +21,10 @@ package com.yangdb.fuse.unipop.controller.search;
  */
 
 import javaslang.collection.Stream;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.aggregations.bucket.composite.CompositeAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.client.Client;
+import org.opensearch.search.aggregations.bucket.composite.CompositeAggregationBuilder;
+import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -157,7 +157,7 @@ public class SearchBuilder {
      * @param agg
      * @param size
      */
-    private void enforceSize(org.elasticsearch.search.aggregations.AggregationBuilder agg, int size) {
+    private void enforceSize(org.opensearch.search.aggregations.AggregationBuilder agg, int size) {
         if (size > 0) {
             if (TermsAggregationBuilder.class.isAssignableFrom(agg.getClass())) {
                 ((TermsAggregationBuilder) agg).size(size);

@@ -22,8 +22,8 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
 
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentBuilderExtension;
+import org.opensearch.common.xcontent.XContentBuilder;
+import org.opensearch.common.xcontent.XContentBuilderExtension;
 
 import java.util.Collections;
 import java.util.HashMap;

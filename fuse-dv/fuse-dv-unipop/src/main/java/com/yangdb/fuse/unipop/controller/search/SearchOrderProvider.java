@@ -20,9 +20,9 @@ package com.yangdb.fuse.unipop.controller.search;
  * #L%
  */
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.search.sort.SortOrder;
 
 import java.util.Objects;
 

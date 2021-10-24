@@ -23,9 +23,9 @@ import com.yangdb.fuse.test.framework.index.Mappings.Mapping.Property;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
+import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.opensearch.action.admin.indices.refresh.RefreshRequest;
+import org.opensearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.io.IOException;

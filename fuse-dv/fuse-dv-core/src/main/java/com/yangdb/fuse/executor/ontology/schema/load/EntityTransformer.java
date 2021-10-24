@@ -41,7 +41,7 @@ import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.model.schema.Redundant;
 import com.yangdb.fuse.model.schema.Relation;
 import javaslang.Tuple2;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 
 import java.io.IOException;
 import java.util.Collection;

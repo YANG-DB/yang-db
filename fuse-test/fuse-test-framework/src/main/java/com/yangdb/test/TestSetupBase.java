@@ -22,7 +22,7 @@ package com.yangdb.test;
 
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.elasticsearch.client.transport.TransportClient;
+import org.opensearch.client.transport.*;
 
 public abstract class TestSetupBase {
     protected ElasticEmbeddedNode instance;

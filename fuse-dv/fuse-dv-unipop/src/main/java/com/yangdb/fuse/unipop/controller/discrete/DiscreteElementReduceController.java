@@ -43,9 +43,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.Client;
 import org.unipop.process.Profiler;
 import org.unipop.query.aggregation.ReduceEdgeQuery;
 import org.unipop.query.aggregation.ReduceQuery;
@@ -88,7 +88,7 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchResponse response = searchRequest.execute().actionGet();
-        long totalHits = response.getHits().getTotalHits();
+        long totalHits = response.getHits().getTotalHits().value;
         //report count
         String stepName = "Reduce[" + reduceQuery.getStepDescriptor().getDescription().orElse("?") + "]";
         getProfiler().get().incrementCount(stepName,totalHits);

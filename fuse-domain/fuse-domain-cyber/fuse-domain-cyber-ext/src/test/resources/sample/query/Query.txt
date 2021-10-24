@@ -1,8 +1,0 @@
-MATCH [user:CyberObject {attributes:type=User}]-(done:EventTypes {attributes:activity=delete})-[file:CyberObject {attributes:type=File}],
-      [file:CyberObject {attributes:type=File}]-(done:EventTypes {attributes:activity=create})-[process:CyberObject {attributes:type=Proc}]
-WHERE
-    user.role eq 'Admin'
-        AND
-     ...
-
-return *

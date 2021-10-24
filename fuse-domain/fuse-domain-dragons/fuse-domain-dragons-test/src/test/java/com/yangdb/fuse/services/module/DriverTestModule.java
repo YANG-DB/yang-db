@@ -28,7 +28,7 @@ import com.yangdb.fuse.services.dispatcher.driver.MockDriver;
 import com.yangdb.fuse.services.engine2.data.schema.InitialTestDataLoader;
 import com.yangdb.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 

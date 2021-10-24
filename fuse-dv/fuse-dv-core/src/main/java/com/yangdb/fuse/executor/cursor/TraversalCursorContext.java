@@ -28,7 +28,7 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 
 /**
  * Created by Roman on 05/04/2017.

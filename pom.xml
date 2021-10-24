@@ -10,7 +10,7 @@
     <name>YangDb open source graph DB project</name>
 
     <description>
-        YANGDB Open-source, Scalable, Non-native Graph database (Powered by Elasticsearch)
+        YANGDB Open-source, Scalable, Non-native Graph database (Powered by Opensearch)
     </description>
     <url>http://www.yangdb.org/</url>
 
@@ -124,12 +124,13 @@
         <!-- caffeine -->
         <caffeine.version>2.6.2</caffeine.version>
 
-        <!-- elasticsearch -->
-        <elasticsearch.version>6.5.4</elasticsearch.version>
+        <!-- opensearch -->
+        <opensearch.version>1.1.0</opensearch.version>
+        <opensearch.client.version>1.1.0</opensearch.client.version>
         <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
 
         <!-- lucene -->
-        <lucene.version>7.5.0</lucene.version>
+        <lucene.version>8.9.0</lucene.version>
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
@@ -262,28 +263,6 @@
                 <version>${fuse.version}</version>
             </dependency>
 
-            <!-- Knowledge Deployment Assemblies   -->
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-ext</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-tutorial</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-datagen</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-test</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-
             <!-- Dragons Deployment Assemblies   -->
             <dependency>
                 <groupId>com.yangdb</groupId>
@@ -303,18 +282,6 @@
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-dragons-test</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-
-            <!-- Cyber Deployment Assemblies   -->
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-cyber-ext</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-cyber-assembly</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
 
@@ -616,23 +583,26 @@
                 <version>1.6.0</version>
             </dependency>
             <!-- jooby -->
-            <!-- elasticsearch -->
+            <!-- opensearch -->
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>${elasticsearch.version}</version>
+                <groupId>org.opensearch</groupId>
+                <artifactId>opensearch</artifactId>
+                <version>${opensearch.version}</version>
             </dependency>
+
             <dependency>
-                <groupId>org.elasticsearch.client</groupId>
+                <groupId>org.opensearch.client</groupId>
                 <artifactId>transport</artifactId>
-                <version>${elasticsearch.client.version}</version>
+                <version>${opensearch.client.version}</version>
             </dependency>
+
             <!--ES plugin module for setting up an embedded ES node during tests-->
             <dependency>
                 <groupId>org.codelibs.elasticsearch.module</groupId>
                 <artifactId>analysis-common</artifactId>
                 <version>${elasticsearch.client.version}</version>
             </dependency>
+
             <!-- elasticsearch -->
 
 
@@ -812,13 +782,6 @@
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-asg</artifactId>
-                <version>${fuse.version}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-knowledge-test</artifactId>
                 <version>${fuse.version}</version>
                 <type>test-jar</type>
                 <scope>test</scope>
@@ -1338,18 +1301,6 @@
             <id>dragons-sys-test</id>
             <modules>
                 <module>fuse-domain/fuse-domain-dragons/fuse-domain-dragons-test</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>knowledge-assembly</id>
-            <modules>
-                <module>fuse-domain/fuse-domain-knowledge</module>
-            </modules>
-        </profile>
-      <profile>
-            <id>knowledge-sys-test</id>
-            <modules>
-                <module>fuse-domain/fuse-domain-knowledge/fuse-domain-knowledge-test</module>
             </modules>
         </profile>
         <profile>

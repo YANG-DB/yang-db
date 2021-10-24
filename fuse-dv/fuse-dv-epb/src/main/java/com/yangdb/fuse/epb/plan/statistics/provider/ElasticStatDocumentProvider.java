@@ -29,9 +29,9 @@ import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
 import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.client.Client;
+import org.opensearch.search.SearchHit;
 
 import java.util.Map;
 

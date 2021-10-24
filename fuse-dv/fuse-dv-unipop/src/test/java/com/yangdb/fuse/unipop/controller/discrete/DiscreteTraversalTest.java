@@ -25,11 +25,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.DefaultTraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
 import org.apache.tinkerpop.gremlin.structure.*;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.opensearch.action.admin.indices.refresh.RefreshRequest;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.common.xcontent.XContentType;
 import org.junit.*;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.coalesce.UniGraphCoalesceStepStrategy;
@@ -126,7 +126,7 @@ public class DiscreteTraversalTest {
                 }, new NewStandardStrategyProvider());
 
         client.admin().indices().preparePutTemplate("all")
-                .setTemplate("*")
+                .setPatterns(Arrays.asList("*"))
                 .setSettings(Settings.builder()
                         .put("number_of_shards", 1)
                         .put("number_of_replicas", 0).build())

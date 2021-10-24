@@ -26,8 +26,8 @@ import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.results.LoadResponse;
 import javaslang.Tuple2;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.Client;
+import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.client.Client;
 
 import java.io.*;
 import java.nio.file.Files;

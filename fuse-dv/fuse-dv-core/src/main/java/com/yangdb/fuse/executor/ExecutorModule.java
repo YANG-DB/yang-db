@@ -56,7 +56,7 @@ import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;

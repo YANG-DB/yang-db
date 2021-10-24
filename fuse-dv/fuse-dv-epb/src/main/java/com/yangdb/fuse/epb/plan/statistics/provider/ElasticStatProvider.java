@@ -26,7 +26,7 @@ import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.utils.map.MapBuilder;
 import javaslang.collection.Stream;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 
 import java.util.*;
 

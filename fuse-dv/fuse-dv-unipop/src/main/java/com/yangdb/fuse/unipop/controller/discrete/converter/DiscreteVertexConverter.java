@@ -29,7 +29,7 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 import org.unipop.process.Profiler;
 
 import java.util.Arrays;

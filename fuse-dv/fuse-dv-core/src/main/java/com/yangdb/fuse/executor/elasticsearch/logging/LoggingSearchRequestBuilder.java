@@ -23,11 +23,11 @@ package com.yangdb.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchAction;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.ElasticsearchClient;
+import org.opensearch.action.ListenableActionFuture;
+import org.opensearch.action.search.SearchAction;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.OpenSearchClient;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.function.Function;
 public class LoggingSearchRequestBuilder extends SearchRequestBuilder {
     //region Constructors
     public LoggingSearchRequestBuilder(
-            ElasticsearchClient client,
+            OpenSearchClient client,
             SearchAction action,
             Function<SearchRequestBuilder, LogMessage> startMessage,
             Function<SearchRequestBuilder, LogMessage> verboseMessage,

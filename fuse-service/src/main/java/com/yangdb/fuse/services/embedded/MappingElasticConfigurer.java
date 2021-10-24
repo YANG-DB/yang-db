@@ -23,10 +23,10 @@ package com.yangdb.fuse.services.embedded;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
-import org.elasticsearch.ResourceAlreadyExistsException;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
+import org.opensearch.ResourceAlreadyExistsException;
+import org.opensearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.common.settings.Settings;
 
 import java.io.IOException;
 import java.util.Collections;

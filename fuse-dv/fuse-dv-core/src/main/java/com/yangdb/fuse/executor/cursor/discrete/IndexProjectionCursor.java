@@ -35,8 +35,8 @@ import com.yangdb.fuse.model.results.AssignmentsQueryResult;
 import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 import javaslang.Tuple2;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.Client;
+import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.client.Client;
 
 import java.util.Collections;
 import java.util.List;

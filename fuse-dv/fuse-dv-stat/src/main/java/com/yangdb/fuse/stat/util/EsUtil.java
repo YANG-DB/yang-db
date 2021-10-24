@@ -30,28 +30,28 @@ import com.yangdb.fuse.stat.model.result.StatRangeResult;
 import com.yangdb.fuse.stat.model.result.StatTermResult;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.Requests;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.collect.ImmutableOpenMap;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.filter.Filters;
-import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
-import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStatsAggregationBuilder;
+import org.opensearch.action.admin.cluster.state.ClusterStateResponse;
+import org.opensearch.action.admin.indices.stats.IndicesStatsRequest;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.index.IndexResponse;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.Client;
+import org.opensearch.client.Requests;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.cluster.metadata.IndexMetadata;
+import org.opensearch.cluster.metadata.MappingMetadata;
+import org.opensearch.common.collect.ImmutableOpenMap;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.aggregations.AggregationBuilders;
+import org.opensearch.search.aggregations.bucket.filter.Filters;
+import org.opensearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.opensearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.opensearch.search.aggregations.bucket.range.Range;
+import org.opensearch.search.aggregations.bucket.range.RangeAggregationBuilder;
+import org.opensearch.search.aggregations.metrics.InternalCardinality;
+import org.opensearch.search.aggregations.metrics.ExtendedStats;
+import org.opensearch.search.aggregations.metrics.ExtendedStatsAggregationBuilder;
 
 import java.util.*;
 
@@ -305,14 +305,14 @@ public class EsUtil {
      */
     public static boolean isIndexExists(Client client, String index) {
 
-        IndexMetaData indexMetaData = client.admin().cluster()
+        final IndexMetadata indexMetadata = client.admin().cluster()
                 .state(Requests.clusterStateRequest())
                 .actionGet()
                 .getState()
-                .getMetaData()
+                .getMetadata()
                 .index(index);
 
-        return indexMetaData != null;
+        return indexMetadata != null;
 
     }
 
@@ -328,7 +328,7 @@ public class EsUtil {
                 .setSize(1)
                 .execute().actionGet();
 
-        return response.getHits().getTotalHits() > 0;
+        return response.getHits().getHits().length > 0;
     }
 
     public static boolean isDocExists(Client client, String index, String type, String docId) {
@@ -422,11 +422,11 @@ public class EsUtil {
      * @param index  Index Name
      * @return
      */
-    public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
+    public static ImmutableOpenMap<String, MappingMetadata> getMappingsOfIndex(
             Client client, String index) {
         ClusterStateResponse clusterStateResponse = client.admin().cluster()
                 .prepareState().execute().actionGet();
-        return clusterStateResponse.getState().getMetaData().index(index)
+        return clusterStateResponse.getState().getMetadata().index(index)
                 .getMappings();
     }
 

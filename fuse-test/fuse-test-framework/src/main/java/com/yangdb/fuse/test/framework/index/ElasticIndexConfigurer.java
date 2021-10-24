@@ -20,7 +20,7 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
-import org.elasticsearch.client.transport.TransportClient;
+import org.opensearch.client.transport.TransportClient;
 
 /**
  * Created by moti on 3/21/2017.

@@ -8,10 +8,10 @@ import com.yangdb.fuse.stat.model.configuration.StatContainer;
 import com.yangdb.fuse.stat.model.configuration.Type;
 import com.yangdb.fuse.stat.model.histogram.Histogram;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.SearchHit;
 import org.junit.Assert;
 
 import java.text.ParseException;

@@ -21,12 +21,12 @@ package com.yangdb.fuse.executor.elasticsearch;
  * #L%
  */
 
-import org.elasticsearch.action.ActionFuture;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateAction;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequestBuilder;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.ElasticsearchClient;
+import org.opensearch.action.ActionFuture;
+import org.opensearch.action.admin.indices.template.put.PutIndexTemplateAction;
+import org.opensearch.action.admin.indices.template.put.PutIndexTemplateRequest;
+import org.opensearch.action.admin.indices.template.put.PutIndexTemplateRequestBuilder;
+import org.opensearch.action.support.master.AcknowledgedResponse;
+import org.opensearch.client.OpenSearchClient;
 
 import java.util.Collections;
 import java.util.Map;
@@ -36,11 +36,11 @@ public class ESPutIndexTemplateRequestBuilder extends PutIndexTemplateRequestBui
     private String type;
     private Map<String, Object> mappings;
 
-    public ESPutIndexTemplateRequestBuilder(ElasticsearchClient client, PutIndexTemplateAction action) {
+    public ESPutIndexTemplateRequestBuilder(OpenSearchClient client, PutIndexTemplateAction action) {
         super(client, action);
     }
 
-    public ESPutIndexTemplateRequestBuilder(ElasticsearchClient client, PutIndexTemplateAction action, String name) {
+    public ESPutIndexTemplateRequestBuilder(OpenSearchClient client, PutIndexTemplateAction action, String name) {
         super(client, action, name);
     }
 

@@ -9,9 +9,9 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,14 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
  * #L%
  */
 
-import org.elasticsearch.ElasticsearchParseException;
-import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.collect.Tuple;
-import org.elasticsearch.common.compress.Compressor;
-import org.elasticsearch.common.compress.CompressorFactory;
-import org.elasticsearch.common.xcontent.*;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.OpenSearchParseException;
+import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.common.collect.Tuple;
+import org.opensearch.common.compress.Compressor;
+import org.opensearch.common.compress.CompressorFactory;
+import org.opensearch.common.compress.DeflateCompressor;
+import org.opensearch.common.xcontent.*;
+import org.opensearch.search.SearchHit;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -43,14 +44,14 @@ public class SearchHitUtils {
     }
 
     public static Tuple<XContentType, Map<String, Object>> convertToMap(BytesReference bytes, boolean ordered, XContentType xContentType)
-            throws ElasticsearchParseException {
+            throws OpenSearchParseException {
         try {
             final XContentType contentType;
             InputStream input;
-            Compressor compressor = CompressorFactory.compressor(bytes);
-            if (compressor != null) {
-                InputStream compressedStreamInput = compressor.streamInput(bytes.streamInput());
-                if (compressedStreamInput.markSupported() == false) {
+            if (CompressorFactory.isCompressed(bytes)) {
+                DeflateCompressor compressor = (DeflateCompressor) CompressorFactory.compressor(bytes);
+                InputStream compressedStreamInput = compressor.threadLocalInputStream(bytes.streamInput());
+                if (!compressedStreamInput.markSupported()) {
                     compressedStreamInput = new BufferedInputStream(compressedStreamInput);
                 }
                 input = compressedStreamInput;
@@ -60,17 +61,17 @@ public class SearchHitUtils {
             contentType = xContentType != null ? xContentType : XContentFactory.xContentType(input);
             return new Tuple<>(Objects.requireNonNull(contentType), convertToMap(FuseJsonXContent.fuseJsonXContent, input, ordered));
         } catch (IOException e) {
-            throw new ElasticsearchParseException("Failed to parse content to map", e);
+            throw new OpenSearchParseException("Failed to parse content to map", e);
         }
     }
 
     public static Map<String, Object> convertToMap(XContent xContent, InputStream input, boolean ordered)
-            throws ElasticsearchParseException {
+            throws OpenSearchParseException {
         // It is safe to use EMPTY here because this never uses namedObject
-        try (XContentParser parser = xContent.createParser(NamedXContentRegistry.EMPTY,DeprecationHandler.THROW_UNSUPPORTED_OPERATION, input)) {
+        try (XContentParser parser = xContent.createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, input)) {
             return ordered ? parser.mapOrdered() : parser.map();
         } catch (IOException e) {
-            throw new ElasticsearchParseException("Failed to parse content to map", e);
+            throw new OpenSearchParseException("Failed to parse content to map", e);
         }
     }
 }

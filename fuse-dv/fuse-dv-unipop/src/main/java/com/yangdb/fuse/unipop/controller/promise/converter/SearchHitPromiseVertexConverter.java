@@ -24,7 +24,7 @@ import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
 import com.yangdb.fuse.unipop.promise.Promise;
 import com.yangdb.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 import org.unipop.process.Profiler;
 import org.unipop.structure.UniGraph;
 

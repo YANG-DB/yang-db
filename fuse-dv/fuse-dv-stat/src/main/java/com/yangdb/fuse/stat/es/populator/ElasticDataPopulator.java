@@ -21,11 +21,11 @@ package com.yangdb.fuse.stat.es.populator;
  */
 
 import com.yangdb.fuse.stat.es.providers.GenericDataProvider;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
+import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.index.IndexRequestBuilder;
+import org.opensearch.client.transport.TransportClient;
 
 import java.io.IOException;
 import java.util.Map;

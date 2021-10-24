@@ -25,32 +25,32 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.logging.*;
-import org.elasticsearch.action.*;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteRequestBuilder;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.explain.ExplainRequest;
-import org.elasticsearch.action.explain.ExplainRequestBuilder;
-import org.elasticsearch.action.explain.ExplainResponse;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequest;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequestBuilder;
-import org.elasticsearch.action.fieldcaps.FieldCapabilitiesResponse;
-import org.elasticsearch.action.get.*;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.*;
-import org.elasticsearch.action.termvectors.*;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateRequestBuilder;
-import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.AdminClient;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.threadpool.ThreadPool;
+import org.opensearch.action.*;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.delete.DeleteRequest;
+import org.opensearch.action.delete.DeleteRequestBuilder;
+import org.opensearch.action.delete.DeleteResponse;
+import org.opensearch.action.explain.ExplainRequest;
+import org.opensearch.action.explain.ExplainRequestBuilder;
+import org.opensearch.action.explain.ExplainResponse;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesRequest;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesRequestBuilder;
+import org.opensearch.action.fieldcaps.FieldCapabilitiesResponse;
+import org.opensearch.action.get.*;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.index.IndexRequestBuilder;
+import org.opensearch.action.index.IndexResponse;
+import org.opensearch.action.search.*;
+import org.opensearch.action.termvectors.*;
+import org.opensearch.action.update.UpdateRequest;
+import org.opensearch.action.update.UpdateRequestBuilder;
+import org.opensearch.action.update.UpdateResponse;
+import org.opensearch.client.AdminClient;
+import org.opensearch.client.Client;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,6 +169,11 @@ public class LoggingClient implements Client {
     }
 
     @Override
+    public BulkRequestBuilder prepareBulk(String globalIndex, String globalType) {
+        return null;
+    }
+
+    @Override
     public ActionFuture<GetResponse> get(GetRequest getRequest) {
         return client.get(getRequest);
     }
@@ -220,7 +225,7 @@ public class LoggingClient implements Client {
                     (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
                             ElapsedFrom.now(),
                             ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                            ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                            ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                             ElasticResults.hitsWriter(response.getHits().getHits().length),
                             ElasticResults.shardsWrite(response.getTotalShards()),
                             ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -261,7 +266,7 @@ public class LoggingClient implements Client {
                                     ElapsedFrom.now(),
                                     ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
                                     NetworkElasticElapsed.stop(), NetworkElasticElapsed.stopTotal(),
-                                    ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                                    ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                                     ElasticResults.hitsWriter(response.getHits().getHits().length),
                                     ElasticResults.shardsWrite(response.getTotalShards()),
                                     ElasticResults.scrollIdWriter(response.getScrollId())
@@ -300,7 +305,7 @@ public class LoggingClient implements Client {
                 (response -> new LogMessage.Impl(this.logger, trace, "#{} finish search", sequence, LogType.of(success), search,
                         ElapsedFrom.now(),
                         ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                        ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                        ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                         ElasticResults.hitsWriter(response.getHits().getHits().length),
                         ElasticResults.shardsWrite(response.getTotalShards()),
                         ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -332,7 +337,7 @@ public class LoggingClient implements Client {
                     (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                             ElapsedFrom.now(),
                             ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                            ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                            ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                             ElasticResults.hitsWriter(response.getHits().getHits().length),
                             ElasticResults.shardsWrite(response.getTotalShards()),
                             ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -371,7 +376,7 @@ public class LoggingClient implements Client {
                             (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                                     ElapsedFrom.now(),
                                     ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                                    ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                                    ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                                     ElasticResults.hitsWriter(response.getHits().getHits().length),
                                     ElasticResults.shardsWrite(response.getTotalShards()),
                                     ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -412,7 +417,7 @@ public class LoggingClient implements Client {
                 (response -> new LogMessage.Impl(this.logger, trace, "#{} finish searchScroll", sequence, LogType.of(success), searchScroll,
                         ElapsedFrom.now(),
                         ElasticElapsed.of(response.getTook().duration()), ElasticElapsed.add(response.getTook().duration()),
-                        ElasticResults.totalHitsWriter(response.getHits().totalHits),
+                        ElasticResults.totalHitsWriter(response.getHits().getTotalHits().value),
                         ElasticResults.hitsWriter(response.getHits().getHits().length),
                         ElasticResults.shardsWrite(response.getTotalShards()),
                         ElasticResults.scrollIdWriter(response.getScrollId()),
@@ -461,29 +466,6 @@ public class LoggingClient implements Client {
         return client.prepareTermVectors(s, s1, s2);
     }
 
-    @Override
-    @Deprecated
-    public ActionFuture<TermVectorsResponse> termVector(TermVectorsRequest termVectorsRequest) {
-        return client.termVector(termVectorsRequest);
-    }
-
-    @Override
-    @Deprecated
-    public void termVector(TermVectorsRequest termVectorsRequest, ActionListener<TermVectorsResponse> actionListener) {
-        client.termVector(termVectorsRequest, actionListener);
-    }
-
-    @Override
-    @Deprecated
-    public TermVectorsRequestBuilder prepareTermVector() {
-        return client.prepareTermVector();
-    }
-
-    @Override
-    @Deprecated
-    public TermVectorsRequestBuilder prepareTermVector(String s, String s1, String s2) {
-        return client.prepareTermVector(s, s1, s2);
-    }
 
     @Override
     public ActionFuture<MultiTermVectorsResponse> multiTermVectors(MultiTermVectorsRequest multiTermVectorsRequest) {
@@ -556,18 +538,13 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> ActionFuture<Response> execute(Action<Request, Response, RequestBuilder> action, Request request) {
+    public <Request extends ActionRequest, Response extends ActionResponse> ActionFuture<Response> execute(ActionType<Response> action, Request request) {
         return client.execute(action, request);
     }
 
     @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> void execute(Action<Request, Response, RequestBuilder> action, Request request, ActionListener<Response> actionListener) {
-        client.execute(action, request, actionListener);
-    }
-
-    @Override
-    public <Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder<Request, Response, RequestBuilder>> RequestBuilder prepareExecute(Action<Request, Response, RequestBuilder> action) {
-        return client.prepareExecute(action);
+    public <Request extends ActionRequest, Response extends ActionResponse> void execute(ActionType<Response> action, Request request, ActionListener<Response> listener) {
+        client.execute(action, request, listener);
     }
 
     @Override

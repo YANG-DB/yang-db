@@ -49,9 +49,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.client.Client;
+import org.opensearch.search.SearchHit;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 

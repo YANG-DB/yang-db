@@ -23,7 +23,7 @@ package com.yangdb.fuse.unipop.controller.promise;
 import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 

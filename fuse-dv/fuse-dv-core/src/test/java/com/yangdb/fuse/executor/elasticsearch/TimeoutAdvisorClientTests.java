@@ -2,8 +2,8 @@ package com.yangdb.fuse.executor.elasticsearch;
 
 import com.yangdb.fuse.dispatcher.modules.ModuleBase;
 import com.yangdb.fuse.executor.BaseModuleInjectionTest;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.Client;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.client.Client;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

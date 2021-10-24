@@ -21,12 +21,12 @@ package com.yangdb.fuse.unipop.converter;
  */
 
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.client.Client;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.search.SearchHit;
 
 import java.util.ArrayList;
 import java.util.Iterator;

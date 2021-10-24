@@ -4,10 +4,10 @@ import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.fuse.test.framework.providers.FileJsonDataProvider;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.admin.indices.refresh.RefreshRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.search.SearchHits;
 import org.junit.Assert;
 import org.junit.Test;
 

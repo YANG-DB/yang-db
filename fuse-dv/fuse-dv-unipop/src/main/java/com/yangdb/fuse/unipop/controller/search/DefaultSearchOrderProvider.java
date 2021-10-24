@@ -21,10 +21,10 @@ package com.yangdb.fuse.unipop.controller.search;
  */
 
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.search.sort.FieldSortBuilder;
+import org.opensearch.search.sort.SortOrder;
 
 public class DefaultSearchOrderProvider implements SearchOrderProviderFactory {
     @Override

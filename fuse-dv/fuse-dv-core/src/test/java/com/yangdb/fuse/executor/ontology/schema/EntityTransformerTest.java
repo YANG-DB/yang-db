@@ -16,7 +16,7 @@ import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.schema.IndexProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

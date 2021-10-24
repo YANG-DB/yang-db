@@ -36,17 +36,17 @@ import com.yangdb.fuse.model.query.Query;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.support.ActiveShardCount;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.rest.RestStatus;
+import org.opensearch.action.admin.indices.create.CreateIndexRequest;
+import org.opensearch.action.admin.indices.create.CreateIndexResponse;
+import org.opensearch.action.delete.DeleteResponse;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.index.IndexResponse;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.support.ActiveShardCount;
+import org.opensearch.client.Client;
+import org.opensearch.index.IndexNotFoundException;
+import org.opensearch.rest.RestStatus;
 
 import java.io.IOException;
 import java.util.*;
@@ -54,8 +54,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.transport.CreateQueryRequestMetadata.StorageType._stored;
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.opensearch.index.query.QueryBuilders.matchAllQuery;
 
 public class PersistentResourceStore implements ResourceStore {
 
@@ -136,7 +136,7 @@ public class PersistentResourceStore implements ResourceStore {
                     .create(new CreateIndexRequest()
                             .waitForActiveShards(ActiveShardCount.ALL)
                             .index(SYSTEM)).actionGet();
-            if(response.isShardsAcked()) {
+            if(response.isAcknowledged()) {
                 if (client.prepareGet(SYSTEM, RESOURCE, queryId).get().isExists()) {
                     try {
                         return Optional.of(buildQueryResource(queryId, client.prepareGet(SYSTEM, RESOURCE, queryId).get().getSource()));

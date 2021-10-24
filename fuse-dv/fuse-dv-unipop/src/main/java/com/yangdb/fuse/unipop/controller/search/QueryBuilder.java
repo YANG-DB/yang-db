@@ -24,19 +24,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.common.geo.ShapeRelation;
-import org.elasticsearch.common.geo.builders.ShapeBuilder;
-import org.elasticsearch.common.geo.builders.ShapeBuilders;
-import org.elasticsearch.common.unit.DistanceUnit;
-import org.elasticsearch.common.xcontent.DeprecationHandler;
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.json.JsonXContent;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.script.Script;
+import org.opensearch.common.geo.GeoPoint;
+import org.opensearch.common.geo.ShapeRelation;
+import org.opensearch.common.geo.builders.CircleBuilder;
+import org.opensearch.common.geo.builders.EnvelopeBuilder;
+import org.opensearch.common.geo.builders.ShapeBuilder;
+//import org.opensearch.common.geo.builders.ShapeBuilders;
+import org.opensearch.common.geo.parsers.ShapeParser;
+import org.opensearch.common.unit.DistanceUnit;
+import org.opensearch.common.xcontent.DeprecationHandler;
+import org.opensearch.common.xcontent.NamedXContentRegistry;
+import org.opensearch.common.xcontent.XContentParser;
+import org.opensearch.common.xcontent.json.JsonXContent;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.QueryStringQueryBuilder;
+import org.opensearch.script.Script;
 import org.geojson.Circle;
 import org.geojson.Envelope;
 import org.geojson.GeoJsonObject;
@@ -47,7 +50,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-import static org.elasticsearch.script.ScriptType.INLINE;
+import static org.opensearch.script.ScriptType.INLINE;
 
 /**
  * Created by lior.perry on 20/03/2017.
@@ -894,12 +897,12 @@ public class QueryBuilder {
         return this.getFieldValuesImpl(fieldName);
     }
 
-    public org.elasticsearch.index.query.QueryBuilder getQuery() {
+    public org.opensearch.index.query.QueryBuilder getQuery() {
         if (root == null) {
             return null;
         }
 
-        return (org.elasticsearch.index.query.QueryBuilder) root.build();
+        return (org.opensearch.index.query.QueryBuilder) root.build();
     }
 
     // The clone will return a deep clone of the query builder (except leaf values: e.g the Object value in terms composite).
@@ -1295,14 +1298,14 @@ public class QueryBuilder {
         //region Composite
         @Override
         protected Object build() {
-            org.elasticsearch.index.query.QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
-            org.elasticsearch.index.query.QueryBuilder filterBuilder = QueryBuilders.matchAllQuery();
+            org.opensearch.index.query.QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+            org.opensearch.index.query.QueryBuilder filterBuilder = QueryBuilders.matchAllQuery();
 
             for (Composite child : getChildren()) {
                 if (child.getOp() == Op.query) {
-                    queryBuilder = (org.elasticsearch.index.query.QueryBuilder) child.build();
+                    queryBuilder = (org.opensearch.index.query.QueryBuilder) child.build();
                 } else if (child.getOp() == Op.filter) {
-                    filterBuilder = (org.elasticsearch.index.query.QueryBuilder) child.build();
+                    filterBuilder = (org.opensearch.index.query.QueryBuilder) child.build();
                 }
             }
 
@@ -1345,18 +1348,18 @@ public class QueryBuilder {
             for (Composite child : getChildren()) {
                 switch (child.getOp()) {
                     case must:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.must(filter));
+                        Stream.ofAll((Iterable<org.opensearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.must(filter));
                         break;
 
                     case mustNot:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.mustNot(filter));
+                        Stream.ofAll((Iterable<org.opensearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.mustNot(filter));
                         break;
 
                     case should:
-                        Stream.ofAll((Iterable<org.elasticsearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.should(filter));
+                        Stream.ofAll((Iterable<org.opensearch.index.query.QueryBuilder>) child.build()).forEach(filter -> boolQueryBuilder.should(filter));
                         break;
                     case filter:
-                        boolQueryBuilder.filter((org.elasticsearch.index.query.QueryBuilder) child.build());
+                        boolQueryBuilder.filter((org.opensearch.index.query.QueryBuilder) child.build());
                         break;
                 }
             }
@@ -1375,9 +1378,9 @@ public class QueryBuilder {
         //region Composite Implementation
         @Override
         protected Object build() {
-            ArrayList<org.elasticsearch.index.query.QueryBuilder> filters = new ArrayList<>();
+            ArrayList<org.opensearch.index.query.QueryBuilder> filters = new ArrayList<>();
             for (Composite child : getChildren()) {
-                filters.add((org.elasticsearch.index.query.QueryBuilder) child.build());
+                filters.add((org.opensearch.index.query.QueryBuilder) child.build());
             }
             return filters;
         }
@@ -1940,15 +1943,15 @@ public class QueryBuilder {
         private ShapeBuilder GetShapeBuilder(GeoJsonObject geoJson) {
             try {
                 if (geoJson instanceof Circle) {
-                    Circle cirlce = (Circle) geoJson;
-                    return ShapeBuilders.newCircleBuilder()
+                    Circle cirlce = (Circle)geoJson;
+                    return new CircleBuilder()
                             .center(
                                     cirlce.getCoordinates().getLongitude(),
                                     cirlce.getCoordinates().getLatitude())
                             .radius(new DistanceUnit.Distance(cirlce.getRadius(), DistanceUnit.METERS));
                 } else if (geoJson instanceof Envelope) {
-                    Envelope envelope = (Envelope) geoJson;
-                    return ShapeBuilders.newEnvelope(
+                    Envelope envelope = (Envelope)geoJson;
+                    return new EnvelopeBuilder(
                             new Coordinate(
                                     envelope.getCoordinates().get(0).getLongitude(),
                                     envelope.getCoordinates().get(1).getLatitude()),
@@ -1960,7 +1963,7 @@ public class QueryBuilder {
                     XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, geoJsonString);
                     parser.nextToken();
 
-                    return ShapeBuilder.parse(parser);
+                    return ShapeParser.parse(parser);
                 }
             } catch (Exception e) {
                 return null;
@@ -1978,7 +1981,7 @@ public class QueryBuilder {
 
         @Override
         protected Object build() {
-            org.elasticsearch.index.query.QueryBuilder queryBuilder = (org.elasticsearch.index.query.QueryBuilder) getChildren().get(0).build();
+            org.opensearch.index.query.QueryBuilder queryBuilder = (org.opensearch.index.query.QueryBuilder) getChildren().get(0).build();
             queryBuilder.boost(boost);
             return queryBuilder;
         }
@@ -1995,7 +1998,7 @@ public class QueryBuilder {
 
         @Override
         protected Object build() {
-            org.elasticsearch.index.query.QueryBuilder queryBuilder = (org.elasticsearch.index.query.QueryBuilder) getChildren().get(0).build();
+            org.opensearch.index.query.QueryBuilder queryBuilder = (org.opensearch.index.query.QueryBuilder) getChildren().get(0).build();
             return QueryBuilders.nestedQuery(eType, queryBuilder, ScoreMode.None);
         }
 

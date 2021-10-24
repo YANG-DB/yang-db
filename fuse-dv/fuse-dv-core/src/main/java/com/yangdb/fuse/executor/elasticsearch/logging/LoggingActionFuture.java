@@ -22,10 +22,10 @@ package com.yangdb.fuse.executor.elasticsearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.elasticsearch.action.ActionFuture;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.common.unit.TimeValue;
+import org.opensearch.action.ActionFuture;
+import org.opensearch.action.ActionListener;
+import org.opensearch.action.ListenableActionFuture;
+import org.opensearch.common.unit.TimeValue;
 
 import java.io.Closeable;
 import java.io.IOException;

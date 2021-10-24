@@ -23,7 +23,7 @@ package com.yangdb.fuse.services.controllers;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.transport.ContentResponse;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 
 import java.util.HashMap;
 import java.util.List;

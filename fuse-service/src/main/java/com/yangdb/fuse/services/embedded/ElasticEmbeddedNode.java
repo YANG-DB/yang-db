@@ -19,24 +19,24 @@ package com.yangdb.fuse.services.embedded;
  * limitations under the License.
  * #L%
  */
+import com.yangdb.fuse.unipop.controller.ElasticGraphConfiguration;
 
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.logging.LogConfigurator;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.node.InternalSettingsPreparer;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.transport.Netty4Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.common.logging.LogConfigurator;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.common.transport.TransportAddress;
+import org.opensearch.node.InternalSettingsPreparer;
+import org.opensearch.node.Node;
+import org.opensearch.plugins.Plugin;
+import org.opensearch.transport.Netty4Plugin;
+import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 
 /**
@@ -44,16 +44,16 @@ import java.util.Collection;
  */
 public class ElasticEmbeddedNode implements AutoCloseable {
 
+    public static final String TARGET_ES = "target/es";
+    public static final int HTTP_PORT = 9200;
+    public static final String FUSE_TEST_ELASTIC = "fuse.test_elastic";
+
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
-        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins,false);
+        public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
+            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins,false);
         }
 
-        @Override
-        protected void registerDerivedNodeNameWithLogger(String nodeName) {
-            LogConfigurator.setNodeName(nodeName);
-        }
     }
     //endregion
 
@@ -70,34 +70,40 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Constructors
+
+    public ElasticEmbeddedNode(ElasticGraphConfiguration configuration) throws Exception {
+        this(TARGET_ES,HTTP_PORT,configuration.getClusterPort(),configuration.getClusterName(),1,false,configuration.getClusterProps());
+    }
+
     public ElasticEmbeddedNode(String clusterName) throws Exception {
-        this("target/es", 9200, 9300, clusterName, true);
+        this(TARGET_ES, HTTP_PORT, 9300, clusterName, true);
     }
 
     public ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
-        this("target/es", 9200, 9300, clusterName, numberOfShards,false);
+        this(TARGET_ES, HTTP_PORT, 9300, clusterName, numberOfShards,false,Collections.emptyMap());
     }
 
     public ElasticEmbeddedNode() throws Exception {
-        this("target/es", 9200, 9300, "fuse.test_elastic", true);
+        this(TARGET_ES, HTTP_PORT, 9300, FUSE_TEST_ELASTIC, true);
     }
 
     public ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
-        this("target/es", 9200, 9300, "fuse.test_elastic", true, configurers);
+        this(TARGET_ES, HTTP_PORT, 9300, FUSE_TEST_ELASTIC, true, configurers);
     }
 
     public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, boolean deleteOnLoad, ElasticIndexConfigurer... configurers) throws Exception {
-        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1,deleteOnLoad, configurers);
+        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1,deleteOnLoad,Collections.emptyMap(), configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards,boolean deleteOnLoad, ElasticIndexConfigurer... configurers) throws Exception {
+
+    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards,boolean deleteOnLoad,Map<String, String> values, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
         this.deleteOnLoad = deleteOnLoad;
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.numberOfShards = numberOfShards;
-        prepare();
+        prepare(values);
 
         for (ElasticIndexConfigurer configurer : configurers) {
             configurer.configure(getClient(nodeName,httpTransportPort));
@@ -153,12 +159,12 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         }
     }
 
-    private void prepare() throws Exception {
+    private void prepare(Map<String, String> values) throws Exception {
         if(deleteOnLoad) {
             this.close();
         }
 
-        Settings settings = Settings.builder()
+        Settings.Builder builder = Settings.builder()
                 .put("cluster.name", nodeName)
                 .put("path.home", esWorkingDir)
                 .put("path.data", esWorkingDir)
@@ -166,16 +172,16 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("http.port", httpPort)
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
-                .put("http.enabled", "true")
-//                .put("xpack.security.enabled","false")
+                .put("http.cors.enabled", "true")
 //                .put("script.auto_reload_enabled", "false")
-                .put("transport.tcp.port", httpTransportPort)
-                .build();
-
+                .put("transport.tcp.port", httpTransportPort);
+        //populate additional cluster config params
+        values.forEach(builder::put);
+        //build setting
+        Settings settings = builder.build();
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
-                Netty4Plugin.class,
-                CommonAnalysisPlugin.class
-        ));
+                Netty4Plugin.class
+        ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();
         System.out.println("Node started successfully on " + esWorkingDir);

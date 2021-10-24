@@ -24,8 +24,8 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import org.elasticsearch.common.xcontent.*;
-import org.elasticsearch.common.xcontent.json.JsonXContentGenerator;
+import org.opensearch.common.xcontent.*;
+import org.opensearch.common.xcontent.json.JsonXContentGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;

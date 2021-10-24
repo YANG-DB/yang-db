@@ -42,7 +42,7 @@ import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
-import org.elasticsearch.common.Strings;
+import org.opensearch.common.Strings;
 
 import java.util.Collections;
 import java.util.List;

@@ -22,11 +22,11 @@ package com.yangdb.test.etl;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.yangdb.fuse.model.execution.plan.Direction;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchRequestBuilder;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.transport.TransportClient;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.SearchHit;
 
 import java.util.ArrayList;
 import java.util.HashMap;

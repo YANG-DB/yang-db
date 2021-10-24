@@ -36,7 +36,7 @@ import com.yangdb.fuse.stat.util.StatUtil;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.elasticsearch.client.transport.TransportClient;
+import org.opensearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,10 +20,10 @@ package com.yangdb.fuse.unipop.controller.utils.elasticsearch;
  * #L%
  */
 
-import org.elasticsearch.ElasticsearchParseException;
-import org.elasticsearch.common.Booleans;
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentParser;
+import org.opensearch.OpenSearchParseException;
+import org.opensearch.common.Booleans;
+import org.opensearch.common.xcontent.NamedXContentRegistry;
+import org.opensearch.common.xcontent.XContentParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -224,11 +224,6 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
     }
 
     @Override
-    public Map<String, String> mapStringsOrdered() throws IOException {
-        return readOrderedMapStrings(this);
-    }
-
-    @Override
     public List<Object> list() throws IOException {
         return readList(this);
     }
@@ -329,7 +324,7 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
         if (token == XContentParser.Token.START_ARRAY) {
             token = parser.nextToken();
         } else {
-            throw new ElasticsearchParseException("Failed to parse list:  expecting "
+            throw new OpenSearchParseException("Failed to parse list:  expecting "
                     + XContentParser.Token.START_ARRAY + " but got " + token);
         }
 

@@ -24,9 +24,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.Client;
+import org.opensearch.action.bulk.BulkProcessor;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.client.Client;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -20,7 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.converter;
  * #L%
  */
 
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.search.SearchHit;
 
 import java.util.Map;
 

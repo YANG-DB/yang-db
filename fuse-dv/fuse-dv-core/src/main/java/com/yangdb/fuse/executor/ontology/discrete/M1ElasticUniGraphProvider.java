@@ -36,7 +36,7 @@ import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.yangdb.fuse.unipop.process.traversal.strategy.FuseStandardStrategyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.structure.FuseUniGraph;
-import org.elasticsearch.client.Client;
+import org.opensearch.client.Client;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.ControllerManagerFactory;

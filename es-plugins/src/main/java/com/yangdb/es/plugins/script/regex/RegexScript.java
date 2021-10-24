@@ -20,9 +20,9 @@ package com.yangdb.es.plugins.script.regex;
  *
  */
 
-import org.elasticsearch.index.fielddata.ScriptDocValues;
-//import org.elasticsearch.script.AbstractSearchScript;
-import org.elasticsearch.script.SearchScript;
+import org.opensearch.index.fielddata.ScriptDocValues;
+//import org.opensearch.script.AbstractSearchScript;
+import org.opensearch.script.SearchScript;
 
 import java.util.regex.Pattern;
 

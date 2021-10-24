@@ -21,8 +21,8 @@ package com.yangdb.es.plugins.script.regex;
  */
 
 import org.apache.lucene.queryparser.flexible.standard.parser.EscapeQuerySyntaxImpl;
-//import org.elasticsearch.script.ExecutableScript;
-//import org.elasticsearch.script.NativeScriptFactory;
+//import org.opensearch.script.ExecutableScript;
+//import org.opensearch.script.NativeScriptFactory;
 
 import java.util.*;
 import java.util.regex.Pattern;

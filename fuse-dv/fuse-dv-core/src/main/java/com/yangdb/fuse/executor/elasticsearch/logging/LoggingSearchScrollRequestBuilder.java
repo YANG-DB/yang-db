@@ -23,11 +23,11 @@ package com.yangdb.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollAction;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.client.ElasticsearchClient;
+import org.opensearch.action.ListenableActionFuture;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.action.search.SearchScrollAction;
+import org.opensearch.action.search.SearchScrollRequestBuilder;
+import org.opensearch.client.OpenSearchClient;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.function.Function;
 public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilder {
     //region Constructors
     public LoggingSearchScrollRequestBuilder(
-            ElasticsearchClient client,
+            OpenSearchClient client,
             SearchScrollAction action,
             String scrollId,
             Function<SearchScrollRequestBuilder, LogMessage> startMessage,

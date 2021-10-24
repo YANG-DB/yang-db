@@ -20,9 +20,9 @@ package com.yangdb.fuse.unipop.controller.common.converter;
  * #L%
  */
 
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.opensearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.bucket.MultiBucketsAggregation;
+import org.opensearch.search.aggregations.bucket.terms.StringTerms;
 
 import java.util.*;
 import java.util.stream.Collectors;
