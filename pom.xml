@@ -80,7 +80,8 @@
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
-
+        <!-- json ld-->
+        <json.ld>0.13.3</json.ld>
         <!-- jackson -->
         <jackson.version>2.10.0</jackson.version>
         <resilience4jVersion>1.6.1</resilience4jVersion>
@@ -306,6 +307,11 @@
                 <version>${fuse.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>${json.ld}</version>
+            </dependency>
             <!-- Cyber Deployment Assemblies   -->
             <dependency>
                 <groupId>com.yangdb</groupId>
@@ -694,11 +700,6 @@
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.sisyphsu</groupId>
-                <artifactId>dateparser</artifactId>
-                <version>${dateparser}</version>
             </dependency>
             <!-- javaslang -->
             <dependency>

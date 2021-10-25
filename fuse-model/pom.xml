@@ -19,6 +19,11 @@
     <dependencies>
         <!-- runtime -->
         <dependency>
+            <groupId>com.github.sisyphsu</groupId>
+            <artifactId>retree</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
         </dependency>
