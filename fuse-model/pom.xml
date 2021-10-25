@@ -4,7 +4,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.51-SNAPSHOT</version>
+        <version>0.80-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,6 +18,11 @@
 
     <dependencies>
         <!-- runtime -->
+        <dependency>
+            <groupId>com.github.sisyphsu</groupId>
+            <artifactId>retree</artifactId>
+            <version>1.0.4</version>
+        </dependency>
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>

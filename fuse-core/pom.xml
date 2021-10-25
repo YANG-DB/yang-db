@@ -4,7 +4,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.51-SNAPSHOT</version>
+        <version>0.80-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>fuse-core</artifactId>
@@ -54,6 +54,11 @@
     </properties>
 
     <dependencies>
+        <!-- json-ld -->
+        <dependency>
+            <groupId>com.github.jsonld-java</groupId>
+            <artifactId>jsonld-java</artifactId>
+        </dependency>
         <!-- runtime -->
         <dependency>
             <groupId>com.yangdb</groupId>

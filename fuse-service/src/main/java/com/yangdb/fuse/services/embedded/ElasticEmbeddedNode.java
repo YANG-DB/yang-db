@@ -9,9 +9,9 @@ package com.yangdb.fuse.services.embedded;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.yangdb.fuse.services.embedded;
  * limitations under the License.
  * #L%
  */
+
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 
 import org.opensearch.client.transport.TransportClient;
@@ -50,7 +51,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region PluginConfigurableNode Implementation
     private static class PluginConfigurableNode extends Node {
         public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins, Path path, String nodeName) {
-            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins,false);
+            super(InternalSettingsPreparer.prepareEnvironment(settings, new HashMap<>(), path, () -> nodeName), classpathPlugins, false);
         }
 
     }
@@ -71,7 +72,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region Constructors
 
     public ElasticEmbeddedNode(OpensearchGraphConfiguration configuration) throws Exception {
-        this(TARGET_ES,HTTP_PORT,configuration.getClusterPort(),configuration.getClusterName(),1,false,configuration.getClusterProps());
+        this(TARGET_ES, HTTP_PORT, configuration.getClusterPort(), configuration.getClusterName(), 1, false, configuration.getClusterProps());
     }
 
     public ElasticEmbeddedNode(String clusterName) throws Exception {
@@ -79,7 +80,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
-        this(TARGET_ES, HTTP_PORT, 9300, clusterName, numberOfShards,false,Collections.emptyMap());
+        this(TARGET_ES, HTTP_PORT, 9300, clusterName, numberOfShards, false, Collections.emptyMap());
     }
 
     public ElasticEmbeddedNode() throws Exception {
@@ -91,11 +92,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, boolean deleteOnLoad, ElasticIndexConfigurer... configurers) throws Exception {
-        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1,deleteOnLoad,Collections.emptyMap(), configurers);
+        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1, deleteOnLoad, Collections.emptyMap(), configurers);
     }
 
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards,boolean deleteOnLoad,Map<String, String> values, ElasticIndexConfigurer... configurers) throws Exception {
+    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, boolean deleteOnLoad, Map<String, String> values, ElasticIndexConfigurer... configurers) throws Exception {
         ElasticEmbeddedNode.httpTransportPort = httpTransportPort;
         ElasticEmbeddedNode.nodeName = nodeName;
         this.deleteOnLoad = deleteOnLoad;
@@ -104,12 +105,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.numberOfShards = numberOfShards;
         try {
             prepare(values);
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             throw new UnknownError(t.getMessage());
         }
-
         for (ElasticIndexConfigurer configurer : configurers) {
-            configurer.configure(getClient(nodeName,httpTransportPort));
+            configurer.configure(getClient(nodeName, httpTransportPort));
         }
     }
 
@@ -117,10 +117,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     //region Methods
     public static TransportClient getClient() {
-        return getClient(nodeName,httpTransportPort);
+        return getClient(nodeName, httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName,int httpTransportPort) {
+    public static TransportClient getClient(String nodeName, int httpTransportPort) {
         if (client == null) {
             try {
                 Settings settings = Settings.builder()
@@ -146,7 +146,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         }
 
 
-        if(deleteOnLoad) {
+        if (deleteOnLoad) {
             deleteFolder(esWorkingDir);
         }
     }
@@ -163,7 +163,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     private void prepare(Map<String, String> values) throws Exception {
-        if(deleteOnLoad) {
+        if (deleteOnLoad) {
             this.close();
         }
 
@@ -193,9 +193,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     private static void deleteFolder(String folder) {
         File folderFile = new File(folder);
         File[] files = folderFile.listFiles();
-        if(files!=null) {
-            for(File f: files) {
-                if(f.isDirectory()) {
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
                     deleteFolder(f.getAbsolutePath());
                 } else {
                     f.delete();

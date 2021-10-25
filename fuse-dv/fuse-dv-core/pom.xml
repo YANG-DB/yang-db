@@ -4,7 +4,7 @@
     <parent>
         <artifactId>fuse-dv</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.51-SNAPSHOT</version>
+        <version>0.80-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -61,10 +61,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.sisyphsu</groupId>
-            <artifactId>dateparser</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
