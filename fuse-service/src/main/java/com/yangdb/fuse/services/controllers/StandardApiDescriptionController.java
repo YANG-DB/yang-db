@@ -27,8 +27,7 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 
 import java.util.Optional;
 
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by Roman on 11/06/2017.

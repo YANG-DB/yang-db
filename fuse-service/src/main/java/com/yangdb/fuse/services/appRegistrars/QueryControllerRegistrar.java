@@ -73,8 +73,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.transport.cursor.CreateCursorRequest.getDefaultCursorRequestType;
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryController> {
     /**
@@ -102,7 +101,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
          **/
         app.get(appUrlSupplier.queryStoreUrl(), req -> {
             Route.of("getQueryStore").write();
-            return Results.with(this.getController(app).getInfo(), Status.OK);
+            return Results.with(this.getController(app).getInfo(), OK.getStatus());
         });
 
         /**
@@ -140,21 +139,21 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             Route.of("getQuery").write();
 
             ContentResponse response = this.getController(app).getInfo(req.param(QUERY_ID_KEY).value());
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         });
 
         /** delete a query */
         app.delete(appUrlSupplier.resourceUrl(":queryId"), req -> {
             Route.of("deleteQuery").write();
             ContentResponse response = this.getController(app).delete(req.param(QUERY_ID_KEY).value());
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         });
 
         /** get the query verbose plan */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/planVerbose", req -> {
             ContentResponse response = this.getController(app).planVerbose(req.param(QUERY_ID_KEY).value());
             //temporary fix for json serialization of object graphs
-            return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
+            return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status().getStatus())
                     .type("application/json");
         });
         /** get the print of the execution plan */
@@ -163,7 +162,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** get the query v1*/
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/v1", req -> {
             ContentResponse response = this.getController(app).getV1(req.param(QUERY_ID_KEY).value());
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         });
 
         /** profile the query by execution */
@@ -187,7 +186,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg", req -> {
             ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param(QUERY_ID_KEY).value());
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         });
 
         /** view the elastic query with d3 html*/
@@ -209,7 +208,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan", req -> {
             ContentResponse response = this.getController(app).explain(req.param(QUERY_ID_KEY).value());
             //temporary fix for jason serialization of object graphs
-            return Results.with(JsonWriter.objectToJson(response), response.status());
+            return Results.with(JsonWriter.objectToJson(response), response.status().getStatus());
         });
 
         /** get the query verbose plan */
@@ -302,7 +301,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     controller.create(createQueryRequest) :
                     controller.createAndFetch(createQueryRequest);
 
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
 
         }
 
@@ -399,7 +398,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     controller.create(createQueryRequest) :
                     controller.createAndFetch(createQueryRequest);
 
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         }
 
         public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
@@ -416,7 +415,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     controller.create(createQueryRequest) :
                     controller.createAndFetch(createQueryRequest);
 
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
 
         }
 
@@ -434,7 +433,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     controller.create(createQueryRequest) :
                     controller.createAndFetch(createQueryRequest);
 
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
 
         }
 
@@ -450,7 +449,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
         }
 
         public static void runCypher(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
@@ -540,7 +539,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<QueryResourceInfo> response = controller.callAndFetch(callQueryRequest);
 
 //            return with(req,response);
-            return Results.with(response, response.status());
+            return Results.with(response, response.status().getStatus());
 
         }
 
@@ -557,7 +556,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             Route.of("profile").write();
             String queryId = req.param(QUERY_ID_KEY).value();
             ContentResponse<Object> profile = registrar.getController(app).profile(queryId);
-            return Results.with(profile, profile.status());
+            return Results.with(profile, profile.status().getStatus());
         }
 
         public static Result nextPage(Jooby app, Request req, QueryControllerRegistrar registrar) {
@@ -567,7 +566,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                             req.param("cursorId").toOptional(String.class),
                             req.param(PAGE_SIZE_KEY).intValue(),
                             req.param("deletePage").isSet() ? req.param("deletePage").booleanValue() : true);
-            return Results.with(page, page.status());
+            return Results.with(page, page.status().getStatus());
 
         }
 
@@ -577,7 +576,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
                     .compose();
-            return Results.with(compose, compose.status());
+            return Results.with(compose, compose.status().getStatus());
 
         }
 
@@ -597,7 +596,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
                     .compose();
-            return Results.with(compose, compose.status());
+            return Results.with(compose, compose.status().getStatus());
         }
 
         public static Result printQuery(Jooby app, Request req, QueryControllerRegistrar registrar) {
@@ -606,7 +605,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             ContentResponse<String> compose = ContentResponse.Builder.<String>builder(OK, NOT_FOUND)
                     .data(Optional.of(print))
                     .compose();
-            return Results.with(compose, compose.status());
+            return Results.with(compose, compose.status().getStatus());
 
         }
 

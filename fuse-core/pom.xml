@@ -76,6 +76,11 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
+        <!-- jooby MVC -->
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby</artifactId>
+        </dependency>
         <!-- text searching with multiple keywords -->
         <dependency>
             <groupId>org.ahocorasick</groupId>

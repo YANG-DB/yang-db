@@ -28,7 +28,7 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 
-import static org.jooby.Status.*;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -44,7 +44,7 @@ public class StandardCursorController implements CursorController<CursorControll
     //region CursorController Implementation
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
-        return Builder.<CursorResourceInfo>builder(CREATED, SERVER_ERROR)
+        return Builder.<CursorResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                 .data(driver().create(queryId, createCursorRequest))
                 .compose();
     }

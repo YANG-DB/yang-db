@@ -32,7 +32,7 @@ import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 import java.util.Optional;
 
 import static com.yangdb.fuse.model.transport.ContentResponse.Builder.builder;
-import static org.jooby.Status.*;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -48,7 +48,7 @@ public class StandardPageController implements PageController<PageController,Pag
     //region PageController Implementation
     @Override
     public ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest) {
-        return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+        return Builder.<PageResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                 .data(driver().create(queryId, cursorId, createPageRequest.getPageSize()))
                 .compose();
     }
@@ -56,16 +56,16 @@ public class StandardPageController implements PageController<PageController,Pag
     @Override
     public ContentResponse<PageResourceInfo> createAndFetch(String queryId, String cursorId, CreatePageRequest createPageRequest) {
         ContentResponse<PageResourceInfo> pageResourceInfoResponse = this.create(queryId, cursorId, createPageRequest);
-        if (pageResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (pageResourceInfoResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<PageResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(pageResourceInfoResponse.getData()))
                     .successPredicate(response -> false)
                     .compose();
         }
 
         ContentResponse<Object> pageDataResponse = this.getData(queryId, cursorId, pageResourceInfoResponse.getData().getResourceId());
-        if (pageDataResponse.status() == SERVER_ERROR) {
-            return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (pageDataResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<PageResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(pageResourceInfoResponse.getData()))
                     .successPredicate(response -> false)
                     .compose();
@@ -73,7 +73,7 @@ public class StandardPageController implements PageController<PageController,Pag
 
         pageResourceInfoResponse.getData().setData(pageDataResponse.getData());
 
-        return Builder.<PageResourceInfo>builder(CREATED, SERVER_ERROR)
+        return Builder.<PageResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                 .data(Optional.of(pageResourceInfoResponse.getData()))
                 .compose();
     }

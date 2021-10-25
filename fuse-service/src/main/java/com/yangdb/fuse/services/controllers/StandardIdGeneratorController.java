@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.jooby.Status.CREATED;
-import static org.jooby.Status.SERVER_ERROR;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by roman.margolis on 20/03/2018.
@@ -47,14 +46,14 @@ public class StandardIdGeneratorController<TId> implements IdGeneratorController
     //region IdGenerator Implementation
     @Override
     public ContentResponse<TId> getNext(String genName, int numIds) {
-        return ContentResponse.Builder.<TId>builder(CREATED, SERVER_ERROR )
+        return ContentResponse.Builder.<TId>builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(this.driver.getNext(genName, numIds)))
                 .compose();
     }
 
     @Override
     public ContentResponse<Boolean> init(List<String> names) {
-        return ContentResponse.Builder.<Boolean>builder(CREATED, SERVER_ERROR )
+        return ContentResponse.Builder.<Boolean>builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(this.driver.init(names)))
                 .compose();
     }

@@ -46,7 +46,6 @@ package com.yangdb.fuse.model.transport;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.yangdb.fuse.model.results.TextContent;
-import org.jooby.Status;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -64,7 +63,7 @@ public class ContentResponse<T> implements Response, TextContent {
     }
 
     public static <T> ContentResponse<T> internalError(Exception ex) {
-        return Builder.<T>builder(Status.SERVER_ERROR, Status.SERVER_ERROR)
+        return Builder.<T>builder(Status.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR)
                 .data(Optional.empty())
                 .error(ex)
                 .compose();

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 
 import java.util.Optional;
 
+import static com.yangdb.fuse.model.transport.Status.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -33,7 +34,7 @@ public class LoggingJacksonRendererTest {
         when(timer.time()).thenReturn(time);
         when(time.stop()).thenReturn((long) 10000000);
         LoggingJacksonRenderer renderer = new LoggingJacksonRenderer(mapper, MediaType.json, Mockito.mock(Logger.class), metricRegistry);
-        ContentResponse<Object> abc123456789 = ContentResponse.Builder.builder(Status.ACCEPTED, Status.NOT_FOUND).data(Optional.of(true)).requestId("ABC123456789").external(new ExternalMetadata()).elapsed(9).compose();
+        ContentResponse<Object> abc123456789 = ContentResponse.Builder.builder(ACCEPTED, NOT_FOUND).data(Optional.of(true)).requestId("ABC123456789").external(new ExternalMetadata()).elapsed(9).compose();
         Renderer.Context context = Mockito.mock(Renderer.Context.class);
         when(context.length(anyLong())).thenReturn(context);
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
@@ -58,7 +59,7 @@ public class LoggingJacksonRendererTest {
         when(time.stop()).thenReturn((long) 10000000);
         ObjectMapper mapper = new ObjectMapper();
         LoggingJacksonRenderer renderer = new LoggingJacksonRenderer(mapper, MediaType.json, Mockito.mock(Logger.class), metricRegistry);
-        ContentResponse<Object> abc123456789 = ContentResponse.Builder.builder(Status.ACCEPTED, Status.NOT_FOUND).data(Optional.of("bla bla")).requestId("ABC123456789").external(new ExternalMetadata()).elapsed(9).compose();
+        ContentResponse<Object> abc123456789 = ContentResponse.Builder.builder(ACCEPTED, NOT_FOUND).data(Optional.of("bla bla")).requestId("ABC123456789").external(new ExternalMetadata()).elapsed(9).compose();
         Renderer.Context context = Mockito.mock(Renderer.Context.class);
         when(context.length(anyLong())).thenReturn(context);
         renderer.renderValue(abc123456789, context);

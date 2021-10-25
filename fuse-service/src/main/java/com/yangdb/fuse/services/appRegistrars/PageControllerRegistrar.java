@@ -61,8 +61,7 @@ import org.jooby.Results;
 
 import java.io.File;
 
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 public class PageControllerRegistrar extends AppControllerRegistrarBase<PageController> {
     //region Constructors
@@ -80,7 +79,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     Route.of("getPageStore").write();
 
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** create the next page */
@@ -92,7 +91,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     ContentResponse<PageResourceInfo> entity = createPageRequest.isFetch() ?
                             this.getController(app).createAndFetch(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest) :
                             this.getController(app).create(req.param("queryId").value(), req.param("cursorId").value(), createPageRequest);
-                    return Results.with(entity, entity.status());
+                    return Results.with(entity, entity.status().getStatus());
                 });
 
         /** view the elastic query with d3 html*/
@@ -106,7 +105,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                 req -> {
                     Route.of("getPage").write();
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get page data by id */
@@ -120,7 +119,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     Route.of("getPageData").write();
 
                     ContentResponse response = this.getController(app).getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get page data by format */
@@ -147,7 +146,7 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     Route.of("deletePage").write();
 
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
     }
 

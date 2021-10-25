@@ -73,7 +73,7 @@ public class RegistrarsUtils {
             writer.write(response.getData().toString());
             writer.close();
             tempFile.deleteOnExit();
-            res.status(response.status());
+            res.status(response.status().getStatus());
             //has to be last
             res.download(tempFile);
         } else if (req.accepts(TEXT_CSV).isPresent()) {
@@ -91,22 +91,22 @@ public class RegistrarsUtils {
                 }
                 Files.write(tempFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
                 tempFile.deleteOnExit();
-                res.status(response.status());
+                res.status(response.status().getStatus());
                 //has to be last
                 res.download(tempFile);
             }
         } else if (req.accepts(APPLICATION_JSON).isPresent()) {
             res.type(MediaType.json);
-            res.status(response.status());
+            res.status(response.status().getStatus());
         } else if (req.accepts(IMAGE_SVG_XML).isPresent()) {
             ((File) response.getData()).deleteOnExit();
-            res.status(response.status());
+            res.status(response.status().getStatus());
             //has to be last
             res.download((File) response.getData());
         }
 
         //default response
-        res.status(response.status());
+        res.status(response.status().getStatus());
         res.type(MediaType.json);
         res.send(response);
     }
@@ -115,10 +115,10 @@ public class RegistrarsUtils {
         //write content as temp file
         if (req.accepts(IMAGE_SVG_XML).isPresent()) {
             res.download(response.getData());
-            res.status(response.status());
+            res.status(response.status().getStatus());
             response.getData().deleteOnExit();
         }
-        return Results.with(response, response.status());
+        return Results.with(response, response.status().getStatus());
     }
 
 

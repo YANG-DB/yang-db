@@ -158,7 +158,7 @@
         <jool.version>0.9.14</jool.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.6.0</jooby.version>
+        <jooby.version>1.6.9</jooby.version>
 
         <!--netty -->
         <netty.version>4.1.30</netty.version>

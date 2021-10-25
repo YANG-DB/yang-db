@@ -41,7 +41,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.jooby.Status.*;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
@@ -65,7 +65,7 @@ public class StandardQueryController implements QueryController<QueryController,
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
+        return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
@@ -77,7 +77,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateJsonQueryRequest request) {
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR )
+        return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().create(request))
                 .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
@@ -85,7 +85,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runV1Query(Query query, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().run(query,pageSize,cursorType ))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -94,7 +94,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<ValidationResult> validate(Query query) {
-        return Builder.<ValidationResult>builder(CREATED, SERVER_ERROR )
+        return Builder.<ValidationResult>builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(driver().validateAndRewriteQuery(query)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -102,7 +102,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> findPath(String ontology, String sourceEntity, String sourceId, String targetEntity,String targetId, String relationType, int maxHops) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(driver().findPath(ontology,sourceEntity,sourceId,targetEntity,targetId,relationType,maxHops)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -110,7 +110,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> getVertex(String ontology, String type, String id) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(driver().getVertex(ontology,type,id)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -118,7 +118,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> getNeighbors(String ontology, String type, String id) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(Optional.of(driver().getNeighbors(ontology,type,id)))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -127,7 +127,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -136,7 +136,7 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().runCypher(cypher,ontology,pageSize,cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -144,14 +144,14 @@ public class StandardQueryController implements QueryController<QueryController,
 
     @Override
     public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().runGraphQL(graphQL,ontology,pageSize,cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
     @Override
     public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
-        return Builder.builder(CREATED, SERVER_ERROR )
+        return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
                 .data(driver().runSparql(sparql,ontology,pageSize,cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
@@ -167,23 +167,23 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     private ContentResponse<QueryResourceInfo> createAndFetch(ContentResponse<QueryResourceInfo> queryResourceInfoResponse, CreateQueryRequestMetadata request) {
-        if (queryResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (queryResourceInfoResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))
                     .successPredicate(response -> false)
                     .compose();
         }
 
         if (request.getCreateCursorRequest() == null) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))
                     .compose();
         }
 
         ContentResponse<CursorResourceInfo> cursorResourceInfoResponse =
                 this.cursorController.create(queryResourceInfoResponse.getData().getResourceId(), request.getCreateCursorRequest());
-        if (cursorResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (cursorResourceInfoResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
@@ -194,7 +194,7 @@ public class StandardQueryController implements QueryController<QueryController,
         }
 
         if (request.getCreateCursorRequest().getCreatePageRequest() == null) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
@@ -216,8 +216,8 @@ public class StandardQueryController implements QueryController<QueryController,
                         queryResourceInfoResponse.getData().getResourceId(),
                         cursorResourceInfoResponse.getData().getResourceId(),
                         request.getCreateCursorRequest().getCreatePageRequest());
-        if (pageResourceInfoResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (pageResourceInfoResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
@@ -235,8 +235,8 @@ public class StandardQueryController implements QueryController<QueryController,
                 cursorResourceInfoResponse.getData().getResourceId(),
                 pageResourceInfoResponse.getData().getResourceId());
 
-        if (pageDataResponse.status() == SERVER_ERROR) {
-            return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        if (pageDataResponse.status() == INTERNAL_SERVER_ERROR) {
+            return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                     .data(Optional.of(new QueryResourceInfo(
                             queryResourceInfoResponse.getData().getType(),
                             queryResourceInfoResponse.getData().getResourceUrl(),
@@ -250,7 +250,7 @@ public class StandardQueryController implements QueryController<QueryController,
         pageResourceInfoResponse.getData().setData(pageDataResponse.getData());
         cursorResourceInfoResponse.getData().setPageResourceInfos(Collections.singletonList(pageResourceInfoResponse.getData()));
 
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                 .data(Optional.of(new QueryResourceInfo(
                         queryResourceInfoResponse.getData().getType(),
                         queryResourceInfoResponse.getData().getResourceUrl(),
@@ -264,7 +264,7 @@ public class StandardQueryController implements QueryController<QueryController,
     @Override
     public ContentResponse<QueryResourceInfo> callAndFetch(ExecuteStoredQueryRequest request) {
         Optional<QueryResourceInfo> queryResourceInfoResponse = driver().call(request);
-        return Builder.<QueryResourceInfo>builder(CREATED, SERVER_ERROR)
+        return Builder.<QueryResourceInfo>builder(CREATED, INTERNAL_SERVER_ERROR)
                 .data(queryResourceInfoResponse)
                 .compose();
     }

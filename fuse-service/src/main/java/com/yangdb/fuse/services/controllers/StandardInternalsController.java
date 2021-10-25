@@ -58,7 +58,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.yangdb.fuse.services.suppliers.CachedRequestIdSupplier.RequestIdSupplierParameter;
-import static org.jooby.Status.*;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.

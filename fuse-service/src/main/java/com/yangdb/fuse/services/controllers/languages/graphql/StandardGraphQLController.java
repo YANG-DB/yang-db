@@ -31,8 +31,7 @@ import com.yangdb.fuse.services.controllers.SchemaTranslatorController;
 
 import java.util.Optional;
 
-import static org.jooby.Status.NOT_FOUND;
-import static org.jooby.Status.OK;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.

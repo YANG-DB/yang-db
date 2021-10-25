@@ -64,6 +64,11 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-geojson</artifactId>
         </dependency>
+        <!-- jooby MVC -->
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>

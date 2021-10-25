@@ -102,7 +102,11 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.numberOfShards = numberOfShards;
-        prepare(values);
+        try {
+            prepare(values);
+        }catch (Throwable t) {
+            throw new UnknownError(t.getMessage());
+        }
 
         for (ElasticIndexConfigurer configurer : configurers) {
             configurer.configure(getClient(nodeName,httpTransportPort));

@@ -45,7 +45,7 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
                     Route.of("getCursorStore").write();
 
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** create a query cursor */
@@ -56,7 +56,7 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
                     req.set(ExecutionScope.class, new ExecutionScope(Math.max(cursorRequest.getMaxExecutionTime(),1000 * 60 * 10)));
                     ContentResponse response = this.getController(app).create(req.param("queryId").value(), cursorRequest);
 
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get the cursor resource info */
@@ -65,7 +65,7 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
                     Route.of("getCursor").write();
 
                     ContentResponse response = this.getController(app).getInfo(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         app.delete(appUrlSupplier.resourceUrl(":queryId", ":cursorId"),
@@ -73,7 +73,7 @@ public class CursorControllerRegistrar extends AppControllerRegistrarBase<Cursor
                     Route.of("deleteCursor").write();
 
                     ContentResponse response = this.getController(app).delete(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
     }
     //endregion

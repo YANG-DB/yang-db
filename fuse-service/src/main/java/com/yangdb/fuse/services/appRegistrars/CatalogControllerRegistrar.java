@@ -25,6 +25,7 @@ import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.execution.plan.descriptors.OntologyDescriptor;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.transport.ContentResponse;
+import com.yangdb.fuse.model.transport.Status;
 import com.yangdb.fuse.rendering.SVGGraphRenderer;
 import com.yangdb.fuse.services.controllers.CatalogController;
 import org.jooby.Jooby;
@@ -55,21 +56,21 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
                     Ontology ontology = req.body(Ontology.class);
                     req.set(Ontology.class, ontology);
                     ContentResponse<Ontology> response = this.getController(app).addOntology(ontology);
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get available ontologies*/
         app.get("/fuse/catalog/ontology"
                 ,req -> {
                     ContentResponse<List<Ontology>> response = this.getController(app).getOntologies();
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get the ontology by id */
         app.get("/fuse/catalog/ontology/:id"
                 ,req -> {
                     ContentResponse response = this.getController(app).getOntology(req.param("id").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         /** get the ontology by id */
@@ -80,13 +81,13 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
         app.get("/fuse/catalog/schema"
                 ,req -> {
                     ContentResponse<List<String>> response = this.getController(app).getSchemas();
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
 
         app.get("/fuse/catalog/schema/:id",
                 req -> {
                     ContentResponse response = this.getController(app).getSchema(req.param("id").value());
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
     }
 
@@ -107,7 +108,7 @@ public class CatalogControllerRegistrar extends AppControllerRegistrarBase<Catal
             ContentResponse<Ontology> ontology = controller.getController(app).getOntology(req.param("id").value());
             String dotGraph = OntologyDescriptor.printGraph(ontology.getData());
             File file = SVGGraphRenderer.render(ontology.getData().getOnt(), dotGraph);
-            ContentResponse<File> compose = ContentResponse.Builder.<File>builder(OK, NOT_FOUND)
+            ContentResponse<File> compose = ContentResponse.Builder.<File>builder(Status.OK, Status.NOT_FOUND)
                     .data(file)
                     .compose();
             return RegistrarsUtils.withImg(req,resp,compose);

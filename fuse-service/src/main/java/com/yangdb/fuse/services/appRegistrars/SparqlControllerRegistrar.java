@@ -45,7 +45,7 @@ public class SparqlControllerRegistrar extends AppControllerRegistrarBase<Standa
                     String owlSchmea = req.body(String.class);
                     req.set(String.class, owlSchmea);
                     ContentResponse<Ontology> response = this.getController(app).translate(req.param("id").value(), owlSchmea);
-                    return Results.with(response, response.status());
+                    return Results.with(response, response.status().getStatus());
                 });
     }
     //endregion

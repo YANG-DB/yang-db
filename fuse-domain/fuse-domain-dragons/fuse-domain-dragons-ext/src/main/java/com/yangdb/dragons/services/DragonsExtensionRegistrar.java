@@ -86,7 +86,7 @@ public class DragonsExtensionRegistrar extends AppControllerRegistrarBase<Dragon
                 controller.create(request) :
                 controller.createAndFetch(request);
 
-        return Results.with(response, response.status());
+        return Results.with(response, response.status().getStatus());
 
     }
 

@@ -38,7 +38,7 @@ import javaslang.collection.Stream;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jooby.Status.*;
+import static com.yangdb.fuse.model.transport.Status.*;
 
 /**
  * Created by lior.perry on 19/02/2017.
