@@ -161,9 +161,6 @@
         <!--jooby plugin -->
         <jooby.version>1.6.9</jooby.version>
 
-        <!--netty -->
-        <netty.version>4.1.30</netty.version>
-
         <!-- fastutil -->
         <fastutil.version>8.1.1</fastutil.version>
         <!-- aviator exp eval -->
@@ -551,11 +548,6 @@
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby</artifactId>
-                <version>${jooby.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jooby</groupId>
-                <artifactId>jooby-netty</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
             <dependency>
@@ -1183,12 +1175,14 @@
 
     </build>
 
+<!--
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+-->
 
 
     <distributionManagement>
