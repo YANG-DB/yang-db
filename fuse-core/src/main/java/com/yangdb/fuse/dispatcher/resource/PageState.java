@@ -1,10 +1,10 @@
-package com.yangdb.fuse.dispatcher.cursor;
+package com.yangdb.fuse.dispatcher.resource;
 
 /*-
  * #%L
  * fuse-core
  * %%
- * Copyright (C) 2016 - 2019 The YangDb Graph Database Project
+ * Copyright (C) 2016 - 2021 The YangDb Graph Database Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,6 @@ package com.yangdb.fuse.dispatcher.cursor;
  * #L%
  */
 
-
-
-import com.yangdb.fuse.dispatcher.provision.CursorRuntimeProvision;
-import com.yangdb.fuse.model.results.QueryResultBase;
-
-/**
- * Created by lior.perry on 06/03/2017.
- */
-public interface Cursor<T> extends CursorRuntimeProvision {
-    QueryResultBase getNextResults(int numResults);
-    T getContext();
-
+public enum PageState {
+    ACTIVE,DELETED,PREPARING
 }

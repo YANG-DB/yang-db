@@ -42,10 +42,13 @@ public class TraversalTest {
     Client client;
     OpensearchGraphConfiguration configuration;
     SearchOrderProviderFactory orderProvider;
+    MetricRegistry metricRegistry;
+
 
     @Before
     public void setUp() throws Exception {
         client = mock(Client.class);
+        metricRegistry = new MetricRegistry();
         configuration = mock(OpensearchGraphConfiguration.class);
         orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
@@ -61,10 +64,10 @@ public class TraversalTest {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider)
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider,metricRegistry)
                                         , registry),
                                 new LoggingSearchController(
-                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(), metricRegistry),
                                         registry))
                 );
             }
@@ -104,10 +107,10 @@ public class TraversalTest {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider)
+                                        new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),orderProvider,metricRegistry)
                                         , registry),
                                 new LoggingSearchController(
-                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                        new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(), metricRegistry),
                                         registry))
                 );
             }

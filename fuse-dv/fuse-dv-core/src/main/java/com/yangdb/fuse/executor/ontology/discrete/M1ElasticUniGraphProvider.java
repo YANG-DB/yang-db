@@ -89,18 +89,21 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new DiscreteElementVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                        new DiscreteElementVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider,metricRegistry ),
                                         metricRegistry),
                                 null
                         ),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                new DiscreteVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider,
+                                        metricRegistry),
                                 metricRegistry),
                         new LoggingSearchVertexController(
-                                new DiscreteVertexFilterController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider),
+                                new DiscreteVertexFilterController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProvider,
+                                        metricRegistry),
                                 metricRegistry),
                         new LoggingReduceController(
-                                new DiscreteElementReduceController(client, opensearchGraphConfiguration, uniGraph, schemaProvider),
+                                new DiscreteElementReduceController(client, opensearchGraphConfiguration, uniGraph, schemaProvider,
+                                        metricRegistry),
                                 metricRegistry)
                 );
             }

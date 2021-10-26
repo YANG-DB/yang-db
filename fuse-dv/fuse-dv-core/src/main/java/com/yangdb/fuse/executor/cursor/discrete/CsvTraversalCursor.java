@@ -23,6 +23,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 import com.opencsv.CSVWriter;
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.query.EBase;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.transport.cursor.CreateCsvCursorRequest.ElementType.Prop;
 
-public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
+public class CsvTraversalCursor extends BaseCursor {
 
     public static final String EID_1 = "eid1";
     public static final String EID_2 = "eid2";
@@ -59,7 +60,8 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
     //endregion
 
     //region Constructors
-    public CsvTraversalCursor(Map<String, List<AsgEBase<EBase>>> projection, Cursor cursor, CreateCsvCursorRequest csvCursorRequest) {
+    public CsvTraversalCursor(Map<String, List<AsgEBase<EBase>>> projection, BaseCursor cursor, CreateCsvCursorRequest csvCursorRequest) {
+        super(cursor.getContext());
         this.projection = projection;
         this.cursor = cursor;
         this.csvCursorRequest = csvCursorRequest;
@@ -114,11 +116,6 @@ public class CsvTraversalCursor implements Cursor<TraversalCursorContext> {
         }
     }
 
-
-    @Override
-    public TraversalCursorContext getContext() {
-        return cursor.getContext();
-    }
     //endregion
 
     //region Private Methods

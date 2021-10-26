@@ -104,10 +104,8 @@ public class PromisePromiseElementVertexControllerTest {
 
     @Test
     public void testSingleIdPromiseVertexWithoutConstraint() {
-        MetricRegistry registry = new MetricRegistry();
-
         UniGraph graph = mock(UniGraph.class);
-
+        MetricRegistry metricRegistry = new MetricRegistry();
         //basic edge constraint
         Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
 
@@ -137,7 +135,7 @@ public class PromisePromiseElementVertexControllerTest {
         when(schemaProvider.getEdgeLabels()).thenReturn(Collections.singletonList("label"));
         when(schemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider, metricRegistry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

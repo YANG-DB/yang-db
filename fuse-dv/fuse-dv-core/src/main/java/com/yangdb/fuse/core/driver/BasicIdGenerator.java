@@ -24,6 +24,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.opensearch.OpenSearchParseException;
 import org.opensearch.action.admin.indices.create.CreateIndexRequest;
 import org.opensearch.action.get.GetRequest;
@@ -35,10 +39,12 @@ import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
 import org.opensearch.index.engine.VersionConflictEngineException;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
 
@@ -48,6 +54,14 @@ import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
 public class BasicIdGenerator implements IdGeneratorDriver<Range> {
     public static final String indexNameParameter = "BasicIdGenerator.@indexName";
     public static final String IDSEQUENCE = "idsequence";
+
+    //retry mechanism
+    private RetryConfig config = RetryConfig.custom()
+            .maxAttempts(5)
+            .waitDuration(Duration.ofSeconds(2))
+            .build();
+    private RetryRegistry registry = RetryRegistry.of(config);
+    private Retry retry = registry.retry("getNextInternal", config);
 
     //region Constructors
     @Inject
@@ -64,47 +78,65 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
     //region IdGenerator Implementation
     @Override
     public Range getNext(String genName, int numIds) {
+        //service supplier
+        Supplier<Range> rangeSupplier =
+                () -> getNextInternal(genName, numIds);
+        // retry supplier
+        Supplier<Range> rangeSupplierService =
+                Retry.decorateSupplier(retry, rangeSupplier);
+        //activate
+        return rangeSupplierService.get();
+    }
+
+    private Range getNextInternal(String genName, int numIds) {
         synchronized (this.sync) {
-            while (true) {
-                try {
-                    GetResponse getResponse = this.client.get(new GetRequest(this.indexName, IDSEQUENCE, genName)).actionGet();
-                    long currentId = 1l;
-                    if (getResponse.isExists()) {
-                        currentId = ((Number) getResponse.getSource().get("value")).longValue();
-                    } else {
-                        addFirstSequenceId(genName);
-                    }
-                    Map<String, Object> newValue = new HashMap<>(1);
-                    newValue.put("value", currentId + numIds);
-
-                    try {
-                        IndexResponse indexResponse = this.client.index(new IndexRequest(
-                                getResponse.getIndex(),
-                                getResponse.getType(),
-                                getResponse.getId()).version(getResponse.getVersion())
-                                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
-                                .source(newValue)).actionGet();
-
-                        if (indexResponse.status().getStatus() == 200) {
-                            return new Range(currentId, currentId + numIds);
-                        }
-                    } catch (VersionConflictEngineException ex) {
-                        //retry
-                    }
-                } catch (IndexNotFoundException ex) {
-                    //retry
-                    generateIndex();
+            //todo replace this with Retry framework
+            try {
+                GetResponse getResponse = this.client.get(new GetRequest(this.indexName, IDSEQUENCE, genName)).actionGet();
+                long currentId = 1l;
+                if (getResponse.isExists()) {
+                    currentId = ((Number) getResponse.getSource().get("value")).longValue();
+                } else {
                     addFirstSequenceId(genName);
                 }
+                Map<String, Object> newValue = new HashMap<>(1);
+                newValue.put("value", currentId + numIds);
+
+                try {
+                    IndexResponse indexResponse = this.client.index(new IndexRequest(
+                            getResponse.getIndex(),
+                            getResponse.getType(),
+                            getResponse.getId())
+//                                    .setIfPrimaryTerm(getResponse.getVersion())
+//                                    .setIfSeqNo(getResponse.getVersion())
+//                                .version(getResponse.getVersion())
+//                                .versionType(VersionType.EXTERNAL)
+                            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                            .source(newValue)).actionGet();
+
+                    if (indexResponse.status().getStatus() == 200) {
+                        return new Range(currentId, currentId + numIds);
+                    }
+                } catch (VersionConflictEngineException ex) {
+                    //retry
+                }
+            } catch (IndexNotFoundException ex) {
+                //before retry generate requeired index elements
+                generateIndex();
+                addFirstSequenceId(genName);
+            } catch (Throwable t) {
+                throw new FuseError.FuseErrorException("Error while attempting to get Snowflake ID ...", t);
             }
         }
+        //activate retry
+        throw new RuntimeException("Error while attempting to get Snowflake ID -> Will soon attempt retry ... ");
     }
 
     @Override
     public boolean init(List<String> names) {
         try {
             generateIndex();
-        } catch (OpenSearchParseException error){
+        } catch (OpenSearchParseException error) {
             //index already exists
         }
         names.forEach(this::addFirstSequenceId);

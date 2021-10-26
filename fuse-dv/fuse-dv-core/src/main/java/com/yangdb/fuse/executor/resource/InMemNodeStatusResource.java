@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
-
 public class InMemNodeStatusResource implements NodeStatusResource {
 
     public static final String ID = "id";

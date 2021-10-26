@@ -136,9 +136,10 @@ public class UniVertex extends UniElement implements Vertex {
         PredicatesHolder predicatesHolder = (edgeLabels.length == 0) ? PredicatesHolderFactory.empty() :
                 PredicatesHolderFactory.predicate(new HasContainer(T.label.getAccessor(), P.within(edgeLabels)));
 
+        //todo: find out where is  this.traversal().asAdmin().getSideEffects().getOrCreate("context",()->"Generic");
         SearchVertexQuery searchVertexQuery = new SearchVertexQuery(Edge.class, Arrays.asList(this), direction, predicatesHolder, -1, null, null, null);
         return graph.getControllerManager().getControllers(SearchVertexQuery.SearchVertexController.class).stream()
-                .<Iterator<Edge>>map(controller -> controller.search(searchVertexQuery))
+                .map(controller -> controller.search(searchVertexQuery))
                 .flatMap(ConversionUtils::asStream)
                 .iterator();
     }

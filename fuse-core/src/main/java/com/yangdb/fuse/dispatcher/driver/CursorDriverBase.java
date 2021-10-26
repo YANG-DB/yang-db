@@ -22,6 +22,7 @@ package com.yangdb.fuse.dispatcher.driver;
 
 
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
@@ -41,11 +42,14 @@ import java.util.Optional;
  * Created by Roman on 12/15/2017.
  */
 public abstract class CursorDriverBase implements CursorDriver {
+    public static final String CONTEXT = "context";
     //region Constructors
     @Inject
-    public CursorDriverBase(ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
+    public CursorDriverBase(MetricRegistry registry, ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
+        this.registry = registry;
         this.resourceStore = resourceStore;
         this.urlSupplier = urlSupplier;
+
     }
     //endregion
 
@@ -110,7 +114,7 @@ public abstract class CursorDriverBase implements CursorDriver {
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorId,
                 cursorResource.get().getCursorRequest(),
-                cursorResource.get().getProfileInfo().infoData(),
+                cursorResource.get().getProfileInfo().infoData(cursorResource.get().getCursorRequest()),
                 urlSupplier.pageStoreUrl(queryId, cursorId),
                 resourceStore.getPageResource(queryId,cursorId,cursorResource.get().getCurrentPageId()).isPresent() ?
                         Collections.singletonList(
@@ -128,10 +132,14 @@ public abstract class CursorDriverBase implements CursorDriver {
         }
         //try delete inner cursors
         queryResource.get().getInnerQueryResources().forEach(inner->delete(inner.getQueryMetadata().getId(),cursorId));
+        //remove any existing underlying open scrolls
+        queryResource.get().getCursorResource(cursorId).get().clearScrolls();
         //delete outer cursor
         queryResource.get().deleteCursorResource(cursorId);
         return Optional.of(true);
     }
+
+
     //endregion
 
     //region Protected Abstract Methods
@@ -140,6 +148,7 @@ public abstract class CursorDriverBase implements CursorDriver {
 
     //region Fields
     protected PageDriver pageDriver;
+    protected MetricRegistry registry;
     protected ResourceStore resourceStore;
     protected AppUrlSupplier urlSupplier;
     //endregion

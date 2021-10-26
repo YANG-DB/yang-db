@@ -22,6 +22,7 @@ package com.yangdb.fuse.executor.cursor.discrete;
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.model.results.*;
 import com.yangdb.fuse.model.transport.cursor.CreateHierarchyFlattenCursorRequest;
@@ -32,7 +33,7 @@ import javaslang.control.Option;
 import java.io.StringWriter;
 import java.util.*;
 
-public class HierarchyFlattenCursor implements Cursor<TraversalCursorContext> {
+public class HierarchyFlattenCursor extends BaseCursor {
     //region Factory
     public static class Factory implements CursorFactory {
         //region CursorFactory Implementation
@@ -48,6 +49,7 @@ public class HierarchyFlattenCursor implements Cursor<TraversalCursorContext> {
 
     //region Constructors
     public HierarchyFlattenCursor(PathsTraversalCursor innerCursor, CreateHierarchyFlattenCursorRequest cursorRequest) {
+        super(innerCursor.getContext());
         this.innerCursor = innerCursor;
     }
     //endregion

@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class DragonsGeneratorTest {
 
     static final String CONFIGURATION_SMALL_FILE_PATH = "test.generator.properties";
-    static final String CONFIGURATION_MASSIVE_FILE_PATH = "test.generator.massive.properties";
+    static final String CONFIGURATION_MASSIVE_FILE_PATH = "test.massive.generator.properties";
 
     static final int NUM_OF_DRAGONS = 100;
 

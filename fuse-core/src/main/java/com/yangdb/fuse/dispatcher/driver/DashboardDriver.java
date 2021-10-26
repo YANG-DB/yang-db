@@ -22,6 +22,8 @@ package com.yangdb.fuse.dispatcher.driver;
 
 
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.Map;
 
 /**
@@ -29,11 +31,9 @@ import java.util.Map;
  */
 public interface DashboardDriver {
 
-    Map graphElementCount() ;
+    ObjectNode graphElementCount(String ontology) ;
 
-    Map graphElementCreated() ;
+    ObjectNode graphElementCreated(String ontology) ;
 
-    Map graphFieldValuesCount();
-
-    Map cursorCount();
+    ObjectNode cursorCount();
 }

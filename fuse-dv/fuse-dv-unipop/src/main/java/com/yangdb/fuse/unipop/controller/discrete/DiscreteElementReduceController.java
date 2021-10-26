@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.*;
 import com.yangdb.fuse.unipop.controller.common.context.CompositeControllerContext;
@@ -67,7 +68,8 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
             Client client,
             OpensearchGraphConfiguration configuration,
             UniGraph graph,
-            GraphElementSchemaProvider schemaProvider) {
+            GraphElementSchemaProvider schemaProvider,
+            MetricRegistry metricRegistry) {
 
         this.client = client;
         this.configuration = configuration;
@@ -256,5 +258,6 @@ public class DiscreteElementReduceController implements ReduceQuery.SearchContro
     private OpensearchGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private MetricRegistry metricRegistry;
     //endregion
 }

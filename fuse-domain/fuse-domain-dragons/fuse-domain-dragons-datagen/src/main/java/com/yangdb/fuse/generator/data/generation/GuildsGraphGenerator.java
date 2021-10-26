@@ -42,11 +42,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase.BUFFER;
+
 /**
  * Created by benishue on 05/06/2017.
  */
 public class GuildsGraphGenerator {
 
+    public static final String[] GUILDS_HEADER = {"id", "name", "description", "iconId", "url", "establishDate"};
+    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since", "until"};
     private final Logger logger = LoggerFactory.getLogger(GuildsGraphGenerator.class);
     //Not all of the population is member of guild
     private final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;
@@ -66,7 +70,7 @@ public class GuildsGraphGenerator {
     public List<Guild> generateGuilds() {
         List<Guild> guildsList = new ArrayList<>();
         List<String[]> guildsRecords = new ArrayList<>();
-        guildsRecords.add(0,new String[]{"id","name","description","iconId","url","establishDate"});
+        guildsRecords.add(0, GUILDS_HEADER);
         try {
             GuildGenerator generator = new GuildGenerator(guildConf);
             int guildsSize = guildConf.getNumberOfNodes();
@@ -116,6 +120,9 @@ public class GuildsGraphGenerator {
                 for (int j = startIndex; j < membersPopulationSize; j++) {
                     String personId = shuffledPersonsIds.get(j);
 
+                    if(guildToPersonsSet.size() % BUFFER == 0)
+                        logger.info("Collecting to generate ... "+ BUFFER +" elements");
+
                     if (guildToPersonsSet.get(guildId) == null) {
                         guildToPersonsSet.put(guildId, new ArrayList<>(Arrays.asList(personId)));
                     } else {
@@ -137,7 +144,7 @@ public class GuildsGraphGenerator {
 
     private void printPersonsToGuild(Map<String, List<String>> personsToGuild, EntityType entityType) {
         List<String[]> p2gRecords = new ArrayList<>();
-        p2gRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"});
+        p2gRecords.add(0, PERSON_TO_GUILD_HEADER);
 
         for (Map.Entry<String, List<String>> p2g : personsToGuild.entrySet()) {
             String guildId = p2g.getKey();
@@ -148,6 +155,9 @@ public class GuildsGraphGenerator {
                 Date till = RandomUtil.randomDate(since, guildConf.getEndDateOfStory());
                 RelationBase personMemberOfGuildsRel = new MemberOf(edgeId, guildId, personId, since, till);
                 p2gRecords.add(personMemberOfGuildsRel.getRecord());
+                if(p2gRecords.size() % BUFFER == 0)
+                    logger.info("Collecting to generate ... "+ BUFFER +" elements");
+
             }
         }
         //Write graph

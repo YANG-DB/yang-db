@@ -22,13 +22,14 @@ package com.yangdb.dragons.cursor;
 
 import com.yangdb.fuse.dispatcher.cursor.Cursor;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
+import com.yangdb.fuse.executor.cursor.BaseCursor;
 import com.yangdb.fuse.executor.cursor.TraversalCursorContext;
 import com.yangdb.fuse.executor.cursor.discrete.NewGraphHierarchyTraversalCursor;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.cursor.CreateGraphCursorRequest.GraphFormat;
 import com.yangdb.fuse.model.transport.cursor.LogicalGraphCursorRequest;
 
-public class LogicalGraphHierarchyTraversalCursor implements Cursor<TraversalCursorContext> {
+public class LogicalGraphHierarchyTraversalCursor extends BaseCursor {
 
     private Cursor<TraversalCursorContext> innerCursor;
     private GraphFormat format;
@@ -47,6 +48,7 @@ public class LogicalGraphHierarchyTraversalCursor implements Cursor<TraversalCur
     }
 
     public LogicalGraphHierarchyTraversalCursor(TraversalCursorContext context, Iterable<String> countTags, GraphFormat format) {
+        super(context);
         this.format = format;
         innerCursor = new NewGraphHierarchyTraversalCursor(context,countTags);
     }

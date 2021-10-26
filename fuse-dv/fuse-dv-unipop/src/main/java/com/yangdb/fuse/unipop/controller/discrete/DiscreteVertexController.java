@@ -19,6 +19,9 @@ package com.yangdb.fuse.unipop.controller.discrete;
  * limitations under the License.
  * #L%
  */
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.provision.ScrollProvisioning;
+import com.yangdb.fuse.model.GlobalConstants;
 
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
@@ -67,7 +70,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
-    public DiscreteVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public DiscreteVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         super(labels -> Stream.ofAll(labels).isEmpty() ||
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet().containsAll(Stream.ofAll(labels).toJavaSet()),
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet());
@@ -77,6 +80,7 @@ public class DiscreteVertexController extends VertexControllerBase {
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -158,6 +162,7 @@ public class DiscreteVertexController extends VertexControllerBase {
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchVertexQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -297,5 +302,6 @@ public class DiscreteVertexController extends VertexControllerBase {
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     //endregion
 }

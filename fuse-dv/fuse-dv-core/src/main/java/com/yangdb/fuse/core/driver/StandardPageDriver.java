@@ -42,18 +42,21 @@ public class StandardPageDriver extends PageDriverBase {
     //region Constructors
     @Inject
     public StandardPageDriver(ResourceStore resourceStore, AppUrlSupplier urlSupplier, GraphWriterStrategy strategy) {
-        super(resourceStore, urlSupplier,strategy);
+        super(resourceStore, urlSupplier, strategy);
     }
     //endregion
 
     //region PageDriverBase Implementation
     @Override
     protected PageResource<QueryResultBase> createResource(QueryResource queryResource, CursorResource cursorResource, String pageId, int pageSize) {
+        PageResource<QueryResultBase> pageResource = new PageResource<>(pageId, pageSize);
+        //drain results from storage
         QueryResultBase results = cursorResource.getCursor().getNextResults(pageSize);
-
-        return new PageResource<>(pageId, results, pageSize, 0)
-                        .withActualSize(results.getSize())
-                        .available();
+        //populate the page resource
+        return pageResource
+                .withResults(results)
+                .withActualSize(results.getSize())
+                .available();
     }
     //endregion
 }

@@ -35,6 +35,8 @@ import org.opensearch.search.SearchHit;
 
 import java.util.Map;
 
+import static com.yangdb.fuse.dispatcher.provision.ScrollProvisioning.NoOpScrollProvisioning.INSTANCE;
+
 /**
  * Created by Roman on 21/06/2017.
  */
@@ -71,6 +73,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 this.client.get(),
+                INSTANCE,
                 searchBuilder.build(this.client.get(), GlobalConstants.INCLUDE_AGGREGATION), SearchOrderProvider.of(SearchOrderProvider.EMPTY,SearchType.DEFAULT) ,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(), searchBuilder.getScrollTime());

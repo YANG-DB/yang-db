@@ -20,6 +20,7 @@ package com.yangdb.fuse.services.controllers;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.cursor.CompositeCursorFactory;
@@ -28,7 +29,6 @@ import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.ContentResponse.Builder;
 import com.yangdb.fuse.services.suppliers.RequestIdSupplier;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,29 +52,22 @@ public class StandardDashboardController implements DashboardController<Standard
     //endregion
 
     @Override
-    public ContentResponse<Map> graphElementCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphElementCount()))
+    public ContentResponse<ObjectNode> graphElementCount(String ontology) {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(driver().graphElementCount(ontology)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<Map> graphElementCreatedOverTime() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphElementCreated()))
+    public ContentResponse<ObjectNode> graphElementCreatedOverTime(String ontology) {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
+                .data(Optional.of(driver().graphElementCreated(ontology)))
                 .compose();
     }
 
     @Override
-    public ContentResponse<Map> graphFieldValuesCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
-                .data(Optional.of(driver().graphFieldValuesCount()))
-                .compose();
-    }
-
-    @Override
-    public ContentResponse<Map> cursorCount() {
-        return Builder.<Map>builder(ACCEPTED, NOT_FOUND)
+    public ContentResponse<ObjectNode> cursorCount() {
+        return Builder.<ObjectNode>builder(ACCEPTED, NOT_FOUND)
                 .data(Optional.of(driver().cursorCount()))
                 .compose();
     }

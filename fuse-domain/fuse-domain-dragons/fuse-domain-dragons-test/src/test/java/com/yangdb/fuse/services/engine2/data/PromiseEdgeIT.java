@@ -98,7 +98,7 @@ public class PromiseEdgeIT implements BaseITMarker {
 
     @Test
     public void testPromiseEdges() {
-
+        MetricRegistry registry = new MetricRegistry();
         //basic edge constraint
         Traversal constraint = __.and(__.has(T.label, "fire"), __.has(GlobalConstants.EdgeSchema.DIRECTION, "out"));
 
@@ -135,7 +135,7 @@ public class PromiseEdgeIT implements BaseITMarker {
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(edgeSchema));
 
-        LoggingSearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexController(client, configuration, graph, schemaProvider), registry);
+        LoggingSearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexController(client, configuration, graph, schemaProvider,registry), registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -194,8 +194,8 @@ public class PromiseEdgeIT implements BaseITMarker {
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        SearchVertexQuery.SearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexFilterController(client, configuration, graph, schemaProvider,
-                context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT)), registry);
+        PromiseVertexFilterController vertexController = new PromiseVertexFilterController(client, configuration, graph, schemaProvider,context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT),registry);
+        SearchVertexQuery.SearchVertexController controller = new LoggingSearchVertexController(vertexController, registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

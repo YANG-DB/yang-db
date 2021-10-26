@@ -40,7 +40,7 @@ import java.util.List;
  */
 public abstract class GraphGeneratorBase<C,E> {
 
-    protected static final int BUFFER = 1000;
+    public static final int BUFFER = 1000;
 
     //region Ctrs
     public GraphGeneratorBase(C configuration, BaseModel model, EntityGeneratorBase entityGenerator) {

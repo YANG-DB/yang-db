@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.VertexControllerBase;
@@ -58,7 +59,7 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE));
 

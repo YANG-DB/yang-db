@@ -263,8 +263,9 @@ public class UniGraph implements Graph {
     private <E extends Element, C extends Comparable> Iterator<E> query(Class<E> returnType, Object[] ids) {
         PredicatesHolder idPredicate = createIdPredicate(ids, returnType);
         // TODO: check order
-        SearchQuery<E> uniQuery = new SearchQuery<>(returnType, idPredicate, -1, null, null, null);
-        return queryControllers.stream().<E>flatMap(controller -> ConversionUtils.asStream(controller.search(uniQuery))).iterator();
+//        this.traversal().asAdmin().getSideEffects().getOrCreate("context",()->"Generic");
+        SearchQuery<E> uniQuery = new SearchQuery<>(returnType, idPredicate, -1, null, null,null);
+        return queryControllers.stream().flatMap(controller -> ConversionUtils.asStream(controller.search(uniQuery))).iterator();
     }
 
     public static <E extends Element> PredicatesHolder createIdPredicate(Object[] ids, Class<E> returnType) {

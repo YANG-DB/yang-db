@@ -31,14 +31,11 @@ import org.opensearch.client.Client;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
+import java.util.*;
 
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.extractFile;
-import static com.yangdb.fuse.model.results.LoadResponse.*;
+import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.getZipType;
+import static com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 
 /**
  * Loader for CSV Data Model to E/S
@@ -64,20 +61,22 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
     public LoadResponse<String, FuseError> load(String type, String label, File data, GraphDataLoader.Directive directive) throws IOException {
         DataTransformerContext context;
         String contentType = Files.probeContentType(data.toPath());
+        if(Objects.isNull(contentType))
+            contentType = getZipType(data);
         if (Arrays.asList("application/gzip", "application/zip").contains(contentType)) {
-            ByteArrayOutputStream stream = null; //unzip
+            List<File> files = Collections.EMPTY_LIST;
             switch (contentType) {
                 case "application/gzip":
-                    stream = extractFile(new GZIPInputStream(Files.newInputStream(data.toPath())));
+                    files = extractFile(data);
                     break;
                 case "application/zip":
-                    stream = extractFile(new ZipInputStream(Files.newInputStream(data.toPath())));
+                    files = extractFile(data);
                     break;
             }
-
-            ByteArrayOutputStream finalStream = stream;
-            context = transformer.transform(readCsv(type, label, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(finalStream.toByteArray())))), directive);
-            return load(context, directive);
+            if(!files.isEmpty()) {
+                //currently assuming a single entry zip fle
+                data = files.get(0);
+            }
         }
 
         context = transformer.transform(readCsv(type, label, new FileReader(data.getAbsoluteFile())), directive);

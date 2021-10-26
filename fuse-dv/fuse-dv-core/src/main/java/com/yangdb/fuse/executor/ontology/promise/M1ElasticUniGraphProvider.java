@@ -91,13 +91,17 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                        new PromiseElementVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProviderFactory), metricRegistry),
+                                        new PromiseElementVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProviderFactory,metricRegistry),
+                                        metricRegistry),
                                 new LoggingSearchController(
-                                        new PromiseElementEdgeController(client, opensearchGraphConfiguration, uniGraph, schemaProvider), metricRegistry)),
+                                        new PromiseElementEdgeController(client, opensearchGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
+                                        metricRegistry)),
                         new LoggingSearchVertexController(
-                                new PromiseVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider), metricRegistry),
+                                new PromiseVertexController(client, opensearchGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
+                                metricRegistry),
                         new LoggingSearchVertexController(
-                                new PromiseVertexFilterController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProviderFactory), metricRegistry)
+                                new PromiseVertexFilterController(client, opensearchGraphConfiguration, uniGraph, schemaProvider, orderProviderFactory,metricRegistry),
+                                metricRegistry)
                 );
             }
 

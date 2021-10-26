@@ -1,5 +1,6 @@
 package com.yangdb.fuse.services.dispatcher.driver;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.yangdb.fuse.client.export.GraphWriterStrategy;
 import com.yangdb.fuse.dispatcher.cursor.CursorFactory;
@@ -89,9 +90,9 @@ public class MockDriver {
     public static class Cursor extends CursorDriverBase {
         //region Constructors
         @Inject
-        public Cursor(ResourceStore resourceStore, PageDriver pageDriver,
+        public Cursor(MetricRegistry registry,ResourceStore resourceStore, PageDriver pageDriver,
                       AppUrlSupplier urlSupplier, CursorFactory cursorFactory) {
-            super(resourceStore, urlSupplier);
+            super(registry,resourceStore, urlSupplier);
             this.pageDriver = pageDriver;
             this.cursorFactory = cursorFactory;
         }

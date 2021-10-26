@@ -20,6 +20,8 @@ package com.yangdb.fuse.unipop.controller.promise;
  * #L%
  */
 
+import com.codahale.metrics.MetricRegistry;
+import com.yangdb.fuse.dispatcher.provision.ScrollProvisioning;
 import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.common.appender.CompositeSearchAppender;
@@ -66,12 +68,13 @@ import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    public PromiseElementVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory) {
+    public PromiseElementVertexController(Client client, OpensearchGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, SearchOrderProviderFactory orderProviderFactory, MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
         this.orderProviderFactory = orderProviderFactory;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -189,6 +192,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         SearchRequestBuilder searchRequest = searchBuilder.build(client, GlobalConstants.INCLUDE_AGGREGATION);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 client,
+                new ScrollProvisioning.MetricRegistryScrollProvisioning(metricRegistry,searchQuery.getContext()),
                 searchRequest,
                 orderProviderFactory.build(context),
                 searchBuilder.getLimit(),
@@ -214,5 +218,6 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
     private SearchOrderProviderFactory orderProviderFactory;
+    private MetricRegistry metricRegistry;
     //endregion
 }
