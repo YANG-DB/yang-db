@@ -25,6 +25,7 @@ import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
+import com.yangdb.fuse.model.transport.Status;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -92,7 +93,7 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
         synchronized (this.sync) {
             //todo replace this with Retry framework
             try {
-                GetResponse getResponse = this.client.get(new GetRequest(this.indexName, IDSEQUENCE, genName)).actionGet();
+                GetResponse getResponse = this.client.get(new GetRequest(this.indexName, genName)).actionGet();
                 long currentId = 1l;
                 if (getResponse.isExists()) {
                     currentId = ((Number) getResponse.getSource().get("value")).longValue();
@@ -104,17 +105,16 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
 
                 try {
                     IndexResponse indexResponse = this.client.index(new IndexRequest(
-                            getResponse.getIndex(),
-                            getResponse.getType(),
                             getResponse.getId())
 //                                    .setIfPrimaryTerm(getResponse.getVersion())
 //                                    .setIfSeqNo(getResponse.getVersion())
 //                                .version(getResponse.getVersion())
 //                                .versionType(VersionType.EXTERNAL)
+                            .index(this.indexName)
                             .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                             .source(newValue)).actionGet();
 
-                    if (indexResponse.status().getStatus() == 200) {
+                    if (indexResponse.status().getStatus() == Status.OK.getStatus() || indexResponse.status().getStatus() == Status.CREATED.getStatus() ) {
                         return new Range(currentId, currentId + numIds);
                     }
                 } catch (VersionConflictEngineException ex) {
@@ -144,7 +144,7 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
     }
 
     private void addFirstSequenceId(String genName) {
-        this.client.index(new IndexRequest(this.indexName).id(genName).type(IDSEQUENCE).source(Collections.singletonMap("value", 1l))).actionGet();
+        this.client.index(new IndexRequest(this.indexName).id(genName).source(Collections.singletonMap("value", 1l))).actionGet();
     }
 
     private void generateIndex() {

@@ -41,7 +41,7 @@ import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase
  */
 public class HorsesGraphGenerator {
 
-    public static final String[] HORSE_HEADER = {"id", "name", "color", "weight", "maxSpeed", "maxDistance"};
+    public static final String[] HORSE_HEADER = {"id", "name", "color", "weight", "maxSpeed", "distance"};
     private final Logger logger = LoggerFactory.getLogger(HorsesGraphGenerator.class);
 
     public HorsesGraphGenerator(final HorseConfiguration configuration) {

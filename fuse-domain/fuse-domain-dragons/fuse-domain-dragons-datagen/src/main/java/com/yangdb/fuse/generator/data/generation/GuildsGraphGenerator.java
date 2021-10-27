@@ -50,7 +50,7 @@ import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase
 public class GuildsGraphGenerator {
 
     public static final String[] GUILDS_HEADER = {"id", "name", "description", "iconId", "url", "establishDate"};
-    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since", "until"};
+    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate","endDate"};
     private final Logger logger = LoggerFactory.getLogger(GuildsGraphGenerator.class);
     //Not all of the population is member of guild
     private final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;

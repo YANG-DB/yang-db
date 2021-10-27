@@ -58,8 +58,8 @@ import static com.yangdb.fuse.generator.util.CsvUtil.appendResults;
 public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguration, Dragon> {
 
     public static final String[] DRAGON_HEADER = {"id", "name", "birthDate", "power", "gender", "color"};
-    public static final String[] DRAGONS_FIRE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "date", "temp"};
-    public static final String[] DRAGON_FREEZE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "from", "to"};
+    public static final String[] DRAGONS_FIRE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "date", "temperature"};
+    public static final String[] DRAGON_FREEZE_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "date", "temperature"};
     private final Logger logger = LoggerFactory.getLogger(DragonsGraphGenerator.class);
 
     //region Ctrs

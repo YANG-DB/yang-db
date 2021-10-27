@@ -118,7 +118,7 @@ public interface DataLoaderUtils {
      */
     static String getZipType(java.io.File file) {
         try (ZipInputStream zipFile = new ZipInputStream(Files.newInputStream(file.toPath()))) {
-            if (zipFile.available() == 1) {
+            if (zipFile.available() == 1 && zipFile.getNextEntry() != null) {
                 zipFile.close();
                 return "application/zip";
             }

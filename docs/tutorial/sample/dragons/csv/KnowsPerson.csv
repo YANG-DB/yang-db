@@ -1,4 +1,4 @@
-"id","entityA.id","entityA.type","entityB.id","entityB.type","since"
+"id","entityA.id","entityA.type","entityB.id","entityB.type","startDate"
 "0_5","0","Person","5","Person","-1327267552331"
 "1_5","1","Person","5","Person","524018457750"
 "2_5","2","Person","5","Person","-1862964562563"

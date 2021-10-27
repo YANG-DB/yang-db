@@ -57,7 +57,7 @@ import static com.yangdb.fuse.generator.util.CsvUtil.appendResults;
 public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguration, Person> {
 
     public static final String[] PERSON_HEADER = {"id", "firstName", "lastName", "gender", "birthDate", "deathDate", "height"};
-    public static final String[] PERSON_KNOWS_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since"};
+    public static final String[] PERSON_KNOWS_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate"};
 
     private final Logger logger = LoggerFactory.getLogger(PersonsGraphGenerator.class);
 
@@ -265,7 +265,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
     private void printAnimalsToPerson(Map<String, List<String>> animalsToPerson, EntityType entityType) {
         List<String[]> d2pRecords = new ArrayList<>();
-        d2pRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","since","until"});
+        d2pRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","startDate","endDate"});
 
         for (Map.Entry<String, List<String>> p2A : animalsToPerson.entrySet()) {
             String personId = p2A.getKey();

@@ -1,4 +1,4 @@
-"id","entityA.id","entityA.type","entityB.id","entityB.type","date","temp"
+"id","entityA.id","entityA.type","entityB.id","entityB.type","date","temperature"
 "0_3_0","0","Dragon","3","Dragon","-1917478511823","187"
 "0_3_1","0","Dragon","3","Dragon","-1134316575110","333"
 "0_3_3","0","Dragon","3","Dragon","-1900890540445","360"

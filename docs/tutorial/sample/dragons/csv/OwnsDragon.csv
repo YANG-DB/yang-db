@@ -1,4 +1,4 @@
-"id","entityB.id","entityB.type","entityA.id","entityA.type","since","until"
+"id","entityB.id","entityB.type","entityA.id","entityA.type","startDate","endDate"
 "88_880","88","DRAGON","880","Person","-86053230955","809437396964"
 "88_153","88","DRAGON","153","Person","-237426827733","799994214473"
 "88_860","88","DRAGON","860","Person","-1129415711958","-666519142647"

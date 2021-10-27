@@ -56,7 +56,7 @@ public class KingdomsGraphGenerator {
     //Used to skew the results
     private static final double LARGEST_KINGDOM_RATIO = 0.3;
     public static final String[] KINGDOM_HEADER = {"id", "name", "king", "queen", "independenceDay", "funds"};
-    public static final String[] ENTITY_TO_KINGDOM_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "since"};
+    public static final String[] ENTITY_TO_KINGDOM_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate"};
 
     public KingdomsGraphGenerator(final KingdomConfiguration configuration) {
         this.kingdomConf = configuration;
