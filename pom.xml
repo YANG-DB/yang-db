@@ -92,7 +92,7 @@
         <!-- graphviz svg graph visualization -->
         <graphviz.version>0.18.0</graphviz.version>
         <!-- jansi -->
-        <jansi.version>1.16</jansi.version>
+        <jansi.version>2.4.0</jansi.version>
         <!--ahocorasick-->
         <ahocorasick.version>0.4.0</ahocorasick.version>
         <!-- spatial4j -->
@@ -171,7 +171,7 @@
         <!-- logging -->
         <slf4j.version>1.7.25</slf4j.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.2.3</logback.version>
         <log4j.version>2.7</log4j.version>
         <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
