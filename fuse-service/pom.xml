@@ -95,10 +95,6 @@
             <artifactId>opensearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codelibs.elasticsearch.module</groupId>
-            <artifactId>analysis-common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.cnsvili</groupId>
             <artifactId>snowflake</artifactId>
         </dependency>

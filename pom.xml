@@ -623,17 +623,6 @@
                 <artifactId>transport</artifactId>
                 <version>${opensearch.client.version}</version>
             </dependency>
-
-            <!--ES plugin module for setting up an embedded ES node during tests-->
-            <dependency>
-                <groupId>org.codelibs.elasticsearch.module</groupId>
-                <artifactId>analysis-common</artifactId>
-                <version>${elasticsearch.client.version}</version>
-            </dependency>
-
-            <!-- elasticsearch -->
-
-
             <!-- lucene -->
             <dependency>
                 <groupId>org.apache.lucene</groupId>
