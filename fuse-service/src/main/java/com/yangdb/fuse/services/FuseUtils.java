@@ -50,23 +50,19 @@ public abstract class FuseUtils {
     }
 
     public static boolean loadEmbedded(Config config) throws Exception {
-        if(config.hasPath(OPENSEARCH_EMBEDDED) &&
-            config.getBoolean(OPENSEARCH_EMBEDDED)) {
-            String nodeName = config.getString(OPENSEARCH_CLUSTER_NAME);
-            boolean deleteOnLoad = true;
-            if(config.hasPath(OPENSEARCH_DELETE_DATA_ON_LOAD)) {
-                deleteOnLoad = config.getBoolean(OPENSEARCH_DELETE_DATA_ON_LOAD);
-            }
-            int nodePort = config.getInt(OPENSEARCH_PORT);
-            String target =  "target/es";
-            if(config.hasPath(OPENSEARCH_WORKING_DIR))
-                target = config.getString(OPENSEARCH_WORKING_DIR);
-
-            System.out.println(String.format("Loading opensearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("opensearch.embedded"),nodeName,nodePort,target));
-            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
-            return true;
+        String nodeName = config.getString(OPENSEARCH_CLUSTER_NAME);
+        boolean deleteOnLoad = true;
+        if(config.hasPath(OPENSEARCH_DELETE_DATA_ON_LOAD)) {
+            deleteOnLoad = config.getBoolean(OPENSEARCH_DELETE_DATA_ON_LOAD);
         }
-        return false;
+        int nodePort = config.getInt(OPENSEARCH_PORT);
+        String target =  "target/es";
+        if(config.hasPath(OPENSEARCH_WORKING_DIR))
+            target = config.getString(OPENSEARCH_WORKING_DIR);
+
+        System.out.println(String.format("Loading opensearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("opensearch.embedded"),nodeName,nodePort,target));
+        closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
+        return true;
     }
 
     public static void onStop() {

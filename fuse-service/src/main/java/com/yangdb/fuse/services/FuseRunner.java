@@ -27,6 +27,8 @@ import org.jooby.Jooby;
 
 import java.io.File;
 
+import static com.yangdb.fuse.services.FuseUtils.OPENSEARCH_EMBEDDED;
+
 /**
  * Created by Roman on 05/06/2017.
  */
@@ -77,11 +79,13 @@ public class FuseRunner {
         //load configuration
         Config config = FuseUtils.loadConfig(configFile, options.getActiveProfile());
         //try load embedded if required
-        FuseUtils.loadEmbedded(config);
+        if (runEmbedded(config, options)) {
+            FuseUtils.loadEmbedded(config);
+        }
 
+        //break when only opensearch is required
         if (options.isOpensearchOnly()) {
             Thread.currentThread().join();
-            //break when only opensearch is required
         } else {
             //load jooby App
             Jooby.run(() -> app != null ?
@@ -91,6 +95,10 @@ public class FuseRunner {
                                     .throwBootstrapException(),
                     joobyArgs);
         }
+    }
+
+    private boolean runEmbedded(Config config, Options options) {
+        return (config.hasPath(OPENSEARCH_EMBEDDED) && config.getBoolean(OPENSEARCH_EMBEDDED)) || options.isOpensearchOnly();
     }
 
     public static class Options {
