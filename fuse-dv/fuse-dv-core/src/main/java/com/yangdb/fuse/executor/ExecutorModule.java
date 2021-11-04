@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
@@ -147,6 +148,7 @@ public class ExecutorModule extends ModuleBase {
             }
         });
     }
+
     protected void bindCSVDataLoader(Env env, Config conf, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
@@ -335,13 +337,13 @@ public class ExecutorModule extends ModuleBase {
 
     private OpensearchGraphConfiguration createElasticGraphConfiguration(Config conf) {
         OpensearchGraphConfiguration configuration = new OpensearchGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts")).toJavaArray(String.class));
-        configuration.setClusterPort(conf.getInt("opensearch.port"));
-        configuration.setClusterName(conf.getString("opensearch.cluster_name"));
-        configuration.setElasticGraphDefaultSearchSize(conf.getLong("opensearch.default_search_size"));
-        configuration.setElasticGraphMaxSearchSize(conf.getLong("opensearch.max_search_size"));
-        configuration.setElasticGraphScrollSize(conf.getInt("opensearch.scroll_size"));
-        configuration.setElasticGraphScrollTime(conf.getInt("opensearch.scroll_time"));
+        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts", Arrays.asList("127.0.0.1"))).toJavaArray(String.class));
+        configuration.setClusterPort(getInt(conf,"opensearch.port",9200));
+        configuration.setClusterName(getString(conf,"opensearch.cluster_name",""));
+        configuration.setElasticGraphDefaultSearchSize(getLong(conf,"opensearch.default_search_size",10000000L));
+        configuration.setElasticGraphMaxSearchSize(getLong(conf,"opensearch.max_search_size",1000000000L));
+        configuration.setElasticGraphScrollSize(getInt(conf,"opensearch.scroll_size",1000));
+        configuration.setElasticGraphScrollTime(getInt(conf,"opensearch.scroll_time",600000));
 
         configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
                 conf.getBoolean("client.transport.ignore_cluster_name"));
@@ -371,12 +373,40 @@ public class ExecutorModule extends ModuleBase {
         return (Class<? extends CursorFactory>) Class.forName(conf.getString(conf.getString("assembly") + ".cursor_factory"));
     }
 
-    private List<String> getStringList(Config conf, String key) {
+    private int getInt(Config conf, String key, int defaults) {
+        try {
+            return conf.getInt(key);
+        } catch (Exception e) {
+            return defaults;
+        }
+    }
+
+    private long getLong(Config conf, String key, long defaults) {
+        try {
+            return conf.getLong(key);
+        } catch (Exception e) {
+            return defaults;
+        }
+    }
+
+    private String getString(Config conf, String key, String defaults) {
+        try {
+            return conf.getString(key);
+        } catch (Exception e) {
+            return defaults;
+        }
+    }
+
+    private List<String> getStringList(Config conf, String key, List<String> defaults) {
         try {
             return conf.getStringList(key);
-        } catch (Exception ex) {
-            String strList = conf.getString(key);
-            return Stream.of(strList.split(",")).toJavaList();
+        } catch (Exception e1) {
+            try {
+                String strList = conf.getString(key);
+                return Stream.of(strList.split(",")).toJavaList();
+            } catch (Exception e2) {
+                return defaults;
+            }
         }
     }
     //endregion
