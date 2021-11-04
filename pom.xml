@@ -91,7 +91,7 @@
         <!-- graphviz svg graph visualization -->
         <graphviz.version>0.18.0</graphviz.version>
         <!-- jansi -->
-        <jansi.version>1.16</jansi.version>
+        <jansi.version>2.4.0</jansi.version>
         <!--ahocorasick-->
         <ahocorasick.version>0.4.0</ahocorasick.version>
         <!-- spatial4j -->
@@ -158,7 +158,7 @@
         <jool.version>0.9.14</jool.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.6.9</jooby.version>
+        <jooby.version>1.6.0</jooby.version>
 
         <!-- fastutil -->
         <fastutil.version>8.1.1</fastutil.version>
@@ -167,8 +167,7 @@
 
         <!-- logging -->
         <slf4j.version>1.7.25</slf4j.version>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.2.3</logback.version>
         <log4j.version>2.7</log4j.version>
         <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
@@ -723,6 +722,11 @@
 
             <!-- logging -->
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
@@ -735,7 +739,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-api.version}</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.internetitem</groupId>

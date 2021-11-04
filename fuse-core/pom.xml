@@ -54,11 +54,6 @@
     </properties>
 
     <dependencies>
-        <!-- json-ld -->
-        <dependency>
-            <groupId>com.github.jsonld-java</groupId>
-            <artifactId>jsonld-java</artifactId>
-        </dependency>
         <!-- runtime -->
         <dependency>
             <groupId>com.yangdb</groupId>
@@ -76,6 +71,19 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
+        <!-- logging        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- json-ld -->
+        <dependency>
+            <groupId>com.github.jsonld-java</groupId>
+            <artifactId>jsonld-java</artifactId>
+        </dependency>
+
         <!--sql -->
         <dependency>
             <groupId>org.jooq</groupId>
