@@ -50,23 +50,19 @@ public abstract class FuseUtils {
     }
 
     public static boolean loadEmbedded(Config config) throws Exception {
-        if(config.hasPath(ELASTICSEARCH_EMBEDDED) &&
-            config.getBoolean(ELASTICSEARCH_EMBEDDED)) {
-            String nodeName = config.getString(ELASTICSEARCH_CLUSTER_NAME);
-            boolean deleteOnLoad = true;
-            if(config.hasPath(ELASTICSEARCH_DELETE_DATA_ON_LOAD)) {
-                deleteOnLoad = config.getBoolean(ELASTICSEARCH_DELETE_DATA_ON_LOAD);
-            }
-            int nodePort = config.getInt(ELASTICSEARCH_PORT);
-            String target =  "target/es";
-            if(config.hasPath(ELASTICSEARCH_WORKING_DIR))
-                target = config.getString(ELASTICSEARCH_WORKING_DIR);
-
-            System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
-            closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
-            return true;
+        String nodeName = config.          getString(ELASTICSEARCH_CLUSTER_NAME);
+        boolean deleteOnLoad = true;
+        if(config.hasPath(ELASTICSEARCH_DELETE_DATA_ON_LOAD)) {
+            deleteOnLoad = config.getBoolean(ELASTICSEARCH_DELETE_DATA_ON_LOAD);
         }
-        return false;
+        int nodePort = config.getInt(ELASTICSEARCH_PORT);
+        String target =  "target/es";
+        if(config.hasPath(ELASTICSEARCH_WORKING_DIR))
+            target = config.getString(ELASTICSEARCH_WORKING_DIR);
+
+        System.out.println(String.format("Loading elasticsearch (embedded?%b) server %s on port %d on target %s",config.getBoolean("elasticsearch.embedded"),nodeName,nodePort,target));
+        closeables.add(new ElasticEmbeddedNode(target, 9200, nodePort, nodeName, deleteOnLoad));
+        return true;
     }
 
     public static void onStop() {
@@ -81,10 +77,10 @@ public abstract class FuseUtils {
     }
 
     public static void onStart() {
-
+        System.out.println("Started ...");
     }
 
     public static void onStarted() {
-
+        System.out.println("Starting ...");
     }
 }

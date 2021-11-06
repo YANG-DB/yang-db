@@ -27,6 +27,8 @@ import org.jooby.Jooby;
 
 import java.io.File;
 
+import static com.yangdb.fuse.services.FuseUtils.ELASTICSEARCH_EMBEDDED;
+
 /**
  * Created by Roman on 05/06/2017.
  */
@@ -44,7 +46,10 @@ public class FuseRunner {
         final String logbackConfigurationFilename = args.length > 2 ?
                 args[2] : "logback.xml";
 
-        new FuseRunner().run(new Options(applicationConfFilename, activeProfile, logbackConfigurationFilename, true));
+        final String opensearchOnly = args.length > 3 ?
+                args[3] : "false";
+
+        new FuseRunner().run(new Options(applicationConfFilename, activeProfile, logbackConfigurationFilename, true, Boolean.parseBoolean(opensearchOnly)));
     }
 
     public void run() throws Exception {
@@ -65,7 +70,7 @@ public class FuseRunner {
                 "server.join=" + (options.isServerJoin() ? "true" : "false")
         };
 
-        String confFilename = options.getApplicationConfFilename() !=null ? options.getApplicationConfFilename() : "application.conf";
+        String confFilename = options.getApplicationConfFilename() != null ? options.getApplicationConfFilename() : "application.conf";
         File configFile = new File(confFilename);
         if (!configFile.exists()) {
             System.out.println("ConfigFile  " + confFilename + " Not Found - fallback getTo application.conf");
@@ -74,33 +79,44 @@ public class FuseRunner {
         //load configuration
         Config config = FuseUtils.loadConfig(configFile, options.getActiveProfile());
         //try load embedded if required
-        FuseUtils.loadEmbedded(config);
+        if (runEmbedded(config, options)) {
+            FuseUtils.loadEmbedded(config);
+        }
 
-        //load jooby App
-        Jooby.run(() -> app != null ?
-                app :
-                new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                        .conf(config)
-                        .throwBootstrapException(),
-                joobyArgs)
-        ;
+        //break when only opensearch is required
+        if (options.isOpensearchOnly()) {
+            Thread.currentThread().join();
+        } else {
+            //load jooby App
+            Jooby.run(() -> app != null ?
+                            app :
+                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                                    .conf(config)
+                                    .throwBootstrapException(),
+                    joobyArgs);
+        }
+    }
+
+    private boolean runEmbedded(Config config, Options options) {
+        return (config.hasPath(ELASTICSEARCH_EMBEDDED) && config.getBoolean(ELASTICSEARCH_EMBEDDED)) || options.isOpensearchOnly();
     }
 
     public static class Options {
         //region Constructors
         public Options() {
-            this("application.conf", "activeProfile", "logback.xml", true);
+            this("application.conf", "activeProfile", "logback.xml", true, false);
         }
 
-        public Options(String logbackConfigrationFilename, boolean serverJoin) {
-            this(null, null, logbackConfigrationFilename, serverJoin);
+        public Options(String logbackConfigrationFilename, boolean serverJoin, boolean opensearchOnly) {
+            this(null, null, logbackConfigrationFilename, serverJoin, opensearchOnly);
         }
 
-        public Options(String applicationConfFilename, String activeProfile, String logbackConfigrationFilename, boolean serverJoin) {
+        public Options(String applicationConfFilename, String activeProfile, String logbackConfigrationFilename, boolean serverJoin, boolean opensearchOnly) {
             this.applicationConfFilename = applicationConfFilename;
             this.activeProfile = activeProfile;
             this.logbackConfigrationFilename = logbackConfigrationFilename;
             this.serverJoin = serverJoin;
+            this.opensearchOnly = opensearchOnly;
         }
         //endregion
 
@@ -120,6 +136,11 @@ public class FuseRunner {
         public boolean isServerJoin() {
             return serverJoin;
         }
+
+        public boolean isOpensearchOnly() {
+            return opensearchOnly;
+        }
+
         //endregion
 
         //region Fields
@@ -127,6 +148,7 @@ public class FuseRunner {
         private String activeProfile;
         private String logbackConfigrationFilename;
         private boolean serverJoin;
+        private boolean opensearchOnly;
         //endregion
     }
 }
