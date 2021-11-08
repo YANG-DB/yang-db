@@ -1,6 +1,6 @@
-###Projection Index Patterns
+### Projection Index Patterns
 
-####Query
+#### Query
 ```
 Match (p1:Person)-[o:Own]->(d2:Dragon )  return *
 ```
