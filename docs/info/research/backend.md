@@ -1,4 +1,4 @@
-####Machine Learning
+#### Machine Learning
 https://github.com/semanticvectors/semanticvectors - 
 
 creates semantic WordSpace models from free natural language text. Such models are designed to represent words and documents in terms of underlying concepts. They can be used for many semantic (concept-aware) matching tasks such as automatic thesaurus generation, knowledge representation, and concept matching.
