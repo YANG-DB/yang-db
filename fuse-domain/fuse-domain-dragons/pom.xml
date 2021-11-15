@@ -15,7 +15,7 @@
     <modules>
 
 <!--
-    TESTS MOVED TO DRAGONS-IT-MAVEN PROFILE
+     TESTS MOVED TO DRAGONS-IT-MAVEN PROFILE
      <module>fuse-domain-dragons-test</module>
  -->
         <module>fuse-domain-dragons-datagen</module>

@@ -10,6 +10,7 @@ import com.yangdb.fuse.generator.model.enums.RelationType;
 import com.yangdb.fuse.generator.util.CsvUtil;
 import org.apache.commons.configuration.Configuration;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -27,6 +28,7 @@ public class DragonsGeneratorTest {
 
     static final String CONFIGURATION_SMALL_FILE_PATH = "test.generator.properties";
     static final String CONFIGURATION_MASSIVE_FILE_PATH = "test.massive.generator.properties";
+    static final String CONFIGURATION_MEDIUM_FILE_PATH = "test.medium.generator.properties";
 
     static final int NUM_OF_DRAGONS = 100;
 
@@ -51,9 +53,10 @@ public class DragonsGeneratorTest {
 //        assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
     }
 
+    @Ignore
     @Test
-    public void testDragonsDataGenerationMassiveGraph() throws Exception {
-        loadConfigurations(CONFIGURATION_MASSIVE_FILE_PATH);
+    public void testDragonsDataGenerationMediumGraph() throws Exception {
+        loadConfigurations(CONFIGURATION_MEDIUM_FILE_PATH);
         File dragonsFile = new File(dragonsFilePath);
         Files.deleteIfExists(dragonsFile.toPath());
         DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(dragonConfiguration);

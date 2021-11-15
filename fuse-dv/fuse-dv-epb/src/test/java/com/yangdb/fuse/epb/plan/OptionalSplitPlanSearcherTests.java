@@ -160,7 +160,7 @@ public class OptionalSplitPlanSearcherTests {
         PlanDetailedCost optionalPlanDetailedCost2 = new PlanDetailedCost(new DoubleCost(10), Stream.of(new PlanWithCost(expectedOptionalPlan2, new CountEstimatesCost(10,10))));
 
         Mockito.when(optionalPlanSearcherMock.search(any())).thenAnswer(invocationOnMock -> {
-            AsgQuery asgQuery = invocationOnMock.getArgumentAt(0, AsgQuery.class);
+            AsgQuery asgQuery = invocationOnMock.getArgument(0, AsgQuery.class);
             if(Stream.ofAll(asgQuery.getElements()).last().geteNum() == 14){
                 return new PlanWithCost<>(expectedOptionalPlan1, optionalPlanDetailedCost1);
             }

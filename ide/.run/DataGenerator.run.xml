@@ -2,6 +2,7 @@
   <configuration default="false" name="DataGenerator" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="com.yangdb.fuse.generator.DataGenerator" />
     <module name="fuse-domain-dragons-datagen" />
+    <option name="VM_PARAMETERS" value="--illegal-access=warn" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.yangdb.fuse.generator.*" />

@@ -13,6 +13,8 @@ import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.test.BaseSuiteMarker;
+import org.opensearch.Version;
+import org.opensearch.action.main.MainResponse;
 import org.opensearch.client.Client;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
@@ -20,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.mockito.Mockito;
+import org.opensearch.cluster.ClusterName;
 
 import java.io.InputStream;
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.yangdb.fuse.executor.ontology.schema.IndexProviderRawSchema.getIndexPartitions;
+import static com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode.FUSE_TEST_ELASTIC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -48,11 +52,11 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     public static Config config;
     public static Ontology ontology;
 
-    public static RawSchema nestedSchema,embeddedSchema,singleIndexSchema;
-    public static IndexProvider nestedProvider,embeddedProvider,singleIndexProvider;
+    public static RawSchema nestedSchema, embeddedSchema, singleIndexSchema;
+    public static IndexProvider nestedProvider, embeddedProvider, singleIndexProvider;
 
     public static OntologyProvider ontologyProvider;
-    public static IndexProviderFactory nestedProviderIfc,embeddedProviderIfc, singleIndexProviderFactory;
+    public static IndexProviderFactory nestedProviderIfc, embeddedProviderIfc, singleIndexProviderFactory;
 
     public static Client client;
 
@@ -84,20 +88,21 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         config = Mockito.mock(Config.class);
         when(config.getString(any())).thenAnswer(invocationOnMock -> "Dragons");
 
-        GraphElementSchemaProvider nestedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc,ontologyProvider).get(ontology);
-        GraphElementSchemaProvider embeddedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, embeddedProviderIfc,ontologyProvider).get(ontology);
-        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderFactory,ontologyProvider).get(ontology);
+        GraphElementSchemaProvider nestedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc, ontologyProvider).get(ontology);
+        GraphElementSchemaProvider embeddedSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, embeddedProviderIfc, ontologyProvider).get(ontology);
+        GraphElementSchemaProvider singleIndexSchemaProvider = new GraphElementSchemaProviderJsonFactory(config, singleIndexProviderFactory, ontologyProvider).get(ontology);
 
         nestedSchema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return getIndexPartitions(nestedSchemaProvider,type);
+                return getIndexPartitions(nestedSchemaProvider, type);
             }
 
             @Override
             public String getIdPrefix(String type) {
                 return "";
             }
+
             @Override
             public String getIdFormat(String type) {
                 return "";
@@ -124,13 +129,14 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         embeddedSchema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return getIndexPartitions(embeddedSchemaProvider,type);
+                return getIndexPartitions(embeddedSchemaProvider, type);
             }
 
             @Override
             public String getIdPrefix(String type) {
                 return "";
             }
+
             @Override
             public String getIdFormat(String type) {
                 return "";
@@ -157,13 +163,14 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         singleIndexSchema = new RawSchema() {
             @Override
             public IndexPartitions getPartition(String type) {
-                return getIndexPartitions(singleIndexSchemaProvider,type);
+                return getIndexPartitions(singleIndexSchemaProvider, type);
             }
 
             @Override
             public String getIdPrefix(String type) {
                 return "";
             }
+
             @Override
             public String getIdFormat(String type) {
                 return "";
@@ -196,22 +203,25 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     }
 
     private static void init(boolean embedded) throws Exception {
+        //first verify no instance is running already
+        Optional<org.opensearch.client.core.MainResponse> info = GlobalElasticEmbeddedNode.isRunningLocally();
         // Start embedded ES
-        if(embedded) {
-            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
-            client = ElasticEmbeddedNode.getClient();
-        } else {
-            //use existing running ES
-            client = ElasticEmbeddedNode.getClient();
+        if (embedded && !info.isPresent()) {
+            info = Optional.of(getDefaultInfo());
+            elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance(info.get().getNodeName());
         }
+        //use existing running ES
+        client = ElasticEmbeddedNode.getClient(info.orElseGet(TestSuiteIndexProviderSuite::getDefaultInfo));
+    }
 
+    private static org.opensearch.client.core.MainResponse getDefaultInfo() {
+        return new org.opensearch.client.core.MainResponse(FUSE_TEST_ELASTIC, null, ClusterName.DEFAULT.toString(),null);
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         GlobalElasticEmbeddedNode.close();
     }
-
 
 
     public static Client getClient() {

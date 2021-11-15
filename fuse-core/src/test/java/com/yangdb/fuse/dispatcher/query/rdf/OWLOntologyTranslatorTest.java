@@ -6,6 +6,7 @@ import com.yangdb.fuse.model.ontology.Property;
 import com.yangdb.fuse.model.ontology.Value;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,7 +15,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Ignore
 public class OWLOntologyTranslatorTest {
     public static Ontology ontology;
 

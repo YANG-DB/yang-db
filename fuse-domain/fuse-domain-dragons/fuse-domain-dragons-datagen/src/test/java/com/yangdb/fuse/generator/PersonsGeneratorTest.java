@@ -11,6 +11,7 @@ import com.yangdb.fuse.generator.model.enums.RelationType;
 import com.yangdb.fuse.generator.util.CsvUtil;
 import org.apache.commons.configuration.Configuration;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -46,6 +47,7 @@ public class PersonsGeneratorTest {
     static Logger logger;
 
 
+    @Ignore
     @Test
     public void personsDataGenerationMassiveGraphTest() throws Exception {
         loadConfigurations(CONFIGURATION_MASSIVE_FILE_PATH);

@@ -20,6 +20,8 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
+import org.opensearch.client.Client;
+import org.opensearch.client.core.MainResponse;
 import org.opensearch.client.transport.TransportClient;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.transport.TransportAddress;
@@ -123,6 +125,25 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     //region Methods
+
+    public static Client getClient(MainResponse info) {
+        if (client == null) {
+            try {
+                System.out.println("Setting client " + info.getNodeName());
+                Settings settings = Settings.builder()
+                        .put("cluster.name", info.getNodeName())
+                        .put("node.name", info.getClusterName())
+                        .build();
+                client = new PreBuiltTransportClient(settings)
+                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
+            } catch (UnknownHostException e) {
+                throw new UnknownError(e.getMessage());
+            }
+        }
+
+        return client;
+    }
+
     public static TransportClient getClient(String nodeName) {
         return getClient(nodeName, httpTransportPort);
     }

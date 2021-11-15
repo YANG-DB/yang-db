@@ -69,7 +69,7 @@ public class EBaseStatisticsProviderIndicesTests {
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000L, 1000L));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),eq(Date.class))).thenAnswer(invocationOnMock -> {
-            List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
+            List<String> providedIndices = (List<String>) invocationOnMock.getArgument(1, List.class );
             List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
             if(providedIndices.contains(indices.get(0))){
                 buckets.addAll(firstDateBuckets);
@@ -82,7 +82,7 @@ public class EBaseStatisticsProviderIndicesTests {
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),eq(String.class))).thenAnswer(invocationOnMock -> {
-            List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
+            List<String> providedIndices = (List<String>) invocationOnMock.getArgument(1, List.class );
 
             Statistics.BucketInfo<String> bucket = null;
             if(providedIndices.contains(indices.get(0))){

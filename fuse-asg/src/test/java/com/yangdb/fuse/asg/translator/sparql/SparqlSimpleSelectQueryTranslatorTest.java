@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
  * https://dzone.com/articles/sparql-and-cypher
  * https://www.w3.org/2009/Talks/0615-qbe/
  */
+@Ignore
 public class SparqlSimpleSelectQueryTranslatorTest {
     private static AsgSparQLTransformer sparQLTransformer;
 
