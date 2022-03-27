@@ -130,7 +130,7 @@
         <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
 
         <!-- lucene -->
-        <lucene.version>8.9.0</lucene.version>
+        <lucene.version>8.10.1</lucene.version>
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
