@@ -80,9 +80,9 @@
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
         <!-- json ld-->
-        <json.ld>0.13.3</json.ld>
+        <json.ld>0.13.4</json.ld>
         <!-- jackson -->
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.13.2</jackson.version>
         <resilience4jVersion>1.6.1</resilience4jVersion>
 
         <!-- com.github.cnsvili.snowflake.version -->
