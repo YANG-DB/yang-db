@@ -1331,7 +1331,7 @@
         <profile>
             <id>dragons-assembly</id>
             <modules>
-                <module>fuse-domain/fuse-domain-dragons</module>
+                <module>fuse-domain</module>
             </modules>
         </profile>
         <profile>
