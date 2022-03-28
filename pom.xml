@@ -615,7 +615,16 @@
                 <artifactId>opensearch</artifactId>
                 <version>${opensearch.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.opensearch.plugin</groupId>
+                <artifactId>lang-painless</artifactId>
+                <version>${opensearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opensearch.test</groupId>
+                <artifactId>framework</artifactId>
+                <version>${opensearch.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-rest-high-level-client</artifactId>
@@ -1022,11 +1031,11 @@
                             <include>**/*.java</include>
                         </includes>
                         <argLine>
-                                -Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}
-                                -Dio.netty.tryReflectionSetAccessible=true
-                                --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
-                                --add-exports java.base/jdk.internal.misc=ALL-UNNAMED
-                                --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+                            -Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}
+                            -Dio.netty.tryReflectionSetAccessible=true
+                            --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+                            --add-exports java.base/jdk.internal.misc=ALL-UNNAMED
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         </argLine>
                     </configuration>
                 </plugin>

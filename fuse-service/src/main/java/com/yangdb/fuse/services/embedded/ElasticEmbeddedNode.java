@@ -27,6 +27,7 @@ import org.opensearch.common.settings.Settings;
 import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
+import org.opensearch.painless.PainlessPlugin;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
 import org.opensearch.transport.client.PreBuiltTransportClient;
@@ -183,7 +184,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         //build setting
         Settings settings = builder.build();
         this.node = new PluginConfigurableNode(settings, Arrays.asList(
-                Netty4Plugin.class
+                Netty4Plugin.class,
+                PainlessPlugin.class
         ), Paths.get(esWorkingDir), nodeName);
 
         this.node = this.node.start();

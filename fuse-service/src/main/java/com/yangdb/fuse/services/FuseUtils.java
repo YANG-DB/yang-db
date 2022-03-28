@@ -77,10 +77,11 @@ public abstract class FuseUtils {
     }
 
     public static void onStart() {
+        System.out.println("Embedded Engine onStart");
 
     }
 
     public static void onStarted() {
-
+        System.out.println("Embedded Engine onStarted");
     }
 }

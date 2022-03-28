@@ -20,8 +20,8 @@ package com.yangdb.fuse.services;
  * #L%
  */
 
-import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.typesafe.config.Config;
+import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import javaslang.collection.Stream;
 import org.jooby.Jooby;
 
