@@ -95,10 +95,6 @@
             <artifactId>opensearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opensearch.test</groupId>
-            <artifactId>framework</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opensearch.plugin</groupId>
             <artifactId>lang-painless</artifactId>
         </dependency>

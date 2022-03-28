@@ -1,18 +1,21 @@
 package com.yangdb.fuse.embedded;
 
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
-import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
+
+// TODO - use this test to make use of open search test framework
+
+//import com.carrotsearch.randomizedtesting.RandomizedRunner;
+//import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.services.FuseRunner;
 import com.yangdb.fuse.services.FuseUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+//import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.net.URL;
 
-@RunWith(RandomizedRunner.class)
-@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
+//@RunWith(RandomizedRunner.class)
+//@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class EmbeddedNodeRunner {
 
     public static final String applicationConfFilename = "config/application.conf";

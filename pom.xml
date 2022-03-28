@@ -621,11 +621,6 @@
                 <version>${opensearch.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.opensearch.test</groupId>
-                <artifactId>framework</artifactId>
-                <version>${opensearch.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-rest-high-level-client</artifactId>
                 <version>${opensearch.client.version}</version>
