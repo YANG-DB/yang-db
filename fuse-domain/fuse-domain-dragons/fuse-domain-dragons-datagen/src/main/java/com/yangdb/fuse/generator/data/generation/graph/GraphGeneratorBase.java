@@ -28,6 +28,7 @@ import com.yangdb.fuse.generator.model.relation.RelationBase;
 import javaslang.Tuple2;
 import org.graphstream.graph.Graph;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public abstract class GraphGeneratorBase<C,E> {
 
     //region Ctrs
     public GraphGeneratorBase(C configuration, BaseModel model, EntityGeneratorBase entityGenerator) {
-        this.configuration = configuration;
+        this.personConf = configuration;
         this.entityGenerator = entityGenerator;
         this.model = model;
     }
@@ -89,7 +90,7 @@ public abstract class GraphGeneratorBase<C,E> {
      * @param nodesList list of nodes ids
      * @param edgesList list of edges (source id, target id)
      */
-    protected abstract void writeGraph(List<String> nodesList, List<Tuple2> edgesList);
+    protected abstract void writeGraph(List<String> nodesList, List<Tuple2> edgesList) throws IOException;
     /**
      * Write the elements to the file system in csv format for each element & its relations
      * @param elements
@@ -99,7 +100,7 @@ public abstract class GraphGeneratorBase<C,E> {
 
     //region Getters
     protected C getConfiguration() {
-        return configuration;
+        return personConf;
     }
 
     protected BaseModel getModel() {
@@ -112,9 +113,11 @@ public abstract class GraphGeneratorBase<C,E> {
     //endregion
 
     //region Fields
-    protected final C configuration;
+    protected final C personConf;
     protected final BaseModel model;
     protected final EntityGeneratorBase<C,E> entityGenerator;
+
+    public abstract void Cleanup();
     //endregion
 
 }

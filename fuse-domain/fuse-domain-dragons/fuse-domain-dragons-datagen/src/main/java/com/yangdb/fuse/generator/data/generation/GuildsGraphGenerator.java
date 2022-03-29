@@ -9,9 +9,9 @@ package com.yangdb.fuse.generator.data.generation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.generator.data.generation;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.yangdb.fuse.generator.configuration.GuildConfiguration;
@@ -38,6 +37,7 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,7 +50,7 @@ import static com.yangdb.fuse.generator.data.generation.graph.GraphGeneratorBase
 public class GuildsGraphGenerator {
 
     public static final String[] GUILDS_HEADER = {"id", "name", "description", "iconId", "url", "establishDate"};
-    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate","endDate"};
+    public static final String[] PERSON_TO_GUILD_HEADER = {"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate", "endDate"};
     private final Logger logger = LoggerFactory.getLogger(GuildsGraphGenerator.class);
     //Not all of the population is member of guild
     private final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;
@@ -98,7 +98,7 @@ public class GuildsGraphGenerator {
      * @return Map <Guild Id, List of Persons Ids>
      */
     public Map<String, List<String>> attachPersonsToGuilds(List<String> guildsIdList,
-                                                                    List<String> personsIdList) {
+                                                           List<String> personsIdList) {
         Map<String, List<String>> guildToPersonsSet = new HashMap<>();
 
         int maxGuildMembership = personConf.getMaxGuildMembership();
@@ -115,13 +115,13 @@ public class GuildsGraphGenerator {
         for (int k = 0; k < maxGuildMembership; k++) {
             int startIndex = 0;
             for (int i = 0; i < guildsMembersDist.size(); i++) {
-                String guildId =  guildsIdList.get(i);
+                String guildId = guildsIdList.get(i);
                 int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * membersPopulationSize));
                 for (int j = startIndex; j < membersPopulationSize; j++) {
                     String personId = shuffledPersonsIds.get(j);
 
-                    if(guildToPersonsSet.size() % BUFFER == 0)
-                        logger.info("Collecting to generate ... "+ BUFFER +" elements");
+                    if (guildToPersonsSet.size() % BUFFER == 0)
+                        logger.info("Collecting to generate ... " + BUFFER + " elements");
 
                     if (guildToPersonsSet.get(guildId) == null) {
                         guildToPersonsSet.put(guildId, new ArrayList<>(Arrays.asList(personId)));
@@ -155,8 +155,8 @@ public class GuildsGraphGenerator {
                 Date till = RandomUtil.randomDate(since, guildConf.getEndDateOfStory());
                 RelationBase personMemberOfGuildsRel = new MemberOf(edgeId, guildId, personId, since, till);
                 p2gRecords.add(personMemberOfGuildsRel.getRecord());
-                if(p2gRecords.size() % BUFFER == 0)
-                    logger.info("Collecting to generate ... "+ BUFFER +" elements");
+                if (p2gRecords.size() % BUFFER == 0)
+                    logger.info("Collecting to generate ... " + BUFFER + " elements");
 
             }
         }
@@ -171,6 +171,13 @@ public class GuildsGraphGenerator {
     //region Fields
     private final GuildConfiguration guildConf;
     private final PersonConfiguration personConf;
+
+    /**
+     * cleanup intermediate files
+     */
+    public void Cleanup() {
+        new File(guildConf.getRelationsFilePath()).delete();
+    }
     //endregion
 
 }

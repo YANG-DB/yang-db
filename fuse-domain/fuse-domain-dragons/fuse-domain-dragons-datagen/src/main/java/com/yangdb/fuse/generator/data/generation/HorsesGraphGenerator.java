@@ -80,6 +80,11 @@ public class HorsesGraphGenerator {
 
     //region Fields
     private final HorseConfiguration horseConf;
+
+    /**
+     * cleanup intermediate files
+     */
+    public void Cleanup() {}
     //endregion
 
 }

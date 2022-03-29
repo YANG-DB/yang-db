@@ -9,9 +9,9 @@ package com.yangdb.fuse.executor.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,9 +33,33 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 public abstract class FileUtils {
     private static final String suffix = ".splitPart";
+
+    /**
+     * zip file
+     *
+     * @param source
+     * @param target
+     * @throws IOException
+     */
+    public static void zip(File source, String target) throws IOException {
+        FileOutputStream fos = new FileOutputStream(target);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        FileInputStream fis = new FileInputStream(source);
+        ZipEntry zipEntry = new ZipEntry(source.getName());
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        zipOut.close();
+        fis.close();
+        fos.close();
+    }
 
     /**
      * unzip compressed file
@@ -107,7 +131,7 @@ public abstract class FileUtils {
      * @param mBperSplit maximum number of MB per file.
      * @throws IOException
      */
-    public static List<Path> splitFile(final String fileName,final String target, final int mBperSplit) throws IOException {
+    public static List<Path> splitFile(final String fileName, final String target, final int mBperSplit) throws IOException {
 
         if (mBperSplit <= 0) {
             throw new IllegalArgumentException("mBperSplit must be more than zero");
@@ -125,11 +149,11 @@ public abstract class FileUtils {
 
             for (; position < numSplits; position++) {
                 //write multipart files.
-                writePartToFile(target , bytesPerSplit, position , sourceChannel, partFiles);
+                writePartToFile(target, bytesPerSplit, position, sourceChannel, partFiles);
             }
 
             if (remainingBytes > 0) {
-                writePartToFile(target, remainingBytes, position , sourceChannel, partFiles);
+                writePartToFile(target, remainingBytes, position, sourceChannel, partFiles);
             }
         }
         return partFiles;
@@ -139,7 +163,7 @@ public abstract class FileUtils {
         Path fileName = Paths.get(target + position + suffix);
         try (RandomAccessFile toFile = new RandomAccessFile(fileName.toFile(), "rw");
              FileChannel toChannel = toFile.getChannel()) {
-            sourceChannel.position(position*byteSize);
+            sourceChannel.position(position * byteSize);
             toChannel.transferFrom(sourceChannel, 0, byteSize);
         }
         partFiles.add(fileName);

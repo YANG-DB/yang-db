@@ -9,9 +9,9 @@ package com.yangdb.fuse.generator.data.generation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.generator.data.generation;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.google.common.base.Stopwatch;
@@ -35,6 +34,7 @@ import com.yangdb.fuse.generator.model.relation.Fires;
 import com.yangdb.fuse.generator.model.relation.Freezes;
 import com.yangdb.fuse.generator.model.relation.RelationBase;
 import com.yangdb.fuse.generator.util.DateUtil;
+import com.yangdb.fuse.generator.util.FileUtils;
 import com.yangdb.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -44,6 +44,7 @@ import org.graphstream.graph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +127,11 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         List<Tuple2> edgesList = graph.getEdgeSet().stream().map(edge ->
                 new Tuple2<>(edge.getSourceNode().getId(), edge.getTargetNode().getId())).collect(Collectors.toList());
 
-        writeGraph(nodesList, edgesList);
+        try {
+            writeGraph(nodesList, edgesList);
+        } catch (Throwable err) {
+            logger.warn(err.getMessage(), err);
+        }
         return graph;
     }
 
@@ -137,7 +142,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 model.getNumOfNodes(),
                 ((ScaleFreeModel) model).getEdgesPerNode(),
                 BAGraphGenerator.SamplingMode.ROLL_TREE,
-                configuration.getRelationsFilePath());
+                personConf.getRelationsFilePath());
 
 
         Set<Long> tempSet = new LinkedHashSet<>(Stream.ofAll(edgesList).map(tuple2 -> (Long) tuple2._1).toJavaList());
@@ -146,7 +151,11 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         Collections.sort(nodeNumericIds);
         List<String> nodesList = nodeNumericIds.stream().map(Object::toString).collect(Collectors.toList());
 
-        writeGraph(nodesList, edgesList);
+        try {
+            writeGraph(nodesList, edgesList);
+        } catch (Throwable err) {
+            logger.warn(err.getMessage(), err);
+        }
 
         return nodesList;
     }
@@ -161,12 +170,12 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
     @Override
     protected RelationBase buildEntityRelation(String sourceId, String targetId, String edgeId) {
         ArrayList<Pair<RelationType, Double>> probs = new ArrayList<>(
-                Arrays.asList(new Pair<>(RelationType.FIRES,configuration.getFireProbability()),
-                              new Pair<>(RelationType.FREEZES, configuration.getFreezProbability())
-                        ));
+                Arrays.asList(new Pair<>(RelationType.FIRES, personConf.getFireProbability()),
+                        new Pair<>(RelationType.FREEZES, personConf.getFreezProbability())
+                ));
         RelationType relationType = RandomUtil.enumeratedDistribution(probs);
-        Date date = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
-        int temperature = RandomUtil.randomInt(configuration.getFireMinTemperature(), configuration.getFireMaxTemperature());
+        Date date = RandomUtil.randomDate(personConf.getStartDateOfStory(), personConf.getEndDateOfStory());
+        int temperature = RandomUtil.randomInt(personConf.getFireMinTemperature(), personConf.getFireMaxTemperature());
         RelationBase relationBase = null;
 
         if (relationType == RelationType.FIRES) {
@@ -174,14 +183,14 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         }
 
         if (relationType == RelationType.FREEZES) {
-            Date dateTill = DateUtil.addMinutesToDate(date, RandomUtil.randomInt(1, configuration.getFreezMaxDuraution()));
-            relationBase = new Freezes(edgeId, sourceId, targetId, date, dateTill,temperature);
+            Date dateTill = DateUtil.addMinutesToDate(date, RandomUtil.randomInt(1, personConf.getFreezMaxDuraution()));
+            relationBase = new Freezes(edgeId, sourceId, targetId, date, dateTill, temperature);
         }
         return relationBase;
     }
 
     @Override
-    protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
+    protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) throws IOException {
         List<String[]> peopleRecords = new ArrayList<>();
         List<String[]> dragonsRecords = new ArrayList<>();
 
@@ -190,25 +199,25 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
         //add headers
         peopleRecords.add(0, DRAGON_HEADER);
-        dragonsRecords.add(0,DRAGON_HEADER);
+        dragonsRecords.add(0, DRAGON_HEADER);
         dragonsFiresRecords.add(0, DRAGONS_FIRE_HEADER);
         dragonsFreezeRecords.add(0, DRAGON_FREEZE_HEADER);
 
-        String fireRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FIRES + ".csv";
-        String freezeRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FREEZES + ".csv";
-        String entitiesFile = configuration.getEntitiesFilePath();
+        String fireRelationsFile = personConf.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FIRES + ".csv";
+        String freezeRelationsFile = personConf.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.FREEZES + ".csv";
+        String entitiesFile = personConf.getEntitiesFilePath();
 
         for (String nodeId : nodesList) {
             dragonsRecords.add(buildEntityNode(nodeId).getRecord());
             if (dragonsRecords.size() % BUFFER == 0) { //BUFFER
-                logger.info("writing to file ... "+ BUFFER +" elements");
+                logger.info("writing to file ... " + BUFFER + " elements");
                 appendResults(dragonsRecords, entitiesFile);
                 dragonsRecords.clear();
             }
         }
 
         for (Tuple2 edge : edgesList) {
-            int numOfInteractions = RandomUtil.randomInt(configuration.getMinUniqueInteractions(), configuration.getMaxUniqueInteractions());
+            int numOfInteractions = RandomUtil.randomInt(personConf.getMinUniqueInteractions(), personConf.getMaxUniqueInteractions());
             for (int i = 0; i < numOfInteractions; i++) {
                 String sourceId = edge._1.toString();
                 String targetId = edge._2.toString();
@@ -224,7 +233,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 if ((dragonsFiresRecords.size() + dragonsFreezeRecords.size()) % BUFFER == 0) { //BUFFER
                     appendResults(dragonsFiresRecords, fireRelationsFile);
                     appendResults(dragonsFreezeRecords, freezeRelationsFile);
-                    logger.info("writing to file ... "+ BUFFER +" elements");
+                    logger.info("writing to file ... " + BUFFER + " elements");
                     dragonsFreezeRecords.clear();
                     dragonsFiresRecords.clear();
                 }
@@ -235,11 +244,20 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
         appendResults(dragonsRecords, entitiesFile);
         appendResults(dragonsFreezeRecords, freezeRelationsFile);
 
+        //zip files
+        FileUtils.zip(new File(entitiesFile), entitiesFile + "_zipped");
+        FileUtils.zip(new File(fireRelationsFile), fireRelationsFile + "_zipped");
+        FileUtils.zip(new File(freezeRelationsFile), freezeRelationsFile + "_zipped");
     }
 
     @Override
     protected void writeCSVs(List<Dragon> elements) {
         //todo
+    }
+
+    @Override
+    public void Cleanup() {
+        new File(dragonConf.getRelationsFilePath()).delete();
     }
     //endregion
 

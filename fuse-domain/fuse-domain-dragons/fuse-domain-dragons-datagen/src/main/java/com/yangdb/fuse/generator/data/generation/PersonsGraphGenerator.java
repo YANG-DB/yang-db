@@ -9,9 +9,9 @@ package com.yangdb.fuse.generator.data.generation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.yangdb.fuse.generator.data.generation;
  * limitations under the License.
  * #L%
  */
-
 
 
 import com.google.common.base.Stopwatch;
@@ -36,6 +35,7 @@ import com.yangdb.fuse.generator.model.relation.Knows;
 import com.yangdb.fuse.generator.model.relation.Owns;
 import com.yangdb.fuse.generator.model.relation.RelationBase;
 import com.yangdb.fuse.generator.util.CsvUtil;
+import com.yangdb.fuse.generator.util.FileUtils;
 import com.yangdb.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -44,6 +44,8 @@ import org.graphstream.graph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -79,7 +81,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         List<String> nodesIds = new ArrayList<>();
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(configuration);
+            PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(personConf);
             nodesIds = personsGraphGenerator.generateMassiveGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
@@ -130,8 +132,11 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         List<Tuple2> edgesList = graph.getEdgeSet().stream().map(edge ->
                 new Tuple2<>(edge.getSourceNode().getId(), edge.getTargetNode().getId())).collect(Collectors.toList());
 
-        writeGraph(nodesList, edgesList);
-
+        try {
+            writeGraph(nodesList, edgesList);
+        } catch (Throwable err) {
+            logger.warn(err.getMessage(), err);
+        }
         return graph;
     }
 
@@ -141,7 +146,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
                 model.getNumOfNodes(),
                 ((ScaleFreeModel) model).getEdgesPerNode(),
                 BAGraphGenerator.SamplingMode.ROLL_TREE,
-                configuration.getRelationsFilePath());
+                personConf.getRelationsFilePath());
 
         Set<Long> tempSet = new LinkedHashSet<>(Stream.ofAll(edgesList).map(tuple2 -> (Long) tuple2._1).toJavaList());
         tempSet.addAll(Stream.ofAll(edgesList).map(tuple2 -> (Long) tuple2._2).toJavaList());
@@ -149,7 +154,11 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         Collections.sort(nodeNumericIds);
         List<String> nodesList = nodeNumericIds.stream().map(Object::toString).collect(Collectors.toList());
 
-        writeGraph(nodesList, edgesList);
+        try {
+            writeGraph(nodesList, edgesList);
+        } catch (Throwable err) {
+            logger.warn(err.getMessage(), err);
+        }
         return nodesList;
     }
 
@@ -162,24 +171,24 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
     @Override
     protected RelationBase buildEntityRelation(String sourceId, String targetId, String edgeId) {
-        Date since = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
+        Date since = RandomUtil.randomDate(personConf.getStartDateOfStory(), personConf.getEndDateOfStory());
         return new Knows(edgeId, sourceId, targetId, since);
     }
 
     @Override
-    protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
+    protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) throws IOException {
         List<String[]> personsRecords = new ArrayList<>();
         List<String[]> personsKnowsRecords = new ArrayList<>();
         personsRecords.add(0, PERSON_HEADER);
         personsKnowsRecords.add(0, PERSON_KNOWS_HEADER);
 
-        String knowsRelationsFile = configuration.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.KNOWS + ".csv";
-        String entitiesFile = configuration.getEntitiesFilePath();
+        String knowsRelationsFile = personConf.getRelationsFilePath().replace(".csv", "") + "_" + RelationType.KNOWS + ".csv";
+        String entitiesFile = personConf.getEntitiesFilePath();
 
         for (String nodeId : nodesList) {
             personsRecords.add(buildEntityNode(nodeId).getRecord());
             if (personsRecords.size() % BUFFER == 0) { //BUFFER
-                logger.info("writing to file ... "+ BUFFER +" elements");
+                logger.info("writing to file ... " + BUFFER + " elements");
                 appendResults(personsRecords, entitiesFile);
                 personsRecords.clear();
             }
@@ -192,7 +201,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
             RelationBase rel = buildEntityRelation(sourceId, targetId, edgeId);
             personsKnowsRecords.add(rel.getRecord());
             if ((personsKnowsRecords.size()) % BUFFER == 0) { //BUFFER
-                logger.info("writing to file ... "+ BUFFER +" elements");
+                logger.info("writing to file ... " + BUFFER + " elements");
                 appendResults(personsKnowsRecords, knowsRelationsFile);
                 personsKnowsRecords.clear();
             }
@@ -200,6 +209,10 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
         appendResults(personsRecords, entitiesFile);
         appendResults(personsKnowsRecords, knowsRelationsFile);
+
+        //zip files
+        FileUtils.zip(new File(entitiesFile), entitiesFile + "_zipped");
+        FileUtils.zip(new File(knowsRelationsFile), knowsRelationsFile + "_zipped");
     }
 
     @Override
@@ -265,25 +278,31 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
 
     private void printAnimalsToPerson(Map<String, List<String>> animalsToPerson, EntityType entityType) {
         List<String[]> d2pRecords = new ArrayList<>();
-        d2pRecords.add(0,new String[]{"id","entityA.id","entityA.type","entityB.id","entityB.type","startDate","endDate"});
+        d2pRecords.add(0, new String[]{"id", "entityA.id", "entityA.type", "entityB.id", "entityB.type", "startDate", "endDate"});
 
         for (Map.Entry<String, List<String>> p2A : animalsToPerson.entrySet()) {
             String personId = p2A.getKey();
             List<String> animalsIds = p2A.getValue();
             for (String dragonId : animalsIds) {
                 String edgeId = personId + "_" + dragonId;
-                Date since = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
-                Date till = RandomUtil.randomDate(since, configuration.getEndDateOfStory());
-                RelationBase personOwnsAnimalsRel = new Owns(edgeId, entityType,personId, dragonId, since, till);
+                Date since = RandomUtil.randomDate(personConf.getStartDateOfStory(), personConf.getEndDateOfStory());
+                Date till = RandomUtil.randomDate(since, personConf.getEndDateOfStory());
+                RelationBase personOwnsAnimalsRel = new Owns(edgeId, entityType, personId, dragonId, since, till);
                 d2pRecords.add(personOwnsAnimalsRel.getRecord());
             }
         }
         //Write graph
         String ownsRelationsFile = String.format("%s_%s_%s.csv",
-                configuration.getRelationsFilePath().replace(".csv", ""),
+                personConf.getRelationsFilePath().replace(".csv", ""),
                 RelationType.OWNS,
                 entityType);
         CsvUtil.appendResults(d2pRecords, ownsRelationsFile);
     }
+
+    @Override
+    public void Cleanup() {
+        new File(personConf.getRelationsFilePath()).delete();
+    }
+
     //endregion
 }

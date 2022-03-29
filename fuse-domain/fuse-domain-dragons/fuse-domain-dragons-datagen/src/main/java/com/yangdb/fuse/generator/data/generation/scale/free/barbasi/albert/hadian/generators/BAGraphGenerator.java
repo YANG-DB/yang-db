@@ -279,7 +279,7 @@ public class BAGraphGenerator {
             BAGraphGenerator generator = new BAGraphGenerator(numOfNodes);
             BAGraphGenerator.m = edgesPerNode;
             BAGraphGenerator.samplingMode = samplingMode;
-            BAGraphGenerator.graphFileWriter = new BufferedWriter(new FileWriter(new File(filePath)));
+            BAGraphGenerator.graphFileWriter = new BufferedWriter(new FileWriter(filePath));
             BAGraphGenerator.graphDistributionOutputFileName = filePath.replace(".csv", "") + "_scaleFreeSummary.txt";
             generator.createGraph();
 

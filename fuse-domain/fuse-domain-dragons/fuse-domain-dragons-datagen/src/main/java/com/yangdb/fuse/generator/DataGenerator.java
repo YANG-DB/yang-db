@@ -84,9 +84,11 @@ public class DataGenerator {
             System.out.println("************GENERATING DRAGONS GRAPH *************************************************");
             DragonsGraphGenerator dgg = new DragonsGraphGenerator(new DragonConfiguration(configuration));
             List<String> dragonsIds = dgg.generateMassiveDragonsGraph();
+            dgg.Cleanup();
 
             System.out.println("************GENERATING HORSES GRAPH *************************************************");
             HorsesGraphGenerator hgg = new HorsesGraphGenerator(new HorseConfiguration(configuration));
+            hgg.Cleanup();
             List<String> horsesIds = hgg.generateHorsesGraph();
 
             System.out.println("************GENERATING PERSON GRAPH *************************************************");
@@ -95,12 +97,13 @@ public class DataGenerator {
             List<String> personsIds = pgg.generatePersonsGraph();
             pgg.attachDragonsToPerson(dragonsIds, personsIds, personConf.getMeanDragonsPerPerson(), personConf.getSdDragonsPerPerson());
             pgg.attachHorsesToPerson(horsesIds, personsIds, personConf.getMeanHorsesPerPerson(), personConf.getSdHorsesPerPerson());
-
+            pgg.Cleanup();
 
             System.out.println("************GENERATING GUILDS GRAPH *************************************************");
             GuildsGraphGenerator ggg = new GuildsGraphGenerator(configuration);
             List<String> guildsIds = ggg.generateGuildsGraph();
             ggg.attachPersonsToGuilds(guildsIds, personsIds);
+            ggg.Cleanup();
 
             System.out.println("************GENERATING KINGDOM GRAPH *************************************************");
             KingdomsGraphGenerator kgg = new KingdomsGraphGenerator(new KingdomConfiguration(configuration));
