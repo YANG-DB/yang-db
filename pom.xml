@@ -111,7 +111,7 @@
         <graphql.java.version>2020-01-17T02-41-10-578985f</graphql.java.version>
 
         <!-- commons -->
-        <commons-io.version>2.5</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <commons-configuration.version>1.10</commons-configuration.version>
         <commons-lang3.version>3.5</commons-lang3.version>
         <commons-math3.version>3.6.1</commons-math3.version>
