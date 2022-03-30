@@ -22,7 +22,6 @@
     "application/xml",
     "image/*",
     "text/csv"
-
   ],
   "paths": {
     "/": {
@@ -65,7 +64,6 @@
         }
       }
     },
-
     "/internal/version": {
       "get": {
         "tags": [
@@ -96,7 +94,6 @@
         }
       }
     },
-
     "/catalog/ontology": {
       "post": {
         "tags": [
@@ -229,14 +226,13 @@
         }
       }
     },
-
     "/graphql/ontology/{id}": {
       "post": {
         "tags": [
           "catalog"
         ],
         "summary": "graphQL IDL into Ontology",
-        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/" ,
+        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/",
         "parameters": [
           {
             "name": "id",
@@ -270,7 +266,7 @@
           "catalog"
         ],
         "summary": "OWL IDL into Ontology",
-        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/" ,
+        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/",
         "parameters": [
           {
             "name": "id",
@@ -304,7 +300,7 @@
           "catalog"
         ],
         "summary": "SQL DDL into Ontology",
-        "description": "Transform a SQL DDL into V1 Ontology " ,
+        "description": "Transform a SQL DDL into V1 Ontology ",
         "parameters": [
           {
             "name": "id",
@@ -332,7 +328,6 @@
         }
       }
     },
-
     "/query/graph/api/getVertex": {
       "get": {
         "tags": [
@@ -413,7 +408,6 @@
         }
       }
     },
-
     "/query/graph/api/findPath": {
       "get": {
         "tags": [
@@ -468,7 +462,6 @@
             "required": true,
             "type": "integer"
           }
-
         ],
         "responses": {
           "200": {
@@ -480,7 +473,6 @@
         }
       }
     },
-
     "/query/cypher": {
       "post": {
         "tags": [
@@ -529,7 +521,13 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths","projection","count"]
+            "enum": [
+              "graph",
+              "csv",
+              "forwardPaths",
+              "projection",
+              "count"
+            ]
           },
           {
             "name": "cypher",
@@ -557,7 +555,6 @@
         }
       }
     },
-
     "/query/graphQL": {
       "post": {
         "tags": [
@@ -606,7 +603,11 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths"]
+            "enum": [
+              "graph",
+              "csv",
+              "forwardPaths"
+            ]
           },
           {
             "name": "graphQL",
@@ -634,7 +635,6 @@
         }
       }
     },
-
     "/query/sparql": {
       "post": {
         "tags": [
@@ -683,7 +683,11 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths"]
+            "enum": [
+              "graph",
+              "csv",
+              "forwardPaths"
+            ]
           },
           {
             "name": "sparql",
@@ -711,7 +715,6 @@
         }
       }
     },
-
     "/query/v1": {
       "post": {
         "tags": [
@@ -844,7 +847,11 @@
             "in": "query",
             "description": "cursorType",
             "required": false,
-            "enum": ["graph","csv","forwardPaths"]
+            "enum": [
+              "graph",
+              "csv",
+              "forwardPaths"
+            ]
           },
           {
             "in": "body",
@@ -887,7 +894,6 @@
         }
       }
     },
-
     "/query/{id}": {
       "get": {
         "tags": [
@@ -1144,41 +1150,41 @@
       }
     },
     "/query/{id}/cursor/{cursorId}": {
-        "get": {
-          "tags": [
-            "cursor"
-          ],
-          "summary": "Fetch cursor info by ID",
-          "description": "Fetch cursor info by ID",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "query ID.",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "cursorId",
-              "in": "path",
-              "description": "cursor ID.",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Returns <code>200</code> with a single query info or <code>404</code>",
-              "schema": {
-                "$ref": "#/definitions/QueryInfo"
-              }
-            },
-            "404": {
-              "description": "Not Found"
-            }
+      "get": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Fetch cursor info by ID",
+        "description": "Fetch cursor info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "type": "string"
           }
-        },
-        "delete": {
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "schema": {
+              "$ref": "#/definitions/QueryInfo"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
         "tags": [
           "cursor"
         ],
@@ -1459,14 +1465,22 @@
         }
       }
     },
-
-    "/dashboard/entities": {
+    "/dashboard/entities/{ontology}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of DB existing entities",
         "description": "summery of DB entities",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "path",
+            "description": "ontology.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
@@ -1494,13 +1508,22 @@
         }
       }
     },
-    "/dashboard/created": {
+    "/dashboard/created/{ontology}": {
       "get": {
         "tags": [
           "dashboard"
         ],
         "summary": "Show summery of created DB elements by creation time ",
         "description": "summery of time bases created DB elements ",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "path",
+            "description": "ontology.",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"
@@ -1528,7 +1551,6 @@
         }
       }
     },
-
     "/load/ontology/{id}/indices": {
       "get": {
         "tags": [
@@ -1729,7 +1751,6 @@
         }
       }
     },
-
     "/load/ontology/{id}/graph/upload": {
       "post": {
         "tags": [
@@ -1833,7 +1854,6 @@
       }
     }
   },
-
   "definitions": {
     "SequenceNames": {
       "type": "string",
@@ -1951,8 +1971,8 @@
         "id": "1",
         "name": "Q1",
         "ontology": "Dragons",
-          "query": "Match (p1:Person)-[o:Own]->(d2:Dragon )  return *",
-   "type":"cypher"
+        "query": "Match (p1:Person)-[o:Own]->(d2:Dragon )  return *",
+        "type": "cypher"
       }
     },
     "SparqlQueryRequest": {

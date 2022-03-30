@@ -140,11 +140,11 @@ public class StandardDashboardDriver implements DashboardDriver {
         return root;
     }
 
-    private ObjectNode collectIndexMetadata(ObjectNode statistics,boolean vertex, IndexPartitions indexPartitions) {
+    private ObjectNode collectIndexMetadata(ObjectNode statistics, boolean vertex, IndexPartitions indexPartitions) {
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setSize(0);
         builder.setIndices(IteratorUtils.toList(indexPartitions.getIndices().iterator()).toArray(new String[0]));
-        if(vertex) {
+        if (vertex) {
             builder.addAggregation(new TermsAggregationBuilder("graphElementCount").field(TYPE));
         } else {
             builder.setQuery(QueryBuilders.boolQuery().filter(QueryBuilders.termQuery(DIRECTION, IN)));//only outgoing edges
@@ -153,20 +153,35 @@ public class StandardDashboardDriver implements DashboardDriver {
         }
         try {
             final SearchResponse response = builder.get();
+            Map<Object, Long> elementCount = Collections.EMPTY_MAP;
+            Map<Object, Long> edgeSourceCount = Collections.EMPTY_MAP;
+            Map<Object, Long> edgeDestCount = Collections.EMPTY_MAP;
 
             //calculate cardinality for every entity type
-            final Map<Object, Long> elementCount = Objects.isNull(response.getAggregations().get("graphElementCount")) ? Collections.EMPTY_MAP :
-                    ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
-                            .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            try {
+                elementCount = Objects.isNull(response.getAggregations().get("graphElementCount")) ? Collections.EMPTY_MAP :
+                        ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            } catch (Throwable graphElementCountErr) {
+                logger.warn(graphElementCountErr.getMessage());
+            }
 
             //calculate cardinality for every relationship type
-            final Map<Object, Long> edgeSourceCount = Objects.isNull(response.getAggregations().get("edgeSourceCount")) ? Collections.EMPTY_MAP :
-                    ((StringTerms) response.getAggregations().get("edgeSourceCount")).getBuckets().stream()
-                            .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            try {
+                edgeSourceCount = Objects.isNull(response.getAggregations().get("edgeSourceCount")) ? Collections.EMPTY_MAP :
+                        ((StringTerms) response.getAggregations().get("edgeSourceCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            }catch (Throwable edgeSourceCountErr) {
+                logger.warn(edgeSourceCountErr.getMessage());
+            }
 
-            final Map<Object, Long> edgeDestCount = Objects.isNull(response.getAggregations().get("edgeDestCount")) ? Collections.EMPTY_MAP :
-                    ((StringTerms) response.getAggregations().get("edgeDestCount")).getBuckets().stream()
-                            .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            try {
+                edgeDestCount = Objects.isNull(response.getAggregations().get("edgeDestCount")) ? Collections.EMPTY_MAP :
+                        ((StringTerms) response.getAggregations().get("edgeDestCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+            }catch (Throwable edgeDestCountErr) {
+                logger.warn(edgeDestCountErr.getMessage());
+            }
 
             if (!elementCount.isEmpty()) {
                 elementCount.forEach((key, value) -> statistics.put(key.toString(), value));
@@ -188,7 +203,6 @@ public class StandardDashboardDriver implements DashboardDriver {
     }
 
     @Override
-    //todo - fix this to be Ontology depended
     public ObjectNode graphElementCreated(String ontologyId) {
         Ontology ontology = ontologyProvider.get(ontologyId)
                 .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("No Ontology present for Id ", "No Ontology present for id[" + ontologyId + "]")));

@@ -35,10 +35,10 @@ public class DashboardControllerRegistrar extends AppControllerRegistrarBase<Das
     //region AppControllerRegistrarBase Implementation
     @Override
     public void register(Jooby app, AppUrlSupplier appUrlSupplier) {
-        app.get("/fuse/dashboard/entities/:id",
-                req -> Results.with(this.getController(app).graphElementCount(req.param("id").value())));
-        app.get("/fuse/dashboard/created/:id",
-                req -> Results.with(this.getController(app).graphElementCreatedOverTime(req.param("id").value())));
+        app.get("/fuse/dashboard/entities/:ontology",
+                req -> Results.with(this.getController(app).graphElementCount(req.param("ontology").value())));
+        app.get("/fuse/dashboard/created/:ontology",
+                req -> Results.with(this.getController(app).graphElementCreatedOverTime(req.param("ontology").value())));
         app.get("/fuse/dashboard/count",
                 req -> Results.with(this.getController(app).cursorCount()));
     }
