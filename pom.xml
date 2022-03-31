@@ -204,6 +204,22 @@
             </dependency>
             <dependency>
                 <groupId>com.yangdb</groupId>
+                <artifactId>common-tasks</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>common</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-core</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -1342,6 +1358,7 @@
             </activation>
             <modules>
                 <module>unipop-core</module>
+                <module>common-tasks</module>
                 <module>fuse-model</module>
                 <module>fuse-test</module>
                 <module>fuse-asg</module>

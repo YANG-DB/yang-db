@@ -139,7 +139,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        System.out.println("Closing");
+        System.out.println("Closing Embedded E/S");
         closeClient();
         if (this.node != null) {
             this.node.close();
@@ -193,6 +193,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     private static void deleteFolder(String folder) {
+        System.out.println("Deleting E/S Data Folder");
         File folderFile = new File(folder);
         File[] files = folderFile.listFiles();
         if (files != null) {
