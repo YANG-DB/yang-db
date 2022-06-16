@@ -97,7 +97,7 @@ import com.yangdb.fuse.model.query.quant.Quant1;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EBase {
-    //region Constructros
+    //region Constructor
     public EBase() {}
 
     public EBase(int eNum) {
