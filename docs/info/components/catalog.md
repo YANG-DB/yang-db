@@ -4,7 +4,7 @@ The purpose of this document is to explain and discuss the need for a generalize
  - It will review the existing solutions for maintaining a catalog repository in the open source domain.
  - It will define the common internal structure for such a catalog  including the knowledge domain and architecture. 
 
-## Why Do we need a Catalog
+## Why is a Catalog needed ?
 
 The modern data stores and engines experience an extreme growth in the volume, variety, and velocity of data.
 Many of which are 'on demand' data-sets which are partially structured (or not structured at all).
@@ -49,7 +49,7 @@ Metadata can be typically ingested using the following methods:
  - crawling based approach by connecting to sources of metadata like your database catalog, the Hive catalog, the Kafka schema registry, or your workflow orchestrator’s log files
 and then writing this metadata into the primary store, with the portions that need indexing added into the search index .
    
-This ingestion proccess is usually running once a day or so. During the ingestion, there is often some transformation of the raw metadata into the semantic metadata model,
+This ingestion process is usually running once a day or so. During the ingestion, there is often some transformation of the raw metadata into the semantic metadata model,
 because the data is rarely in the exact form that the catalog wants it. Typically, this transformation is embedded into the ingestion job directly. 
 
 This is a pull oriented metadata collection method and the crawler runs in a different environment than the data source and its configuration needs to be managed separately.
@@ -94,11 +94,11 @@ Domain-oriented metadata models enables extensible, strongly-typed metadata mode
 Strong typing is important, because without that, we get the least common denominator of generic property-bags being stored in the metadata store
 which makes it impossible for programmatic consumers of metadata to process metadata with any guarantee of backwards compatibility.
 
-In the metadata model graph, we will use a terminology of Entity Types, Aspects, and Relationships to describe a graph with default three kinds of entities: Datasets, Users, and Groups.
-Different aspects such as Ownership, Physical-Schema, Profile can be attached to these entities for different concerns which results in relationships being created between these entity types. 
+In the metadata model graph, we will use a terminology of Entity Types, Relationships and Aspects.
+The basic knowledge which is used to describe a graph with default types of high level entities: Datasets, Roles, and Groups.
+Different aspects such as Ownership, Physical-Schema, Profile & so on can be attached to these entities for different concerns which results in relationships being created between these entity types. 
 
-This is a property graph entity model based topology which is both generic to allow any general purpose domain semantic and 
-can also evolve freely without any constraints.
+This topology is represented in practice using a property graph that is both generic to allow any general purpose domain semantic and can also evolve freely without (almost) any constraints.
 
 The basic element of this topology are entities and relations which are labeled with some kind of type identification.
 These elements also have properties that represent the fields of these domain elements.
@@ -114,14 +114,18 @@ TODO add example for 'schema on read'
 
 ## Entities & Aspects
 
-To allow a generic knowledge structure which can contain multiple business domains in the same place, we also predefine 3 types of default entities that are the heart
-of the generic knowledge domain - user, group, dataset.
+The purpose of Aspects is to give the entity a different capability to express additional features without changing the internal fields of that entity.
+
+To allow a generic knowledge structure which can contain multiple business domains in the same place, we predefine 3 types of default high-level entities that are the heart
+of the generic knowledge domain - roles, group, dataset.
+
+These entity types are always present no matter which business domain they represent and they are  
+
 On top of these entities we will create additional aspects that refer to different point of views for these elements:
  - Dataset entity will have a 'contains' relationship to a list of tables entities that represent the business domain of that dataset
  - Group will have a 'members' relationship to a list of users
- - User will have a 'ownerOf' relationship to the dataset entities
+ - Roles will have a different type of relationships to the dataset entities representing different access capabilities. 
 
-The purpose of Aspects is to give the entity a different capability to express additional features without changing the internal fields of that entity. 
 Lets review some sample of aspects for a 'table' entity:
  - Physical aspect - here the columns and constrains is specified
  - Statistics aspect - here the selectivity and cardinality of the columns is specified
