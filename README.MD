@@ -1,6 +1,11 @@
 From Graph to open-search - A tail of a Yang-DB...
 =========================================================================================
 
+
+![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB)]![Lior's GitHub streak-stats](https://streak-stats.demolab.com/?user=yang-db)
+
+---
+
 [![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
@@ -57,11 +62,7 @@ From Graph to open-search - A tail of a Yang-DB...
 ##### Dependencies Tags:
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
 
----
 
-![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB)]![Lior's GitHub streak-stats](https://streak-stats.demolab.com/?user=yang-db)
-
----
 
 Infrastructure Technologies  
 -----------------------------------------------------------------------------------------------
