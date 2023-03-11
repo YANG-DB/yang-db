@@ -31,6 +31,7 @@ From Graph to open-search - A tail of a Yang-DB...
 
 * [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/) 
 
+
 * [Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
 
 * [Moti Cohen](https://www.linkedin.com/in/moti-cohen-8815a577/) 
@@ -56,6 +57,11 @@ From Graph to open-search - A tail of a Yang-DB...
 ##### Dependencies Tags:
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
 
+---
+
+[![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB)](https://github.com/anuraghazra/github-readme-stats)
+
+---
 
 Infrastructure Technologies  
 -----------------------------------------------------------------------------------------------
