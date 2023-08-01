@@ -24,7 +24,7 @@ services:
     image: opensearchstaging/opensearch:${OS_VERSION}
     container_name: opensearch
     environment:
-      - cluster.name=opensearch-cluster
+      - cluster.name=Dragons
       - node.name=opensearch
       - discovery.seed_hosts=opensearch
       - cluster.initial_cluster_manager_nodes=opensearch
@@ -78,7 +78,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      - "elasticsearchHosts=localhost"
-      - "elasticsearchClusterName=${ELASTICSEARCH_CLUSTER_NAME}"
+      - "opensearch.hosts=localhost"
+      - "opensearch.cluster_name=${ELASTICSEARCH_CLUSTER_NAME}"
     volumes:
       - fuse-data:/usr/share/fuse
