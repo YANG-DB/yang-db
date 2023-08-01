@@ -1,8 +1,15 @@
-version: '3.3'
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+version: '3.9'
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
     environment:
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "discovery.type=single-node"
@@ -22,7 +29,7 @@ services:
     volumes:
       - esdata1:/usr/share/elasticsearch/data
   kibana:
-    image: docker.elastic.co/kibana/kibana:6.5.4
+    image: docker.elastic.co/kibana/kibana:${ES_VERSION}
     links:
       - elasticsearch
     depends_on:
@@ -53,4 +60,5 @@ volumes:
 
 networks:
   network:
+    name: elasticsearch-graphdb-dragons-demo
     attachable: true

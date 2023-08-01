@@ -1,8 +1,15 @@
-version: '3.3'
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+version: '3.9'
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
 
 services:
   fuse:
-    image: yangdb/yang.db:latest
+    image: yangdb/yang.db:Dragons
     ports:
       - 8888:8888
     environment:
@@ -11,7 +18,7 @@ services:
     networks:
       - network
   es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
     environment:
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "discovery.zen.minimum_master_nodes=1"
@@ -37,7 +44,7 @@ services:
       mode: 'global'
 
   es-master:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
     environment:
       - "ES_JAVA_OPTS=-Xms7g -Xmx7g"
       - "discovery.zen.minimum_master_nodes=1"
@@ -53,7 +60,7 @@ services:
       mode: 'replicated'
       replicas: 3
   es-data:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
     environment:
       - "ES_JAVA_OPTS=-Xms13g -Xmx13g"
       - "discovery.zen.minimum_master_nodes=1"
@@ -89,5 +96,6 @@ volumes:
 
 networks:
   network:
+    name: elasticsearch-graphdb-dragons-demo
     driver: overlay
     attachable: true
