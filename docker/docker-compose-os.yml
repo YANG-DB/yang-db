@@ -78,7 +78,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      - "opensearch.hosts=localhost"
-      - "opensearch.cluster_name=${ELASTICSEARCH_CLUSTER_NAME}"
+      - "opensearch.hosts=opensearch"
+      - "opensearch.cluster_name=Dragons"
     volumes:
       - fuse-data:/usr/share/fuse
