@@ -68,7 +68,7 @@ public class RegistrarsUtils {
         //write content as temp file
         if (req.accepts(APPLICATION_OCTET_STREAM).isPresent()) {
             res.type(MediaType.octetstream);
-            File tempFile = File.createTempFile(response.getRequestId(), "-suffix");
+            File tempFile = Files.createTempFile(response.getRequestId(), "-suffix").toFile();
             FileWriter writer = new FileWriter(tempFile);
             writer.write(response.getData().toString());
             writer.close();
@@ -79,7 +79,7 @@ public class RegistrarsUtils {
         } else if (req.accepts(TEXT_CSV).isPresent()) {
             res.type(MediaType.text);
             String now = Instant.now().toString();
-            File tempFile = File.createTempFile("csv_" + now, ".csv");
+            File tempFile = Files.createTempFile("csv_" + now, ".csv").toFile();
 
             QueryResourceInfo queryResourceInfo = (QueryResourceInfo) response.getData();
             if (!queryResourceInfo.getCursorResourceInfos().isEmpty() && !queryResourceInfo.getCursorResourceInfos().get(0).getPageResourceInfos().isEmpty()) {
