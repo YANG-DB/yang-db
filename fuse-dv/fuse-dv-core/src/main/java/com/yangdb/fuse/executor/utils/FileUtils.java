@@ -77,6 +77,9 @@ public abstract class FileUtils {
                 ZipEntry entry = entries.nextElement();
                 //todo sanitize entry name
                 File entryDestination = new File(target, entry.getName());
+                if (!entryDestination.toPath().normalize().startsWith(target)) {
+                    throw new IOException("Bad zip entry");
+                }
                 if (entry.isDirectory()) {
                     entryDestination.mkdirs();
                 } else {

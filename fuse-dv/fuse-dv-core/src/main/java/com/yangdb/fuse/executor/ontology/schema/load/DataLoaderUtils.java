@@ -147,6 +147,9 @@ public interface DataLoaderUtils {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 File entryDestination = new File(zipIn.getParent(), entry.getName());
+                if (!entryDestination.toPath().normalize().startsWith(zipIn.getParent())) {
+                    throw new IOException("Bad zip entry");
+                }
                 files.add(entryDestination);
                 if (entry.isDirectory()) {
                     entryDestination.mkdirs();
