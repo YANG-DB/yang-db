@@ -1,6 +1,6 @@
 
 ### ⚙️ WhoAmI ?:
-- **What's Your Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 👌 Yehonatan,Amos,Naomi,
+- **What's Your Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 
 - **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
 
 <div style="display: flex; align-items: center; justify-content: center;">
