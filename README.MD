@@ -1,10 +1,12 @@
+
 ### ⚙️ WhoAmI ?:
-- **What's Your Name ?**: Lior Perry 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 👌 Yehonatan,Amos,Naomi,
+- **What's Your Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 👌 Yehonatan,Amos,Naomi,
 - **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
 
-![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github)
-![](https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg)
-
+<div style="display: flex; align-items: center; justify-content: center;">
+  <img src="https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
+  <img src="https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg" style="width: 50%; max-width: 400px;" alt="Conservation Image" />
+</div>
 
 ---
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
