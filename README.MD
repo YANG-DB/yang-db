@@ -1,9 +1,12 @@
+### ⚙️ WhoAmI ?:
+- **What's Your Name ?**: Lior Perry 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 👌 Yehonatan,Amos,Naomi,
+- **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
 
-![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB)![Lior's GitHub streak-stats](https://streak-stats.demolab.com/?user=yang-db)
+![Lior's GitHub stats](https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github)
+![](https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg)
+
 
 ---
-
-[![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
 [![](https://img.shields.io/docker/pulls/yangdb/yang.db?style=flat-square)](https://hub.docker.com/u/yangdb)
