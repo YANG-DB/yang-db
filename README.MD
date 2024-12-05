@@ -2,6 +2,10 @@
 ### ⚙️ WhoAmI ?:
 - **What's Your Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊, YANG-DB stands for YetAnotherNonNativeGraph-DB 
 - **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
+- **CurrentlyWorkingOn**: [OpenSearch](https://opensearch.org/) 
+    - [PPL on Spark](https://github.com/opensearch-project/opensearch-spark)
+    - [OpenTelemetry On OpenSearch](https://github.com/opensearch-project/opentelemetry-demo)
+    - [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)
 
 <div style="display: flex; align-items: center; justify-content: center;">
   <img src="https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
