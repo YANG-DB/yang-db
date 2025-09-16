@@ -7,21 +7,21 @@
 
 - About Me
 Mostly interested in :
-* Working with Excellent People
-* Leading the customer to success
-* Ingenuity & creativity (thinking out of the box)
+  * Working with Excellent People
+  * Leading the customer to success
+  * Ingenuity & creativity (thinking out of the box)
 
 - Achievements:
- * [Graph DB](https://github.com/YANG-DB)
- * [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)
- * [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)
- * [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)
+   * [Graph DB](https://github.com/YANG-DB)
+   * [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)
+   * [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)
+   * [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)
 
 - Domain Of Interest:
- * 'Big Data arena'
- * Graph & Knowledge DB
- * Deep understanding of software design, architecture & performance.
- * Service Oriented architecture / Domain Driven Design
+   * 'Big Data arena'
+   * Graph & Knowledge DB
+   * Deep understanding of software design, architecture & performance.
+   * Service Oriented architecture / Domain Driven Design
 
 ---
 <div style="display: flex; align-items: center; justify-content: center;">
