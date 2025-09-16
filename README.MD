@@ -1,27 +1,34 @@
 
 ### ⚙️ WhoAmI ?:
-- **What's My Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊, What's YANG-DB stands for ?? **YetAnotherNonNativeGraph-DB** 🦾 
-- **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
-- **CurrentlyWorkingOn**: `source =` [OpenSearch](https://opensearch.org/) | `where "coding" contains` [ [PPL & Spark](https://github.com/opensearch-project/opensearch-spark) | [OpenTelemetry](https://github.com/opensearch-project/opentelemetry-demo) | [OpenSearch Catalog](https://github.com/opensearch-project/opensearch-catalog)]
+- **What's My Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊  
+  What's **YANG-DB** stand for? → **YetAnotherNonNativeGraph-DB** 🦾  
+- **Interests**: 📡 OpenTelemetry | 🔎 Query Languages | ☁️ Cloud-native Architectures | 🤖 Machine Learning | 🕸️ Graph DB  
+- **Currently Working On**:  
+  `source =` [OpenSearch](https://opensearch.org/)  
+  `where "coding" contains` [ [PPL & Spark](https://github.com/opensearch-project/opensearch-spark) | [OpenTelemetry](https://github.com/opensearch-project/opentelemetry-demo) | [OpenSearch Catalog](https://github.com/opensearch-project/opensearch-catalog)]
 
+---
 
-- About Me
-Mostly interested in :
-  * Working with Excellent People
-  * Leading the customer to success
-  * Ingenuity & creativity (thinking out of the box)
+### 💡 What I Enjoy in My Work
+- 👥 Working with Excellent People  
+- 🚀 Leading Customers to Success  
+- 🎨 Ingenuity & Creativity (thinking outside the box)  
 
-- Achievements:
-   * [Graph DB](https://github.com/YANG-DB)
-   * [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)
-   * [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)
-   * [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)
+---
 
-- Domain Of Interest:
-   * 'Big Data arena'
-   * Graph & Knowledge DB
-   * Deep understanding of software design, architecture & performance.
-   * Service Oriented architecture / Domain Driven Design
+### 🌍 Domain Of Interest
+- 📊 Big Data Arena  
+- 🕸️ Graph & Knowledge DB  
+- 🏗️ Software Design, Architecture & Performance  
+- 🧩 Service-Oriented Architecture / Domain-Driven Design  
+
+---
+
+### 🏆 Achievements
+- 🕸️ [Graph DB](https://github.com/YANG-DB)  
+- 🔥 [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)  
+- 📖 [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)  
+- 🌐 [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)  
 
 ---
 <div style="display: flex; align-items: center; justify-content: center;">
