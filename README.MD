@@ -4,6 +4,26 @@
 - **Interests**: OpenTelemetry , Query Languages , Cloud-native architectures ☁️, Machine Learning 🎓, Graph DB
 - **CurrentlyWorkingOn**: `source =` [OpenSearch](https://opensearch.org/) | `where "coding" contains` [ [PPL & Spark](https://github.com/opensearch-project/opensearch-spark) | [OpenTelemetry](https://github.com/opensearch-project/opentelemetry-demo) | [OpenSearch Catalog](https://github.com/opensearch-project/opensearch-catalog)]
 
+
+- About Me
+Mostly interested in :
+* Working with Excellent People
+* Leading the customer to success
+* Ingenuity & creativity (thinking out of the box)
+
+- Achievements:
+ * [Graph DB](https://github.com/YANG-DB)
+ * [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)
+ * [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)
+ * [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)
+
+- Domain Of Interest:
+ * 'Big Data arena'
+ * Graph & Knowledge DB
+ * Deep understanding of software design, architecture & performance.
+ * Service Oriented architecture / Domain Driven Design
+
+---
 <div style="display: flex; align-items: center; justify-content: center;">
   <img src="https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
   <img src="https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg" style="width: 50%; max-width: 400px;" alt="Conservation Image" />
