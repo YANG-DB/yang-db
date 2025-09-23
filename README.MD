@@ -27,7 +27,7 @@
 - 🕸️ [Graph DB](https://github.com/YANG-DB)  
 - 🔥 [OpenSearch Spark](https://github.com/opensearch-project/opensearch-spark)  
 - 📖 [OpenSearch Observability Catalog](https://github.com/opensearch-project/opensearch-catalog)  
-- 🌐 [Community Member](https://1291fa08092a4a2dfd6d43f11d7bbcf3f22bf569.opensearch.org/community/members/lior-perry.html)  
+- 🌐 [Community Member](https://opensearch.org/author/lior-perry/)  
 
 ---
 <div style="display: flex; align-items: center; justify-content: center;">
