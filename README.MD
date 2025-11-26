@@ -61,8 +61,6 @@
 
 
 #### Project YANG-DB
-* https://www.yangdb.org/ 
-
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
 * [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
 * [Release.notes](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes)
@@ -308,10 +306,6 @@ In the last section we took a simple graph query and drilled down into the detai
 Start Using
 ---------------
  - See [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
- - See https://www.yangdb.org 
- - See https://www.yangdb.org/general-info.html
- - See https://www.yangdb.org/docker.html
- - See https://www.yangdb.org/get-involved.html
 
 Please review the following tutorial pages:
 ---------------
