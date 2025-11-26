@@ -30,6 +30,12 @@
 - 🌐 [Community Member](https://opensearch.org/author/lior-perry/)  
 
 ---
+🎥 YouTube Lectures
+- 🕸️ [Vega Integration In OpenSearch](https://www.youtube.com/watch?v=UZ9RbVi2nLo)
+- 🔥 [OTEL OpenSearch Workflow](https://www.youtube.com/watch?v=meGSFn1MMJs)
+- 📖 [OpenSearch OTEL Integration](https://www.youtube.com/watch?v=5gjSKufLRw4)
+---
+
 <div style="display: flex; align-items: center; justify-content: center;">
   <img src="https://github-readme-stats.vercel.app/api?username=YANG-DB&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage&rank_icon=github" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
   <img src="https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg" style="width: 50%; max-width: 400px;" alt="Conservation Image" />
