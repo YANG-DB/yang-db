@@ -38,7 +38,6 @@
 
 <div style="display: flex; align-items: center; justify-content: center;">
   <img src="https://github-readme-streak-stats-eight.vercel.app/?user=yangdb&theme=radical" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
-  <img src="https://nrs.objectstore.gov.bc.ca/kuwyyf/conservation_resources_1110x740_72dpi_v1_bbe130b564.jpg" style="width: 50%; max-width: 400px;" alt="Conservation Image" />
 </div>
 
 ---
