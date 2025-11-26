@@ -1,7 +1,7 @@
 
 ### ⚙️ WhoAmI ?: 
 - **What's My Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊  
-- What's **YANG-DB** stand for? → **YetAnotherNonNativeGraph-DB** 🦾  | My C.V page URL 📄 [CV](https://yang-db.github.io/)
+- What's **YANG-DB** stand for? → **YetAnotherNonNativeGraph-DB** 🦾  | My C.V 📄 [CV](https://yang-db.github.io/)
 - **Interests**: 📡 OpenTelemetry | 🔎 Query Languages | ☁️ Cloud-native Architectures | 🤖 Machine Learning | 🕸️ Graph DB  
 - **Currently Working On**:    `source =` [OpenSearch](https://opensearch.org/)  
   `where "coding" contains` [ [PPL & Spark](https://github.com/opensearch-project/opensearch-spark) | [OpenTelemetry](https://github.com/opensearch-project/opentelemetry-demo) | [OpenSearch Catalog](https://github.com/opensearch-project/opensearch-catalog)]
