@@ -36,9 +36,11 @@
 - 📖 [OpenSearch OTEL Integration](https://www.youtube.com/watch?v=5gjSKufLRw4)
 ---
 <div id="stats" align="center">
-  <div style="display: flex; align-items: center; justify-content: center;">
-    <img src="https://github-readme-streak-stats-eight.vercel.app/?user=yangdb&theme=radical" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
-  </div>
+  <a href="https://yang-db.github.io">
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <img src="https://github-readme-streak-stats-eight.vercel.app/?user=yangdb&theme=radical" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
+    </div>
+  </a>
 </div>
 
 ---
