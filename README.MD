@@ -34,18 +34,6 @@
 - 🕸️ [Vega Integration In OpenSearch](https://www.youtube.com/watch?v=UZ9RbVi2nLo)
 - 🔥 [OTEL OpenSearch Workflow](https://www.youtube.com/watch?v=meGSFn1MMJs)
 - 📖 [OpenSearch OTEL Integration](https://www.youtube.com/watch?v=5gjSKufLRw4)
----
-<div id="stats" align="center">
-  <a href="https://yang-db.github.io">
-    <div style="display: flex; align-items: center; justify-content: center;">
-      <img src="https://github-readme-streak-stats-eight.vercel.app/?user=yangdb&theme=radical" style="width: 50%; max-width: 400px;" alt="Lior's GitHub stats" />
-    </div>
-  </a>
-</div>
-
----
-## 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=yangdb&theme=radical&no-frame=true&no-bg=true&margin-w=4)
 
 ---
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
