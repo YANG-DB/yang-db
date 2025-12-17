@@ -1,5 +1,5 @@
 
-### ⚙️ WhoAmI ?: 🚀 [Portfolio](https://yang-db.github.io/yang-db/portfolio.html) 
+### ⚙️ About me: 🚀 [Portfolio](https://yang-db.github.io/yang-db/portfolio.html) 
 - **What's My Name ?**: [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/) 😊  
 - What's **YANG-DB** stand for? → **YetAnotherNonNativeGraph-DB** | 📄 [CV](https://yang-db.github.io/)
 - **Interests**: 📡 OpenTelemetry | 🔎 Query Languages | ☁️ Cloud-native Architectures | 🤖 Machine Learning | 🕸️ Graph DB  
