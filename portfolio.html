@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lior Perry | Distinguished Software Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        github: {
+                            bg: '#0d1117',
+                            secondary: '#161b22',
+                            tertiary: '#21262d',
+                            border: '#30363d',
+                            blue: '#58a6ff',
+                            'blue-dark': '#1f6feb',
+                            green: '#3fb950',
+                            purple: '#8957e5',
+                            text: '#c9d1d9',
+                            'text-secondary': '#8b949e',
+                            'text-muted': '#6e7681',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        .ambient-light {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        #networkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-github-bg text-github-text font-sans antialiased">
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#30363d 1px, transparent 1px), linear-gradient(90deg, #30363d 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+    <!-- Ambient Lights -->
+    <div class="ambient-light" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(88, 166, 255, 0.15), transparent); top: -200px; right: -100px; animation-delay: 0s;"></div>
+    <div class="ambient-light" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(137, 87, 229, 0.12), transparent); bottom: -150px; left: -100px; animation-delay: 2s;"></div>
+    <div class="ambient-light" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(63, 185, 80, 0.1), transparent); top: 40%; right: 20%; animation-delay: 4s;"></div>
+
+    <!-- Network Graph Canvas -->
+    <canvas id="networkCanvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-github-bg/95 backdrop-blur-sm border-b border-github-border">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-lg font-semibold text-github-text">Lior Perry</div>
+                <ul class="hidden md:flex gap-6">
+                    <li><a href="#projects" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">Projects</a></li>
+                    <li><a href="#lectures" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">Lectures</a></li>
+                    <li><a href="#impact" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">Impact</a></li>
+                    <li><a href="https://github.com/YANG-DB" target="_blank" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="relative max-w-7xl mx-auto px-6">
+        <!-- Hero Section -->
+        <header class="py-24">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 bg-github-secondary border border-github-border px-4 py-2 rounded-md text-sm text-github-text-secondary mb-6">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    <span>YANG-DB</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-semibold mb-6 text-github-text">
+                    Lior Perry
+                </h1>
+                <p class="text-xl text-github-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
+                    Building scalable distributed systems, graph databases, and observability solutions. Leading OpenSearch innovations in search, analytics, and data processing.
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a href="#projects" class="inline-flex items-center gap-2 px-6 py-3 bg-github-blue hover:bg-blue-400 text-github-bg rounded-md text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        View Projects
+                    </a>
+                    <a href="https://github.com/YANG-DB" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-transparent hover:bg-github-secondary border border-github-border hover:border-github-text-secondary text-github-text rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        GitHub Profile
+                    </a>
+                    <a href="https://www.linkedin.com/in/lior-perry-yang-db/" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-transparent hover:bg-github-secondary border border-github-border hover:border-github-text-secondary text-github-text rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        Let's Connect
+                    </a>
+                    <a href="https://yang-db.github.io/" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-transparent hover:bg-github-secondary border border-github-border hover:border-github-text-secondary text-github-text rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        C.V.
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-16">
+            <div class="mb-8">
+                <div class="text-xs font-semibold text-github-text-secondary uppercase tracking-wide mb-2">Portfolio</div>
+                <h2 class="text-3xl font-semibold mb-2 pb-2 border-b border-github-border">Featured Projects</h2>
+                <p class="text-github-text-secondary mt-4">Building scalable, distributed systems that power the next generation of search and analytics</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- YANG-DB -->
+                <a href="https://github.com/YANG-DB/yang-db" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">🕸️</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">YANG-DB</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">Yet Another Non-native Graph Database - an open-source, scalable graph database powered by OpenSearch. Implements the property graph model with Cypher query support.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Java</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">OpenSearch</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Cypher</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">TinkerPop</span>
+                    </div>
+                </a>
+
+                <!-- OpenSearch Spark -->
+                <a href="https://github.com/opensearch-project/opensearch-spark" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">🔥</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">OpenSearch Spark</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">Spark Accelerator framework enabling secondary indices to remote data stores. Integrates Apache Spark with OpenSearch for high-performance data processing.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Scala</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Apache Spark</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">PPL</span>
+                    </div>
+                </a>
+
+                <!-- OpenSearch Catalog -->
+                <a href="https://github.com/opensearch-project/opensearch-catalog" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">📖</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">OpenSearch Catalog</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">Community-driven catalog for OpenSearch plugins, dashboards, and integrations. Making it easier for developers to contribute and discover artifacts.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">TypeScript</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">React</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Community</span>
+                    </div>
+                </a>
+
+                <!-- OpenTelemetry Demo -->
+                <a href="https://github.com/opensearch-project/opentelemetry-demo" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">🌐</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">OpenTelemetry Demo</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">OpenSearch adaptation of the CNCF OpenTelemetry Astronomy Shop microservices demo.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">OTEL</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Observability</span>
+                    </div>
+                </a>
+
+                <!-- Vega Integration -->
+                <a href="https://opensearch.org/blog/improving-dashboards-usability-with-vega/" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">📊</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">Vega Integration</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">Enhanced data visualization capabilities in OpenSearch Dashboards using Vega.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Vega</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Visualization</span>
+                    </div>
+                </a>
+
+                <!-- Fluent Bit Integration -->
+                <a href="https://opensearch.org/blog/nginx-dashboards-with-fluent-bit/" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg p-6 hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl">⚡</span>
+                        <span class="text-github-text-muted group-hover:text-github-blue transition-colors">↗</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-3">Fluent Bit Integration</h3>
+                    <p class="text-sm text-github-text-secondary mb-4 leading-relaxed">NGINX dashboards with Fluent Bit for streamlined log ingestion and analysis.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">Fluent Bit</span>
+                        <span class="text-xs px-2 py-1 border border-github-border rounded-full text-github-blue">NGINX</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- YouTube Lectures Section -->
+        <section id="lectures" class="py-16">
+            <div class="mb-8">
+                <div class="text-xs font-semibold text-github-text-secondary uppercase tracking-wide mb-2">Knowledge Sharing</div>
+                <h2 class="text-3xl font-semibold mb-2 pb-2 border-b border-github-border">YouTube Lectures</h2>
+                <p class="text-github-text-secondary mt-4">Deep dives into graph databases, OpenSearch, and observability technologies</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Vega Integration Lecture -->
+                <a href="https://www.youtube.com/watch?v=UZ9RbVi2nLo" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg overflow-hidden hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="h-48 bg-github-tertiary flex items-center justify-center border-b border-github-border relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-github-blue/20 to-github-purple/20"></div>
+                        <div class="relative w-16 h-16 bg-github-blue/20 border-2 border-github-blue rounded-full flex items-center justify-center group-hover:bg-github-blue group-hover:text-github-bg transition-all">
+                            <span class="text-2xl text-github-blue group-hover:text-github-bg">▶</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2 text-github-text">Vega Integration in OpenSearch</h3>
+                        <p class="text-sm text-github-text-secondary leading-relaxed mb-3">Comprehensive guide to integrating Vega visualizations in OpenSearch Dashboards for creating powerful, custom data visualizations.</p>
+                        <span class="text-sm text-github-blue font-medium inline-flex items-center gap-1">
+                            Watch on YouTube <span class="group-hover:translate-x-1 transition-transform">→</span>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- OTEL OpenSearch Workflow -->
+                <a href="https://www.youtube.com/watch?v=meGSFn1MMJs" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg overflow-hidden hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="h-48 bg-github-tertiary flex items-center justify-center border-b border-github-border relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-github-green/20 to-github-blue/20"></div>
+                        <div class="relative w-16 h-16 bg-github-blue/20 border-2 border-github-blue rounded-full flex items-center justify-center group-hover:bg-github-blue group-hover:text-github-bg transition-all">
+                            <span class="text-2xl text-github-blue group-hover:text-github-bg">▶</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2 text-github-text">OTEL OpenSearch Workflow</h3>
+                        <p class="text-sm text-github-text-secondary leading-relaxed mb-3">Learn how to implement OpenTelemetry workflows with OpenSearch for comprehensive observability and distributed tracing.</p>
+                        <span class="text-sm text-github-blue font-medium inline-flex items-center gap-1">
+                            Watch on YouTube <span class="group-hover:translate-x-1 transition-transform">→</span>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- OpenSearch OTEL Integration -->
+                <a href="https://www.youtube.com/watch?v=5gjSKufLRw4" target="_blank" class="block bg-github-secondary border border-github-border rounded-lg overflow-hidden hover:border-github-blue hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="h-48 bg-github-tertiary flex items-center justify-center border-b border-github-border relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-github-purple/20 to-github-green/20"></div>
+                        <div class="relative w-16 h-16 bg-github-blue/20 border-2 border-github-blue rounded-full flex items-center justify-center group-hover:bg-github-blue group-hover:text-github-bg transition-all">
+                            <span class="text-2xl text-github-blue group-hover:text-github-bg">▶</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2 text-github-text">OpenSearch OTEL Integration</h3>
+                        <p class="text-sm text-github-text-secondary leading-relaxed mb-3">Deep dive into integrating OpenTelemetry with OpenSearch for modern observability pipelines and telemetry data analysis.</p>
+                        <span class="text-sm text-github-blue font-medium inline-flex items-center gap-1">
+                            Watch on YouTube <span class="group-hover:translate-x-1 transition-transform">→</span>
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Impact Section -->
+        <section id="impact" class="py-16">
+            <div class="mb-8">
+                <div class="text-xs font-semibold text-github-text-secondary uppercase tracking-wide mb-2">Community Impact</div>
+                <h2 class="text-3xl font-semibold mb-2 pb-2 border-b border-github-border">By The Numbers</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-github-secondary border border-github-border rounded-lg p-8 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-4xl font-semibold text-github-blue mb-2">117</div>
+                    <div class="text-sm text-github-text-secondary">Public Repositories</div>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-8 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-4xl font-semibold text-github-blue mb-2">15+</div>
+                    <div class="text-sm text-github-text-secondary">Years Experience</div>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-8 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-4xl font-semibold text-github-blue mb-2">1000+</div>
+                    <div class="text-sm text-github-text-secondary">Contributions</div>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-8 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-4xl font-semibold text-github-blue mb-2">∞</div>
+                    <div class="text-sm text-github-text-secondary">Ideas & Innovation</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expertise Section -->
+        <section class="py-16">
+            <div class="mb-8">
+                <div class="text-xs font-semibold text-github-text-secondary uppercase tracking-wide mb-2">Expertise</div>
+                <h2 class="text-3xl font-semibold mb-2 pb-2 border-b border-github-border">Core Domains</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">🏗️</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">Architecture</h3>
+                    <p class="text-sm text-github-text-secondary">Service-Oriented Architecture, Domain-Driven Design, Cloud-Native Patterns, Microservices</p>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">📊</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">Big Data</h3>
+                    <p class="text-sm text-github-text-secondary">Distributed Systems, Real-time Analytics, Data Processing at Scale</p>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">🔍</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">Search</h3>
+                    <p class="text-sm text-github-text-secondary">Full-text Search, Query Optimization, Relevance Tuning, DSL Design</p>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">🕸️</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">Graph Tech</h3>
+                    <p class="text-sm text-github-text-secondary">Graph Databases, Knowledge Graphs, Traversal Algorithms, Cypher</p>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">📡</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">Observability</h3>
+                    <p class="text-sm text-github-text-secondary">OpenTelemetry, Distributed Tracing, Metrics, Logs, APM</p>
+                </div>
+                <div class="bg-github-secondary border border-github-border rounded-lg p-6 text-center hover:border-github-blue hover:-translate-y-1 transition-all">
+                    <div class="text-3xl mb-3">🤖</div>
+                    <h3 class="text-lg font-semibold text-github-blue mb-2">ML Systems</h3>
+                    <p class="text-sm text-github-text-secondary">Machine Learning Infrastructure, Model Serving, Vector Search</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-12 mt-16 border-t border-github-border text-center">
+            <div class="flex justify-center gap-6 mb-6 flex-wrap">
+                <a href="https://github.com/YANG-DB" target="_blank" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">GitHub</a>
+                <a href="https://www.linkedin.com/in/lior-perry-yang-db/" target="_blank" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">LinkedIn</a>
+                <a href="https://opensearch.org/author/lior-perry/" target="_blank" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">OpenSearch Blog</a>
+                <a href="https://yang-db.github.io/" target="_blank" class="text-sm text-github-text-secondary hover:text-github-blue transition-colors">CV</a>
+            </div>
+            <p class="text-xs text-github-text-muted">© 2024 Lior Perry · Built with passion for open source</p>
+        </footer>
+    </div>
+
+    <script>
+        // Network Graph Animation
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        class Node {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(88, 166, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+        
+        const nodes = [];
+        const nodeCount = 50;
+        const maxDistance = 150;
+        
+        for (let i = 0; i < nodeCount; i++) {
+            nodes.push(new Node());
+        }
+        
+        function drawConnections() {
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < maxDistance) {
+                        const opacity = (1 - distance / maxDistance) * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(88, 166, 255, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawConnections();
+            
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
