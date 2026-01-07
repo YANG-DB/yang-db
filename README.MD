@@ -38,7 +38,7 @@
 ---
 
 ### 💼 Professional Services
-View my [Professional Services Portfolio](services-portfolio.html) for consulting and advisory services.
+View my [Professional Services Portfolio](https://yang-db.github.io/portfolio/) for consulting and advisory services.
 
 ---
 
