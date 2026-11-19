@@ -3,7 +3,7 @@ package com.yangdb.fuse.stat;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
 import com.yangdb.test.BaseSuiteMarker;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -30,8 +30,8 @@ public class StatTestSuite implements BaseSuiteMarker {
     public static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
     public static final String STAT_INDEX_NAME = "stat";
 
-    public static TransportClient dataClient;
-    public static TransportClient statClient;
+    public static Client dataClient;
+    public static Client statClient;
 
     private static ElasticEmbeddedNode elasticEmbeddedNode;
 

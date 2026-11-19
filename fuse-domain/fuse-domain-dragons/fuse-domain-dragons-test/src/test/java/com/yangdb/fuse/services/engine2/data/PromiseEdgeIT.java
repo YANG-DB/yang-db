@@ -28,7 +28,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
 import org.opensearch.action.search.SearchType;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.joda.time.DateTime;
 import org.junit.*;
 import org.unipop.query.predicates.PredicatesHolder;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
  * Created by Elad on 4/25/2017.
  */
 public class PromiseEdgeIT implements BaseITMarker {
-    static TransportClient client;
+    static Client client;
     static OpensearchGraphConfiguration configuration;
     static UniGraph graph;
     static MetricRegistry registry;

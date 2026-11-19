@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.opensearch.ResourceAlreadyExistsException;
 import org.opensearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
 
     //region ElasticIndexConfigurer
     @Override
-    public void configure(TransportClient client) {
+    public void configure(Client client) {
         try {
             addMappings(client);
         } catch (IOException e) {
@@ -69,7 +69,7 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
     //endregion
 
     //region Private Methods
-    protected void addMappings(TransportClient client) throws java.io.IOException {
+    protected void addMappings(Client client) throws java.io.IOException {
         for(String indexName : this.indices) {
             CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
             Map<String, Object> allMappings = (Map<String, Object>) mappings.get("mappings");

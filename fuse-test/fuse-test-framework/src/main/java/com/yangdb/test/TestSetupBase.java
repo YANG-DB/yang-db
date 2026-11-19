@@ -22,7 +22,7 @@ package com.yangdb.test;
 
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.opensearch.client.transport.*;
+import org.opensearch.client.Client;
 
 public abstract class TestSetupBase {
     protected ElasticEmbeddedNode instance;
@@ -37,6 +37,6 @@ public abstract class TestSetupBase {
     }
 
 
-    protected abstract void loadData(TransportClient client) throws Exception;
-    protected abstract void cleanData(TransportClient client);
+    protected abstract void loadData(Client client) throws Exception;
+    protected abstract void cleanData(Client client);
 }

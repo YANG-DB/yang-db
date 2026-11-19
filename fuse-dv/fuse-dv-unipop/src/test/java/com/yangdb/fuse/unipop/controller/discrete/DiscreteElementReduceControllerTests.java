@@ -25,7 +25,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.XContentType;
 import org.junit.*;
@@ -111,7 +111,7 @@ public class DiscreteElementReduceControllerTests {
                 },
                 new StandardStrategyProvider());
 
-        TransportClient client = ElasticEmbeddedNode.getClient();
+        Client client = ElasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
                 .setPatterns(Arrays.asList("*"))
                 .setSettings(Settings.builder()

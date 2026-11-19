@@ -28,7 +28,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
 import org.opensearch.action.search.SearchType;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.XContentType;
 import org.junit.*;
@@ -71,7 +71,7 @@ public class DiscreteTraversalTest {
     public static GraphElementSchemaProvider schemaProvider;
     public static SearchOrderProviderFactory orderProvider = context -> SearchOrderProvider.of(SearchOrderProvider.EMPTY, SearchType.DEFAULT);
 
-    private static TransportClient client;
+    private static Client client;
 
     //endregion
 

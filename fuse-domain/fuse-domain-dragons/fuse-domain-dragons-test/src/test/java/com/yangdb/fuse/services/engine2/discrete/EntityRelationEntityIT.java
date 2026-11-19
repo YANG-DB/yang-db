@@ -24,7 +24,7 @@ import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import com.yangdb.test.BaseITMarker;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class EntityRelationEntityIT implements BaseITMarker {
 
         String idField = "id";
 
-        TransportClient client = ElasticEmbeddedNode.getClient();
+        Client client = ElasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
                 new Mapping().addProperty("type", new Mapping.Property(keyword))

@@ -46,7 +46,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.*;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class SmartEpbCountIT implements BaseITMarker {
     }
 
 
-    public static void setup(TransportClient client, boolean calcStats) throws Exception {
+    public static void setup(Client client, boolean calcStats) throws Exception {
         fuseClient = new BaseFuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -187,11 +187,11 @@ public class SmartEpbCountIT implements BaseITMarker {
 
 
 
-    public static void cleanup(TransportClient client) throws Exception {
+    public static void cleanup(Client client) throws Exception {
         cleanup(client, true);
     }
 
-    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
+    public static void cleanup(Client client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         PERSON.name.toLowerCase(),

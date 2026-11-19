@@ -15,7 +15,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,7 @@ public class DragonsSmartEpbTest6Setup extends TestSetupBase  {
     }
 
     @Override
-    protected void loadData(TransportClient client) throws Exception {
+    protected void loadData(Client client) throws Exception {
         String idField = "id";
         new MappingElasticConfigurer(OntologyTestUtils.DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
                 .configure(client);
@@ -86,7 +86,7 @@ public class DragonsSmartEpbTest6Setup extends TestSetupBase  {
     }
 
     @Override
-    protected void cleanData(TransportClient client) {
+    protected void cleanData(Client client) {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         OntologyTestUtils.DRAGON.name.toLowerCase(),

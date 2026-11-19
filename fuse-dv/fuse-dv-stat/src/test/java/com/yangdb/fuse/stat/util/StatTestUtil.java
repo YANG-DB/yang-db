@@ -9,7 +9,7 @@ import com.yangdb.fuse.stat.model.configuration.Type;
 import com.yangdb.fuse.stat.model.histogram.Histogram;
 import javaslang.collection.Stream;
 import org.opensearch.action.search.SearchResponse;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.SearchHit;
 import org.junit.Assert;
@@ -144,7 +144,7 @@ public class StatTestUtil {
     }
 
 
-    public static List<Map<String, Object>> getAllDocs(TransportClient client, String index, String type) {
+    public static List<Map<String, Object>> getAllDocs(Client client, String index, String type) {
         int scrollSize = 1000;
         List<Map<String, Object>> esData = new ArrayList<>();
         SearchResponse response = null;
@@ -166,7 +166,7 @@ public class StatTestUtil {
     }
 
 
-    public static void printAllDocs(TransportClient client, String index, String type) {
+    public static void printAllDocs(Client client, String index, String type) {
         List<Map<String, Object>> allDocs = getAllDocs(client, index, type);
         for ( Map<String, Object> doc : allDocs) {
             for (Map.Entry<String, Object> entry : doc.entrySet()) {
@@ -199,7 +199,7 @@ public class StatTestUtil {
         return histogram;
     }
 
-    public static Set<Map<String, Object>> searchByTerm(TransportClient client, String[] indices, String[] types, String field, String term) {
+    public static Set<Map<String, Object>> searchByTerm(Client client, String[] indices, String[] types, String field, String term) {
         SearchResponse response;
         try {
             response = client.prepareSearch()

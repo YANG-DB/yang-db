@@ -32,7 +32,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -345,7 +345,7 @@ public class ElasticStatisticsGraphProviderTest {
     //endregion
 
     //region Fields
-    private static TransportClient statClient;
+    private static Client statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 

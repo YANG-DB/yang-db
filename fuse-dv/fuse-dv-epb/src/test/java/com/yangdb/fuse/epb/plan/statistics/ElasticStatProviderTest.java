@@ -20,7 +20,7 @@ import com.yangdb.fuse.test.framework.index.MappingFileElasticConfigurer;
 import com.yangdb.fuse.test.framework.populator.ElasticDataPopulator;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
 import org.opensearch.client.Client;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,8 +41,8 @@ import static org.junit.Assert.assertTrue;
 public class ElasticStatProviderTest {
 
     //region Parameters
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
+    private static Client dataClient;
+    private static Client statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 

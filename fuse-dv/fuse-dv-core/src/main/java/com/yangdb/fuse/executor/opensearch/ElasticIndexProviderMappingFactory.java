@@ -667,8 +667,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         Settings.Builder builder = getSettings();
         if (relation.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.relation$(relation.getType()).idFieldName())
-                    .put("sort.order", "asc");
+            builder.put("index.sort.field", ontology.relation$(relation.getType()).idFieldName())
+                    .put("index.sort.order", "asc");
         }
         return builder.build();
     }
@@ -677,8 +677,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         Settings.Builder builder = getSettings();
         if (entity.getNested().isEmpty()) {
             //assuming id is a mandatory part of metadata/properties
-            builder.put("sort.field", ontology.entity$(entity.getType()).idFieldName())
-                    .put("sort.order", "asc");
+            builder.put("index.sort.field", ontology.entity$(entity.getType()).idFieldName())
+                    .put("index.sort.order", "asc");
         }
         return builder.build();
     }

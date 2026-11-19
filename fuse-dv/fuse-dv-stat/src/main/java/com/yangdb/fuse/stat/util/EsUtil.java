@@ -38,7 +38,6 @@ import org.opensearch.action.search.SearchRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.Client;
 import org.opensearch.client.Requests;
-import org.opensearch.client.transport.TransportClient;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MappingMetadata;
 import org.opensearch.common.collect.ImmutableOpenMap;
@@ -76,7 +75,7 @@ public class EsUtil {
      * @param field     Elastic field name
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
-    public static List<StatRangeResult<? extends Number>> getNumericHistogramResults(TransportClient client,
+    public static List<StatRangeResult<? extends Number>> getNumericHistogramResults(Client client,
                                                                    String index,
                                                                    String type,
                                                                    String field,
@@ -87,7 +86,7 @@ public class EsUtil {
         return getNumericBucketsStatResults(client, index, type, field, dataType, buckets);
     }
 
-    public static <T> List<StatRangeResult<T>> getManualHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getManualHistogramResults(Client client,
                                                                       String index,
                                                                       String type,
                                                                       String field,
@@ -110,7 +109,7 @@ public class EsUtil {
         return Collections.emptyList();
     }
 
-    public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(TransportClient client,
+    public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(Client client,
                                                                                   String index,
                                                                                   String type,
                                                                                   String field,
@@ -163,7 +162,7 @@ public class EsUtil {
      * @param buckets - String buckets ["str1", "str2")
      * @return List of String range buckets with lower (inclusive) and upper bound (exclusive)
      */
-    public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
+    public static List<StatRangeResult> getStringBucketsStatResults(Client client,
                                                                     String index,
                                                                     String type,
                                                                     String field,
@@ -212,7 +211,7 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    public static List<StatTermResult> getTermHistogramResults(TransportClient client,
+    public static List<StatTermResult> getTermHistogramResults(Client client,
                                                                String index,
                                                                String type,
                                                                String field,
@@ -260,7 +259,7 @@ public class EsUtil {
      * @param numOfBins
      * @return
      */
-    public static <T> List<StatRangeResult<T>> getDynamicHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getDynamicHistogramResults(Client client,
                                                                    String index,
                                                                    String type,
                                                                    String field,

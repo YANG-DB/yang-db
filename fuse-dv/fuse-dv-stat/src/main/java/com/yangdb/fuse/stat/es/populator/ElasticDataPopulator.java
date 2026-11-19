@@ -25,7 +25,7 @@ import org.opensearch.action.bulk.BulkRequestBuilder;
 import org.opensearch.action.bulk.BulkResponse;
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.index.IndexRequestBuilder;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,14 +35,14 @@ import java.util.Map;
  * Created by moti on 3/12/2017.
  */
 public class ElasticDataPopulator implements DataPopulator {
-    private TransportClient client;
+    private Client client;
     private String indexName;
     private String docType;
     private String idField;
     private GenericDataProvider provider;
     private static final int BULK_SIZE = 10000;
 
-    public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
+    public ElasticDataPopulator(Client client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this.client = client;
         this.indexName = indexName;
         this.docType = docType;

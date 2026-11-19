@@ -8,7 +8,7 @@ import com.yangdb.fuse.services.FuseApp;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.test.framework.index.GlobalElasticEmbeddedNode;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.jooby.Jooby;
 
 import java.io.File;
@@ -22,7 +22,7 @@ public abstract class Setup {
     public static ElasticEmbeddedNode elasticEmbeddedNode = null;
     public static FuseApp app = null;
     public static FuseClient fuseClient = null;
-    public static TransportClient client = null;
+    public static Client client = null;
 
     public static void withPath(Path path) {
         Setup.path = path;

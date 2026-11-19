@@ -21,7 +21,7 @@ import com.yangdb.test.BaseITMarker;
 import javaslang.collection.Stream;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.junit.*;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class SingleEntityIT implements BaseITMarker {
 
         String idField = "id";
 
-        TransportClient client = ElasticEmbeddedNode.getClient();
+        Client client = ElasticEmbeddedNode.getClient();
 
         new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
                 new Mappings.Mapping().addProperty("type", new Mappings.Mapping.Property(keyword))

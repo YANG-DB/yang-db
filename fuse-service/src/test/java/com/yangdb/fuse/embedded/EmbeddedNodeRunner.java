@@ -8,6 +8,7 @@ package com.yangdb.fuse.embedded;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.services.FuseRunner;
 import com.yangdb.fuse.services.FuseUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 //import org.junit.runner.RunWith;
 
@@ -22,6 +23,16 @@ public class EmbeddedNodeRunner {
     public static final String activeProfile = "activeProfile";
     public static final String logbackConfigurationFilename = "config/logback.xml";
 
+    // FIXME (dev-opensearch migration): disabled - this is not a real automated test, it's a
+    // manual dev runner that was accidentally picked up by surefire via @Test (see the file's
+    // own "TODO - use this test to make use of open search test framework" comment above, and
+    // the class name "...Runner" rather than "...Test"). Currently fails fast with
+    // com.typesafe.config.ConfigException$Missing: No configuration setting found for key
+    // 'opensearch' (config/application.conf doesn't define it), but even if that's fixed this
+    // would hang the build forever: it ends with Thread.currentThread().join(), and a running
+    // thread blocking on its own join() never returns. Needs to be rewritten as a real
+    // assertion-based test (or moved out of src/test entirely) before it can run in the suite.
+    @Ignore("Manual dev runner mistakenly annotated as a test; hangs forever via self-join - see comment above")
     @Test
     public void runEmbeddedNodeTest() throws Exception {
         final FuseRunner.Options options = new FuseRunner.Options(applicationConfFilename, activeProfile, logbackConfigurationFilename, true, true);

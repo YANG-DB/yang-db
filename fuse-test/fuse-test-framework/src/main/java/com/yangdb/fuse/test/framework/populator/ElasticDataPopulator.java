@@ -27,7 +27,7 @@ import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.index.IndexRequestBuilder;
 import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.WriteRequest;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ import java.util.Map;
  * Created by moti on 3/12/2017.
  */
 public class ElasticDataPopulator implements DataPopulator {
-    private TransportClient client;
+    private Client client;
     private String indexName;
     private String docType;
     private String idField;
@@ -48,12 +48,12 @@ public class ElasticDataPopulator implements DataPopulator {
     private GenericDataProvider provider;
     private static int BULK_SIZE = 10000;
 
-    public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
+    public ElasticDataPopulator(Client client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this(client, indexName, docType, idField, true, null, true, provider);
     }
 
     public ElasticDataPopulator(
-            TransportClient client,
+            Client client,
             String indexName,
             String docType,
             String idField,
@@ -84,7 +84,6 @@ public class ElasticDataPopulator implements DataPopulator {
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
                 .setRouting(this.routingField != null ? (String)doc.get(this.routingField) : (String)doc.get(this.idField))
-                .setType(this.docType)
                 .setOpType(IndexRequest.OpType.INDEX);
 
         if(doc.containsKey(this.idField)) {

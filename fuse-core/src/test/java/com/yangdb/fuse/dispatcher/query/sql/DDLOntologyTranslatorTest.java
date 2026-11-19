@@ -21,9 +21,9 @@ public class DDLOntologyTranslatorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tables = new ArrayList<>();
-        String sqlPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("sql")).getPath();
+        java.net.URI sqlPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("sql")).toURI();
         Files.newDirectoryStream(Paths.get(sqlPath),
-                path -> path.toString().endsWith(".ddl")).
+                path -> path.getFileName().toString().endsWith(".ddl") && !path.getFileName().toString().startsWith(".")).
                 forEach(file-> {
                     try {
                         tables.add(new String(Files.readAllBytes(file.toFile().toPath())));

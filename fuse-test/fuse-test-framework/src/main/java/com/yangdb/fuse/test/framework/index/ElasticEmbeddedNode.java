@@ -22,19 +22,14 @@ package com.yangdb.fuse.test.framework.index;
 
 import org.opensearch.client.Client;
 import org.opensearch.client.core.MainResponse;
-import org.opensearch.client.transport.TransportClient;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
-import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -69,14 +64,14 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region Members
     private static String esWorkingDir;
     private static int numberOfShards;
-    public Node node;
+    public static Node node;
 
     static String nodeName = FUSE_TEST_ELASTIC;
 
     static int httpPort = 9200;
     static int httpTransportPort = 9300;
 
-    static TransportClient client = null;
+    static Client client = null;
     //endregion
 
     //region Constructors
@@ -120,7 +115,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Methods
-    public static TransportClient getClient() {
+    public static Client getClient() {
         return getClient(nodeName, httpTransportPort);
     }
 
@@ -128,39 +123,21 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     public static Client getClient(MainResponse info) {
         if (client == null) {
-            try {
-                System.out.println("Setting client " + info.getNodeName());
-                Settings settings = Settings.builder()
-                        .put("cluster.name", info.getNodeName())
-                        .put("node.name", info.getClusterName())
-                        .build();
-                client = new PreBuiltTransportClient(settings)
-                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
-            } catch (UnknownHostException e) {
-                throw new UnknownError(e.getMessage());
-            }
+            System.out.println("Setting client " + info.getNodeName());
+            client = node.client();
         }
 
         return client;
     }
 
-    public static TransportClient getClient(String nodeName) {
+    public static Client getClient(String nodeName) {
         return getClient(nodeName, httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName, int httpTransportPort) {
+    public static Client getClient(String nodeName, int httpTransportPort) {
         if (client == null) {
-            try {
-                System.out.println("Setting client " + nodeName);
-                Settings settings = Settings.builder()
-                        .put("cluster.name", nodeName)
-                        .put("node.name", nodeName)
-                        .build();
-                client = new PreBuiltTransportClient(settings)
-                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
-            } catch (UnknownHostException e) {
-                throw new UnknownError(e.getMessage());
-            }
+            System.out.println("Setting client " + nodeName);
+            client = node.client();
         }
 
         return client;
@@ -180,14 +157,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public static void closeClient() {
-        if (client != null) {
-            try {
-                client.close();
-                client = null;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+        // the client is owned by the embedded Node and is closed with it; just drop the reference
+        client = null;
     }
 
     private void prepare(Settings additional) throws Exception {

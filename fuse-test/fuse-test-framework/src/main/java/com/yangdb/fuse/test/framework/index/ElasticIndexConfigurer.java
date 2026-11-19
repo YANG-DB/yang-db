@@ -20,12 +20,12 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 
 /**
  * Created by moti on 3/21/2017.
  */
 public interface ElasticIndexConfigurer {
-    void configure(TransportClient client);
+    void configure(Client client);
 
 }
