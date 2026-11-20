@@ -48,7 +48,8 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
         if(joiner.length() > 0 )
                 return (joiner.toString().toCharArray()[joiner.length() - 1] == '-') ? joiner.toString().substring(0, joiner.length() - 1) : joiner.toString();
         else {
-            assignment.getEntities().forEach(a -> joiner.add(a.geteID()));
+            // type is part of the key: Dragon 7, Horse 7 and Person 7 are different entities
+            assignment.getEntities().forEach(a -> joiner.add(print(a)));
         }
         return joiner.toString();
     }
