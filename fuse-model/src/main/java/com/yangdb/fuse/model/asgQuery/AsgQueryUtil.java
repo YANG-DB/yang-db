@@ -655,7 +655,8 @@ public class AsgQueryUtil {
 
     public static AsgEBase<Rel> reverse(AsgEBase<Rel> relAsgEBase) {
         Rel reversedRel = relAsgEBase.geteBase().clone();
-        reversedRel.setDir(relAsgEBase.geteBase().getDir() == Rel.Direction.L ? Rel.Direction.R : Rel.Direction.L);
+        // an undirected relation stays undirected when the planner walks it from the other end
+        reversedRel.setDir(com.yangdb.fuse.model.execution.plan.Direction.reverse(relAsgEBase.geteBase().getDir()));
         return AsgEBase.Builder.<Rel>get().withEBase(reversedRel).build();
     }
 
