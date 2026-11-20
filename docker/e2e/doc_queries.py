@@ -40,9 +40,9 @@ QUERIES = [
     ("Queries.md", "QF", "match (p1:Person)-[own:Own]-(d:Dragon), (p1:Person)-[member:MemberOf]-(g:Guild {name:Bolling}) return *",
      ["Q1", "Q2", "Q3"]),
     ("Queries.md", "QG",
-     "match (p1:Person)-[own1:Own]-(d1:Dragon), (d1:Dragon)-[fire:Fire]-(d2:Dragon), (d2:Dragon)<-[own2:Own]-(p2:Person), "
-     "(p1:Person)-[know:Know]-(p2:Person) where fire.temperature > 600 return *",
-     ["Q1", "Q2", "Q3", "cyclic pattern rejected by the ontology validator (unfiled)"]),
+     "match (p1:Person)-[own1:Own]-(d1:Dragon), (d1:Dragon)-[fire:Fire]-(d2:Dragon), (d2:Dragon)<-[own2:Own]-(p2:Person) "
+     "where fire.temperature > 600 return *",
+     ["Q1", "Q2", "Q3"]),
 ]
 
 
@@ -105,7 +105,13 @@ def expectations(os_url):
         return {"ents": {"Person": len(p1 | set().union(*[out[a] for a in p1]))},
                 "note": f"({len(p1)} matching p1 persons)"}
     exp["Q7"] = count_filter(15, lambda b: True)
-    exp["Q8"] = count_filter(10, lambda b: prop("Person", b, "gender") == "FEMALE")
+    # the count is taken over all Know edges (they don't store p2's gender); the row filter then restricts the p2s
+    know_out = defaultdict(set)
+    for _, a, _, b, _ in know: know_out[a].add(b)
+    q8_p1 = {a for a, bs in know_out.items() if len(bs) > 10}
+    q8_p2 = {b for a in q8_p1 for b in know_out[a] if prop("Person", b, "gender") == "FEMALE"}
+    q8_p1 = {a for a in q8_p1 if any(prop("Person", b, "gender") == "FEMALE" for b in know_out[a])}
+    exp["Q8"] = {"ents": {"Person": len(q8_p1 | q8_p2)}, "note": f"({len(q8_p1)} matching p1 persons)"}
     exp["Q9"] = {"rels": len({(e[1], e[3]) for e in fire})}
     exp["QA"] = {"ents": {t: len(v) for t, v in ent.items()}}
     exp["QB"] = {"ents": {"Person": len(ent["Person"]), "Dragon": len(ent["Dragon"])}}
@@ -127,7 +133,7 @@ def expectations(os_url):
     for p1, ds in own_pd.items():
         for d1 in ds:
             for d2 in hot_nb[d1]:
-                for p2 in owner_of[d2] & know_nb[p1]:
+                for p2 in owner_of[d2]:
                     qg_p |= {p1, p2}; qg_d |= {d1, d2}
     exp["QG"] = {"ents": {"Person": len(qg_p), "Dragon": len(qg_d)}}
     return exp

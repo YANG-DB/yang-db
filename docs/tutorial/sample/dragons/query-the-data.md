@@ -212,7 +212,8 @@ It is very much possible to combine the aggregative filter with row based filter
 ```
 Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *
 ```
-Here the row filter applies first: this returns the persons who know more than 10 *female* persons (5 in the tutorial data).
+The count is taken over **all** of `p1`'s `Know` relationships (16 persons in the tutorial data know more than 10
+persons); the row filter then restricts which `p2` acquaintances are returned — here only the female ones.
 
 
 We can also use the **distinct** keyword to dedup the edges between nodes - meaning that in the following example only one fire edge will be returned
