@@ -49,7 +49,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>
-        <distr.dir>${project.basedir}/../../../distrib</distr.dir>
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
@@ -273,11 +272,6 @@
             <dependency>
                 <groupId>com.yangdb</groupId>
                 <artifactId>fuse-domain-dragons-datagen</artifactId>
-                <version>${fuse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yangdb</groupId>
-                <artifactId>fuse-domain-dragons-test</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
 
@@ -1330,13 +1324,15 @@
         <profile>
             <id>dragons-assembly</id>
             <modules>
-                <module>fuse-domain</module>
+                <module>examples</module>
+                <module>distribution</module>
             </modules>
         </profile>
         <profile>
-            <id>dragons-sys-test</id>
+            <!-- sample domains only, without the distribution -->
+            <id>examples</id>
             <modules>
-                <module>fuse-domain/fuse-domain-dragons/fuse-domain-dragons-test</module>
+                <module>examples</module>
             </modules>
         </profile>
         <profile>

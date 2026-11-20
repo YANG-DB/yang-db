@@ -24,7 +24,7 @@ and stats agree.
   `IndexProviderRawSchema` (`ExecutorModule.bindRawSchema`). ITs that build the schema directly skip it. Always test
   through this chain.
 - Out of scope:
-  - `DragonsOntologyPhysicalIndexProviderFactory` (fuse-domain) still matches exact index names.
+  - `DragonsOntologyPhysicalIndexProviderFactory` (removed with the dragons-sys-test module in Phase 1) still matches exact index names.
   - The appender reads only the first time predicate.
   - Stats intersect `inSet` values instead of taking their union.
   - Fixture dates built with `new Date(String)` use the local time zone.

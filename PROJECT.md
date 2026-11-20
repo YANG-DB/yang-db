@@ -49,7 +49,7 @@ and the [Dragons tutorial](docs/tutorial/sample/dragons/create-ontology.md) walk
 
 ```bash
 mvn clean install                          # core modules, with tests (JDK 11)
-mvn clean install -P core,dragons-assembly # also builds the Dragons sample distribution into distrib/dragon
+mvn clean install -P core,dragons-assembly # also builds examples/ and the distribution into distrib/dragon
 ```
 
 | Module | What it contains |
@@ -62,7 +62,8 @@ mvn clean install -P core,dragons-assembly # also builds the Dragons sample dist
 | `fuse-service` | REST server and Swagger UI |
 | `fuse-geojson` | GeoJSON support |
 | `fuse-test` | Test framework with an embedded OpenSearch node |
-| `fuse-domain` | The Dragons sample domain (demo data, assembly, system tests) |
+| `distribution` | Assembles the runnable engine (with the Dragons sample configuration) into `distrib/dragon`; the Docker image is built from it. Built with `-P dragons-assembly` |
+| `examples/dragons` | The Dragons sample domain: the `DragonsModule` service extension (`ext`) and the tutorial data generator (`datagen`). Not part of the default build |
 
 ## Documentation
 

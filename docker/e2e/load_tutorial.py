@@ -14,8 +14,7 @@ import argparse, csv, json, os, sys, urllib.error, urllib.parse, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 CSV_DIR = os.path.join(REPO, "docs", "tutorial", "sample", "dragons", "csv")
-ONTOLOGY = os.path.join(REPO, "fuse-domain", "fuse-domain-dragons", "fuse-domain-dragons-assembly",
-                        "resources", "assembly", "Dragons", "ontology", "Dragons.json")
+ONTOLOGY = os.path.join(REPO, "distribution", "resources", "assembly", "Dragons", "ontology", "Dragons.json")
 
 # (csv file, vertex|edge, ontology label, index pattern holding the stored documents)
 FILES = [

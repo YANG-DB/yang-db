@@ -83,7 +83,7 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
   (`LoadUtils.resolveIndex`, graph loader delegates), query (`PromiseEdgeIndexAppender`), stats (`EBaseStatisticsProvider`)
   all agree. `YYYY`→`yyyy` in 8 Dragons configs. Tests: `TimeBasedIndexPartitionsTest` (7), IT
   `testLoadFireRoutesToTimeBuckets`. fuse-dv-core 68, epb 427, unipop 156, dv-asg 27 — 0 failures.
-- Out of scope: `DragonsOntologyPhysicalIndexProviderFactory` (fuse-domain) still exact-name; appender reads only the
+- Out of scope: `DragonsOntologyPhysicalIndexProviderFactory` (removed with the dragons-sys-test module in Phase 1) still exact-name; appender reads only the
   first time predicate; stats intersect `inSet` values instead of union; fixture dates via `new Date(String)` are
   local-time-zone.
 - 2026-11-20 — started: implement range buckets across loader, query-side index selection and stats; out-of-range
