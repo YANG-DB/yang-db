@@ -107,9 +107,10 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
   - `fuse-domain-dragons-test` (`dragons-sys-test`, 19.4K LOC, 322/418 failing, not in CI) **retired**: deleted, kept in
     git history; the `docker/e2e` suite covers the same scenario and passes
 
-### Follow-up — Dragons playground (in progress, branch `dragons-swagger-playground`)
-- [ ] `/dragons/swagger`: Swagger UI 5 page with every tutorial query as a named example, plus a one-click
+### Follow-up — Dragons playground ✅ done 2026-11-20 (PR #161, merged)
+- [x] `/dragons/swagger`: Swagger UI 5 page with every tutorial query as a named example, plus a one-click
       `POST /fuse/dragons/tutorial/load`. Its spec is the e2e suite's query list.
+- [x] Tutorial main page `docs/tutorial/sample/dragons/README.md` (Docker setup through queries); the wiki links it
 
 ## Phase 2 — One source of truth for test fixtures
 - [ ] Shared fixtures module replacing the Dragons ontology/mapping/CSV copies duplicated across 7+ modules
