@@ -27,6 +27,7 @@ import com.yangdb.fuse.unipop.controller.utils.CollectionUtil;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchema;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
@@ -59,11 +60,24 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
                     context.getSchemaProvider().getEdgeLabels()).toJavaSet();
         }
 
-        Set<String> indices =
+        List<GraphElementSchema> schemas =
                 Stream.ofAll(labels)
                 .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
                             context.getSchemaProvider().getVertexSchemas(label) :
                             context.getSchemaProvider().getEdgeSchemas(label))
+                .map(schema -> (GraphElementSchema) schema)
+                .toJavaList();
+
+        // a nested (child) type lives inside its parent's documents and has no index of its own; searching its
+        // declared index fails the whole request (an untyped "match (p)" expands to every type, nested ones included)
+        List<GraphElementSchema> standaloneSchemas = Stream.ofAll(schemas)
+                .filter(schema -> !(schema.getIndexPartitions().orElse(null) instanceof NestedIndexPartitions))
+                .toJavaList();
+        if (!standaloneSchemas.isEmpty()) {
+            schemas = standaloneSchemas;
+        }
+
+        Set<String> indices = Stream.ofAll(schemas)
                 .map(GraphElementSchema::getIndexPartitions)
                 .flatMap(indexPartitions -> getIndices(indexPartitions, context))
                 .toJavaSet();

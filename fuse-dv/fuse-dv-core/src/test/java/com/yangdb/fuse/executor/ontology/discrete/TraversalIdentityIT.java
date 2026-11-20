@@ -222,4 +222,14 @@ public class TraversalIdentityIT implements BaseITMarker {
                 .map(p -> ((Edge) p.get("A-->B")).id()).collect(Collectors.toSet());
         Assert.assertEquals(fromSource, fromTarget);
     }
+
+    // untyped node: the planner expands (p) to every entity type of the ontology, including the nested Profession
+    @Test
+    public void testUntypedVertexReturnsAllEntityTypes() {
+        List<String> all = Arrays.asList("Person", "Profession", "Horse", "Dragon", "Kingdom", "Guild");
+        List<String> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, org.apache.tinkerpop.gremlin.process.traversal.P.within(all))))
+                .toList().stream().map(TraversalIdentityIT::vertexKey).sorted().collect(Collectors.toList());
+        Assert.assertEquals(Arrays.asList("Dragon:22", "Dragon:34", "Dragon:4", "Dragon:42", "Dragon:44", "Dragon:465",
+                "Dragon:65", "Dragon:7", "Horse:7", "Person:22", "Person:42", "Person:85"), vertices);
+    }
 }
