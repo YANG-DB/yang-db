@@ -197,15 +197,13 @@ public class TraversalIdentityIT implements BaseITMarker {
         Assert.assertEquals(Collections.singletonList("Person:23->Horse:9"), pairs(ownedThroughFilter(p23, "Horse").toList()));
     }
 
-    // Q2 through the filter step: a Horse reached through Own is not turned into the Dragon with the same id
-    @org.junit.Ignore("Needs unipop-core: UniGraphVertexStep groups a bulk's traversers and vertices by id only, so " +
-            "Horse 7 and Dragon 7 collapse into one query vertex and share each other's results. Fix (type+id keys, " +
-            "one query per type) is ready but unipop-core is outside stream B's modules - see stream B report.")
+    // Q2 through the filter step: Horse 7 and Dragon 7 reached in the same bulk stay apart
     @Test
     public void testFilteredTargetKeepsItsStoredType() {
-        Assert.assertEquals(Arrays.asList("Person:22->Dragon:22", "Person:42->Dragon:34", "Person:85->Dragon:42",
-                "Person:85->Dragon:7"), pairs(ownedThroughFilter("Dragon").toList()));
-        Assert.assertEquals(Collections.singletonList("Person:42->Horse:7"), pairs(ownedThroughFilter("Horse").toList()));
+        Assert.assertEquals(Arrays.asList("Person:22->Dragon:22", "Person:23->Dragon:65", "Person:42->Dragon:34",
+                "Person:85->Dragon:42", "Person:85->Dragon:7"), pairs(ownedThroughFilter("Dragon").toList()));
+        Assert.assertEquals(Arrays.asList("Person:23->Horse:9", "Person:42->Horse:7"),
+                pairs(ownedThroughFilter("Horse").toList()));
     }
 
     // Q2 (undirected): the owners of Dragon 42 must not show up as relationships of Person 42

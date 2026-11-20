@@ -114,29 +114,29 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
 
     @Override
     protected Iterator<Traverser.Admin<E>> process(List<Traverser.Admin<Vertex>> traversers) {
+        // vertices of different types may share an id (Person 7, Horse 7, Dragon 7): identity is type + id
         Map<Object, List<Traverser<Vertex>>> idToTraverser = new LinkedHashMap<>(traversers.size());
         Map<Object, Vertex> vertices = new LinkedHashMap<>(this.bulkSizeSupplierFactory.get().get());
         traversers.forEach(traverser -> {
             Vertex vertex = traverser.get();
-            List<Traverser<Vertex>> traverserList = idToTraverser.computeIfAbsent(vertex.id(), k -> new ArrayList<>(1));
+            List<Traverser<Vertex>> traverserList = idToTraverser.computeIfAbsent(vertexKey(vertex), k -> new ArrayList<>(1));
             traverserList.add(traverser);
-            vertices.put(vertex.id(), vertex);
+            vertices.put(vertexKey(vertex), vertex);
         });
 
-        List<Vertex> uniqueVertices = Stream.ofAll(vertices.values()).toJavaList();
-
-        SearchVertexQuery vertexQuery;
         String context = this.traversal.asAdmin().getSideEffects().getOrCreate("context", () -> "Generic");
 
-        if (!returnsVertex)
-            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, limit, propertyKeys, orders, context, stepDescriptor);
-        else
-            vertexQuery = new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, -1, propertyKeys, null, context, stepDescriptor);
-        //logger.debug("Executing query: ", vertexQuery);
+        // one query per vertex type: controllers look bulk vertices up by id and take the type from the first one
+        Map<String, List<Vertex>> verticesByLabel = new LinkedHashMap<>();
+        vertices.values().forEach(vertex -> verticesByLabel.computeIfAbsent(vertex.label(), k -> new ArrayList<>()).add(vertex));
 
-        Iterator<Traverser.Admin<E>> traversersIterator = Stream.ofAll(this.controllers)
-                .map(controller -> controller.search(vertexQuery))
-                .flatMap(iterator -> () -> iterator)
+        Iterator<Traverser.Admin<E>> traversersIterator = Stream.ofAll(verticesByLabel.values())
+                .map(uniqueVertices -> !returnsVertex ?
+                        new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, limit, propertyKeys, orders, context, stepDescriptor) :
+                        new SearchVertexQuery(Edge.class, uniqueVertices, direction, predicates, -1, propertyKeys, null, context, stepDescriptor))
+                .flatMap(vertexQuery -> Stream.ofAll(this.controllers)
+                        .map(controller -> controller.search(vertexQuery))
+                        .flatMap(iterator -> () -> iterator))
                 .flatMap(edge -> toTraversers(edge, idToTraverser))
                 .iterator();
 
@@ -166,7 +166,7 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
         List<Traverser.Admin<E>> newTraversers = new ArrayList<>();
 
         edge.vertices(direction).forEachRemaining(originalVertex -> {
-            List<Traverser<Vertex>> vertexTraversers = traversers.get(originalVertex.id());
+            List<Traverser<Vertex>> vertexTraversers = traversers.get(vertexKey(originalVertex));
             if (vertexTraversers != null) {
                 for (Traverser<Vertex> vertexTraverser : vertexTraversers) {
                     E result = getReturnElement(edge, originalVertex);
@@ -189,6 +189,10 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
                         return vertexTraverser.asAdmin().split(result, this);
                     });
                 }).filter(Objects::nonNull);*/
+    }
+
+    private static Object vertexKey(Vertex vertex) {
+        return vertex.label() + "\u0000" + vertex.id();
     }
 
     private E getReturnElement(Edge edge, Vertex originalVertex) {
