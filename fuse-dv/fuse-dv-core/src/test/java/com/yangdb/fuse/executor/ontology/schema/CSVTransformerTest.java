@@ -1,6 +1,7 @@
 package com.yangdb.fuse.executor.ontology.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.Config;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.dispatcher.ontology.IndexProviderFactory;
@@ -26,9 +27,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -391,6 +395,48 @@ public class CSVTransformerTest {
             }
         }, GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(14, testTransform(transform).getRelations().size());
+    }
+
+    @Test
+    public void testRelationKeepsSourceTypeWhenPairsShareDestination() throws IOException {
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, providerIfc, schema, Mockito.mock(IdGeneratorDriver.class), client);
+        String csv = "id,entityA.id,entityA.type,entityB.id,entityB.type\n" +
+                "D1_K1,D1,DRAGON,K1,Kingdom\n" +
+                "H1_K1,H1,HORSE,K1,Kingdom\n" +
+                "P1_K1,P1,Person,K1,Kingdom\n";
+        DataTransformerContext<Object> transform = transformer.transform(csvEdges("OriginatedIn", csv), GraphDataLoader.Directive.INSERT);
+
+        Map<String, String> sourceTypeByDoc = new HashMap<>();
+        transform.getRelations().forEach(doc -> {
+            ObjectNode node = doc.getNode();
+            String sourceSide = "out".equals(node.get("direction").asText()) ? "entityA" : "entityB";
+            sourceTypeByDoc.put(doc.getId(), node.get(sourceSide).get("type").asText());
+        });
+
+        Assert.assertEquals(sourceTypeByDoc.toString(), "Dragon", sourceTypeByDoc.get("D1_K1.out"));
+        Assert.assertEquals("Dragon", sourceTypeByDoc.get("D1_K1.in"));
+        Assert.assertEquals("Horse", sourceTypeByDoc.get("H1_K1.out"));
+        Assert.assertEquals("Horse", sourceTypeByDoc.get("H1_K1.in"));
+        Assert.assertEquals("Person", sourceTypeByDoc.get("P1_K1.out"));
+        Assert.assertEquals("Person", sourceTypeByDoc.get("P1_K1.in"));
+    }
+
+    private static CSVTransformer.CsvElement csvEdges(String label, String csv) {
+        return new CSVTransformer.CsvElement() {
+            @Override
+            public String label() {
+                return label;
+            }
+
+            public String type() {
+                return "edge";
+            }
+
+            @Override
+            public Reader content() {
+                return new StringReader(csv);
+            }
+        };
     }
 
     @Test

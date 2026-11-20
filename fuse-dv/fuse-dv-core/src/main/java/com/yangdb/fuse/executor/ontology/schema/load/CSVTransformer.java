@@ -33,6 +33,7 @@ import com.yangdb.fuse.executor.ontology.schema.RawSchema;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.ontology.EPair;
 import com.yangdb.fuse.model.ontology.RelationshipType;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.schema.Entity;
@@ -55,6 +56,7 @@ import static com.yangdb.fuse.executor.ontology.DataTransformer.Utils.sdf;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.parseValue;
 import static com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils.validateValue;
 import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.DEST_TYPE;
+import static com.yangdb.fuse.model.GlobalConstants.EdgeSchema.SOURCE_TYPE;
 
 public class CSVTransformer implements DataTransformer<DataTransformerContext, CSVTransformer.CsvElement> {
     private final Ontology.Accessor accessor;
@@ -208,25 +210,32 @@ public class CSVTransformer implements DataTransformer<DataTransformerContext, C
                         parseValue(accessor.property$(m.getKey()).getType(), m.getValue(), sdf).toString()));
 
         RelationshipType relationshipType = accessor.$relation$(relation.getType());
-        //populate each pair
+        EPair pair = matchingPair(relationshipType, node);
         switch (direction) {
             case "out":
-                //for each pair do:
-                relationshipType.getePairs().stream().filter(pair -> pair.geteTypeB().equalsIgnoreCase(node.get(DEST_TYPE)))
-                        .forEach(pair -> {
-                            element.put(ENTITY_A, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
-                            element.put(ENTITY_B, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
-                        });
+                element.put(ENTITY_A, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                element.put(ENTITY_B, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
                 break;
             case "in":
-                //for each pair do:
-                relationshipType.getePairs().stream().filter(pair -> pair.geteTypeB().equalsIgnoreCase(node.get(DEST_TYPE)))
-                        .forEach(pair -> {
-                            element.put(ENTITY_B, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
-                            element.put(ENTITY_A, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
-                        });
+                element.put(ENTITY_B, populateSide(ENTITY_A, context, node.get(pair.getSideAIdField()), pair.geteTypeA(), relation, node));
+                element.put(ENTITY_A, populateSide(ENTITY_B, context, node.get(pair.getSideBIdField()), pair.geteTypeB(), relation, node));
                 break;
         }
+    }
+
+    /**
+     * Pick the single ontology pair this row belongs to. Several pairs can share a destination type
+     * (e.g. Dragon->Kingdom and Horse->Kingdom), so the row's source type must be matched too.
+     */
+    private EPair matchingPair(RelationshipType relationshipType, Map<String, String> node) {
+        String sourceType = node.get(SOURCE_TYPE);
+        String destType = node.get(DEST_TYPE);
+        return relationshipType.getePairs().stream()
+                .filter(pair -> pair.geteTypeB().equalsIgnoreCase(destType))
+                .filter(pair -> sourceType == null || pair.geteTypeA().equalsIgnoreCase(sourceType))
+                .findFirst()
+                .orElseThrow(() -> new FuseError.FuseErrorException(new FuseError("CSV Transformation Error",
+                        String.format("Relation %s has no ontology pair %s -> %s", relationshipType.getrType(), sourceType, destType))));
     }
 
 
