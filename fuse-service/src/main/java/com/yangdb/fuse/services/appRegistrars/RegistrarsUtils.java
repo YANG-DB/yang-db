@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,8 +49,24 @@ public class RegistrarsUtils {
     //json fast serializer
     public static ObjectMapper mapper = new ObjectMapper();
 
+    private static final List<String> FORMATS = Arrays.asList(APPLICATION_JSON, APPLICATION_OCTET_STREAM, TEXT_CSV, IMAGE_SVG_XML);
+
     /**
-     * result is projected according to mime type
+     * The response format the client asked for: the first supported media type the Accept header names explicitly,
+     * in the client's order of preference. Wildcards (a missing Accept header, curl's default {@code *}{@code /*},
+     * {@code text/*}) never select a download format: they get JSON.
+     */
+    static String requestedFormat(Request req) {
+        for (MediaType accepted : req.accept()) {
+            if (!"*".equals(accepted.type()) && !"*".equals(accepted.subtype()) && FORMATS.contains(accepted.name())) {
+                return accepted.name();
+            }
+        }
+        return APPLICATION_JSON;
+    }
+
+    /**
+     * result is projected according to mime type (see {@link #requestedFormat(Request)})
      *
      * @param req
      * @param res
@@ -65,8 +82,9 @@ public class RegistrarsUtils {
             res.send(response);
         }
 
+        String format = requestedFormat(req);
         //write content as temp file
-        if (req.accepts(APPLICATION_OCTET_STREAM).isPresent()) {
+        if (APPLICATION_OCTET_STREAM.equals(format)) {
             res.type(MediaType.octetstream);
             File tempFile = Files.createTempFile(response.getRequestId(), "-suffix").toFile();
             FileWriter writer = new FileWriter(tempFile);
@@ -76,7 +94,7 @@ public class RegistrarsUtils {
             res.status(response.status().getStatus());
             //has to be last
             res.download(tempFile);
-        } else if (req.accepts(TEXT_CSV).isPresent()) {
+        } else if (TEXT_CSV.equals(format)) {
             res.type(MediaType.text);
             String now = Instant.now().toString();
             File tempFile = Files.createTempFile("csv_" + now, ".csv").toFile();
@@ -95,10 +113,10 @@ public class RegistrarsUtils {
                 //has to be last
                 res.download(tempFile);
             }
-        } else if (req.accepts(APPLICATION_JSON).isPresent()) {
+        } else if (APPLICATION_JSON.equals(format)) {
             res.type(MediaType.json);
             res.status(response.status().getStatus());
-        } else if (req.accepts(IMAGE_SVG_XML).isPresent()) {
+        } else if (IMAGE_SVG_XML.equals(format)) {
             ((File) response.getData()).deleteOnExit();
             res.status(response.status().getStatus());
             //has to be last

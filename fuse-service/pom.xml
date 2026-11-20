@@ -50,6 +50,14 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-netty</artifactId>
         </dependency>
+        <!-- jooby-netty pulls netty-buffer 4.1.43 while the OpenSearch 1.3.0 client brings netty codec/transport 4.1.73.
+             The mix fails on every HTTP request (NoSuchMethodError ByteBuf.isContiguous). The shaded fuse-core jar
+             already ships 4.1.73 throughout; pin it here so the unshaded reactor classpath (mvn test) agrees. -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.73.Final</version>
+        </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-scanner</artifactId>
