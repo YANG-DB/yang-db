@@ -52,6 +52,40 @@ Verification
 - [ ] `S13` end-to-end doc-query suite committed to the repo and passing
 - [ ] `S14` full `mvn clean test` green with ITs running → **push the batch**
 
+### Parallel execution plan for the Stabilize workstream
+The work splits into streams that touch different modules, so it can run as several agents, each in its own git
+worktree. It can't be fully parallel: everyone needs a trustworthy test signal first, the embedded test node has fixed
+ports, and the traversal-identity bugs share code and must stay together.
+
+**Stage 0 — foundation (serial, lead)**
+- [ ] `T1` fix the reuse-running-cluster crash and make suite setup failures fail the build
+- [ ] Make the embedded test node's ports configurable (system properties, default 9200/9300) so worktrees can run ITs side by side
+- [ ] Run `L3`'s IT, commit `L3`
+
+**Stage 1 — parallel streams (one agent per stream, separate worktrees)**
+
+| Stream | Scope | Modules | Test ports | Notes |
+|---|---|---|---|---|
+| A — Cypher translator | `Q1` undirected, `Q5` untyped node / label union | `fuse-asg` | none (unit tests) | Decides whether `Q5` is fixed or documented as unsupported; reports the decision for stream D |
+| B — Traversal identity | `Q2` endpoint type, `Q3` same-id drop, `Q4` relationship ids | `fuse-dv-unipop`, `fuse-dv-gta`, `fuse-dv-core` cursors | 9210 / 9310 | Critical path: largest and least certain; likely one shared root cause (identity by id only) |
+| C — Service & loader | `A1` JSON-by-default rendering, `L4` partition buckets | `fuse-service`, `fuse-dv-core` load | 9220 / 9320 | Starts after `L3` is committed (shares `LoadUtils`) |
+| D — Data, docs & e2e | `D1` CSV fixes, `S13` e2e suite in repo, engine-independent parts of `D2` | `docs/`, `docker/` | Docker stack (exclusive) | Queries.md updates wait for stream A's `Q5` decision |
+
+**Stage 2 — integration (serial, lead)**
+- [ ] Merge streams one at a time (rebase on `main`, full `mvn clean test` with ITs running after each)
+- [ ] Rebuild the Docker image, run the e2e suite (`S13`) against freshly loaded tutorial data
+- [ ] Finish engine-dependent `D2` docs, tick this checklist, push the batch (`S14`)
+
+**Rules for agents**
+- Work only in your own worktree and modules; don't edit ROADMAP.md / KNOWN_ISSUES.md (the lead updates them from reports).
+- Every fix starts with a test that fails for the right reason; one commit per issue ID.
+- Run module tests offline without installing (`mvn -o test -pl <module> -am`) so the shared `~/.m2` isn't written concurrently; pass your assigned test ports.
+- "Done" = module tests green **with non-zero IT counts**, plus a short report: what changed, root cause, anything found out of scope.
+
+**Expected gain:** stream B sets the pace; running A, C and D alongside it saves roughly their combined duration
+(a large share of the workstream's wall-clock time), at the cost of several agents' worth of tokens and a serial
+merge step. Beyond these four streams, more agents would mostly add merge conflicts.
+
 ## Phase 1 — Shrink the footprint
 - [ ] Move `fuse-domain` (Dragons sample, ~30K LOC, 100% demo code) out of the default build
 
