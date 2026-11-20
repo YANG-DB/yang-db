@@ -77,21 +77,26 @@ we would be able to ask interesting graph queries upon the data.
 ---
 
 #### Amounts
-Once all csv file are loaded here are the expected document amount:
+Once all csv files in [csv/](csv) are loaded these are the expected amounts (one per CSV row). Each relationship is
+stored as two documents (`<id>.out` and `<id>.in`), so its index holds twice the number shown:
  
-    - Dragon: 1000
-    - Perosn:  100
-    - Guild:    15
-    - Horse:   500
-    - Kindgom:   9
+    - Dragon:   1000   (Dragons.csv)
+    - Person:    100   (Person.csv)
+    - Guild:      15   (Guilds.csv)
+    - Horse:     500   (horses.csv)
+    - Kingdom:     8   (Kingdoms.csv)
     
-    - Fire:     45,500
-    - Freeze:   20,000
-    - Knows:      1742
-    - MemberOf:   1862
-    - SubjectOf:   282
-    - RegisteredIn: 42 
-    - OriginatedIn: 4250
+    - Fire:        11,503   (Fire.csv)
+    - Freeze:       4,907   (Freeze.csv)
+    - Know:           475   (KnowsPerson.csv)
+    - MemberOf:       551   (MembersOfGuilds.csv)
+    - SubjectOf:      100   (SubjectOfPerson.csv)
+    - RegisteredIn:    30   (RegisteredGuilds.csv)
+    - OriginatedIn: 1,500   (OriginatedDragons.csv + OriginatedHorse.csv)
+    - Own:          1,462   (OwnsDragon.csv + OwnsHorse.csv)
+
+To run the whole sequence (id generator init, ontology, indices, every CSV) and verify these counts in one step, use
+[docker/e2e/load_tutorial.py](../../../../docker/e2e/load_tutorial.py).
 
 ### What's Next
 For the most exciting part - in the next tutorial we will query the graph data using cypher query language

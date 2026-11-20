@@ -9,19 +9,23 @@ We should use this cursor in the case that we need to understand the amount of r
 Once such a query with the "count" cursor is submitted - the engine accumulates the resulting labels in each row - once no more results are available it returns the exact number of
 labels that appeared in the response:
 
-we use the following query:
+we use the following query (who knows whom), with cursor type `count`:
 ```
-Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *
+Match (p1:Person)-[k:Know]->(p2:Person) return *
 ```
 
 ![swagger-countCursor-results.png](img/swagger-countCursor-results.png)
-We can observe that result assignments contains the following lables:
+(The screenshot shows the same call for an older query and data set.)
+
+With the tutorial data loaded, the result assignments contain the following labels - one `Know` per row of
+`KnowsPerson.csv`, and two `Person` labels (`p1`, `p2`) per row:
 
 ```
 "assignments": [
                 {
-                  "Know": 460,
-                  "Person": 920
+                  "id": 1449928957329970608,
+                  "Know": 475,
+                  "Person": 950
                 }
                ]
 ```

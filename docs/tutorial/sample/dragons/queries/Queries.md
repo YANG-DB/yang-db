@@ -10,8 +10,8 @@ Once loading the csv different graph nodes and edges is complete we can start as
  - Get all nodes types:
     ```match (p) return *```
 
- - Get all nodes of types Person & Dragon:
-    ```match (p:Person | Dragon) return *```
+ - Get all nodes of types Person & Dragon (a label union such as `(p:Person | Dragon)` is not supported - use `WHERE`):
+    ```match (p) where p:Person OR p:Dragon return *```
    
 
  - Get all nodes with Person label:
@@ -19,26 +19,26 @@ Once loading the csv different graph nodes and edges is complete we can start as
 
 
  - Get nodes with Person label and name :
-    ```match (p:Person {name:Bonaparte}) return *```
+    ```match (p:Person {name:'Braden Heaney'}) return *```
 
 
  - Get people who own a dragon:
   ```match (p:Person)-[own:Own]-(d:Dragon) return *```
    
 
- - Get people who own a dragon and are members of the merchant Guild:
+ - Get people who own a dragon and are members of the Bolling Guild:
 ```
 match (p1:Person)-[own:Own]-(d:Dragon),
-      (p1:Person)-[member:memberOf]-(g:Guild {name:merchant }) return *
+      (p1:Person)-[member:MemberOf]-(g:Guild {name:Bolling}) return *
 ```   
 
-- Get people who own a dragon, this dragon has fired upon other dragons with blue fire and are they know the dragon's (that was fired upon) owners:
+- Get people who own a dragon, this dragon has fired upon other dragons with very hot fire (above 600 degrees) and are they know the dragon's (that was fired upon) owners:
 
 ```
 match (p1:Person)-[own1:Own]-(d1:Dragon),
       (d1:Dragon)-[fire:Fire]-(d2:Dragon),  
       (d2:Dragon)<-[own2:Own]-(p2:Person),
-      (p1:Person)-[know:Know]-(p2:Preson) 
-        where fire.color=blue
+      (p1:Person)-[know:Know]-(p2:Person) 
+        where fire.temperature > 600
       return *
 ```   

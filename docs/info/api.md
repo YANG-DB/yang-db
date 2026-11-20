@@ -12,27 +12,29 @@ YangDb has multiple API endpoints that serve different purposes:
 ### Management
 Allows to query the version & configuration info.
 
-Allows to initiate a DB sequencer used to generate unique ids to the newly generated graph elements. 
+Allows to initiate a DB sequencer used to generate unique ids to the newly generated graph elements
+(`[GET] /fuse/idgen/init?names=Entity,Relation,Evalue,Rvalue,workerId`; run it once - a second call fails with
+"already exists").
 
 ### Catalog
 Allows insert & query information regarding the catalog & schema - ontology & indices.
 
 The creation of logical ontologies inside the schema model is done here.
 
- * Supports GraphQL Definition language using: 
+ * Add an ontology (V1 ontology JSON) to the catalog / list or get catalog ontologies:
 
-   
-    [POST] http://localhost:8888/fuse/catalog/grqphql
+    [POST] http://localhost:8888/fuse/catalog/ontology
+    [GET]  http://localhost:8888/fuse/catalog/ontology
+    [GET]  http://localhost:8888/fuse/catalog/ontology/{id}
 
- * Supports OWL (Sparql) Definition language using: 
+ * List or get the physical schemas (index provider):
 
-   
-    [POST] http://localhost:8888/fuse/catalog/sparql
+    [GET]  http://localhost:8888/fuse/catalog/schema
+    [GET]  http://localhost:8888/fuse/catalog/schema/{id}
 
- * Supports DQL (DDL) Definition language using: 
+ * Transform a GraphQL IDL (schema definition) into a V1 ontology:
 
-   
-    [POST] http://localhost:8888/fuse/catalog/sql
+    [POST] http://localhost:8888/fuse/graphql/ontology/{id}
 
 
 ### Query
@@ -41,11 +43,15 @@ This is the main query API used to question the Data held by the engine.
 
 The API supports creating queries in the following languages:
 
-* V1 query language (default language)
-* Cypher query language 
-* GraphQL language
-* SparQL language
-* SQL language
+* V1 query language (default language) - `[POST] /fuse/query/v1`, `/fuse/query/v1/run`
+* Cypher query language - `[POST] /fuse/query/cypher`, `[GET] /fuse/query/cypher/run`
+* GraphQL language - `[POST] /fuse/query/graphQL`, `[GET] /fuse/query/graphQL/run`
+* SparQL language - `[POST] /fuse/query/sparql`, `[GET] /fuse/query/sparql/run`
+
+There is no SQL query endpoint.
+
+Send `Accept: application/json` with every request: without it the query and load endpoints currently answer with a
+Java object name (e.g. `QueryResourceInfo@48764515`) instead of JSON.
 
 Each query (in any language) is verified and translated into intermediate language that is used to plan the actual traversal path.
 
@@ -110,10 +116,15 @@ This API enables both the creation of the indices mapping templates as well as t
 ### Load
 This API is used for initialization of the indices according to the physical ontology;
 
-- init will initialize the tables and tables templates
-- drop will drop the tables
-- load will load a logical graph model into the DB according to the logical ontology
+- init will initialize the tables and tables templates - `[GET] /fuse/load/ontology/{id}/init`
+- drop will drop the tables - `[GET] /fuse/load/ontology/{id}/drop`
+- load will load a logical graph model or a CSV file into the DB according to the logical ontology -
+  `[POST] /fuse/load/ontology/{id}/graph/load`, `[POST] /fuse/load/ontology/{id}/csv/load?type=vertex|edge&label=<type>`
+
+The `directive` parameter of the load / upload calls is `INSERT` (rejects elements whose id already exists) or
+`UPSERT` (overwrites them).
 
 ### Upload
 
-- upload will load a file/zipfile containing logical graph model into the DB according to the logical ontology
+- upload will load a file/zipfile containing logical graph model into the DB according to the logical ontology -
+  `[POST] /fuse/load/ontology/{id}/graph/upload`, `[POST] /fuse/load/ontology/{id}/csv/upload`
