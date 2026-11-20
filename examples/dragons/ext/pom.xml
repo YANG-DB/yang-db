@@ -13,6 +13,7 @@
     <artifactId>fuse-domain-dragons-ext</artifactId>
 
     <properties>
+        <swagger-ui.playground.version>5.35.1</swagger-ui.playground.version>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
 
@@ -120,7 +121,55 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- the tutorial data and ontology, bundled for POST /fuse/dragons/tutorial/load (single copy in the repo) -->
+            <resource>
+                <directory>${project.basedir}/../../../docs/tutorial/sample/dragons/csv</directory>
+                <targetPath>dragons/tutorial/csv</targetPath>
+                <includes><include>*.csv</include></includes>
+                <excludes><exclude>._*</exclude></excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/../../../distribution/resources/assembly/Dragons/ontology</directory>
+                <targetPath>dragons/tutorial</targetPath>
+                <includes><include>Dragons.json</include></includes>
+            </resource>
+        </resources>
         <plugins>
+            <!--
+              Swagger UI 5 for the Dragons playground page (/dragons/swagger). Unpacked into this jar under
+              dragons/playground/ui instead of being a dependency: as a dependency, Maven would replace the swagger-ui
+              3.17.1 webjar that jooby-apitool needs for the generated /swagger, and the service would fail to start.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.7.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-playground-swagger-ui</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>unpack</goal></goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>swagger-ui</artifactId>
+                                    <version>${swagger-ui.playground.version}</version>
+                                    <includes>META-INF/resources/webjars/swagger-ui/${swagger-ui.playground.version}/swagger-ui-bundle.js,META-INF/resources/webjars/swagger-ui/${swagger-ui.playground.version}/swagger-ui.css</includes>
+                                    <outputDirectory>${project.build.outputDirectory}/dragons/playground/ui</outputDirectory>
+                                    <fileMappers>
+                                        <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                                    </fileMappers>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

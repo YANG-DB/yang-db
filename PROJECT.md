@@ -40,8 +40,9 @@ curl -H 'Accept: application/json' \
   'http://localhost:8888/fuse/query/cypher/run?ontology=Dragons&cypher=MATCH%20(d:Dragon)%20RETURN%20*'
 ```
 
-Then open the Swagger UI at http://localhost:8888/swagger#. Full details in [docker/README.md](docker/README.md),
-and the [Dragons tutorial](docs/tutorial/sample/dragons/create-ontology.md) walks through creating the ontology,
+Then try the **Dragons playground** at http://localhost:8888/dragons/swagger: one click loads the tutorial data,
+and every tutorial query is ready to run from a list. The full generated API is at http://localhost:8888/swagger#. Full details in [docker/README.md](docker/README.md),
+and the [Dragons tutorial](docs/tutorial/sample/dragons/README.md) walks through creating the ontology,
 [loading data](docs/tutorial/sample/dragons/load-data.md) and
 [querying it](docs/tutorial/sample/dragons/query-the-data.md).
 

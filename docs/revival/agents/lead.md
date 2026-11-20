@@ -62,10 +62,11 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
   commit.
 
 ## Queue (maintainer-approved, 2026-11-20)
-1. **Phase 1 PR**: branch `phase1-examples-layout` (assembly → `distribution/`, ext/datagen → `examples/dragons/`,
+1. ~~**Phase 1 PR**~~: merged as #160 (`3ab36bbc0`, 2026-11-20). The remote branch `phase1-examples-layout` is still
+   there; delete it only if the maintainer asks. Original plan: branch `phase1-examples-layout` (assembly → `distribution/`, ext/datagen → `examples/dragons/`,
    dragons-sys-test retired). Verify (full build + image + e2e), push the branch, mark `e2e/docker` on the branch
    commit, open the PR for the maintainer to review. Don't merge it yourself.
-2. **Dragons playground at `/dragons/swagger`** on a new branch after the Phase 1 PR, in its own PR:
+2. **Dragons playground at `/dragons/swagger`**: IN PROGRESS on branch `dragons-swagger-playground`; its PR targets `main`.
    - a hand-written OpenAPI spec served by the Dragons extension (`examples/dragons/ext`), separate from the generated
      `/swagger`
    - `POST /fuse/dragons/tutorial/load`: one click runs idgen → catalog → init → all tutorial CSVs, bundled into the

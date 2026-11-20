@@ -10,41 +10,27 @@ with what the engine returns: entity ids per type and distinct relationship ids.
 
 Exits non-zero if any query or cursor check does not pass (known or not). Python 3 standard library only.
 """
-import argparse, json, sys, urllib.error, urllib.parse
+import argparse, json, os, sys, urllib.error, urllib.parse, urllib.request
 from collections import defaultdict
 
 import load_tutorial
 from load_tutorial import http
 
-# (doc, id, cypher, open issues it depends on). Keep in sync with the docs.
-QUERIES = [
-    ("query-the-data.md", "Q1", "Match (d:Dragon) return *", []),
-    ("query-the-data.md", "Q2a", "Match (p1:Person)-[know:Know]-(p2:Person) return *", ["Q1", "Q4"]),
-    ("query-the-data.md", "Q2", "Match (p1:Person)-[know:Know]-(p2:Person {gender: FEMALE}) return *", ["Q1", "Q4"]),
-    ("query-the-data.md", "Q3", "Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *", ["Q1", "Q4"]),
-    ("query-the-data.md", "Q4", "Match (g:Guild)-[r:RegisteredIn]->(k:Kingdom)  where k.funds > 0 return *", []),
-    ("query-the-data.md", "Q5", "Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *", ["Q1", "Q3", "Q4"]),
-    ("query-the-data.md", "Q6",
-     "Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}), (p:Person)-[oh:Own]-(h:Horse), "
-     "(d:Dragon)-[f:Fire]-(other:Dragon { gender:MALE}), (h:Horse)-[org:OriginatedIn]->(k:Kingdom ) where k.funds > 0  return *",
-     ["Q1", "Q2", "Q3"]),
-    # count examples use Know: tutorial ownership data caps every person at one dragon (D3), so Own counts can't exceed 1
-    ("query-the-data.md", "Q7", "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *", []),
-    ("query-the-data.md", "Q8", "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *", []),
-    ("query-the-data.md", "Q9", "Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2", ["Q3", "Q4"]),
-    ("Queries.md", "QA", "match (p) return *", ["Q5 (stream B)"]),
-    # label union `(p:Person | Dragon)` is unsupported (explicit error); the docs use the WHERE form instead
-    ("Queries.md", "QB", "match (p) where p:Person OR p:Dragon return *", ["Q5 (stream B)"]),
-    ("Queries.md", "QC", "match (p:Person) return *", []),
-    ("Queries.md", "QD", "match (p:Person {name:'Braden Heaney'}) return *", []),
-    ("Queries.md", "QE", "match (p:Person)-[own:Own]-(d:Dragon) return *", ["Q1", "Q2", "Q3", "Q4"]),
-    ("Queries.md", "QF", "match (p1:Person)-[own:Own]-(d:Dragon), (p1:Person)-[member:MemberOf]-(g:Guild {name:Bolling}) return *",
-     ["Q1", "Q2", "Q3"]),
-    ("Queries.md", "QG",
-     "match (p1:Person)-[own1:Own]-(d1:Dragon), (d1:Dragon)-[fire:Fire]-(d2:Dragon), (d2:Dragon)<-[own2:Own]-(p2:Person) "
-     "where fire.temperature > 600 return *",
-     ["Q1", "Q2", "Q3"]),
-]
+# The queries come from the Dragons playground spec (served at /dragons/swagger), so every example offered there is
+# verified here. Each example carries its doc page (x-doc) and the issues it once depended on (x-known).
+SPEC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "examples", "dragons", "ext", "src", "main",
+                    "resources", "dragons", "playground", "openapi.json")
+
+
+def spec_queries(spec_path=SPEC):
+    """[(doc, id, cypher, known issues)] from the cypher parameter's examples, in spec order."""
+    spec = json.load(open(spec_path))
+    params = spec["paths"]["/query/cypher/run"]["get"]["parameters"]
+    examples = next(p for p in params if p["name"] == "cypher")["examples"]
+    return [(e["x-doc"], qid, e["value"], e.get("x-known", [])) for qid, e in examples.items()]
+
+
+QUERIES = spec_queries()
 
 
 def scan(os_url, index):
@@ -178,6 +164,40 @@ def verdict(got, exp):
     return "PASS" if ok else "FAIL"
 
 
+def playground(fuse, os_url, one_click):
+    """The /dragons/swagger page and spec respond; with one_click, POST /dragons/tutorial/load reloads exactly the
+    tutorial data (it resets the indices, so it runs after the query checks)."""
+    print("\nDragons playground")
+    failed = 0
+    base = fuse.rsplit("/fuse", 1)[0]
+    for path in ["/dragons/swagger", "/dragons/swagger/openapi.json", "/dragons/swagger/ui/swagger-ui-bundle.js"]:
+        try:
+            code = urllib.request.urlopen(base + path, timeout=60).status
+        except urllib.error.HTTPError as e:
+            code = e.code
+        except Exception as e:  # noqa: BLE001
+            code = type(e).__name__
+        failed += code != 200
+        print(f"  {'ok' if code == 200 else 'FAIL':5} GET {path}  ({code})")
+    if not one_click:
+        return failed
+    try:
+        r = http("POST", f"{fuse}/dragons/tutorial/load?reset=true")
+        ok = bool(r.get("ok"))
+    except Exception as e:  # noqa: BLE001
+        r, ok = {"error": str(e)[:300]}, False
+    http("POST", f"{os_url}/_refresh")
+    want = {}
+    for name, kind, _, index in load_tutorial.FILES:
+        want[index] = want.get(index, 0) + load_tutorial.rows(os.path.join(load_tutorial.CSV_DIR, name)) * (2 if kind == "edge" else 1)
+    wrong = {i: (load_tutorial.doc_count(os_url, i), n) for i, n in want.items() if load_tutorial.doc_count(os_url, i) != n}
+    good = ok and not wrong
+    failed += not good
+    print(f"  {'PASS' if good else 'FAIL':5} POST /fuse/dragons/tutorial/load  "
+          + ("stored counts match the tutorial CSVs" if good else f"ok={ok} wrong={wrong} {str(r.get('error', ''))[:200]}"))
+    return failed
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fuse", default="http://localhost:8888/fuse")
@@ -225,6 +245,8 @@ def main(argv=None):
         bad = "error" in r or r["errors"]
         failed += bool(bad)
         print(f"  {'ERROR' if bad else 'ok':5} cursorType={ct:12} {r.get('error') or (r['errors'][:1] if r['errors'] else 'responds')}")
+
+    failed += playground(a.fuse, a.opensearch, one_click=a.load)
 
     print(f"\n{'ALL PASS' if not failed else f'{failed} check(s) not passing'}")
     return 1 if failed else 0

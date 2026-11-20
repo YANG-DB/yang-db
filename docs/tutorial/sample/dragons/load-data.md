@@ -60,6 +60,9 @@ Running the data generator looks as follows:
 ![data generator console](img/data-generator-console.png)
 
 ### Loading CSV files
+> **Shortcut:** in the Dragons playground (http://localhost:8888/dragons/swagger), `POST /dragons/tutorial/load`
+> runs this whole tutorial (id generator, ontology, indices and every CSV below) in one call.
+
 We will use the swagger REST API to load the csv files http://localhost:8888/swagger#/operations/load/post_load_ontology__id__csv_load 
 
 ![yangdb-swagger-csv](img/yangdb-swagger-csv-upload.png)

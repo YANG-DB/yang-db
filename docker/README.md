@@ -37,7 +37,9 @@ Fuse waits for OpenSearch to report healthy before starting. Check it's up with:
 ```bash
 curl http://localhost:8888/fuse/health
 ```
-Then open http://localhost:8888/swagger# to explore the API.
+Then open the **Dragons playground**, http://localhost:8888/dragons/swagger: `POST /dragons/tutorial/load` loads the
+tutorial data in one call, and `GET /query/cypher/run` offers every tutorial query in its *Examples* list. The full
+generated API is at http://localhost:8888/swagger#.
 
 To stop everything: `docker compose -f docker-compose-os.yml down` (add `-v` to also delete the data volumes).
 
