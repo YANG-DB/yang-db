@@ -34,6 +34,7 @@ import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesBuckets;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 
@@ -517,7 +518,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         for(EProp timeCondition : timeConditions) {
             String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
-            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
+            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName, indexPartitions.getIndexFormat()));
         }
         return relevantIndices;
 
@@ -563,13 +564,18 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for(RelProp timeCondition : timeConditions) {
 
             String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
-            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
+            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName, indexPartitions.getIndexFormat()));
         }
         return relevantIndices;
 
     }
 
-    private List<String> findIndicesToRemove(Constraint timeCondition, List<String> relevantIndices, String indexName){
+    /**
+     * indexName is the range bucket covering the condition value, or null when the value is after the last bucket;
+     * buckets are ordered numerically (see {@link TimeSeriesBuckets})
+     */
+    private List<String> findIndicesToRemove(Constraint timeCondition, List<String> relevantIndices, String indexName, String indexFormat){
+        Comparator<String> byBucket = TimeSeriesBuckets.byBucket(indexFormat);
         List<String> indicesToRemove = new ArrayList<>();
         switch(timeCondition.getOp()){
             case eq:
@@ -580,11 +586,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 break;
             case gt:
             case ge:
-                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> idx.compareTo(indexName) < 0).collect(Collectors.toList()));
+                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> indexName == null || byBucket.compare(idx, indexName) < 0).collect(Collectors.toList()));
                 break;
             case lt:
             case le:
-                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> idx.compareTo(indexName) > 0).collect(Collectors.toList()));
+                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> indexName != null && byBucket.compare(idx, indexName) > 0).collect(Collectors.toList()));
                 break;
 
         }

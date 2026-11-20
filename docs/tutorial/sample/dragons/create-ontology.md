@@ -108,6 +108,10 @@ of the Dragons schema it is called DragonsIndexProvider.conf and its location is
 The DragonsIndexProvider.conf file describes the actual indexes and their partitions and structure - this file may be auto generated from the logical schema 
 with reasonable defaults and is also may be manually crafted for specific performance & structure needs. 
 
+For example, `Fire` and `Freeze` are time-partitioned by their `date` into the range buckets `500`, `1000`, `1500` and `2000`
+(each value is the inclusive upper bound of its bucket): a fire in 1950 is stored in `idx_fire_2000`, one in 1000 in
+`idx_fire_1000`, and a date after 2000 is rejected at load time. See [IndexProvider.md](../../../info/components/IndexProvider.md#time-buckets).
+
 _The physical schema part is explained in depth in a separate tutorial..._
 
 ### What's next ?

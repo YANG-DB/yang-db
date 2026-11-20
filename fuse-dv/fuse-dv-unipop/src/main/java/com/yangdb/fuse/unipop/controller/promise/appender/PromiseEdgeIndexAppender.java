@@ -28,6 +28,7 @@ import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalPredicateByKey
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesBuckets;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
@@ -37,8 +38,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -96,36 +98,37 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
         return true;
     }
 
+    /**
+     * partition values are range buckets (see {@link TimeSeriesBuckets}): an index is relevant when its bucket
+     * can hold a value matching the predicate; buckets are compared numerically, never as text
+     */
     private boolean testSimplePredicate(P predicate, String index, TimeSeriesIndexPartitions tsIndexPartition) {
+        Comparator<String> byBucket = TimeSeriesBuckets.byBucket(tsIndexPartition.getIndexFormat());
 
         if (predicate.getBiPredicate().equals(Compare.eq)) {
-
-            return index.equals(getIndexName(predicate.getValue(), tsIndexPartition));
+            Optional<String> bucket = getIndexName(predicate.getValue(), tsIndexPartition);
+            // an unknown value type cannot be bucketed - keep the index
+            return bucket == null || (bucket.isPresent() && byBucket.compare(index, bucket.get()) == 0);
 
         } else if (predicate.getBiPredicate().equals(Compare.gt) ||
                    predicate.getBiPredicate().equals(Compare.gte)) {
-
-            String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
-
-            // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
-
-            return  list.indexOf(indexName) <= list.indexOf(index);
+            // the value's bucket and every later one; nothing when the value is after the last bucket
+            Optional<String> bucket = getIndexName(predicate.getValue(), tsIndexPartition);
+            return bucket == null || (bucket.isPresent() && byBucket.compare(index, bucket.get()) >= 0);
 
         } else if (predicate.getBiPredicate().equals(Compare.lt) ||
                    predicate.getBiPredicate().equals(Compare.lte)) {
-
-            String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
-
-            // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
-            return  list.indexOf(indexName) >= list.indexOf(index);
+            // the value's bucket and every earlier one; all of them when the value is after the last bucket
+            Optional<String> bucket = getIndexName(predicate.getValue(), tsIndexPartition);
+            return bucket == null || !bucket.isPresent() || byBucket.compare(index, bucket.get()) <= 0;
 
         } else if (predicate.getBiPredicate().equals(Compare.neq)) {
             //all getIndices are relevant
             return true;
         } else if (predicate.getBiPredicate().equals(Contains.within)) {
-            return Stream.ofAll(CollectionUtil.listFromObjectValue(predicate.getValue())).map(date -> getIndexName(date, tsIndexPartition)).toJavaList().contains(index);
+            return Stream.ofAll(CollectionUtil.listFromObjectValue(predicate.getValue()))
+                    .map(value -> getIndexName(value, tsIndexPartition))
+                    .exists(bucket -> bucket == null || (bucket.isPresent() && byBucket.compare(index, bucket.get()) == 0));
         } else if (predicate.getBiPredicate().equals(Contains.without)) {
             //all getIndices are relevant ?
             return true;
@@ -135,11 +138,20 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
         }
     }
 
-    private String getIndexName(Object value, TimeSeriesIndexPartitions indexPartition) {
-
-        String formattedDate = new SimpleDateFormat(indexPartition.getDateFormat()).format(value);
-
-        return String.format(indexPartition.getIndexFormat(), formattedDate);
+    /**
+     * @return the bucket covering the value, empty when the value is after the last bucket,
+     * or null when the value is not a date
+     */
+    private Optional<String> getIndexName(Object value, TimeSeriesIndexPartitions indexPartition) {
+        Date date;
+        if (value instanceof Date) {
+            date = (Date) value;
+        } else if (value instanceof Number) {
+            date = new Date(((Number) value).longValue());
+        } else {
+            return null;
+        }
+        return Optional.ofNullable(indexPartition.getIndexName(date));
     }
 
 }

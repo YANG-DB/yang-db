@@ -119,10 +119,29 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
              "partition.field": "birth", => the partitioned field
              "prefix": "idx_person",     => the inedx common name
              "index.format": "idx_person_%s", => the incremental index naming pattern
-             "date.format": "YYYY",           => the date format for the naming pattern
+             "date.format": "yyyy",           => the date format for the naming pattern (yyyy = calendar year; YYYY is week-year)
              "values": ["1900", "1950", "2000","2050"] => the indices incremental time buckets
            }
          }
+
+  ###### Time buckets
+  Each entry in `values` names one index (`index.format` applied to the value) and is the **inclusive upper bound**
+  of its bucket; the first bucket is open below. A document's partition field is formatted with `date.format` (in UTC)
+  and compared to the values **numerically** (digit group by digit group, so `500` < `1000`). With the example above:
+
+  | partition field (year) | index            |
+  |------------------------|------------------|
+  | up to 1900             | `idx_person_1900` |
+  | 1901 – 1950            | `idx_person_1950` |
+  | 1951 – 2000            | `idx_person_2000` |
+  | 2001 – 2050            | `idx_person_2050` |
+  | after 2050             | load failure      |
+
+  - Loading: a document whose partition field is after the last value, or missing, is reported as a failed item of the
+    load response - it is never written to a fallback index. Add a larger value to cover later dates.
+  - Querying: a filter on the partition field searches only the buckets that can hold matches -
+    `=` the covering bucket, `>`/`>=` the covering bucket and all later ones, `<`/`<=` the covering bucket and all
+    earlier ones; `!=` and filters without the partition field search all buckets.
 
   ##### Unified 
   Mapping the entity type to a universal single index containing all the schematic structure
@@ -207,7 +226,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
           "partition.field": "date",
           "prefix": "idx_call",
           "index.format": "idx_call_%s",
-          "date.format": "YYYY",
+          "date.format": "yyyy",
           "values": ["2001", "2002", "2003","2004"]
         }
       },

@@ -166,16 +166,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
      * @return
      */
     private String resolveIndex(DocumentBuilder node) throws ParseException {
-        String nodeType = node.getType();
-        Optional<Tuple2<String, String>> field = node.getPartitionField();
-        IndexPartitions partitions = schema.getPartition(nodeType);
-        //todo validate the partitioned field is indeed the correct time field
-        if ((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
-            String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
-            if (indexName != null) return indexName;
-        }
-        //get the first matching index to populate
-        return partitions.getIndices().iterator().next();
+        return LoadUtils.resolveIndex(schema, node);
     }
 
 

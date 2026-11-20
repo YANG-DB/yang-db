@@ -193,7 +193,7 @@ Next the physical representation which describes some store related instructions
         "partition.field": "date",
         "prefix": "idx_fire",
         "index.format": "idx_fire_%s",
-        "date.format": "YYYY",
+        "date.format": "yyyy",
         "values": ["500", "1000", "1500","2000"]
       }
 

@@ -27,5 +27,10 @@ public interface TimeSeriesIndexPartitions extends IndexPartitions {
     String getIndexPrefix();
     String getIndexFormat();
     String getTimeField();
+
+    /**
+     * the index of the range bucket covering the date (see {@link TimeSeriesBuckets} for the bucket semantics),
+     * or null when the date is after the last bucket
+     */
     String getIndexName(Date date);
 }

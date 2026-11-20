@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -118,11 +119,28 @@ public class LoadUtils {
         Optional<Tuple2<String, String>> field = node.getPartitionField();
         IndexPartitions partitions = schema.getPartition(nodeType);
         //todo validate the partitioned field is indeed the correct time field
-        if ((partitions instanceof TimeSeriesIndexPartitions) && field.isPresent()) {
-            String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(sdf.parse(field.get()._2));
-            if (indexName != null) return indexName;
+        if (partitions instanceof TimeSeriesIndexPartitions) {
+            // a time-partitioned document must land in the bucket covering its date - never in a fallback index
+            if (!field.isPresent())
+                throw partitionError(String.format("%s document %s has no value for its partition field", nodeType, node.getId()));
+            String indexName = ((TimeSeriesIndexPartitions) partitions).getIndexName(parsePartitionDate(field.get()._2));
+            if (indexName == null)
+                throw partitionError(String.format("%s document %s: %s=%s is outside every partition bucket %s",
+                        nodeType, node.getId(), field.get()._1, field.get()._2, partitions.getIndices()));
+            return indexName;
         }
         return partitions.getPartitions().iterator().next().getIndices().iterator().next();
+    }
+
+    private static FuseError.FuseErrorException partitionError(String description) {
+        // the message is set so callers that re-wrap the exception keep the description
+        return new FuseError.FuseErrorException(description, new FuseError("Time partition error", description));
+    }
+
+    private static Date parsePartitionDate(String value) throws ParseException {
+        synchronized (sdf) {
+            return sdf.parse(value);
+        }
     }
 
     /**

@@ -37,6 +37,7 @@ import com.yangdb.fuse.unipop.schemaProviders.*;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.NestedIndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesBuckets;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -336,11 +337,9 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
     public static class TimeBasedIndexPartitions implements TimeSeriesIndexPartitions {
         private Props props;
-        private SimpleDateFormat dateFormat;
 
         TimeBasedIndexPartitions(Props props) {
             this.props = props;
-            this.dateFormat = new SimpleDateFormat(getDateFormat());
         }
 
 
@@ -366,13 +365,10 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
         @Override
         public String getIndexName(Date date) {
-            String format = String.format(getIndexFormat(), dateFormat.format(date));
-            List<String> indices = Stream.ofAll(getPartitions())
-                    .flatMap(Partition::getIndices)
-                    .filter(index -> index.equals(format))
-                    .toJavaList();
-
-            return indices.isEmpty() ? null : indices.get(0);
+            // the loader parses dates as UTC, so buckets are cut in UTC too
+            SimpleDateFormat dateFormat = new SimpleDateFormat(getDateFormat());
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return TimeSeriesBuckets.bucketOf(getIndices(), getIndexFormat(), dateFormat.format(date)).orElse(null);
         }
 
         @Override
@@ -382,10 +378,10 @@ public class GraphElementSchemaProviderJsonFactory implements GraphElementSchema
 
         @Override
         public Iterable<Partition> getPartitions() {
-            return Collections.singletonList(() -> Stream.ofAll(props.getValues())
+            return Collections.singletonList(() -> TimeSeriesBuckets.sorted(Stream.ofAll(props.getValues())
                     .map(p -> String.format(getIndexFormat(), p))
-                    .distinct().sorted()
-                    .toJavaList());
+                    .distinct()
+                    .toJavaList(), getIndexFormat()));
         }
     }
 
