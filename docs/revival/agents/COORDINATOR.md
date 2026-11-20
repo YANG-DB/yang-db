@@ -171,6 +171,10 @@ python3 docker/e2e/doc_queries.py --load --reset             # exit 0 = all pass
 ## 9. Gotchas (machine)
 - The external drive (exFAT) creates `._*` sidecar files. They break git, Maven (bogus test classes), Docker
   builds and OpenSearch index deletion. Delete them before every build or git op; keep test data dirs in `/tmp`.
+- **Set `JAVA_HOME` inside every script you run in the background.** Shell state doesn't carry over between
+  commands. Without it Maven forks Homebrew's default JDK (27), which rejects the pom's `-XX:MaxPermSize`; the fork
+  dies at startup and `unipop-core` reports "The forked VM terminated without properly saying goodbye". That's an
+  environment failure, not a test failure.
 - With `-Dtest`, surefire 2.22 ignores pom excludes. Pass `-Dtest='<pattern>, !**/._*'`.
 - `fuse-dv-stat` tests read port 9300 from config. Run them only in the coordinator's full build with Docker
   stopped. Agents exclude it (`-pl '!fuse-dv/fuse-dv-stat'`, or run epb tests by package).

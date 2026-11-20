@@ -60,9 +60,10 @@ Attached", even when rewritten as directed. Fix or document as unsupported.
 `Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *` returns no results; the stored data has 9
 persons with more than 15 outgoing `Know` relationships.
 
-### Q8 — `WHERE p:A OR p:B` on an untyped node crashes · **partly fixed, open**
-The M2 rewrite no longer crashes, but e2e run 3 shows the ASG validator rejecting the query: `Property type
-mismatch parent entity: EUntyped`.
+### Q8 — `WHERE p:A OR p:B` on an untyped node crashes · **fixed**
+Two causes: the M2 rewrite cast untyped nodes (stream A), and the entity-properties validator treated an untyped
+node with no listed types as having no fields and ignored metadata like `type` (fixed in `5cb0117d2`). Verified in
+e2e run 4.
 `match (p) where p:Person OR p:Dragon return *` → HTTP 500 `EUntyped cannot be cast to ETyped`. This is the
 documented replacement for the unsupported label union.
 
@@ -75,7 +76,7 @@ different path, which was fixed in later rounds:
 - the forward-paths cursor, the distinct step and unipop's vertex step all keyed by bare id
 
 Checked live on the tutorial data: Q2a 475, Q2 349, Q3 30, Q5 2,437, `match (p)` 1,623, QE 96, QF 7/1/7, all as
-expected. A full e2e run on a freshly rebuilt image is still to do.
+expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass).
 
 ### Known limitations (not planned)
 - Two count filters whose valid start nodes don't overlap get "No valid plan was found".

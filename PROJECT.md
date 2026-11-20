@@ -15,8 +15,9 @@ graph database.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
 
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
-> OpenSearch **1.3.0** (moving to 2.x is planned). The full build is green: 1,120 tests with the integration suites
-> running. A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
+> OpenSearch **1.3.0** (moving to 2.x is planned). The full build is green (1,123 tests with the integration suites
+> running), and every documented tutorial query passes end to end on Docker
+> ([e2e suite](docker/e2e/README.md)). A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
 > partitions and JSON responses. Progress and open issues are in [docs/revival/](docs/revival/ROADMAP.md).
 
 ## Quickstart

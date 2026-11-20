@@ -52,9 +52,14 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
 ## Update — e2e run 3 (2026-11-20)
 - Pushed `56621b0af`. Run 3 on an image built from it: **21/22 pass**; L4, Q7, Q8 counts and Q9 confirmed live.
 - Posted GitHub commit status `e2e/docker` = failure on `56621b0af`. From now on use `docker/e2e/verify_and_mark.sh`.
-- **Open: QB** (`WHERE p:A OR p:B` rejected by the ASG validator). Stream A hit the usage limit (resets 14:50
-  Pacific); the lead is investigating. Next: fix QB → full build → rebuild → `verify_and_mark.sh` → ask the
-  maintainer before pushing.
+- **QB fixed by the lead** (`5cb0117d2`, local): `AsgEntityPropertiesValidatorStrategy` treated an untyped node
+  with no vTypes as having no fields, and ignored metadata (`type`). New tests are in
+  `AsgEntityPropertiesValidationStrategyTest`; fuse-asg has 270 tests, 0 failures. Stream A is no longer needed
+  for QB. Don't resume it for that.
+- **e2e run 4: ALL 21 CHECKS PASS**; full build 1,123 / 0 failures. Fixed the description of run 3's ✗ status
+  (20/21, not 21/22). Waiting on the maintainer's OK to push; after pushing, run
+  `docker/e2e/verify_and_mark.sh` (it reuses the loaded data; the image must match HEAD) to post ✓ on the pushed
+  commit.
 
 ## Discoveries
 - Run 2 bisect, done by swapping jars into the container and restarting it:

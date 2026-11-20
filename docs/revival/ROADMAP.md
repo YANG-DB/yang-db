@@ -28,7 +28,7 @@ Live progress and blockers of the running work: [STATUS.md](STATUS.md). Resume p
 - [x] `dev-opensearch` renamed to `main` (default branch)
 - [x] Quickstart verified end-to-end with Docker
 
-## Current workstream — Stabilize (code complete; end-to-end confirmation pending)
+## Workstream — Stabilize ✅ done 2026-11-20 (full build 1,123 tests green, e2e doc-query suite 21/21)
 Loader
 - [x] `L1` relation endpoint types rewritten — fixed in `CSVTransformer`, test `CSVTransformerTest#testRelationKeepsSourceTypeWhenPairsShareDestination`
 - [x] `L2` pre-1970 epoch-millis dates dropped — fixed in `DataLoaderUtils`, test `DataLoaderUtilsTest`
@@ -56,8 +56,8 @@ Tutorial data & docs
 - [ ] `A2` whole-file load failure easy to misread (minor, open)
 
 Verification
-- [ ] `S13` end-to-end doc-query suite committed (✅ `docker/e2e/`); fixes for every failure of runs 1–2 merged and
-      checked live by stream B; **a full run on a rebuilt image (run 3) is still to do**
+- [x] `S13` end-to-end doc-query suite committed (`docker/e2e/`) and **passing**: run 4 (2026-11-20), all 21 checks
+      on a freshly rebuilt image. `verify_and_mark.sh` publishes the result as the GitHub commit status `e2e/docker`.
 - [x] `S14` full `mvn clean test` green with ITs running (1,120 tests, 0 failures) → batch pushed 2026-11-20 at
       the maintainer's request, before e2e run 3
 
@@ -82,7 +82,7 @@ ports, and the traversal-identity bugs share code and must stay together.
 
 **Stage 2 — integration (serial, lead)**
 - [x] Merge streams one at a time (rebase on `main`, full `mvn clean test` with ITs running after each)
-- [ ] Rebuild the Docker image, run the e2e suite (`S13`) against freshly loaded tutorial data (runs 1–2 done; run 3 pending)
+- [x] Rebuild the Docker image, run the e2e suite (`S13`) against freshly loaded tutorial data (run 4: all pass)
 - [x] Finish engine-dependent `D2` docs, tick this checklist, push the batch (`S14`)
 
 **Rules for agents**
