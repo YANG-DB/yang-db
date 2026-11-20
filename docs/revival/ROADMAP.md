@@ -31,10 +31,10 @@ Bugs referenced by ID (e.g. `L1`, `Q2`) are described in [KNOWN_ISSUES.md](KNOWN
 Loader
 - [x] `L1` relation endpoint types rewritten — fixed in `CSVTransformer`, test `CSVTransformerTest#testRelationKeepsSourceTypeWhenPairsShareDestination`
 - [x] `L2` pre-1970 epoch-millis dates dropped — fixed in `DataLoaderUtils`, test `DataLoaderUtilsTest`
-- [ ] `L3` `INSERT` silently overwrites — fixed in `LoadUtils` and both loaders; IT `IndexProviderBasedCSVLoaderIT#testInsertDoesNotOverwriteButUpsertDoes` written, **not yet run** (blocked by `T1`)
+- [x] `L3` `INSERT` silently overwrites — fixed in `LoadUtils` and both loaders, IT `IndexProviderBasedCSVLoaderIT#testInsertDoesNotOverwriteButUpsertDoes`
 
 Test infrastructure
-- [ ] `T1` integration suite crashes (NPE) when an OpenSearch is already running locally, and the build reports false green
+- [x] `T1` integration suite crashed when an OpenSearch was already running locally, and the build reported false green
 
 Query engine
 - [ ] `Q1` undirected pattern `-[r]-` executes as `->`
@@ -57,10 +57,10 @@ The work splits into streams that touch different modules, so it can run as seve
 worktree. It can't be fully parallel: everyone needs a trustworthy test signal first, the embedded test node has fixed
 ports, and the traversal-identity bugs share code and must stay together.
 
-**Stage 0 — foundation (serial, lead)**
-- [ ] `T1` fix the reuse-running-cluster crash and make suite setup failures fail the build
-- [ ] Make the embedded test node's ports configurable (system properties, default 9200/9300) so worktrees can run ITs side by side
-- [ ] Run `L3`'s IT, commit `L3`
+**Stage 0 — foundation (serial, lead)** ✅ done 2026-11-20 — full `mvn clean test`: 1,064 tests, 0 failures, ITs running
+- [x] `T1` fix the reuse-running-cluster crash and make suite setup failures fail the build
+- [x] Make the embedded test node's ports and data directory configurable (`fuse.test.http.port`, `fuse.test.transport.port`, `fuse.test.data.dir`; defaults 9200 / 9300 / `target/es`)
+- [x] Run `L3`'s IT, commit `L3`
 
 **Stage 1 — parallel streams (one agent per stream, separate worktrees)**
 
@@ -79,7 +79,10 @@ ports, and the traversal-identity bugs share code and must stay together.
 **Rules for agents**
 - Work only in your own worktree and modules; don't edit ROADMAP.md / KNOWN_ISSUES.md (the lead updates them from reports).
 - Every fix starts with a test that fails for the right reason; one commit per issue ID.
-- Run module tests offline without installing (`mvn -o test -pl <module> -am`) so the shared `~/.m2` isn't written concurrently; pass your assigned test ports.
+- Run module tests offline without installing (`mvn -o test -pl <module> -am`) so the shared `~/.m2` isn't written concurrently; pass your assigned test ports and a private data dir, e.g.
+  `-Dfuse.test.http.port=9210 -Dfuse.test.transport.port=9310 -Dfuse.test.data.dir=/tmp/yangdb-es-B`.
+- Never run ITs on the default ports while the Docker stack is up: the suite then *reuses* that cluster and resets its indices, wiping the demo data.
+- `fuse-dv-stat` tests read port 9300 from config files, so they only run in Stage 2 (default ports, Docker stopped).
 - "Done" = module tests green **with non-zero IT counts**, plus a short report: what changed, root cause, anything found out of scope.
 
 **Expected gain:** stream B sets the pace; running A, C and D alongside it saves roughly their combined duration
@@ -106,5 +109,5 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
 ## Dev environment notes
 - JDK 11 + Maven; Docker via colima on macOS. Quickstart: [docker/README.md](../../docker/README.md).
 - Full tutorial load sequence: `GET /fuse/idgen/init?names=Entity,Relation,Evalue,Rvalue,workerId` → `POST /fuse/catalog/ontology` (Dragons.json) → `GET /fuse/load/ontology/Dragons/init` → `POST /fuse/load/ontology/Dragons/csv/load?directive=INSERT&type=vertex|edge&label=<Type>` per CSV.
-- Stop the Docker stack before `mvn test`: it occupies ports 9200/9300 used by the embedded test node (`T1`).
-- On external (non-APFS) drives macOS writes `._*` sidecar files that break git and Maven; delete them before building and set `git config core.fileMode false`.
+- With the Docker stack up, run tests on other ports (see the agent rules above) or stop it first (`docker compose -f docker/docker-compose-os.yml stop`, data volumes are kept).
+- On external (non-APFS) drives macOS writes `._*` sidecar files that break git and Maven; delete them before building and set `git config core.fileMode false`. They also block OpenSearch from deleting index folders, so keep the test node's data off such drives with `-Dfuse.test.data.dir=/tmp/...`.

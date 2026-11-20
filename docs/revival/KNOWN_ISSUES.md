@@ -17,7 +17,7 @@ with no matching pair is reported as a failure.
 negative ones (before 1970) failed. Property values that fail validation are dropped silently (69/100 tutorial
 persons lost `birthDate`); for time-partitioned relations (Fire, Freeze) the failure aborted the whole file.
 
-### L3 — `INSERT` silently overwrites · **fixed, IT pending**
+### L3 — `INSERT` silently overwrites · **fixed**
 The `directive` parameter was accepted but ignored: every write used `OpType.INDEX`. Duplicate ids (e.g. Person 367 owns
 Dragon 10 *and* Horse 10 → both edges `10_367`) silently overwrote each other while reporting success. `INSERT` now uses
 `OpType.CREATE` (duplicates reported as failed items); `UPSERT` overwrites.
@@ -53,10 +53,12 @@ Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@487
 
 ## Test infrastructure
 
-### T1 — Integration suite crashes when OpenSearch already runs, and reports success · open
-`TestSuiteIndexProviderSuite` reuses a locally running cluster if one answers on `localhost:9200`, but
-`ElasticEmbeddedNode.getClient(info)` assumes an embedded node exists → `NullPointerException` in suite setup. Surefire
-then reports 0 tests and `BUILD SUCCESS`, i.e. a false green.
+### T1 — Integration suite crashes when OpenSearch already runs, and reports success · **fixed**
+`TestSuiteIndexProviderSuite` reuses a locally running cluster if one answers on the test HTTP port, but
+`ElasticEmbeddedNode.getClient(info)` assumed an embedded node exists → `NullPointerException` in suite setup. Surefire's
+parallel JUnit provider then reported 0 tests and `BUILD SUCCESS`, i.e. a false green. Fixed by dropping the parallel
+provider (it ran single-threaded anyway) and connecting a transport client when reusing a cluster. Related hardening:
+configurable test ports / data dir, and the disk-threshold decider is disabled on the test node.
 
 ## Tutorial data & docs
 
