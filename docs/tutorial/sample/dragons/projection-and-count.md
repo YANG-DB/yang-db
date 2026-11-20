@@ -41,9 +41,9 @@ This is a new feature that is under development and will be available soon...
 
 The purpose of this cursor is to provide a consistent and general way to project a (general) query results into a dedicated projection index
 This index will be used to store the returning query-results assignments inside a single index, it will also be able to efficiently perform slice & dice over the resulting assignments using
-the efficient E/S aggregation DSL.
+the efficient OpenSearch aggregation DSL.
 
-For additional details refer to [index-projection-details](../../../docs/branch/indexProjection.md)
+For additional details refer to [index-projection-details](../../../branch/indexProjection.md)
 
 
 ### Usage
@@ -54,10 +54,15 @@ The regular API can be called with the following query:
 
 
 ```
-Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *
+Match (p1:Person)-[k:Know]->(p2:Person {gender: FEMALE}) return *
 ```
 
-The only difference would be the type of cursor that is selected - projection.
+The only difference would be the type of cursor that is selected - projection. With the tutorial data this writes 980
+documents into the `projection` index (`curl 'localhost:9200/_cat/indices/projection?v'`). The index is kept until
+you delete it (`curl -XDELETE localhost:9200/projection`).
+
+_Note:_ the projection cursor doesn't support count filters (`WHERE count(k) > n`) yet. Such a query projects
+nothing.
 The result will reflect the amount of elements ingested into the projection index - this API can is syncronized so the waiting time for the query to complete
 depends on the amount of results the query returns.
 ![swagger-project-query](img/swagger-project-query.png)

@@ -1,5 +1,5 @@
 ## Loading Sample Data
-So we've completed installing the ontology and generating the physical elasticsearch schema (see create-ontology tutorial)
+So we've completed installing the ontology and generating the physical OpenSearch schema (see create-ontology tutorial)
 And now we would like to load some data.
 
 Since this ontology is the base demo ontology we have prepared a data generator to create volumes of data to load and review many of the
@@ -64,7 +64,7 @@ We will use the swagger REST API to load the csv files http://localhost:8888/swa
 
 ![yangdb-swagger-csv](img/yangdb-swagger-csv-upload.png)
 
-Once the file is loaded it will be added to the appropriate table/s & the REST API will respond with the 
+Once the file is loaded it will be added to the appropriate index/indices & the REST API will respond with the 
 success status of the amount of entities uploaded to the store.
 
 ![yangdb-swagger-csv-result](img/yangdb-swagger-csv-upload-result.png)
@@ -73,6 +73,22 @@ We will repeat this process with all the relevant entities / relationships of th
 we would be able to ask interesting graph queries upon the data.
 
 **Note**: A zipped file can also be used in this API for much larger volumes of data.
+
+The same call with curl. `type` is `vertex` for entity files and `edge` for relationship files; `label` is the
+ontology type:
+```bash
+curl -X POST -H 'Content-Type: text/csv' --data-binary @docs/tutorial/sample/dragons/csv/Fire.csv \
+  'http://localhost:8888/fuse/load/ontology/Dragons/csv/load?directive=INSERT&type=edge&label=Fire'
+```
+
+- **`directive`**: `INSERT` only creates documents. A row whose id already exists is reported as a failure, never
+  overwritten. `UPSERT` creates or overwrites. Reloading the same files therefore needs `UPSERT`, or dropped indices
+  (`GET /fuse/load/ontology/Dragons/drop`, then `.../init` again).
+- **Response**: per-row `successes` and `failures`. If the whole file is rejected (e.g. a malformed CSV), the
+  reason is in the top-level `error` and both lists are empty. Check it rather than reading "0 of 0" as success.
+- **Dates**: date columns accept formatted dates or epoch milliseconds, including negative values (before 1970).
+- **Time-partitioned relations** (`Fire`, `Freeze`): each row goes to the index of the bucket covering its `date`
+  (see [create-ontology](create-ontology.md#physical-schema-considerations)). A row dated after the last bucket fails.
 
 ---
 

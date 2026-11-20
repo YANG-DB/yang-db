@@ -22,6 +22,7 @@ QUERIES = [
     ("query-the-data.md", "Q2a", "Match (p1:Person)-[know:Know]-(p2:Person) return *", ["Q1", "Q4"]),
     ("query-the-data.md", "Q2", "Match (p1:Person)-[know:Know]-(p2:Person {gender: FEMALE}) return *", ["Q1", "Q4"]),
     ("query-the-data.md", "Q3", "Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *", ["Q1", "Q4"]),
+    ("query-the-data.md", "Q4", "Match (g:Guild)-[r:RegisteredIn]->(k:Kingdom)  where k.funds > 0 return *", []),
     ("query-the-data.md", "Q5", "Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *", ["Q1", "Q3", "Q4"]),
     ("query-the-data.md", "Q6",
      "Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}), (p:Person)-[oh:Own]-(h:Horse), "
@@ -88,6 +89,7 @@ def expectations(os_url):
            "Q2": {"rels": sum(1 for e in know if "FEMALE" in (prop("Person", e[1], "gender"), prop("Person", e[3], "gender")))}}
     exp["Q3"] = {"rels": sum(1 for e in E["RegisteredIn"] if e[0] == "Guild" and exists("Guild", e[1])
                              and e[2] == "Kingdom" and funds(e[3]) > 0)}
+    exp["Q4"] = exp["Q3"]  # RegisteredIn is stored Guild -> Kingdom, so the directed form returns the same relationships
     exp["Q5"] = {"rels": sum(1 for e in fire if "BLACK" in (prop("Dragon", e[1], "color"), prop("Dragon", e[3], "color")))}
     # Q6: female p -Own- black dragon d that fired on/was fired by a male dragon; p -Own- horse from a kingdom with funds > 0
     orig_ok = {e[1] for e in E["OriginatedIn"] if e[0] == "Horse" and e[2] == "Kingdom" and funds(e[3]) > 0}

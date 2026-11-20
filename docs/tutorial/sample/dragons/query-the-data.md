@@ -14,7 +14,7 @@ should be resolved (Join in SQL) and all the patterns are present in a logical f
 
 In the next image we can visualize the simple cypher pattern
     
-    (person)->[likes]- (message) 
+    (person)-[:likes]->(message)
 
 versus the composite and large explicit SQL equivalent query:
 
@@ -150,7 +150,7 @@ Lets visualize the results:
 
 
 #### Query:3
-This time lets see Guilds registered in kingdoms that have a positive cache flow...
+This time lets see Guilds registered in kingdoms that have a positive cash flow...
 ```
     Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
 ```
@@ -159,10 +159,13 @@ Lets visualize the results:
 ![yangdb-page-result-visualize-q3](img/visualize-q3.png)
 
 #### Query:4
-This time lets see Guilds registered in kingdoms that have a positive cache flow...
+The same question with a direction. `-[r]-` matches a relationship in either direction, `-[r]->` only from the left
+node to the right one. `RegisteredIn` is stored as Guild → Kingdom, so both forms return the same 30 registrations:
 ```
-    Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *
+    Match (g:Guild)-[r:RegisteredIn]->(k:Kingdom)  where k.funds > 0 return *
 ```
+_Note:_ write a pattern starting from the relationship's source type. `(k:Kingdom)-[r:RegisteredIn]-(g:Guild)` is
+currently rejected by the ontology validator, even though it is undirected.
 
 #### Query:5
 Now lets see the exciting Dragons battles ... give us the dragons who fire upon black dragons
@@ -196,7 +199,7 @@ The female person also owns a horse that is originated from a kingdom that has a
 **The ASG query looks as follows:**
 ![yangdb-page-result-visualize-asg-q4](img/visualize-asg-q4.png)
 
-#### Query:6
+#### Query:7
 **Lets aggregate some data:**
 
 If we want to filter out nodes according to their edge count we will use the following semantics:
@@ -209,6 +212,7 @@ This will result in the Person nodes that know more than 15 other persons (9 per
 
 It is very much possible to combine the aggregative filter with row based filter such as the following query:
 
+#### Query:8
 ```
 Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *
 ```
@@ -216,11 +220,18 @@ The count is taken over **all** of `p1`'s `Know` relationships (16 persons in th
 persons); the row filter then restricts which `p2` acquaintances are returned — here only the female ones.
 
 
+#### Query:9
+Without `distinct`, every relationship is returned: `Match (d1:Dragon)-[f:Fire]->(d2:Dragon) return *` returns all
+11,503 fires in the tutorial data, including repeated fires between the same two dragons.
+
 We can also use the **distinct** keyword to dedup the edges between nodes - meaning that in the following example only one fire edge will be returned
-for every pair of dragons - if a dragon fired multiple times only one edge will be returned... 
+for every pair of dragons (2,964 pairs in the tutorial data) - if a dragon fired multiple times only one edge will be returned...
 ```
 Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2
 ```
+
+> Every query on this page is checked against the tutorial data by the end-to-end suite
+> ([docker/e2e](../../../../docker/e2e/README.md)), and the counts above come from it.
 
 ### What's Next
 For the next part - in the next tutorial we will review different type of cursors that enable us to materialize queries and count results
