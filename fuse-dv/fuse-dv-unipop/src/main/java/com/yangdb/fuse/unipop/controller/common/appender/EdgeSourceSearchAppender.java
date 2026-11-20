@@ -20,6 +20,7 @@ package com.yangdb.fuse.unipop.controller.common.appender;
  * #L%
  */
 
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -59,6 +60,13 @@ public class EdgeSourceSearchAppender implements SearchAppender<VertexController
 
         searchBuilder.getIncludeSourceFields().addAll(Stream.ofAll(edgeSchema.getEndA().get().getIdFields()).toJavaList());
         searchBuilder.getIncludeSourceFields().addAll(Stream.ofAll(edgeSchema.getEndB().get().getIdFields()).toJavaList());
+        // endpoint types and stored direction tell the converter which type pair / direction a document holds
+        Stream.ofAll(edgeSchema.getEndA().get().getIdFields()).appendAll(edgeSchema.getEndB().get().getIdFields())
+                .filter(idField -> idField.endsWith("." + GlobalConstants.ID))
+                .map(idField -> idField.substring(0, idField.length() - GlobalConstants.ID.length()) + GlobalConstants.TYPE)
+                .forEach(typeField -> searchBuilder.getIncludeSourceFields().add(typeField));
+        edgeSchema.getDirectionSchema().ifPresent(directionSchema ->
+                searchBuilder.getIncludeSourceFields().add(directionSchema.getField()));
         return true;
     }
     //endregion

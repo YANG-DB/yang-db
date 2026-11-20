@@ -43,6 +43,8 @@ import static org.mockito.Mockito.when;
         GraphInitiatorIT.class,
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,
+        // before the mapping-factory IT: its single-index templates match every index created afterwards
+        com.yangdb.fuse.executor.ontology.discrete.TraversalIdentityIT.class,
         OpensearchIndexProviderMappingFactoryIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {

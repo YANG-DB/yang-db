@@ -24,8 +24,8 @@ import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.yangdb.fuse.unipop.controller.common.converter.DataItem;
 import com.yangdb.fuse.unipop.controller.common.converter.ElementConverter;
+import com.yangdb.fuse.unipop.controller.common.converter.SearchHitDataItem;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
-import com.yangdb.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.yangdb.fuse.unipop.controller.utils.map.MapHelper;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
@@ -55,12 +55,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region Constructors
     public DiscreteEdgeConverter(VertexControllerContext context, Profiler profiler) {
         this.context = context;
-        try {
-            this.edgeIdProvider = new HashEdgeIdProvider(context.getConstraint());
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.edgeIdProvider = new SimpleEdgeIdProvider();
-        }
+        // only for edges without a document of their own (see edgeId); delimited, unlike HashEdgeIdProvider's label+outId+inId
+        this.edgeIdProvider = new SimpleEdgeIdProvider();
 
         //currently assuming a single vertex label in bulk
         this.contextVertexLabel = getLabel(context, "?");
@@ -83,13 +79,29 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     public Iterable<E> convert(DataItem dataItem) {
         Map<String, Object> dataItemProperties = dataItem.properties();
 
-        Iterator<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel).iterator();
-        if (!edgeSchemas.hasNext()) {
+        List<GraphEdgeSchema> edgeSchemas = Stream.ofAll(context.getSchemaProvider()
+                .getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel)).toJavaList();
+        if (edgeSchemas.isEmpty()) {
             return null;
         }
 
-        //currently assuming only one relevant edge schema
-        GraphEdgeSchema edgeSchema = edgeSchemas.next();
+        // undirected step: each document records which way its relationship points, use that direction's schemas
+        if (context.getDirection().equals(Direction.BOTH)) {
+            Optional<Direction> storedDirection = storedDirection(edgeSchemas.get(0), dataItemProperties);
+            if (storedDirection.isPresent()) {
+                edgeSchemas = Stream.ofAll(context.getSchemaProvider()
+                        .getEdgeSchemas(this.contextVertexLabel, storedDirection.get(), this.contextEdgeLabel)).toJavaList();
+            }
+        }
+
+        // a relation may connect several type pairs (Own: Person->Dragon, Person->Horse): pick the schema of the
+        // pair this document was stored for; a document of another pair (e.g. a same-id entity of another type) is skipped
+        Optional<GraphEdgeSchema> matchingSchema = Stream.ofAll(edgeSchemas)
+                .find(schema -> matchesStoredTypes(schema, dataItemProperties)).toJavaOptional();
+        if (!matchingSchema.isPresent()) {
+            return Collections.emptyList();
+        }
+        GraphEdgeSchema edgeSchema = matchingSchema.get();
 
         Vertex outV = null;
         Vertex inV = null;
@@ -120,7 +132,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                     inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
 
                     edges.add((E) new DiscreteEdge(
-                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeId(dataItem, edgeSchema, outV, inV, edgeProperties),
                             edgeSchema.getLabel(),
                             outV,
                             inV,
@@ -153,7 +165,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                     outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
 
                     edges.add((E) new DiscreteEdge(
-                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeId(dataItem, edgeSchema, outV, inV, edgeProperties),
                             edgeSchema.getLabel(),
                             outV,
                             inV,
@@ -172,6 +184,80 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //endregion
 
     //region Private Methods
+
+    /**
+     * The id of a relationship read from an edge document is the document id without its direction suffix
+     * ({@code <id>.out} / {@code <id>.in}), so it is unique per stored relationship and the same from both ends.
+     * Edges built without a document of their own (from redundant fields on a vertex) fall back to a delimited
+     * {@code label.outId.inId}.
+     */
+    private String edgeId(DataItem dataItem, GraphEdgeSchema edgeSchema, Vertex outV, Vertex inV, Map<String, Object> edgeProperties) {
+        if (!(dataItem instanceof SearchHitDataItem) || dataItem.id() == null) {
+            return this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties);
+        }
+
+        String documentId = dataItem.id().toString();
+        if (edgeSchema.getDirectionSchema().isPresent()) {
+            for (Object directionValue : Arrays.asList(
+                    edgeSchema.getDirectionSchema().get().getOutValue(),
+                    edgeSchema.getDirectionSchema().get().getInValue())) {
+                String suffix = "." + directionValue;
+                if (documentId.endsWith(suffix)) {
+                    documentId = documentId.substring(0, documentId.length() - suffix.length());
+                    break;
+                }
+            }
+        }
+        return edgeSchema.getLabel() + ":" + documentId;
+    }
+
+    /** the direction the document's relationship was stored with, if the schema and document record it */
+    private Optional<Direction> storedDirection(GraphEdgeSchema edgeSchema, Map<String, Object> properties) {
+        if (!edgeSchema.getDirectionSchema().isPresent()) {
+            return Optional.empty();
+        }
+        GraphEdgeSchema.DirectionSchema directionSchema = edgeSchema.getDirectionSchema().get();
+        Object value = properties.get(directionSchema.getField());
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (value.toString().equals(directionSchema.getOutValue().toString())) {
+            return Optional.of(Direction.OUT);
+        }
+        if (value.toString().equals(directionSchema.getInValue().toString())) {
+            return Optional.of(Direction.IN);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * true unless the document stores an endpoint type that differs from the schema's end label. End A is always the
+     * side of the vertex being expanded, end B the other side.
+     */
+    private boolean matchesStoredTypes(GraphEdgeSchema edgeSchema, Map<String, Object> properties) {
+        return matchesStoredType(edgeSchema.getEndA(), properties) && matchesStoredType(edgeSchema.getEndB(), properties);
+    }
+
+    private boolean matchesStoredType(Optional<GraphEdgeSchema.End> end, Map<String, Object> properties) {
+        if (!end.isPresent() || !end.get().getLabel().isPresent()) {
+            return true;
+        }
+        Optional<String> storedType = storedType(end.get(), properties);
+        return !storedType.isPresent() || storedType.get().equals(end.get().getLabel().get());
+    }
+
+    /** the stored type of an end, read from the {@code <side>.type} field next to its {@code <side>.id} field */
+    private Optional<String> storedType(GraphEdgeSchema.End end, Map<String, Object> properties) {
+        List<String> idFields = Stream.ofAll(end.getIdFields()).toJavaList();
+        if (idFields.size() != 1 || !idFields.get(0).endsWith("." + GlobalConstants.ID)) {
+            return Optional.empty();
+        }
+        String idField = idFields.get(0);
+        String typeField = idField.substring(0, idField.length() - GlobalConstants.ID.length()) + GlobalConstants.TYPE;
+        List<Object> values = MapHelper.values(properties, typeField);
+        return values.isEmpty() || values.get(0) == null ? Optional.empty() : Optional.of(values.get(0).toString());
+    }
+
     private Iterable<Object> getIdFieldValues(DataItem dataItem, Iterable<String> idFields) {
         List<Object> idFieldValues = Collections.emptyList();
         boolean isfirst = true;

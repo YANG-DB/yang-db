@@ -139,7 +139,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 if (!Stream.ofAll(new TraversalHasStepFinder(DistinctFilterP::hasDistinct)
                         .getValue(context.getConstraint().get().getTraversal()))
                         .toJavaSet().isEmpty()) {
-                    results = results.distinct();
+                    results = results.distinctBy(DiscreteVertexController::endpointPair);
                 }
             }
             return results;
@@ -186,7 +186,7 @@ public class DiscreteVertexController extends VertexControllerBase {
             if (!Stream.ofAll(new TraversalHasStepFinder(DistinctFilterP::hasDistinct)
                     .getValue(context.getConstraint().get().getTraversal()))
                     .toJavaSet().isEmpty()) {
-                results = results.distinct();
+                results = results.distinctBy(DiscreteVertexController::endpointPair);
             }
         }
 
@@ -255,6 +255,19 @@ public class DiscreteVertexController extends VertexControllerBase {
     //endregion
 
     //region Private Methods
+
+    /**
+     * distinct keeps one relationship per typed endpoint pair; types are part of the key because entities of
+     * different types may share an id (Person 42, Dragon 42)
+     */
+    private static String endpointPair(Edge edge) {
+        Vertex outV = edge.outVertex();
+        Vertex inV = edge.inVertex();
+        return String.join("\u0000", edge.label(),
+                outV.label(), String.valueOf(outV.id()),
+                inV.label(), String.valueOf(inV.id()));
+    }
+
     private boolean canDoWithoutQuery(SearchVertexQuery searchVertexQuery, CompositeControllerContext context) {
         Set<String> labels = context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
