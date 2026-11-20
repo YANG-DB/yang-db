@@ -94,6 +94,12 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
 
         boolean isReversed = Rel.class.isAssignableFrom(elements.get(0).geteBase().getClass());
 
+        // an undirected relation reads the same from either end, so reversing it keeps RL (AsgQueryUtil.reverse)
+        Rel queryRel = (Rel) (isReversed ? elements.get(0) : elements.get(1)).geteBase();
+        if (queryRel.getDir() == Rel.Direction.RL) {
+            return asgRelation.geteBase().getDir() == Rel.Direction.RL;
+        }
+
         return isReversed ? ((Rel)(elements.get(0).geteBase())).getDir() != asgRelation.geteBase().getDir() :
                 ((Rel)(elements.get(1).geteBase())).getDir() == asgRelation.geteBase().getDir();
     }

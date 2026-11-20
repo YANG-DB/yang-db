@@ -77,6 +77,36 @@ public class ReverseRelationOpValidatorTests {
     }
     //endregion
 
+    // undirected (a)-[r]-(b): walked from b, the reversed relation is still RL (KNOWN_ISSUES Q1)
+    public static AsgQuery undirectedQuery() {
+        return AsgQuery.Builder.start("undirected", "ont")
+                .next(typed(1, OntologyTestUtils.PERSON.type, "A"))
+                .next(rel(2, OWN.getrType(), Rel.Direction.RL))
+                .next(typed(3, OntologyTestUtils.DRAGON.type, "B")).build();
+    }
+
+    @Test
+    public void testValidPlan_undirected_entity3_rel2_entity1() {
+        AsgQuery asgQuery = undirectedQuery();
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
+        );
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
+    @Test
+    public void testValidPlan_undirected_entity1_rel2_entity3() {
+        AsgQuery asgQuery = undirectedQuery();
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
+        );
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
     //region Invalid Plan
     @Test
     public void testInvalidPlan_entity3_rel2() {
