@@ -108,8 +108,9 @@ public class TraversalIdentityIT implements BaseITMarker {
 
         client.admin().indices().refresh(new RefreshRequest()).actionGet();
 
-        GraphElementSchemaProvider schemaProvider =
-                new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc, ontologyProvider).get(ontology);
+        // wrapped like the service does (CachedGraphElementSchemaProviderFactory)
+        GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProvider.Cached(
+                new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc, ontologyProvider).get(ontology));
         OpensearchGraphConfiguration graphConfiguration = new OpensearchGraphConfiguration();
         graphConfiguration.setElasticGraphDefaultSearchSize(1000);
         graphConfiguration.setElasticGraphMaxSearchSize(1000);
@@ -204,6 +205,17 @@ public class TraversalIdentityIT implements BaseITMarker {
                 "Person:85->Dragon:42", "Person:85->Dragon:7"), pairs(ownedThroughFilter("Dragon").toList()));
         Assert.assertEquals(Arrays.asList("Person:23->Horse:9", "Person:42->Horse:7"),
                 pairs(ownedThroughFilter("Horse").toList()));
+    }
+
+    // Q1: an undirected step from the target side of a relation (Dragons are only ever owned) finds the owners
+    @Test
+    public void testUndirectedFromTargetSide() {
+        List<Path> paths = g.V().as("A")
+                .has(CONSTRAINT, Constraint.by(__.and(__.has(T.id, "34"), __.has(T.label, "Dragon"))))
+                .bothE().as("A--B").has(CONSTRAINT, Constraint.by(__.has(T.label, "Own")))
+                .otherV().as("B")
+                .path().toList();
+        Assert.assertEquals(Collections.singletonList("Person:42"), targets(paths));
     }
 
     // Q2 (undirected): the owners of Dragon 42 must not show up as relationships of Person 42

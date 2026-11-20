@@ -146,9 +146,12 @@ public interface GraphElementSchemaProvider {
                 case IN:
                     return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label)))
                             .orElseGet(Collections::emptyList);
-                default://both - first search the out going direction if no found try the in direction
-                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label)))
-                            .orElseGet(()->this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label)));
+                default:
+                    // both: the outgoing and the incoming schemas. Cached stores empty lists for absent directions, so
+                    // "OUT unless missing" returned nothing for a vertex that is only ever the target (Guild in MemberOf)
+                    return bothDirections(
+                            this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label)),
+                            this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label)));
             }
         }
 
@@ -159,10 +162,17 @@ public interface GraphElementSchemaProvider {
                 case IN:
                     return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label,vertexLabelB)))
                             .orElseGet(Collections::emptyList);
-                default://both - first search the out going direction if no found try the in direction
-                    return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label,vertexLabelB)))
-                            .orElseGet(()->this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label,vertexLabelB)));
+                default:
+                    return bothDirections(
+                            this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.OUT.toString(), label, vertexLabelB)),
+                            this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, Direction.IN.toString(), label, vertexLabelB)));
             }
+        }
+
+        private static Iterable<GraphEdgeSchema> bothDirections(List<GraphEdgeSchema> out, List<GraphEdgeSchema> in) {
+            return Stream.ofAll(out == null ? Collections.<GraphEdgeSchema>emptyList() : out)
+                    .appendAll(in == null ? Collections.<GraphEdgeSchema>emptyList() : in)
+                    .toJavaList();
         }
 
         @Override
