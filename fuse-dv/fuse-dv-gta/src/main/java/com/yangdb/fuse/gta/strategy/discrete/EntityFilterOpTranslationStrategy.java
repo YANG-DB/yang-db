@@ -161,16 +161,16 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             EPropGroup ePropGroup,
             Ontology.Accessor ont) {
 
-        List<Traversal> entityTraversals = Collections.emptyList();
-
-        //hotfix for concrete filters
-        if (entity instanceof EConcrete) {
-            entityTraversals = Collections.singletonList(__.start().has(T.id, P.eq(((EConcrete)entity).geteID())));
-        }
-
-        if (this.options == EntityTranslationOptions.filterEntity) {
-            entityTraversals = Collections.singletonList(getEntityFilterTraversal(entity, ont));
-        }
+        // the entity's type (and id, if concrete) is always part of the filter: cleanPreviousFilteringSteps removed
+        // the has(label) appended for this entity, and without it any entity reached through the relation passes
+        // (an owned Horse in a (d:Dragon) slot)
+        // an untyped entity that may be of any type needs no type check
+        boolean anyType = entity instanceof EUntyped &&
+                EntityTranslationUtil.getValidEntityNames(ont, entity).size() >= Stream.ofAll(ont.entities()).size();
+        Traversal entityFilter = anyType ? null : getEntityFilterTraversal(entity, ont);
+        List<Traversal> entityTraversals = entityFilter == null ?
+                Collections.emptyList() :
+                Collections.singletonList(entityFilter);
 
         List<Traversal> epropGroupTraversals = Collections.emptyList();
         if (!ePropGroup.getProps().isEmpty() || !ePropGroup.getGroups().isEmpty()) {
@@ -197,7 +197,10 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     private Traversal getEntityFilterTraversal(EEntityBase entity, Ontology.Accessor ont) {
         if (entity instanceof EConcrete) {
             //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
-            return __.start().has(T.id, P.eq(((EConcrete)entity).geteID()));
+            // id and type: entities of different types may share an id
+            return __.start().and(
+                    __.start().has(T.id, P.eq(((EConcrete)entity).geteID())),
+                    __.start().has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);

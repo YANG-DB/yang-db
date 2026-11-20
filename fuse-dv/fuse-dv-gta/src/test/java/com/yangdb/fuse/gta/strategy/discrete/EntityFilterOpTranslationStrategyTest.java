@@ -22,6 +22,7 @@ import com.yangdb.fuse.unipop.process.traversal.dsl.graph.__;
 import com.yangdb.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -216,12 +217,16 @@ public class EntityFilterOpTranslationStrategyTest {
         EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
+        // B's type is part of the filter: the has(label) appended for B is removed before the filter is built,
+        // and without it any entity reached through the relation passes (KNOWN_ISSUES Q2: horses as dragons)
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
                         Constraint.by(__.start().and(
-                                __.start().has("name", "value1"),
-                                __.start().has("age", 30))))
+                                __.start().has(T.label, P.eq("Person")),
+                                __.start().and(
+                                        __.start().has("name", "value1"),
+                                        __.start().has("age", 30)))))
                 .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -277,7 +282,8 @@ public class EntityFilterOpTranslationStrategyTest {
                 .otherV().as("B");
 */
 
-        Assert.assertEquals("[VertexStep(OUT,[promiseFilter],edge), HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~id.eq(12345678)])], [AndStep([[HasStep([name.eq(value1)])], [HasStep([age.eq(30)])]])]])]))]), EdgeOtherVertexStep@[B]]", actualTraversal.toString());
+        // a concrete entity is its id and its type (Person 22 is not Dragon 22)
+        Assert.assertEquals("[VertexStep(OUT,[promiseFilter],edge), HasStep([constraint.eq(Constraint.by([AndStep([[AndStep([[HasStep([~id.eq(12345678)])], [HasStep([~label.eq(Person)])]])], [AndStep([[HasStep([name.eq(value1)])], [HasStep([age.eq(30)])]])]])]))]), EdgeOtherVertexStep@[B]]", actualTraversal.toString());
     }
 
 }

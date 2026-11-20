@@ -123,6 +123,10 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                                 __.start().has(T.label, "Person"))))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
+                        .otherV()
+                        // the target's type is checked by the filter step (KNOWN_ISSUES Q2)
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Person")))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -164,7 +168,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .otherV().as("A");
 */
 
-        Assert.assertEquals("[GraphStep(vertex,[])@[B], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Dragon)])]))]), VertexStep(OUT,edge)@[B-->A], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Fire)])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([constraint.eq(Constraint.by([HasStep([~id.eq(12345678)])]))]), EdgeOtherVertexStep@[A]]",
+        Assert.assertEquals("[GraphStep(vertex,[])@[B], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Dragon)])]))]), VertexStep(OUT,edge)@[B-->A], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Fire)])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~id.eq(12345678)])], [HasStep([~label.eq(Person)])]])]))]), EdgeOtherVertexStep@[A]]",
                 actualTraversal.toString());
     }
 
@@ -179,6 +183,10 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Person")))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
+                        .otherV()
+                        // the target's type is checked by the filter step (KNOWN_ISSUES Q2)
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Dragon")))
                         .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -197,6 +205,10 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                                 __.start().has(T.label, "Person"))))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
+                        .otherV()
+                        // the target's type is checked by the filter step (KNOWN_ISSUES Q2)
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Dragon")))
                         .otherV().as("B")
                         .outE().as("B-->C")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.start().has(T.label, "Fire")))
