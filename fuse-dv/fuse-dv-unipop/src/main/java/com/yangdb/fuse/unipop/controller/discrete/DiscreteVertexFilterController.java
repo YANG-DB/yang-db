@@ -34,6 +34,7 @@ import com.yangdb.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.yangdb.fuse.unipop.controller.search.SearchBuilder;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProviderFactory;
 import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
+import com.yangdb.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.yangdb.fuse.unipop.converter.SearchHitScrollIterable;
 import com.yangdb.fuse.unipop.predicates.SelectP;
 import com.yangdb.fuse.unipop.promise.TraversalConstraint;
@@ -41,6 +42,8 @@ import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opensearch.action.search.SearchRequestBuilder;
 import org.opensearch.client.Client;
 import org.opensearch.search.SearchHit;
@@ -48,10 +51,12 @@ import org.unipop.process.predicate.DistinctFilterP;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.yangdb.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
@@ -98,13 +103,27 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
-        return filterVertices(searchVertexQuery, constraint, selectPHasContainers);
+        // only vertices of the filtered type: the search reads its index off the bulk's first vertex, and a vertex of
+        // another type must not be matched against a same-id document of the filtered type (Horse 7 vs Dragon 7)
+        List<Vertex> vertices = searchVertexQuery.getVertices();
+        if (constraint.isPresent()) {
+            Set<String> labels = new TraversalValuesByKeyProvider().getValueByKey(constraint.get().getTraversal(), T.label.getAccessor());
+            if (!labels.isEmpty()) {
+                vertices = Stream.ofAll(vertices).filter(vertex -> labels.contains(vertex.label())).toJavaList();
+            }
+        }
+        if (vertices.isEmpty()) {
+            return Collections.emptyIterator();
+        }
+
+        return filterVertices(searchVertexQuery, vertices, constraint, selectPHasContainers);
     }
     //endregion
 
     //region Private Methods
     private Iterator<Edge> filterVertices(
             SearchVertexQuery searchVertexQuery,
+            List<Vertex> vertices,
             Optional<TraversalConstraint> constraint,
             List<HasContainer> selectPHasContainers) {
         SearchBuilder searchBuilder = new SearchBuilder();
@@ -114,7 +133,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 new DiscreteVertexFilterControllerContext(
                         this.graph,
                         searchVertexQuery.getStepDescriptor(),
-                        searchVertexQuery.getVertices(),
+                        vertices,
                         constraint,
                         selectPHasContainers,
                         schemaProvider,

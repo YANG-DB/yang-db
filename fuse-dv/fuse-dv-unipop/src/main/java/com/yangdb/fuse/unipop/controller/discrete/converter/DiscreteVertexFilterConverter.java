@@ -64,15 +64,20 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
     @Override
     public Iterable<Edge> convert(SearchHit hit) {
         Vertex contextVertex = context.getVertex(hit.getId());
-        Map<String, Object> contextVertexProperties =
-                Stream.ofAll(contextVertex::properties).toJavaMap(property -> new Tuple2<>(property.key(), property.value()));
 
         //        ##Es 5 optimization for searchHit deprecated Logger
         //        Map<String, Object> source = SearchHitUtils.convertToMap(hit);
         Map<String, Object> source = new HashMap<>(hit.getSourceAsMap());
+        String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
+        // same id, different type (Dragon 7 found for Horse 7): not a match
+        if (contextVertex == null || !label.equals(contextVertex.label())) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Object> contextVertexProperties =
+                Stream.ofAll(contextVertex::properties).toJavaMap(property -> new Tuple2<>(property.key(), property.value()));
         contextVertexProperties.putAll(source);
 
-        String label = this.typeToLabelVertexSchemas.get(source.get("type")).getLabel();
         String stepName = context.getStepDescriptor().getDescription().orElse(label);
         profiler.get().incrementCount(stepName,1);
 

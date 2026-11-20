@@ -29,6 +29,7 @@ import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.executor.ontology.schema.load.IndexProviderBasedCSVLoader;
 import com.yangdb.fuse.model.results.LoadResponse;
+import com.yangdb.fuse.model.GlobalConstants;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 import com.yangdb.fuse.unipop.controller.search.SearchOrderProvider;
@@ -78,10 +79,11 @@ public class TraversalIdentityIT implements BaseITMarker {
         load(loader, "Entity", "Person", "id,firstName,lastName,gender,birthDate,deathDate,height,name\n" +
                 "42,p42,,male,,,,p42\n" +
                 "22,p22,,male,,,,p22\n" +
-                "85,p85,,male,,,,p85\n");
+                "85,p85,,male,,,,p85\n" +
+                "23,p23,,male,,,,p23\n");
         load(loader, "Entity", "Dragon", "id,name,birthDate,power,gender,color\n" +
                 "7,d7,,,,\n34,d34,,,,\n22,d22,,,,\n42,d42,,,,\n4,d4,,,,\n465,d465,,,,\n44,d44,,,,\n65,d65,,,,\n");
-        load(loader, "Entity", "Horse", "id,name,weight,maxSpeed,distance\n7,h7,,,\n");
+        load(loader, "Entity", "Horse", "id,name,weight,maxSpeed,distance\n7,h7,,,\n9,h9,,,\n");
 
         load(loader, "Relation", "Own", OWN_HEADER +
                 // Person 42 owns Dragon 34 and Horse 7 (Dragon 7 exists, but nobody owns it)
@@ -90,7 +92,12 @@ public class TraversalIdentityIT implements BaseITMarker {
                 // same id on both ends
                 "own3,22,Person,p22,p22,22,Dragon,d22,01/01/1900,\n" +
                 // Dragon 42 (same id as Person 42) is owned by Person 85
-                "own4,85,Person,p85,p85,42,Dragon,d42,01/01/1900,\n");
+                "own4,85,Person,p85,p85,42,Dragon,d42,01/01/1900,\n" +
+                // Dragon 7 is owned too, so Horse 7 and Dragon 7 meet in one bulk of owned things
+                "own5,85,Person,p85,p85,7,Dragon,d7,01/01/1900,\n" +
+                // Person 23 owns a dragon and a horse whose ids collide with nothing
+                "own6,23,Person,p23,p23,65,Dragon,d65,01/01/1900,\n" +
+                "own7,23,Person,p23,p23,9,Horse,h9,01/01/1900,\n");
 
         load(loader, "Relation", "Fire", FIRE_HEADER +
                 // 4->465 and 44->65 concatenate to the same "Fire4465"
@@ -154,6 +161,51 @@ public class TraversalIdentityIT implements BaseITMarker {
         List<Path> paths = outgoing("Person", "42", "Own").toList();
         Assert.assertEquals(Arrays.asList("Dragon:34", "Horse:7"), targets(paths));
         Assert.assertEquals(Arrays.asList("Person:42->Dragon:34", "Person:42->Horse:7"), edgeEnds(paths));
+    }
+
+    /**
+     * the service's shape when the target entity has a filter (EntityFilterOp, e.g. projected properties): the
+     * reached vertices are checked against their index through the promise-filter step
+     */
+    private GraphTraversal<?, Path> ownedThroughFilter(String targetType) {
+        return ownedThroughFilter(__.has(T.label, "Person"), targetType);
+    }
+
+    private GraphTraversal<?, Path> ownedThroughFilter(org.apache.tinkerpop.gremlin.process.traversal.Traversal owner, String targetType) {
+        return g.V().as("A")
+                .has(CONSTRAINT, Constraint.by(owner))
+                .bothE().as("A--B").has(CONSTRAINT, Constraint.by(__.has(T.label, "Own")))
+                .otherV()
+                .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                .has(CONSTRAINT, Constraint.by(__.has(T.label, targetType)))
+                .otherV().as("B")
+                .path();
+    }
+
+    private static List<String> pairs(List<Path> paths) {
+        return paths.stream().map(p -> vertexKey(p.get("A")) + "->" + vertexKey(p.get("B")))
+                .sorted().collect(Collectors.toList());
+    }
+
+    // Q2 through the filter step: owned things of several types reach the filter in one bulk; each is checked
+    // against its own type
+    @Test
+    public void testFilteredTargetOfMixedTypes() {
+        org.apache.tinkerpop.gremlin.process.traversal.Traversal p23 = __.and(__.has(T.id, "23"), __.has(T.label, "Person"));
+        Assert.assertEquals(Collections.singletonList("Person:23->Dragon:65"), pairs(ownedThroughFilter(p23, "Dragon").toList()));
+        p23 = __.and(__.has(T.id, "23"), __.has(T.label, "Person"));
+        Assert.assertEquals(Collections.singletonList("Person:23->Horse:9"), pairs(ownedThroughFilter(p23, "Horse").toList()));
+    }
+
+    // Q2 through the filter step: a Horse reached through Own is not turned into the Dragon with the same id
+    @org.junit.Ignore("Needs unipop-core: UniGraphVertexStep groups a bulk's traversers and vertices by id only, so " +
+            "Horse 7 and Dragon 7 collapse into one query vertex and share each other's results. Fix (type+id keys, " +
+            "one query per type) is ready but unipop-core is outside stream B's modules - see stream B report.")
+    @Test
+    public void testFilteredTargetKeepsItsStoredType() {
+        Assert.assertEquals(Arrays.asList("Person:22->Dragon:22", "Person:42->Dragon:34", "Person:85->Dragon:42",
+                "Person:85->Dragon:7"), pairs(ownedThroughFilter("Dragon").toList()));
+        Assert.assertEquals(Collections.singletonList("Person:42->Horse:7"), pairs(ownedThroughFilter("Horse").toList()));
     }
 
     // Q2 (undirected): the owners of Dragon 42 must not show up as relationships of Person 42
@@ -230,6 +282,6 @@ public class TraversalIdentityIT implements BaseITMarker {
         List<String> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, org.apache.tinkerpop.gremlin.process.traversal.P.within(all))))
                 .toList().stream().map(TraversalIdentityIT::vertexKey).sorted().collect(Collectors.toList());
         Assert.assertEquals(Arrays.asList("Dragon:22", "Dragon:34", "Dragon:4", "Dragon:42", "Dragon:44", "Dragon:465",
-                "Dragon:65", "Dragon:7", "Horse:7", "Person:22", "Person:42", "Person:85"), vertices);
+                "Dragon:65", "Dragon:7", "Horse:7", "Horse:9", "Person:22", "Person:23", "Person:42", "Person:85"), vertices);
     }
 }
