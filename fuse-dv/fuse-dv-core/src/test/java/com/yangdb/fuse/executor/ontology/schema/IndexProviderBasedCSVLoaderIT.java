@@ -184,6 +184,39 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         Assert.assertEquals(inAll.getHits().getTotalHits().value, inSelected.getHits().getTotalHits().value);
     }
 
+    /**
+     * L4 end-to-end: the service loads through the injected RawSchema chain
+     * (Cached -> PartitionFiltered -> Prefixed -> IndexProviderRawSchema, see ExecutorModule.bindRawSchema),
+     * and the tutorial's Fire.csv carries negative epoch-millis dates. 1900s rows belong in idx_fire_2000.
+     */
+    @Test
+    public void testTutorialFireRowsThroughServiceSchemaChain() throws IOException {
+        RawSchema serviceSchema = serviceSchemaChain();
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, nestedProviderIfc, serviceSchema, Mockito.mock(IdGeneratorDriver.class), client);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, serviceSchema);
+        // first rows of docs/tutorial/sample/dragons/csv/Fire.csv, verbatim
+        String rows = "\"id\",\"entityA.id\",\"entityA.type\",\"entityB.id\",\"entityB.type\",\"date\",\"temperature\"\n"
+                + "\"0_3_0\",\"0\",\"Dragon\",\"3\",\"Dragon\",\"-1917478511823\",\"187\"\n"
+                + "\"0_3_1\",\"0\",\"Dragon\",\"3\",\"Dragon\",\"-1134316575110\",\"333\"\n"
+                + "\"0_3_3\",\"0\",\"Dragon\",\"3\",\"Dragon\",\"-1900890540445\",\"360\"\n";
+
+        LoadResponse<String, FuseError> response = csvLoader.load("Relation", "Fire", rows, GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(6, response.getResponses().get(1).getSuccesses().size());
+
+        client.admin().indices().refresh(new RefreshRequest("idx_fire*")).actionGet();
+        Assert.assertEquals(0, count("idx_fire_500"));
+        Assert.assertEquals(0, count("idx_fire_1000"));
+        Assert.assertEquals(0, count("idx_fire_1500"));
+        Assert.assertEquals(6, count("idx_fire_2000"));
+    }
+
+    static RawSchema serviceSchemaChain() {
+        GraphElementSchemaProvider provider = new GraphElementSchemaProviderJsonFactory(config, nestedProviderIfc, ontologyProvider).get(ontology);
+        RawSchema prefixed = new PrefixedRawSchema(new IndexProviderRawSchema(provider), "");
+        RawSchema filtered = new PartitionFilteredRawSchema(prefixed, () -> client);
+        return new CachedRawSchema(Collections::emptyList, filtered);
+    }
+
     private static long count(String index) {
         return client.prepareSearch(index).setQuery(new MatchAllQueryBuilder()).setSize(0).get().getHits().getTotalHits().value;
     }

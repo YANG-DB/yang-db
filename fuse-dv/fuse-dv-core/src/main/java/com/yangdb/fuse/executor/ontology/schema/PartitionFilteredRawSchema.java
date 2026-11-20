@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.opensearch.client.Client;
 
@@ -49,6 +50,12 @@ public class PartitionFilteredRawSchema implements RawSchema {
     @Override
     public IndexPartitions getPartition(String type) {
         IndexPartitions indexPartitions = this.rawSchema.getPartition(type);
+
+        if (indexPartitions instanceof TimeSeriesIndexPartitions) {
+            // keep the time buckets - a plain IndexPartitions would make the loader write to the first index
+            // (index filtering is currently a no-op, see filterIndices)
+            return indexPartitions;
+        }
 
         if (indexPartitions.getPartitionField().isPresent()) {
             return new IndexPartitions.Impl(

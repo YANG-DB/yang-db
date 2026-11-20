@@ -102,6 +102,32 @@ public class TimeBasedIndexPartitionsTest {
         }
     }
 
+    /**
+     * the service wraps the schema in Cached -> PartitionFiltered -> Prefixed (ExecutorModule.bindRawSchema);
+     * the wrappers must keep the time partitioning, or the loader falls back to the first index
+     */
+    @Test
+    public void serviceSchemaWrappersKeepTimeBuckets() throws Exception {
+        Assert.assertEquals("idx_fire_2000", LoadUtils.resolveIndex(serviceChain(""), fireDoc("1909-03-27 07:44:48.177")));
+        Assert.assertEquals("p_idx_fire_2000", LoadUtils.resolveIndex(serviceChain("p_"), fireDoc("1909-03-27 07:44:48.177")));
+        Assert.assertEquals("p_idx_fire_1000", LoadUtils.resolveIndex(serviceChain("p_"), fireDoc("1000-06-15 00:00:00.000")));
+        try {
+            LoadUtils.resolveIndex(serviceChain(""), fireDoc("2050-06-15 00:00:00.000"));
+            Assert.fail("expected a load failure");
+        } catch (FuseError.FuseErrorException expected) {
+            // expected
+        }
+    }
+
+    private static RawSchema serviceChain(String prefix) {
+        GraphElementSchemaProvider provider = new GraphElementSchemaProvider.Impl(
+                Collections.emptyList(),
+                Collections.singletonList(new GraphEdgeSchema.Impl(FIRE, fire())));
+        RawSchema prefixed = new PrefixedRawSchema(new IndexProviderRawSchema(provider), prefix);
+        RawSchema filtered = new PartitionFilteredRawSchema(prefixed, () -> null);
+        return new CachedRawSchema(Collections::emptyList, filtered);
+    }
+
     @Test
     public void querySelectsOnlyBucketsThatCanMatch() {
         Assert.assertEquals(set("idx_fire_2000"), selected(P.eq(utc(1950, 6, 15, 0, 0))));

@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions.Partition.Range;
+import com.yangdb.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 
 import java.util.List;
@@ -51,6 +52,11 @@ public class PrefixedRawSchema implements RawSchema {
     @Override
     public IndexPartitions getPartition(String type) {
         IndexPartitions indexPartitions = this.rawSchema.getPartition(type);
+
+        if (indexPartitions instanceof TimeSeriesIndexPartitions) {
+            // keep the time buckets - a plain IndexPartitions would make the loader write to the first index
+            return TimeSeriesIndexPartitions.mapIndices((TimeSeriesIndexPartitions) indexPartitions, index -> this.prefix + index);
+        }
 
         if (indexPartitions.getPartitionField().isPresent()) {
             return new IndexPartitions.Impl(
