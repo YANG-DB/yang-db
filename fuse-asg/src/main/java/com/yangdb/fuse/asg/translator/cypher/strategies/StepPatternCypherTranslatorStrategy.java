@@ -25,16 +25,20 @@ package com.yangdb.fuse.asg.translator.cypher.strategies;
 import com.yangdb.fuse.asg.translator.cypher.strategies.expressions.EqualityExpression;
 import com.yangdb.fuse.model.asgQuery.AsgEBase;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.asgQuery.AsgQueryUtil;
 import com.yangdb.fuse.model.query.EBase;
 import com.yangdb.fuse.model.query.Rel;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import org.opencypher.v9_0.expressions.*;
 import org.opencypher.v9_0.util.InputPosition;
 import scala.Option;
 import scala.Tuple2;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.yangdb.fuse.model.asgQuery.AsgQueryUtil.maxEntityNum;
@@ -52,15 +56,57 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
     @Override
     public void apply(PatternElement element, AsgQuery query, CypherStrategyContext context) {
         if (element instanceof RelationshipChain) {
-            final PatternElement left = ((RelationshipChain) element).element();
-            if(left instanceof RelationshipChain) apply(left,query,context);
-            if(left instanceof NodePattern) nodePattern.apply(left,query,context);
-
-            final RelationshipPattern relationship = ((RelationshipChain) element).relationship();
-            apply(relationship,query,context);
-            final NodePattern right = ((RelationshipChain) element).rightNode();
-            this.nodePattern.apply(right,query,context);
+            // node variables this chain shares with earlier comma-separated patterns
+            final Set<String> boundBefore = nodeNames((RelationshipChain) element).stream()
+                    .filter(name -> AsgQueryUtil.getByTag(query.getStart(), name).isPresent())
+                    .collect(Collectors.toSet());
+            applyChain((RelationshipChain) element, query, context, boundBefore, new ArrayList<>());
         }
+    }
+
+    private void applyChain(RelationshipChain chain, AsgQuery query, CypherStrategyContext context,
+                            Set<String> boundBefore, List<String> chainNodes) {
+        final PatternElement left = chain.element();
+        if (left instanceof RelationshipChain) applyChain((RelationshipChain) left, query, context, boundBefore, chainNodes);
+        if (left instanceof NodePattern) {
+            nodePattern.apply(left, query, context);
+            name((NodePattern) left).ifPresent(chainNodes::add);
+        }
+
+        final RelationshipPattern relationship = chain.relationship();
+        final NodePattern right = chain.rightNode();
+        final Optional<String> rightName = name(right);
+        if (rightName.isPresent() && AsgQueryUtil.getByTag(query.getStart(), rightName.get()).isPresent()) {
+            // the ASG is a tree: a relationship can't end on a node that already has a place in it
+            throw closingOnBoundNode(relationship, rightName.get(),
+                    chainNodes.contains(rightName.get()) || chainNodes.stream().anyMatch(boundBefore::contains));
+        }
+        apply(relationship, query, context);
+        this.nodePattern.apply(right, query, context);
+        rightName.ifPresent(chainNodes::add);
+    }
+
+    private static FuseError.FuseErrorException closingOnBoundNode(RelationshipPattern relationship, String node, boolean cyclic) {
+        final String rel = relationship.variable().isEmpty() ? "a relationship" : "relationship [" + relationship.variable().get().name() + "]";
+        final String description = cyclic
+                ? String.format("Cyclic patterns are not supported: %s ends on (%s), which the pattern already reaches. " +
+                "Only tree-shaped patterns can be matched; drop one relationship of the cycle.", rel, node)
+                : String.format("A pattern can't end on the already-matched node (%s): %s would be left without an end node. " +
+                "Write this pattern starting from (%s) instead, reversing its direction.", node, rel, node);
+        return new FuseError.FuseErrorException("Unsupported Cypher pattern", new FuseError("Unsupported Cypher pattern", description));
+    }
+
+    private static Optional<String> name(NodePattern node) {
+        return node.variable().isEmpty() ? Optional.empty() : Optional.of(node.variable().get().name());
+    }
+
+    private static List<String> nodeNames(RelationshipChain chain) {
+        final List<String> names = new ArrayList<>();
+        final PatternElement left = chain.element();
+        if (left instanceof RelationshipChain) names.addAll(nodeNames((RelationshipChain) left));
+        if (left instanceof NodePattern) name((NodePattern) left).ifPresent(names::add);
+        name(chain.rightNode()).ifPresent(names::add);
+        return names;
     }
 
 
