@@ -140,6 +140,20 @@
                 </excludes>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <!--
+              The shipped Dragons ontology, used by the tests as schema/Dragons.json. It is referenced, not copied, so
+              tests always exercise the ontology the distribution ships.
+            -->
+            <testResource>
+                <directory>${project.basedir}/../../distribution/resources/assembly/Dragons/ontology</directory>
+                <targetPath>schema</targetPath>
+                <includes><include>Dragons.json</include></includes>
+            </testResource>
+        </testResources>
     </build>
 
 </project>
