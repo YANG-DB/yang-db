@@ -9,10 +9,24 @@ import org.unipop.process.predicate.CountFilterP;
 
 import java.util.Collections;
 
+import static com.yangdb.fuse.unipop.controller.search.QueryDslAssert.assertDsl;
+
 public class CountFilterQueryTranslatorTest extends TestCase {
 
     public static final String ENTITY_A_ID = "entityA.id";
 
+    /**
+     * Expected shape of a count filter: a terms aggregation on the field with a bucket_selector sub-aggregation
+     * that runs {@code scriptSource} over the bucket's doc count.
+     */
+    static String countFilterAggregation(String scriptSource) {
+        return "{'entityA.id':{" +
+                "terms:{field:'entityA.id'}," +
+                "aggregations:{'entityA.id':{bucket_selector:{" +
+                    "buckets_path:{entityA_id_Count:'_count'}," +
+                    "script:{source:'" + scriptSource + "',lang:'painless'}," +
+                    "gap_policy:'skip'}}}}}";
+    }
 
     @Test
     public void testGtEqTranslate() {
@@ -24,7 +38,9 @@ public class CountFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a=120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        // NOTE: pins current output. "a=120" is a painless assignment, not a comparison (should be "a==120");
+        // see AggregationBuilder.BuildFilterScript.
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a=120"), aggregations.iterator().next().toString());
 
     }
 
@@ -38,6 +54,7 @@ public class CountFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a>120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        // NOTE: pins current output. gte renders as ">" (should be ">="); see AggregationBuilder.BuildFilterScript.
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>120"), aggregations.iterator().next().toString());
     }
 }
