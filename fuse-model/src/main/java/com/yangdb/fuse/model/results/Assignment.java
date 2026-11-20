@@ -141,23 +141,23 @@ public class Assignment<E extends Vertex, R extends Edge> {
         }
 
         public Builder withEntity(E entity) {
-            E currentEntity = this.entities.get(entity.id());
+            E currentEntity = this.entities.get(key(entity));
             if (currentEntity != null) {
                 entity.merge(currentEntity);
             }
 
-            entities.put(entity.id(), entity);
+            entities.put(key(entity), entity);
             this.currentNode = entity;
             return this;
         }
 
         public Builder withEntity(E entity, String tag) {
-            E currentEntity = this.entities.get(entity.id());
+            E currentEntity = this.entities.get(key(entity));
             if (currentEntity != null) {
                 entity.merge(currentEntity);
             }
 
-            entities.put(entity.id(), entity);
+            entities.put(key(entity), entity);
             this.currentNode = entity;
             return this;
         }
@@ -173,6 +173,11 @@ public class Assignment<E extends Vertex, R extends Edge> {
             return this;
         }
 
+
+        /** entities of different types may share an id (Person 22, Dragon 22), so the key is type and id */
+        private static String key(Vertex entity) {
+            return entity.label() + "\u0000" + entity.id();
+        }
 
         public E getCurrentNode() {
             return currentNode;
