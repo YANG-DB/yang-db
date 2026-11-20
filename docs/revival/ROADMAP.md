@@ -98,8 +98,14 @@ ports, and the traversal-identity bugs share code and must stay together.
 (a large share of the workstream's wall-clock time), at the cost of several agents' worth of tokens and a serial
 merge step. Beyond these four streams, more agents would mostly add merge conflicts.
 
-## Phase 1 — Shrink the footprint
-- [ ] Move `fuse-domain` (Dragons sample, ~30K LOC, 100% demo code) out of the default build
+## Phase 1 — Shrink the footprint (in review: PR from branch `phase1-examples-layout`)
+- [x] `fuse-domain` was already outside the default build (only `-P dragons-assembly` built it). Restructured, as
+      the maintainer chose (in-repo examples, retire sys-tests):
+  - `fuse-domain-dragons-assembly` → `distribution/` (it builds the quickstart image; artifactId unchanged)
+  - `fuse-domain-dragons-ext` and `-datagen` → `examples/dragons/{ext,datagen}` (new aggregator `examples/pom.xml`,
+    profile `examples`; artifactIds unchanged so IDE run configs keep working)
+  - `fuse-domain-dragons-test` (`dragons-sys-test`, 19.4K LOC, 322/418 failing, not in CI) **retired**: deleted, kept in
+    git history; the `docker/e2e` suite covers the same scenario and passes
 
 ## Phase 2 — One source of truth for test fixtures
 - [ ] Shared fixtures module replacing the Dragons ontology/mapping/CSV copies duplicated across 7+ modules
@@ -112,7 +118,7 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
 
 ## Phase 5 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog, including the OpenSearch 2.x bump (needs a REST-backed `Client` adapter for the remote-cluster connections)
-- [ ] Resolve or retire the `dragons-sys-test` profile failures
+- [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
 - [ ] Prune stale remote branches
 
 ## Dev environment notes

@@ -931,9 +931,8 @@ The project if a maven multi modules project
 
  * **fuse-asg**:  Abstract syntax graph component that transforms logical query to a lower lever logical query
  * **fuse-core**: Todo 
- * **fuse-domain**: Todo
- * * **fuse-domain-dragons**: Todo
- * * **fuse-domain-knowledge**: Todo
+ * **distribution**: the runnable engine assembly (Dragons sample configuration)
+ * **examples/dragons**: the Dragons sample domain (service extension and data generator)
 
  * **fuse-dv**: Todo
  * **fuse-model**: Todo

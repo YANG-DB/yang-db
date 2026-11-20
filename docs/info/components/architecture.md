@@ -61,10 +61,11 @@ These modules are the basic "plug-able" parts of the software allowing all the e
     - fuse-dv-unipop :  tinkerpop drivers adaptation for graph traversal over elasticserch with specific changes introduced for performance 
     - fuse-dv-stat :  statistical calculation module enabling the usage of dynamic execution planning and modeling based on pre-calculated cardinality statistics
 
-- **fuse-domain (different graph distributions)**
-    - fuse-domain-cyber : a cyber typed assembly project pre-build with the logical & physical schema representing the cyber domain world (see https://oasis-open.github.io/cti-documentation/stix/intro.html)
-    - fuse-domain-dragons : a fantasy based on Games Of Thrown ontology with dragons, kingdoms and more...
-    - fuse-domain-knowledge : a special RDF typed flat ontology allowing the schema seamless evolution over ontological changes
+- **distribution**: assembles the runnable engine, with the configuration (ontology, index provider, application.conf)
+  of the Dragons sample, into `distrib/dragon`. The Docker image is built from it (`-P dragons-assembly`).
+- **examples** (sample domains, outside the default build)
+    - examples/dragons/ext : the Dragons service extension (`DragonsModule`), loaded by the distribution's application.conf
+    - examples/dragons/datagen : generator for the Dragons tutorial data (a fantasy world with dragons, kingdoms and more)
  
 The usage of the dependency injection framework guice togather with jooby (a modern, performant and easy to use web framework) makes it easy to load the modules in the correct order to allow plug-able architecture.
 
