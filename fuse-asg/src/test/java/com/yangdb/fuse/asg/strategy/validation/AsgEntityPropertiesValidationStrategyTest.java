@@ -176,5 +176,51 @@ public class AsgEntityPropertiesValidationStrategyTest {
         Assert.assertEquals(Stream.ofAll(validationResult.errors()).toJavaArray(String.class).length, 2);
     }
 
+    /** the real Dragons ontology declares id/type as metadata on every entity; `match (p) where p:A OR p:B` filters on it */
+    private Ontology withIdTypeMetadata(Ontology ontology) {
+        ontology.getEntityTypes().forEach(e -> e.setMetadata(java.util.Arrays.asList("id", "type")));
+        return ontology;
+    }
+
+    @Test
+    public void testUntypedLabelPredicateOnTypeMetadataIsValid() {
+        AsgQuery query = AsgQuery.Builder.start("Q8", "Dragons")
+                .next(unTyped(1, PERSON.type, DRAGON.type))
+                .next(ePropGroup(10, EProp.of(11, "type", of(ConstraintOp.inSet, java.util.Arrays.asList(PERSON.type, DRAGON.type)))))
+                .build();
+
+        ValidationResult validationResult = new AsgEntityPropertiesValidatorStrategy()
+                .apply(query, new AsgStrategyContext(new Ontology.Accessor(withIdTypeMetadata(ontology))));
+        Assert.assertTrue(String.join(",", validationResult.errors()), validationResult.valid());
+    }
+
+    @Test
+    public void testUntypedWithoutTypesAcceptsAnyEntityField() {
+        // a bare `match (p)` has no vTypes: it may be any entity type
+        AsgQuery query = AsgQuery.Builder.start("Q8", "Dragons")
+                .next(unTyped(1))
+                .next(ePropGroup(10,
+                        EProp.of(11, "type", of(ConstraintOp.inSet, java.util.Arrays.asList(PERSON.type, DRAGON.type))),
+                        EProp.of(12, FIRST_NAME.type, of(eq, "Moshe"))))
+                .build();
+
+        ValidationResult validationResult = new AsgEntityPropertiesValidatorStrategy()
+                .apply(query, new AsgStrategyContext(new Ontology.Accessor(withIdTypeMetadata(ontology))));
+        Assert.assertTrue(String.join(",", validationResult.errors()), validationResult.valid());
+    }
+
+    @Test
+    public void testUntypedStillRejectsFieldOfNoListedType() {
+        AsgQuery query = AsgQuery.Builder.start("Q8", "Dragons")
+                .next(unTyped(1, HORSE.type, DRAGON.type))
+                .next(ePropGroup(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
+                .build();
+
+        ValidationResult validationResult = new AsgEntityPropertiesValidatorStrategy()
+                .apply(query, new AsgStrategyContext(new Ontology.Accessor(withIdTypeMetadata(ontology))));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
+    }
+
 
 }

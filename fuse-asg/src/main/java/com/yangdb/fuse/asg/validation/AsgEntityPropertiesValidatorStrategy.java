@@ -105,7 +105,13 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             }
 
         } else if (base.geteBase() instanceof EUntyped) {
-            Stream<String> types = Stream.ofAll(((EUntyped) base.geteBase()).getvTypes()).map(accessor::$entity$).flatMap(EntityType::getProperties);
+            EUntyped untyped = (EUntyped) base.geteBase();
+            // no vTypes means "any entity type" (a bare `match (p)`), minus the excluded nvTypes; fields() includes metadata
+            // such as `type`, which `where p:A or p:B` filters on
+            Iterable<String> candidates = untyped.getvTypes().isEmpty()
+                    ? Stream.ofAll(accessor.eTypes()).filter(t -> !untyped.getNvTypes().contains(t))
+                    : untyped.getvTypes();
+            Stream<String> types = Stream.ofAll(candidates).map(accessor::$entity$).flatMap(EntityType::fields);
             String pType = property.getpType();
 
             //skip projection fields validation
