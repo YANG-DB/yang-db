@@ -27,6 +27,10 @@ the following :
  - https://neo4j.com/blog/open-cypher-sql-for-graphs/
 
 ### Let's start asking questions
+> **Shortcut: the Dragons playground.** Open http://localhost:8888/dragons/swagger, run
+> `POST /dragons/tutorial/load` once (it loads all of the tutorial data), then pick any query from this tutorial in the
+> *Examples* list of `GET /query/cypher/run` and press **Execute**. No copying and pasting needed.
+
 First I would like to see some Dragons in the graph, I will use the REST API for sending the appropriate cypher query
 
 #### Query:1

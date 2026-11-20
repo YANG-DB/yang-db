@@ -1,0 +1,286 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "YANG-DB Dragons playground",
+    "version": "1.0",
+    "description": "Try the [Dragons tutorial](https://github.com/YANG-DB/yang-db/tree/main/docs/tutorial/sample/dragons) without copying text around.\n\n1. **Set up the tutorial**: run `POST /dragons/tutorial/load` once. It registers the Dragons ontology, creates the indices and loads every tutorial CSV.\n2. **Query the dragons**: open `GET /query/cypher/run`, pick a query from the *Examples* list and press **Execute**.\n\nEvery example here is also checked by the end-to-end suite (`docker/e2e`), so they are known to work. The full, generated API is at [/swagger](/swagger)."
+  },
+  "servers": [
+    {
+      "url": "/fuse"
+    }
+  ],
+  "tags": [
+    {
+      "name": "1. Set up the tutorial"
+    },
+    {
+      "name": "2. Query the dragons"
+    },
+    {
+      "name": "3. Inspect"
+    }
+  ],
+  "paths": {
+    "/dragons/tutorial/load": {
+      "post": {
+        "tags": [
+          "1. Set up the tutorial"
+        ],
+        "summary": "Load the Dragons tutorial data (one click)",
+        "description": "Runs the documented setup sequence: id generator init, ontology registration, index creation, then every tutorial CSV (1,000 dragons, 100 people, 500 horses, 8 kingdoms, 15 guilds and about 20,000 relationships). Takes a minute or two.",
+        "parameters": [
+          {
+            "name": "reset",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Drop the Dragons indices first, so the load starts clean. With `false`, rows that already exist are reported as failures (INSERT never overwrites)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per-file summary: rows, successes, failures and any error"
+          }
+        }
+      }
+    },
+    "/query/cypher/run": {
+      "get": {
+        "tags": [
+          "2. Query the dragons"
+        ],
+        "summary": "Run a tutorial Cypher query",
+        "description": "Pick a query from the **Examples** list of the `cypher` parameter. You can also edit it or type your own.",
+        "parameters": [
+          {
+            "name": "cypher",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "Q1": {
+                "summary": "Q1 - All dragons",
+                "value": "Match (d:Dragon) return *",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "Q2a": {
+                "summary": "Q2a - Who knows whom (undirected)",
+                "value": "Match (p1:Person)-[know:Know]-(p2:Person) return *",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q1",
+                  "Q4"
+                ]
+              },
+              "Q2": {
+                "summary": "Q2 - People who know a woman",
+                "value": "Match (p1:Person)-[know:Know]-(p2:Person {gender: FEMALE}) return *",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q1",
+                  "Q4"
+                ]
+              },
+              "Q3": {
+                "summary": "Q3 - Guilds registered in kingdoms with funds > 0",
+                "value": "Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q1",
+                  "Q4"
+                ]
+              },
+              "Q4": {
+                "summary": "Q4 - Same, with a direction (Guild -> Kingdom)",
+                "value": "Match (g:Guild)-[r:RegisteredIn]->(k:Kingdom)  where k.funds > 0 return *",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "Q5": {
+                "summary": "Q5 - Dragons that fired on (or were fired on by) a black dragon",
+                "value": "Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q1",
+                  "Q3",
+                  "Q4"
+                ]
+              },
+              "Q6": {
+                "summary": "Q6 - Women with a black dragon that fought a male dragon, and a horse from a funded kingdom",
+                "value": "Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}), (p:Person)-[oh:Own]-(h:Horse), (d:Dragon)-[f:Fire]-(other:Dragon { gender:MALE}), (h:Horse)-[org:OriginatedIn]->(k:Kingdom ) where k.funds > 0  return *",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q1",
+                  "Q2",
+                  "Q3"
+                ]
+              },
+              "Q7": {
+                "summary": "Q7 - People who know more than 15 others (count filter)",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "Q8": {
+                "summary": "Q8 - People who know more than 10 others, showing only the women they know",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "Q9": {
+                "summary": "Q9 - Each pair of dragons that fired, once (distinct)",
+                "value": "Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2",
+                "x-doc": "query-the-data.md",
+                "x-known": [
+                  "Q3",
+                  "Q4"
+                ]
+              },
+              "QA": {
+                "summary": "QA - Every entity of every type (untyped match)",
+                "value": "match (p) return *",
+                "x-doc": "Queries.md",
+                "x-known": [
+                  "Q5 (stream B)"
+                ]
+              },
+              "QB": {
+                "summary": "QB - People and dragons (WHERE p:A OR p:B)",
+                "value": "match (p) where p:Person OR p:Dragon return *",
+                "x-doc": "Queries.md",
+                "x-known": [
+                  "Q5 (stream B)"
+                ]
+              },
+              "QC": {
+                "summary": "QC - All people",
+                "value": "match (p:Person) return *",
+                "x-doc": "Queries.md",
+                "x-known": []
+              },
+              "QD": {
+                "summary": "QD - A person by name",
+                "value": "match (p:Person {name:'Braden Heaney'}) return *",
+                "x-doc": "Queries.md",
+                "x-known": []
+              },
+              "QE": {
+                "summary": "QE - People who own a dragon",
+                "value": "match (p:Person)-[own:Own]-(d:Dragon) return *",
+                "x-doc": "Queries.md",
+                "x-known": [
+                  "Q1",
+                  "Q2",
+                  "Q3",
+                  "Q4"
+                ]
+              },
+              "QF": {
+                "summary": "QF - Dragon owners in the Bolling guild",
+                "value": "match (p1:Person)-[own:Own]-(d:Dragon), (p1:Person)-[member:MemberOf]-(g:Guild {name:Bolling}) return *",
+                "x-doc": "Queries.md",
+                "x-known": [
+                  "Q1",
+                  "Q2",
+                  "Q3"
+                ]
+              },
+              "QG": {
+                "summary": "QG - Owners of dragons that exchanged very hot fire (> 600)",
+                "value": "match (p1:Person)-[own1:Own]-(d1:Dragon), (d1:Dragon)-[fire:Fire]-(d2:Dragon), (d2:Dragon)<-[own2:Own]-(p2:Person) where fire.temperature > 600 return *",
+                "x-doc": "Queries.md",
+                "x-known": [
+                  "Q1",
+                  "Q2",
+                  "Q3"
+                ]
+              }
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "Dragons"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "paths",
+                "graph",
+                "count",
+                "csv",
+                "forwardPaths",
+                "projection"
+              ]
+            },
+            "description": "Leave empty for the default result shape. `paths` returns assignments; `count` returns label counts only; `projection` materializes the results into the `projection` index."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query resource with the first page of results"
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}": {
+      "get": {
+        "tags": [
+          "3. Inspect"
+        ],
+        "summary": "Show the Dragons ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "Dragons"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The ontology"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "3. Inspect"
+        ],
+        "summary": "Service health",
+        "responses": {
+          "200": {
+            "description": "Alive"
+          }
+        }
+      }
+    }
+  }
+}

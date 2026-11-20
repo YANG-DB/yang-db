@@ -98,7 +98,7 @@ ports, and the traversal-identity bugs share code and must stay together.
 (a large share of the workstream's wall-clock time), at the cost of several agents' worth of tokens and a serial
 merge step. Beyond these four streams, more agents would mostly add merge conflicts.
 
-## Phase 1 — Shrink the footprint (in review: PR from branch `phase1-examples-layout`)
+## Phase 1 — Shrink the footprint ✅ done 2026-11-20 (PR #160, merged)
 - [x] `fuse-domain` was already outside the default build (only `-P dragons-assembly` built it). Restructured, as
       the maintainer chose (in-repo examples, retire sys-tests):
   - `fuse-domain-dragons-assembly` → `distribution/` (it builds the quickstart image; artifactId unchanged)
@@ -106,6 +106,10 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
     profile `examples`; artifactIds unchanged so IDE run configs keep working)
   - `fuse-domain-dragons-test` (`dragons-sys-test`, 19.4K LOC, 322/418 failing, not in CI) **retired**: deleted, kept in
     git history; the `docker/e2e` suite covers the same scenario and passes
+
+### Follow-up — Dragons playground (in progress, branch `dragons-swagger-playground`)
+- [ ] `/dragons/swagger`: Swagger UI 5 page with every tutorial query as a named example, plus a one-click
+      `POST /fuse/dragons/tutorial/load`. Its spec is the e2e suite's query list.
 
 ## Phase 2 — One source of truth for test fixtures
 - [ ] Shared fixtures module replacing the Dragons ontology/mapping/CSV copies duplicated across 7+ modules

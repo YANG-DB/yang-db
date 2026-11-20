@@ -37,5 +37,11 @@ docker/e2e/verify_and_mark.sh --no-mark   # run without publishing
 ```
 Only mark a commit when the running image was built from it.
 
-When a query is added or changed in the docs, update `QUERIES` and `expectations()` in `doc_queries.py` to match.
+The list of queries is **not** in this folder: `doc_queries.py` reads it from the Dragons playground spec,
+[examples/dragons/ext/src/main/resources/dragons/playground/openapi.json](../../examples/dragons/ext/src/main/resources/dragons/playground/openapi.json)
+(the examples of the `cypher` parameter, each with `x-doc` and `x-known`). Every query offered at `/dragons/swagger` is
+therefore verified here. With `--load`, the suite also checks the playground: the page, the spec, and that
+`POST /fuse/dragons/tutorial/load` reloads exactly the tutorial data.
+
+When a query is added or changed in the docs, update the spec's examples and `expectations()` in `doc_queries.py` to match.
 Only `--reset` deletes data: it drops the Dragons indices of the stack you point it at.

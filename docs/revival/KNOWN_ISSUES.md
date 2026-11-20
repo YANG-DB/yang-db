@@ -88,6 +88,12 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 
 ## API
 
+### A3 — Dragons extension routes are never registered · open
+`FuseApp` only discovers `AppControllerRegistrarBase` subclasses under `com.yangdb.fuse.services`. The Dragons
+extension's `DragonsExtensionRegistrar` lives in `com.yangdb.dragons.services`, so `/ext`, `/fuse/query/clause/run`,
+`/fuse/query/cypher/logical/run` and `/fuse/query/query/v1/logical/run` all return 404. The playground's registrar
+sits in `com.yangdb.fuse.services.dragons` to be found. A proper fix belongs to Phase 4 (extension discovery).
+
 ### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends
 `Accept: application/json`.
