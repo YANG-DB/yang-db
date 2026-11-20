@@ -83,6 +83,8 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 - An undirected pattern written from a relation's target side (e.g. `(k:Kingdom)-[:RegisteredIn]-(g:Guild)`) is
   rejected by the ontology validator.
 - `match (p)` returns at most 1,000 results regardless of `pageSize`.
+- The projection cursor projects nothing for a count-filtered query (`WHERE count(k) > n`); plain queries project
+  normally (found 2026-11-20 while reviewing the tutorial).
 
 ## API
 
