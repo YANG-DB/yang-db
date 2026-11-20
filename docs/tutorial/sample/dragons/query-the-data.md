@@ -201,17 +201,18 @@ The female person also owns a horse that is originated from a kingdom that has a
 
 If we want to filter out nodes according to their edge count we will use the following semantics:
 ```
-Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 return *
+Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *
 ```
 When we use the aggregate function count with the tag as operand the engine will create a push-down of a pipe term aggregation...
 
-This will result in the Person node that fulfill the edge count filter condition.
+This will result in the Person nodes that know more than 15 other persons (9 persons in the tutorial data), together with their acquaintances.
 
 It is very much possible to combine the aggregative filter with row based filter such as the following query:
 
 ```
-Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *
+Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *
 ```
+Here the row filter applies first: this returns the persons who know more than 10 *female* persons (5 in the tutorial data).
 
 
 We can also use the **distinct** keyword to dedup the edges between nodes - meaning that in the following example only one fire edge will be returned

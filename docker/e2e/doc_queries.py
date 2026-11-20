@@ -27,8 +27,9 @@ QUERIES = [
      "Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}), (p:Person)-[oh:Own]-(h:Horse), "
      "(d:Dragon)-[f:Fire]-(other:Dragon { gender:MALE}), (h:Horse)-[org:OriginatedIn]->(k:Kingdom ) where k.funds > 0  return *",
      ["Q1", "Q2", "Q3"]),
-    ("query-the-data.md", "Q7", "Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 return *", ["Q2"]),
-    ("query-the-data.md", "Q8", "Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *", ["Q2"]),
+    # count examples use Know: tutorial ownership data caps every person at one dragon (D3), so Own counts can't exceed 1
+    ("query-the-data.md", "Q7", "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *", []),
+    ("query-the-data.md", "Q8", "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 10 AND p2.gender = FEMALE  return *", []),
     ("query-the-data.md", "Q9", "Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2", ["Q3", "Q4"]),
     ("Queries.md", "QA", "match (p) return *", ["Q5 (stream B)"]),
     # label union `(p:Person | Dragon)` is unsupported (explicit error); the docs use the WHERE form instead
@@ -95,10 +96,16 @@ def expectations(os_url):
                   for d in own_pd[p])
           and any(h in orig_ok for h in own_ph[p])}
     exp["Q6"] = {"ents": {"Person": len(q6)}}
-    owned = {p: len(ds) for p, ds in own_pd.items()}
-    exp["Q7"] = {"ents": {"Person": sum(1 for v in owned.values() if v > 50)},
-                 "note": f"most dragons owned by one person: {max(owned.values(), default=0)}"}
-    exp["Q8"] = exp["Q7"]
+    # count(k) > n keeps the p1 persons with more than n (filtered) outgoing Know edges; return * also yields their p2s
+    def count_filter(n, p2_ok):
+        out = defaultdict(set)
+        for _, a, _, b, _ in know:
+            if p2_ok(b): out[a].add(b)
+        p1 = {a for a, bs in out.items() if len(bs) > n}
+        return {"ents": {"Person": len(p1 | set().union(*[out[a] for a in p1]))},
+                "note": f"({len(p1)} matching p1 persons)"}
+    exp["Q7"] = count_filter(15, lambda b: True)
+    exp["Q8"] = count_filter(10, lambda b: prop("Person", b, "gender") == "FEMALE")
     exp["Q9"] = {"rels": len({(e[1], e[3]) for e in fire})}
     exp["QA"] = {"ents": {t: len(v) for t, v in ent.items()}}
     exp["QB"] = {"ents": {"Person": len(ent["Person"]), "Dragon": len(ent["Dragon"])}}
