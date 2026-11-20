@@ -112,8 +112,20 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
       `POST /fuse/dragons/tutorial/load`. Its spec is the e2e suite's query list.
 - [x] Tutorial main page `docs/tutorial/sample/dragons/README.md` (Docker setup through queries); the wiki links it
 
-## Phase 2 — One source of truth for test fixtures
-- [ ] Shared fixtures module replacing the Dragons ontology/mapping/CSV copies duplicated across 7+ modules
+## Phase 2 — One source of truth for test fixtures (in review: branch `phase2-shared-fixtures`)
+Phase 1 had already removed most of the copies this phase targeted (they lived in the retired sys-test module).
+Scope chosen by the maintainer:
+- [x] Remove dead fixtures. `fuse-test-framework/src/test/resources` (`dragons/`, `dragons_dual/`, `IndexDocs`,
+      `schema`, `dragon_mapping.json`, 10 MB) can never be read: the module has no tests and publishes no test-jar.
+      Also `dragons_mock.csv` (shipped in fuse-dv-stat's jar, unused) and a dead staging config. −52K lines.
+- [x] fuse-dv-core's tests use the **shipped** `distribution/.../Dragons.json` through a Maven `testResource`
+      (same classpath path, `schema/Dragons.json`) instead of keeping an identical copy.
+- Deliberately kept:
+  - the older lowercase Dragons test ontology (fuse-asg `Dragons_Ontology.json`, fuse-service `ontology/Dragons.json`),
+    which 18 Cypher tests are written against. Migrating it fits Phase 3.
+  - fuse-asg's generic `mapping/Dragons.json`
+  - fuse-model's golden expected-output JSONs
+  - fuse-dv-core's deliberate index-provider variants (Embedded / Nested / Single)
 
 ## Phase 3 — Structural assertions instead of golden JSON strings
 - [ ] Rewrite `OpensearchIndexProviderMappingFactoryIT` and similar tests; re-enable the tests `@Ignore`d during the OpenSearch migration
