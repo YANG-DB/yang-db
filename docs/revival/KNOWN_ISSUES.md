@@ -65,8 +65,21 @@ persons with more than 15 outgoing `Know` relationships.
 documented replacement for the unsupported label union.
 
 ### End-to-end status of Q1–Q4 (2026-11-20)
-The fixes hold in the traversal-level IT but **not** through the REST service: on the rebuilt image, undirected and
-mixed-type queries still return wrong results (e.g. `Person-[Own]-Dragon` returns horses). Reopened for stream B.
+The first fixes held at traversal level but not through the REST service. The service's planner and cursors take a
+different path, which was fixed in later rounds:
+- the plan validator rejected an undirected relation walked from its far end
+- the entity-filter translation dropped the target's type
+- a caching schema provider returned empty lists for one direction
+- the forward-paths cursor, the distinct step and unipop's vertex step all keyed by bare id
+
+Checked live on the tutorial data: Q2a 475, Q2 349, Q3 30, Q5 2,437, `match (p)` 1,623, QE 96, QF 7/1/7, all as
+expected. A full e2e run on a freshly rebuilt image is still to do.
+
+### Known limitations (not planned)
+- Two count filters whose valid start nodes don't overlap get "No valid plan was found".
+- An undirected pattern written from a relation's target side (e.g. `(k:Kingdom)-[:RegisteredIn]-(g:Guild)`) is
+  rejected by the ontology validator.
+- `match (p)` returns at most 1,000 results regardless of `pageSize`.
 
 ## API
 

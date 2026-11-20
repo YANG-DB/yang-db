@@ -7,7 +7,7 @@ session, machine or agent restart. [STATUS.md](../STATUS.md) is the one-page ove
 |---|---|---|---|
 | [lead.md](lead.md) | lead (main session) | main checkout, branch `main` | active |
 | [stream-A.md](stream-A.md) | `stream-A-cypher` | `.claude/worktrees/agent-a52a1b8474fd93794` | done (r1–r3 merged) |
-| [stream-B.md](stream-B.md) | `stream-B-traversal` | `.claude/worktrees/agent-a43e06c700eb4b7ef` | done; r4 **not merged yet** |
+| [stream-B.md](stream-B.md) | `stream-B-traversal` | `.claude/worktrees/agent-a43e06c700eb4b7ef` | done (r1–r4 merged) |
 | [stream-C.md](stream-C.md) | `stream-C-service` | `.claude/worktrees/agent-acdc794fa7038a886` | done |
 | [stream-D.md](stream-D.md) | `stream-D-data-docs` | `.claude/worktrees/agent-a28d8e52a88b602de` | done |
 | [stream-E.md](stream-E.md) | `stream-E-partitions` | `.claude/worktrees/agent-a7164b98179501307` | done (r1–r2 merged) |

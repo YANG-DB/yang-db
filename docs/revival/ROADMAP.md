@@ -28,7 +28,7 @@ Live progress and blockers of the running work: [STATUS.md](STATUS.md). Resume p
 - [x] `dev-opensearch` renamed to `main` (default branch)
 - [x] Quickstart verified end-to-end with Docker
 
-## Current workstream — Stabilize (in progress)
+## Current workstream — Stabilize (code complete; end-to-end confirmation pending)
 Loader
 - [x] `L1` relation endpoint types rewritten — fixed in `CSVTransformer`, test `CSVTransformerTest#testRelationKeepsSourceTypeWhenPairsShareDestination`
 - [x] `L2` pre-1970 epoch-millis dates dropped — fixed in `DataLoaderUtils`, test `DataLoaderUtilsTest`
@@ -48,14 +48,18 @@ Query engine
 
 Tutorial data & docs
 - [x] `D1` tutorial CSV defects (header/row mismatches, header typo, duplicate edge ids)
-- [ ] `D2` doc examples and claims that don't match reality (engine-independent parts done; rest after B/C)
+- [x] `D2` doc examples and claims that don't match reality (label union → `WHERE … OR …`, count semantics, cyclic example replaced)
 - [x] `D3` dangling ids in tutorial relationship data — count examples rewritten to use `Know`
-- [ ] `Q6` cycle-closing pattern rejected by the validator
-- [ ] `A2` whole-file load failure easy to misread
+- [x] `Q6` cycle-closing pattern → explicit "Cyclic patterns are not supported" error, documented
+- [x] `Q7` count filter returned nothing (planner reversed the counted relation)
+- [x] `Q8` `WHERE p:A OR p:B` on an untyped node crashed
+- [ ] `A2` whole-file load failure easy to misread (minor, open)
 
 Verification
-- [ ] `S13` end-to-end doc-query suite committed to the repo (✅ `docker/e2e/`) and passing
-- [ ] `S14` full `mvn clean test` green with ITs running → **push the batch**
+- [ ] `S13` end-to-end doc-query suite committed (✅ `docker/e2e/`); fixes for every failure of runs 1–2 merged and
+      checked live by stream B; **a full run on a rebuilt image (run 3) is still to do**
+- [x] `S14` full `mvn clean test` green with ITs running (1,120 tests, 0 failures) → batch pushed 2026-11-20 at
+      the maintainer's request, before e2e run 3
 
 ### Parallel execution plan for the Stabilize workstream
 The work splits into streams that touch different modules, so it can run as several agents, each in its own git
@@ -67,7 +71,7 @@ ports, and the traversal-identity bugs share code and must stay together.
 - [x] Make the embedded test node's ports and data directory configurable (`fuse.test.http.port`, `fuse.test.transport.port`, `fuse.test.data.dir`; defaults 9200 / 9300 / `target/es`)
 - [x] Run `L3`'s IT, commit `L3`
 
-**Stage 1 — parallel streams (one agent per stream, separate worktrees)**
+**Stage 1 — parallel streams (one agent per stream, separate worktrees)** ✅ done 2026-11-20 (streams A–E; E added for L4)
 
 | Stream | Scope | Modules | Test ports | Notes |
 |---|---|---|---|---|
@@ -77,9 +81,9 @@ ports, and the traversal-identity bugs share code and must stay together.
 | D — Data, docs & e2e | `D1` CSV fixes, `S13` e2e suite in repo, engine-independent parts of `D2` | `docs/`, `docker/` | Docker stack (exclusive) | Queries.md updates wait for stream A's `Q5` decision |
 
 **Stage 2 — integration (serial, lead)**
-- [ ] Merge streams one at a time (rebase on `main`, full `mvn clean test` with ITs running after each)
-- [ ] Rebuild the Docker image, run the e2e suite (`S13`) against freshly loaded tutorial data
-- [ ] Finish engine-dependent `D2` docs, tick this checklist, push the batch (`S14`)
+- [x] Merge streams one at a time (rebase on `main`, full `mvn clean test` with ITs running after each)
+- [ ] Rebuild the Docker image, run the e2e suite (`S13`) against freshly loaded tutorial data (runs 1–2 done; run 3 pending)
+- [x] Finish engine-dependent `D2` docs, tick this checklist, push the batch (`S14`)
 
 **Rules for agents**
 - Work only in your own worktree and modules; don't edit ROADMAP.md / KNOWN_ISSUES.md (the lead updates them from reports).

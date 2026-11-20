@@ -15,11 +15,13 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 - [x] Full `mvn clean test` on merged main: **1,113 tests, 0 failures** (2026-11-20)
 - [x] e2e run 1 (pre-L4) and run 2 (all merged). Run 2 regressed, so I bisected and sent the fixes out (below).
 - [x] Merge A r3 (Q7 validator) and E r2 (Fire → `_500`: service RawSchema wrappers dropped time partitions)
-- [ ] Merge B r4 (`571c60504`, `e2d3691e7`, `9c9789fde`): done in its worktree, not yet merged
+- [x] Merge B r4 (`f7eab43ae`, `a501228d4`, `79b8b0e01` on main)
+- [x] Full `mvn clean test` after B r4: 1,120 tests, 0 failures
 - [x] Move Docker (colima) to the external drive (done 2026-11-20; internal disk 4.5 → 14 GB free)
 - [ ] Full `mvn clean test` (Docker stopped) → rebuild image → `python3 docker/e2e/doc_queries.py --load --reset`
 - [ ] e2e suite: drop the `projection` index created by the projection-cursor check (`--reset` leaves it behind)
-- [ ] Tick ROADMAP/KNOWN_ISSUES, commit STATUS.md and these files, **ask the maintainer**, then push
+- [x] Tick ROADMAP/KNOWN_ISSUES, update PROJECT.md and the GitHub wiki, push (2026-11-20, at the maintainer's request,
+      before e2e run 3)
 
 ## Maintainer instruction (2026-11-20)
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
@@ -30,17 +32,16 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
 - Docker was migrated to the external drive (done and verified). The stack runs, and the data survived. The
   `dragons-graph` container still runs B's experimental jars, which is fine because the next image rebuild replaces
   them.
-- `main` is local only, about 24 commits ahead of `origin/main`. Nothing pushed.
+- `main` is pushed to `origin/main` (2026-11-20).
 - **Exact next steps (in order):**
-  1. Merge B r4: cherry-pick `571c60504`, `e2d3691e7`, `9c9789fde` from `worktree-agent-a43e06c700eb4b7ef`, one at a
-     time (COORDINATOR.md §6).
-  2. Run the verification pipeline (COORDINATOR.md §7): full `mvn clean test` with Docker stopped, rebuild the
-     image, delete the `projection` index, then `python3 docker/e2e/doc_queries.py --load --reset`. This is e2e
-     run 3.
+  1. ~~Merge B r4~~: done, as `f7eab43ae`, `a501228d4`, `79b8b0e01`.
+  2. ~~Full `mvn clean test`~~: done, **1,120 tests, 0 failures**, all 16 modules green. Docker is left **stopped**.
+     Next: rebuild the image, `docker compose ... start`, delete the `projection` index, then
+     `python3 docker/e2e/doc_queries.py --load --reset` (e2e run 3; COORDINATOR.md §7).
   3. Check that Fire/Freeze land in `idx_*_2000` (L4 e2e confirmation) and that Q7/Q8 count queries return 9 and 16
      p1 persons.
   4. For any failure, spawn or route to the owning stream (see stream files) with the evidence.
-  5. When everything is green: tick ROADMAP/KNOWN_ISSUES/STATUS, **ask the maintainer**, then push (S14).
+  5. ~~Push~~: done 2026-11-20. Next pushes need the maintainer's OK again.
 - Known open items that don't block "stable":
   - an undirected pattern written from the target side, e.g. `(k:Kingdom)-[:RegisteredIn]-(g:Guild)`, is rejected
     by the ASG validator (owner: stream A)

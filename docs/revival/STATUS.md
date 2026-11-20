@@ -15,11 +15,11 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
 | Stream | Issues | Status | Branch | Commits | Blocker |
 |---|---|---|---|---|---|
 | A — Cypher translator | Q5, Q6, Q7, Q8 | **done, all merged** (r3 `ac146fd66`) | `worktree-agent-a52a1b8474fd93794` | `a66ba46c2` Q8, `d25580d0f` Q7, `460153c8b` Q6 | — |
-| B — Traversal identity | Q1–Q4, untyped match | **r4 done** (`571c60504`, `e2d3691e7`, `9c9789fde`): all 5 failing queries correct live; not merged yet | `worktree-agent-a43e06c700eb4b7ef` | round 2 + `fe77d54f2` unipop-core vertex step | — |
+| B — Traversal identity | Q1–Q4, untyped match | **done, all merged** (r4 `f7eab43ae`, `a501228d4`, `79b8b0e01`) | `worktree-agent-a43e06c700eb4b7ef` | round 2 + `fe77d54f2` unipop-core vertex step | — |
 | C — Service & loader | A1, L4 | **A1 merged to local main**; L4 → stream E | `worktree-agent-acdc794fa7038a886` | `54896dc37` A1 | — |
 | D — Data, docs & e2e | D1, D2, S13 | **merged to local main** | `worktree-agent-a28d8e52a88b602de` | `5e32376ca` D1, `4588df726` S13, `a37981c53` D2 | needs rebuilt image to go green |
 | E — Time partitions | L4 range buckets | **done, all merged** (r2 `e498ad46a`); e2e confirmation pending | `worktree-agent-a7164b98179501307` | `6b0a1c346` L4 | — |
-| Lead — Stage 2 merge | S14 | Docker migrated to external drive; next: merge B r4 → full build → rebuild → e2e run 3 (see agents/lead.md) | `main` | — | — |
+| Lead — Stage 2 merge | S14 | all merged; `mvn clean test` green (1,120); **pushed 2026-11-20**; next: e2e run 3 on a rebuilt image | `main` | — | — |
 
 ## Timeline
 - 2026-11-20 — Stage 0 done and pushed (`3ace71186`): 1,064 tests, 0 failures, ITs running.
@@ -34,6 +34,10 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
   Q3, Q4 and untyped `match (p)` fixed, merged to local main. Full `mvn clean test` on merged main started.
 - 2026-11-20 — Full `mvn clean test` on merged main (A–D): **1,088 tests, 0 failures**, BUILD SUCCESS, ITs running
   (fuse-dv-core 60 incl. `TraversalIdentityIT`). Rebuilding the Docker image for the e2e suite (pre-L4). Agents in worktrees can't edit this file; the lead copies reports in.
+
+- 2026-11-20 — B r4 merged (`f7eab43ae`, `a501228d4`, `79b8b0e01`): all five run-2 failures correct live. Docker VM
+  moved to the external drive. Full `mvn clean test`: **1,120 tests, 0 failures**. Docs, wiki and README updated;
+  batch **pushed** at the maintainer's request. e2e run 3 on a rebuilt image is the next step.
 
 ## Stream A — Cypher translator (Q1, Q5)
 - 2026-11-20 — **Done.** fuse-asg 263 tests, 0 failures (fuse-model 21, fuse-core 34 green).

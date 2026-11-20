@@ -15,7 +15,9 @@ graph database.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
 
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
-> OpenSearch **1.3.0**; moving to OpenSearch 2.x is planned. Some legacy tests are disabled pending rework.
+> OpenSearch **1.3.0** (moving to 2.x is planned). The full build is green: 1,120 tests with the integration suites
+> running. A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
+> partitions and JSON responses. Progress and open issues are in [docs/revival/](docs/revival/ROADMAP.md).
 
 ## Quickstart
 
@@ -27,6 +29,14 @@ cd docker
 ./buildDocker.sh Dragons
 docker compose -f docker-compose-os.yml up -d
 curl http://localhost:8888/fuse/health
+```
+
+Load the Dragons tutorial data and check every documented example query against it (Python 3, standard library only):
+
+```bash
+python3 docker/e2e/doc_queries.py --load --reset
+curl -H 'Accept: application/json' \
+  'http://localhost:8888/fuse/query/cypher/run?ontology=Dragons&cypher=MATCH%20(d:Dragon)%20RETURN%20*'
 ```
 
 Then open the Swagger UI at http://localhost:8888/swagger#. Full details in [docker/README.md](docker/README.md),
@@ -59,6 +69,14 @@ mvn clean install -P core,dragons-assembly # also builds the Dragons sample dist
 - [Architecture](docs/info/components/architecture.md) · [Ontology](docs/info/components/ontology.md) ·
   [Query language](docs/info/components/query_language.md) · [Execution planner](docs/info/components/execution_planner.md)
 - [REST API](docs/info/api.md)
+- [Revival roadmap](docs/revival/ROADMAP.md) · [Known issues](docs/revival/KNOWN_ISSUES.md) ·
+  [Live status](docs/revival/STATUS.md)
+
+### Cypher support notes
+- Node label union `(n:A|B)` is not supported (openCypher 9 grammar). Use `MATCH (n) WHERE n:A OR n:B`.
+- Cyclic patterns, which close a loop back to an already-matched node, are rejected with an explicit error.
+- A count filter (`WHERE count(r) > n`) counts all of the start node's relationships; row filters on the far end
+  only restrict which neighbours are returned.
 
 ## Contributing
 
