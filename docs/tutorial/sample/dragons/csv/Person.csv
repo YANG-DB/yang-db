@@ -1,4 +1,4 @@
-"id","firstName","lastName","gender","birthDate","deathDate","height"
+"id","firstName","lastName","gender","birthDate","deathDate","height","name"
 "0","Braden","Heaney","MALE","792843774684","4074834174684","175","Braden Heaney"
 "1","Evert","Weber","MALE","-733082855765","2233374744235","182","Evert Weber"
 "2","Walton","Little","MALE","-425496543178","2256877856822","184","Walton Little"
