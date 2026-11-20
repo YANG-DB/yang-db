@@ -64,7 +64,19 @@ public class QueryTest {
                 .ePropGroup(Arrays.asList(new Tuple2<>("deleteTime", of(new Constraint(ConstraintOp.empty)))), QuantType.all)
                 .build();
         String queryString = mapper.writeValueAsString(query);
-        JSONAssert.assertEquals("{\"ont\":\"Knowledge\",\"name\":\"test\",\"elements\":[{\"type\":\"Start\",\"eNum\":0,\"next\":1},{\"type\":\"ETyped\",\"eNum\":1,\"eTag\":\"P1\",\"next\":2,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":2,\"qType\":\"some\",\"b\":-1,\"next\":[3,4]},{\"type\":\"EPropGroup\",\"eNum\":3,\"props\":[{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"category\",\"proj\":{\"type\":\"Identity\"},\"constraint\":false,\"projection\":true},{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"not empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"},{\"type\":\"Rel\",\"eNum\":4,\"rType\":\"hasOutRelation\",\"dir\":\"R\",\"wrapper\":\"k\",\"next\":5,\"b\":-1,\"eTag\":\"k\",\"typed\":\"hasOutRelation\"},{\"type\":\"ETyped\",\"eNum\":5,\"eTag\":\"P2\",\"next\":6,\"b\":-1,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":6,\"qType\":\"all\",\"b\":-1,\"next\":[7]},{\"type\":\"EPropGroup\",\"eNum\":7,\"props\":[{\"type\":\"EProp\",\"eNum\":7,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}],\"quantType\":\"all\"}]}", queryString, true);
+        // the builder chains elements with next / b (-1 = none) links; props carry either a projection or a constraint
+        assertQuery("Knowledge", "test", queryString,
+                "{type:'Start',eNum:0,next:1}",
+                "{type:'ETyped',eNum:1,eTag:'P1',eType:'Entity',next:2,b:-1}",
+                "{type:'Quant1',eNum:2,qType:'some',next:[3,4],b:-1}",
+                "{type:'EPropGroup',eNum:3,quantType:'all',props:[" +
+                        "{type:'EProp',eNum:3,pType:'category',proj:{type:'Identity'},constraint:false,projection:true}," +
+                        "{type:'EProp',eNum:3,pType:'context',con:{type:'Constraint',op:'not empty'},constraint:true,projection:false}]}",
+                "{type:'Rel',eNum:4,rType:'hasOutRelation',dir:'R',wrapper:'k',eTag:'k',next:5,b:-1}",
+                "{type:'ETyped',eNum:5,eTag:'P2',eType:'Entity',next:6,b:-1}",
+                "{type:'Quant1',eNum:6,qType:'all',next:[7],b:-1}",
+                "{type:'EPropGroup',eNum:7,quantType:'all',props:[" +
+                        "{type:'EProp',eNum:7,pType:'deleteTime',con:{type:'Constraint',op:'empty'},constraint:true,projection:false}]}");
         Assert.assertNotNull(QueryDescriptor.printGraph(query));
     }
 
@@ -107,8 +119,68 @@ public class QueryTest {
                         new EProp(32, "deleteTime", Constraint.of(ConstraintOp.empty))
                 )).build();
         String queryString = mapper.writeValueAsString(query);
-        JSONAssert.assertEquals("{\"ont\":\"Knowledge\",\"name\":\"q2\",\"elements\":[{\"type\":\"Start\",\"eNum\":0,\"next\":1},{\"type\":\"ETyped\",\"eNum\":1,\"eTag\":\"A\",\"next\":2,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":2,\"qType\":\"all\",\"next\":[3,4,9,14,28]},{\"type\":\"EProp\",\"eNum\":3,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"global\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"Rel\",\"eNum\":4,\"rType\":\"hasEvalue\",\"dir\":\"R\",\"next\":5,\"typed\":\"hasEvalue\"},{\"type\":\"ETyped\",\"eNum\":5,\"eTag\":\"B\",\"next\":6,\"eType\":\"Evalue\",\"typed\":\"Evalue\"},{\"type\":\"Quant1\",\"eNum\":6,\"qType\":\"all\",\"next\":[7,8,29]},{\"type\":\"EProp\",\"eNum\":7,\"pType\":\"fieldId\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"title\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":8,\"pType\":\"stringValue\",\"con\":{\"type\":\"Constraint\",\"op\":\"like\",\"expr\":\"*\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"Rel\",\"eNum\":9,\"rType\":\"hasEvalue\",\"dir\":\"R\",\"next\":10,\"typed\":\"hasEvalue\"},{\"type\":\"ETyped\",\"eNum\":10,\"eTag\":\"B\",\"next\":11,\"eType\":\"Evalue\",\"typed\":\"Evalue\"},{\"type\":\"Quant1\",\"eNum\":11,\"qType\":\"all\",\"next\":[12,13,30]},{\"type\":\"EProp\",\"eNum\":12,\"pType\":\"fieldId\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"nicknames\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":13,\"pType\":\"stringValue\",\"con\":{\"type\":\"Constraint\",\"op\":\"like\",\"expr\":\"***\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"Rel\",\"eNum\":14,\"rType\":\"hasEntity\",\"dir\":\"L\",\"next\":15,\"typed\":\"hasEntity\"},{\"type\":\"ETyped\",\"eNum\":15,\"eTag\":\"B\",\"next\":16,\"eType\":\"LogicalEntity\",\"typed\":\"LogicalEntity\"},{\"type\":\"Rel\",\"eNum\":16,\"rType\":\"hasEntity\",\"dir\":\"R\",\"next\":17,\"typed\":\"hasEntity\"},{\"type\":\"ETyped\",\"eNum\":17,\"eTag\":\"B\",\"next\":18,\"eType\":\"Entity\",\"typed\":\"Entity\"},{\"type\":\"Quant1\",\"eNum\":18,\"qType\":\"all\",\"next\":[19,20,22,31]},{\"type\":\"EProp\",\"eNum\":19,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"global\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":20,\"pType\":\"context\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"context1\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"OptionalComp\",\"eNum\":22,\"next\":23,\"qType\":\"some\"},{\"type\":\"Rel\",\"eNum\":23,\"rType\":\"hasEvalue\",\"dir\":\"R\",\"next\":24,\"typed\":\"hasEvalue\"},{\"type\":\"ETyped\",\"eNum\":24,\"eTag\":\"B\",\"next\":25,\"eType\":\"Evalue\",\"typed\":\"Evalue\"},{\"type\":\"Quant1\",\"eNum\":25,\"qType\":\"all\",\"next\":[26,27,32]},{\"type\":\"EProp\",\"eNum\":26,\"pType\":\"fieldId\",\"con\":{\"type\":\"Constraint\",\"op\":\"eq\",\"expr\":\"description\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":27,\"pType\":\"stringValue\",\"con\":{\"type\":\"Constraint\",\"op\":\"like\",\"expr\":\"*\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":28,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":29,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":30,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":31,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false},{\"type\":\"EProp\",\"eNum\":32,\"pType\":\"deleteTime\",\"con\":{\"type\":\"Constraint\",\"op\":\"empty\",\"iType\":\"[]\"},\"constraint\":true,\"projection\":false}]}", queryString, true);
+        assertQuery("Knowledge", "q2", queryString,
+                start(0, 1),
+                eTyped(1, "A", "Entity", 2),
+                quant1(2, "all", "3,4,9,14,28"),
+                eProp(3, "context", "eq", "global"),
+                rel(4, "hasEvalue", "R", 5),
+                eTyped(5, "B", "Evalue", 6),
+                quant1(6, "all", "7,8,29"),
+                eProp(7, "fieldId", "eq", "title"),
+                eProp(8, "stringValue", "like", "*"),
+                rel(9, "hasEvalue", "R", 10),
+                eTyped(10, "B", "Evalue", 11),
+                quant1(11, "all", "12,13,30"),
+                eProp(12, "fieldId", "eq", "nicknames"),
+                eProp(13, "stringValue", "like", "***"),
+                rel(14, "hasEntity", "L", 15),
+                eTyped(15, "B", "LogicalEntity", 16),
+                rel(16, "hasEntity", "R", 17),
+                eTyped(17, "B", "Entity", 18),
+                quant1(18, "all", "19,20,22,31"),
+                eProp(19, "context", "eq", "global"),
+                eProp(20, "context", "eq", "context1"),
+                "{type:'OptionalComp',eNum:22,next:23,qType:'some'}",
+                rel(23, "hasEvalue", "R", 24),
+                eTyped(24, "B", "Evalue", 25),
+                quant1(25, "all", "26,27,32"),
+                eProp(26, "fieldId", "eq", "description"),
+                eProp(27, "stringValue", "like", "*"),
+                eProp(28, "deleteTime", "empty", null),
+                eProp(29, "deleteTime", "empty", null),
+                eProp(30, "deleteTime", "empty", null),
+                eProp(31, "deleteTime", "empty", null),
+                eProp(32, "deleteTime", "empty", null));
+    }
 
+    /** Asserts the query header and its elements, in order (see {@link JsonTreeAssert} for the matching rules). */
+    private static void assertQuery(String ont, String name, String actualJson, String... elements) {
+        JsonTreeAssert.assertJsonMatches(
+                "{ont:'" + ont + "',name:'" + name + "',elements:[" + String.join(",", elements) + "]}", actualJson);
+    }
+
+    private static String start(int eNum, int next) {
+        return "{type:'Start',eNum:" + eNum + ",next:" + next + "}";
+    }
+
+    private static String eTyped(int eNum, String eTag, String eType, int next) {
+        return "{type:'ETyped',eNum:" + eNum + ",eTag:'" + eTag + "',eType:'" + eType + "',next:" + next + "}";
+    }
+
+    private static String quant1(int eNum, String qType, String next) {
+        return "{type:'Quant1',eNum:" + eNum + ",qType:'" + qType + "',next:[" + next + "]}";
+    }
+
+    private static String rel(int eNum, String rType, String dir, int next) {
+        return "{type:'Rel',eNum:" + eNum + ",rType:'" + rType + "',dir:'" + dir + "',next:" + next + "}";
+    }
+
+    /** A constraint-only EProp; {@code expr} null means the constraint has no expression. */
+    private static String eProp(int eNum, String pType, String op, String expr) {
+        return "{type:'EProp',eNum:" + eNum + ",pType:'" + pType + "'," +
+                "con:{type:'Constraint',op:'" + op + "'" + (expr == null ? "" : ",expr:'" + expr + "'") + "}," +
+                "constraint:true,projection:false}";
     }
 
     @Test
@@ -116,7 +188,7 @@ public class QueryTest {
         String q1ActualJSON = mapper.writeValueAsString(q1Obj);
         String q1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q1ExpectedJSONString, q1ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q1ExpectedJSONString, q1ActualJSON);
     }
 
     @Test
@@ -124,7 +196,7 @@ public class QueryTest {
         String q2ActualJSON = mapper.writeValueAsString(q2Obj);
         String q2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\",\"next\":4},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q2ExpectedJSONString, q2ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q2ExpectedJSONString, q2ActualJSON);
     }
 
     @Test
@@ -132,7 +204,7 @@ public class QueryTest {
         String q3_1ActualJSON = mapper.writeValueAsString(q3_1Obj);
         String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Dragon\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Person\",\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
 
-        JSONAssert.assertEquals(q3_1ExpectedJSONString, q3_1ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q3_1ExpectedJSONString, q3_1ActualJSON);
     }
 
     @Test
@@ -140,7 +212,7 @@ public class QueryTest {
         String q3_2ActualJSON = mapper.writeValueAsString(q3_2Obj);
         String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
-        JSONAssert.assertEquals(q3_2ExpectedJSONString, q3_2ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q3_2ExpectedJSONString, q3_2ActualJSON);
     }
 
     @Test
@@ -148,7 +220,7 @@ public class QueryTest {
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
         String q5ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q5\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,5,11]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":4},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":5,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":6},{\"eNum\":6,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\",\"next\":7},{\"eNum\":7,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":8},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":10},{\"eNum\":10,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":11,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":12},{\"eNum\":12,\"type\":\"ETyped\",\"eTag\":\"E\",\"eType\":\"Person\",\"next\":13},{\"eNum\":13,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":14},{\"eNum\":14,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\"}],\"nonidentical\":[[\"C\",\"E\"]]}";
 
-        JSONAssert.assertEquals(q5ExpectedJSONString, q5ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q5ExpectedJSONString, q5ActualJSON);
     }
 
     @Test
@@ -156,7 +228,7 @@ public class QueryTest {
         String q11ActualJSON = mapper.writeValueAsString(q11Obj);
         String q11ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":\"Guild\",\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":\"registered\",\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Person\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant1\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":\"Guild\",\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":\"Guild\",\"eName\":\"Blacksmiths\"}]}";
 
-        JSONAssert.assertEquals(q11ExpectedJSONString, q11ActualJSON, false);
+        JsonTreeAssert.assertJsonMatches(q11ExpectedJSONString, q11ActualJSON);
     }
 
     @Test
