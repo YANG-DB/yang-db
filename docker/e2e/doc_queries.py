@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""End-to-end check of every example query in the Dragons docs against a running quickstart stack.
+
+Expected results are computed from the documents actually stored in OpenSearch (not from the CSVs), then compared
+with what the engine returns: entity ids per type and distinct relationship ids. Each query lists the open issues
+(docs/revival/KNOWN_ISSUES.md) it currently depends on, so a failure prints e.g. `FAIL (known: Q1)`.
+
+    python3 docker/e2e/doc_queries.py                  # data already loaded
+    python3 docker/e2e/doc_queries.py --load --reset   # (re)load the tutorial data first, then run
+
+Exits non-zero if any query or cursor check does not pass (known or not). Python 3 standard library only.
+"""
+import argparse, json, sys, urllib.error, urllib.parse
+from collections import defaultdict
+
+import load_tutorial
+from load_tutorial import http
+
+# (doc, id, cypher, open issues it depends on). Keep in sync with the docs.
+QUERIES = [
+    ("query-the-data.md", "Q1", "Match (d:Dragon) return *", []),
+    ("query-the-data.md", "Q2a", "Match (p1:Person)-[know:Know]-(p2:Person) return *", ["Q1", "Q4"]),
+    ("query-the-data.md", "Q2", "Match (p1:Person)-[know:Know]-(p2:Person {gender: FEMALE}) return *", ["Q1", "Q4"]),
+    ("query-the-data.md", "Q3", "Match (p1:Guild)-[r:RegisteredIn]-(k:Kingdom)  where k.funds > 0 return *", ["Q1", "Q4"]),
+    ("query-the-data.md", "Q5", "Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *", ["Q1", "Q3", "Q4"]),
+    ("query-the-data.md", "Q6",
+     "Match (p:Person {gender:FEMALE})-[o:Own]-(d:Dragon {color :BLACK}), (p:Person)-[oh:Own]-(h:Horse), "
+     "(d:Dragon)-[f:Fire]-(other:Dragon { gender:MALE}), (h:Horse)-[org:OriginatedIn]->(k:Kingdom ) where k.funds > 0  return *",
+     ["Q1", "Q2", "Q3"]),
+    ("query-the-data.md", "Q7", "Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 return *", ["Q2"]),
+    ("query-the-data.md", "Q8", "Match (p1:Person)-[o:Own]-(d1:Dragon) WHERE count(o) > 50 AND d1.color = BLACK  return *", ["Q2"]),
+    ("query-the-data.md", "Q9", "Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2", ["Q3", "Q4"]),
+    ("Queries.md", "QA", "match (p) return *", ["Q5 (stream B)"]),
+    # label union `(p:Person | Dragon)` is unsupported (explicit error); the docs use the WHERE form instead
+    ("Queries.md", "QB", "match (p) where p:Person OR p:Dragon return *", ["Q5 (stream B)"]),
+    ("Queries.md", "QC", "match (p:Person) return *", []),
+    ("Queries.md", "QD", "match (p:Person {name:'Braden Heaney'}) return *", []),
+    ("Queries.md", "QE", "match (p:Person)-[own:Own]-(d:Dragon) return *", ["Q1", "Q2", "Q3", "Q4"]),
+    ("Queries.md", "QF", "match (p1:Person)-[own:Own]-(d:Dragon), (p1:Person)-[member:MemberOf]-(g:Guild {name:Bolling}) return *",
+     ["Q1", "Q2", "Q3"]),
+    ("Queries.md", "QG",
+     "match (p1:Person)-[own1:Own]-(d1:Dragon), (d1:Dragon)-[fire:Fire]-(d2:Dragon), (d2:Dragon)<-[own2:Own]-(p2:Person), "
+     "(p1:Person)-[know:Know]-(p2:Person) where fire.temperature > 600 return *",
+     ["Q1", "Q2", "Q3", "cyclic pattern rejected by the ontology validator (unfiled)"]),
+]
+
+
+def scan(os_url, index):
+    """All _source docs of an index (pattern) via scroll."""
+    out, r = [], http("POST", f"{os_url}/{index}/_search?scroll=2m&size=5000", {"query": {"match_all": {}}})
+    while r["hits"]["hits"]:
+        out += [h["_source"] for h in r["hits"]["hits"]]
+        r = http("POST", f"{os_url}/_search/scroll", {"scroll": "2m", "scroll_id": r["_scroll_id"]})
+    return out
+
+
+def expectations(os_url):
+    """Expected result per query id, from stored data: {"ents": {type: count}, "rels": count}."""
+    ent = {t: {d["id"]: d for d in scan(os_url, t.lower())} for t in ["Dragon", "Person", "Horse", "Kingdom", "Guild"]}
+
+    def edges(index):  # one tuple per logical edge (its "out" document): (typeA, idA, typeB, idB, temperature)
+        return [(d["entityA"]["type"], d["entityA"]["id"], d["entityB"]["type"], d["entityB"]["id"], d.get("temperature"))
+                for d in scan(os_url, index) if d.get("direction") == "out"]
+
+    def exists(t, i): return i in ent[t]
+    def prop(t, i, p): return ent[t].get(i, {}).get(p)
+    def funds(k):
+        try: return float(prop("Kingdom", k, "funds") or 0)
+        except ValueError: return 0
+
+    E = {"Own": edges("own"), "Know": edges("know"), "MemberOf": edges("memberof"), "Fire": edges("idx_fire_*"),
+         "RegisteredIn": edges("registeredin"), "OriginatedIn": edges("originatedin")}
+    know = [e for e in E["Know"] if exists("Person", e[1]) and exists("Person", e[3])]
+    fire = [e for e in E["Fire"] if exists("Dragon", e[1]) and exists("Dragon", e[3])]
+    own_pd, own_ph = defaultdict(set), defaultdict(set)
+    for a_t, a, b_t, b, _ in E["Own"]:
+        if a_t == "Person" and exists("Person", a):
+            if b_t == "Dragon" and exists("Dragon", b): own_pd[a].add(b)
+            if b_t == "Horse" and exists("Horse", b): own_ph[a].add(b)
+    fire_nb = defaultdict(set)
+    for _, a, _, b, _ in fire: fire_nb[a].add(b); fire_nb[b].add(a)
+    know_nb = defaultdict(set)
+    for _, a, _, b, _ in know: know_nb[a].add(b); know_nb[b].add(a)
+
+    exp = {"Q1": {"ents": {"Dragon": len(ent["Dragon"])}, "rels": 0},
+           "Q2a": {"rels": len(know)},
+           "Q2": {"rels": sum(1 for e in know if "FEMALE" in (prop("Person", e[1], "gender"), prop("Person", e[3], "gender")))}}
+    exp["Q3"] = {"rels": sum(1 for e in E["RegisteredIn"] if e[0] == "Guild" and exists("Guild", e[1])
+                             and e[2] == "Kingdom" and funds(e[3]) > 0)}
+    exp["Q5"] = {"rels": sum(1 for e in fire if "BLACK" in (prop("Dragon", e[1], "color"), prop("Dragon", e[3], "color")))}
+    # Q6: female p -Own- black dragon d that fired on/was fired by a male dragon; p -Own- horse from a kingdom with funds > 0
+    orig_ok = {e[1] for e in E["OriginatedIn"] if e[0] == "Horse" and e[2] == "Kingdom" and funds(e[3]) > 0}
+    q6 = {p for p in own_pd if prop("Person", p, "gender") == "FEMALE"
+          and any(prop("Dragon", d, "color") == "BLACK" and any(prop("Dragon", o, "gender") == "MALE" for o in fire_nb[d])
+                  for d in own_pd[p])
+          and any(h in orig_ok for h in own_ph[p])}
+    exp["Q6"] = {"ents": {"Person": len(q6)}}
+    owned = {p: len(ds) for p, ds in own_pd.items()}
+    exp["Q7"] = {"ents": {"Person": sum(1 for v in owned.values() if v > 50)},
+                 "note": f"most dragons owned by one person: {max(owned.values(), default=0)}"}
+    exp["Q8"] = exp["Q7"]
+    exp["Q9"] = {"rels": len({(e[1], e[3]) for e in fire})}
+    exp["QA"] = {"ents": {t: len(v) for t, v in ent.items()}}
+    exp["QB"] = {"ents": {"Person": len(ent["Person"]), "Dragon": len(ent["Dragon"])}}
+    exp["QC"] = {"ents": {"Person": len(ent["Person"])}}
+    exp["QD"] = {"ents": {"Person": sum(1 for p in ent["Person"].values() if p.get("name") == "Braden Heaney")}}
+    exp["QE"] = {"rels": sum(len(ds) for ds in own_pd.values())}
+    bolling = {g for g, d in ent["Guild"].items() if d.get("name") == "Bolling"}
+    members = {e[1] for e in E["MemberOf"] if e[3] in bolling and exists("Person", e[1])}
+    qf = {p for p in members if own_pd[p]}
+    exp["QF"] = {"ents": {"Person": len(qf), "Guild": len(bolling) if qf else 0,
+                          "Dragon": len(set().union(*[own_pd[p] for p in qf]))}}
+    hot_nb = defaultdict(set)
+    for _, a, _, b, t in fire:
+        if t is not None and float(t) > 600: hot_nb[a].add(b); hot_nb[b].add(a)
+    owner_of = defaultdict(set)
+    for p, ds in own_pd.items():
+        for d in ds: owner_of[d].add(p)
+    qg_p, qg_d = set(), set()
+    for p1, ds in own_pd.items():
+        for d1 in ds:
+            for d2 in hot_nb[d1]:
+                for p2 in owner_of[d2] & know_nb[p1]:
+                    qg_p |= {p1, p2}; qg_d |= {d1, d2}
+    exp["QG"] = {"ents": {"Person": len(qg_p), "Dragon": len(qg_d)}}
+    return exp
+
+
+def run(fuse, cypher, cursor=None):
+    params = {"cypher": cypher, "ontology": "Dragons", "pageSize": "100000"}
+    if cursor: params["cursorType"] = cursor
+    try:
+        d = http("GET", f"{fuse}/query/cypher/run?" + urllib.parse.urlencode(params))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")
+        try:
+            body = json.loads(body)["data"]["errorDescription"]
+        except (ValueError, KeyError, TypeError):
+            pass
+        return {"error": f"HTTP {e.code}: {str(body)[:300]}"}
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"{type(e).__name__}: {e}"}
+    ents, rels, errs = defaultdict(set), set(), []
+    def walk(o):
+        if isinstance(o, dict):
+            if "eType" in o: ents[o["eType"]].add(o.get("id") or o.get("eID"))
+            if "rType" in o: rels.add(o.get("rID") or o.get("id"))
+            for k, v in o.items():
+                if k in ("error", "errorDescription") and v: errs.append(str(v)[:200])
+                walk(v)
+        elif isinstance(o, list):
+            for x in o: walk(x)
+    walk(d)
+    return {"ents": {k: len(v) for k, v in ents.items()}, "rels": len(rels), "errors": errs, "raw": d}
+
+
+def verdict(got, exp):
+    if "error" in got or got["errors"]: return "ERROR"
+    ok = all(got["ents"].get(t, 0) == n for t, n in exp.get("ents", {}).items())
+    if "rels" in exp: ok &= got["rels"] == exp["rels"]
+    if ok and not any(exp.get("ents", {}).values()) and not exp.get("rels"):
+        return "PASS (vacuous: expected nothing)"  # passes, but proves little - check the data
+    return "PASS" if ok else "FAIL"
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--fuse", default="http://localhost:8888/fuse")
+    p.add_argument("--opensearch", default="http://localhost:9200")
+    p.add_argument("--load", action="store_true", help="load the tutorial data first (load_tutorial.py)")
+    p.add_argument("--reset", action="store_true", help="with --load: drop the Dragons indices before loading")
+    p.add_argument("--only", nargs="*", help="run only these query ids")
+    a = p.parse_args(argv)
+
+    failed = 0
+    if a.load:
+        failed += load_tutorial.load(a.fuse, a.opensearch, reset=a.reset) > 0
+        print()
+
+    exp = expectations(a.opensearch)
+    print("Doc queries (expected = computed from stored data)")
+    for doc, qid, cypher, known in QUERIES:
+        if a.only and qid not in a.only: continue
+        got, e = run(a.fuse, cypher), exp.get(qid, {})
+        v = verdict(got, e)
+        failed += not v.startswith("PASS")
+        label = v if v.startswith("PASS") or not known else f"{v} (known: {', '.join(known)})"
+        shown = got.get("error") or f"ents={got['ents']} rels={got['rels']}" + (f" errors={got['errors'][:1]}" if got["errors"] else "")
+        want = ", ".join(f"{k}={x}" for k, x in e.items() if k != "note")
+        print(f"  {qid:4} {label} - {doc}\n       {cypher}\n       got:      {shown}\n       expected: {want} {e.get('note', '')}")
+
+    # Cursor types used in projection-and-count.md / api.md
+    print("\nCursor types")
+    count_q = "Match (p1:Person)-[k:Know]->(p2:Person) return *"
+    c = run(a.fuse, count_q, "count")
+    want_know = exp["Q2a"]["rels"]
+    counts = {}
+    def find_counts(o):
+        if isinstance(o, dict):
+            if "Know" in o and isinstance(o["Know"], int): counts.update(o)
+            for x in o.values(): find_counts(x)
+        elif isinstance(o, list):
+            for x in o: find_counts(x)
+    find_counts(c.get("raw"))
+    ok = counts.get("Know") == want_know and counts.get("Person") == 2 * want_know
+    failed += not ok
+    print(f"  {'PASS' if ok else 'FAIL':5} count cursor  {count_q}\n        got: {c.get('error') or counts}  expected: Know={want_know}, Person={2 * want_know}")
+    for ct in ["graph", "csv", "forwardPaths", "projection"]:
+        r = run(a.fuse, "Match (d:Dragon) return *", ct)
+        bad = "error" in r or r["errors"]
+        failed += bool(bad)
+        print(f"  {'ERROR' if bad else 'ok':5} cursorType={ct:12} {r.get('error') or (r['errors'][:1] if r['errors'] else 'responds')}")
+
+    print(f"\n{'ALL PASS' if not failed else f'{failed} check(s) not passing'}")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
