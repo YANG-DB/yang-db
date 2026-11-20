@@ -56,6 +56,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan, AsgQuery> {
                     new NoRedundantRelationOpValidator(),
                     new RedundantGoToEntityOpValidator(),
                     new ReverseRelationOpValidator(),
+                    new AggregatedRelationDirectionOpValidator(),
                     new OptionalCompletePlanOpValidator());
         }
 
@@ -65,6 +66,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan, AsgQuery> {
                 new NoRedundantRelationOpValidator(),
                 new RedundantGoToEntityOpValidator(),
                 new ReverseRelationOpValidator(),
+                new AggregatedRelationDirectionOpValidator(),
                 new OptionalCompletePlanOpValidator(),
                 new ChainedPlanOpValidator(buildNestedPlanOpValidator(numNestingLevels - 1)));
     }
