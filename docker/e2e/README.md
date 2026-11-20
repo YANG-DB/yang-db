@@ -25,5 +25,17 @@ is non-zero if anything is not passing, known or not.
 
 Options: `--fuse` (default `http://localhost:8888/fuse`), `--opensearch` (default `http://localhost:9200`).
 
+## Marking a commit as verified on Docker
+`verify_and_mark.sh` runs the suite with `--load --reset` and publishes the result as a GitHub **commit status**
+named `e2e/docker` on the current commit. It shows as ✓ or ✗ next to the commit on GitHub, like a CI check, so
+anyone can see which commit was verified end to end and with what result.
+
+```bash
+docker/buildDocker.sh Dragons && docker compose -f docker/docker-compose-os.yml up -d --force-recreate fuse
+docker/e2e/verify_and_mark.sh             # needs `gh` logged in, and HEAD pushed
+docker/e2e/verify_and_mark.sh --no-mark   # run without publishing
+```
+Only mark a commit when the running image was built from it.
+
 When a query is added or changed in the docs, update `QUERIES` and `expectations()` in `doc_queries.py` to match.
 Only `--reset` deletes data: it drops the Dragons indices of the stack you point it at.

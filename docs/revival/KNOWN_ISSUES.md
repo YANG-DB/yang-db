@@ -60,7 +60,9 @@ Attached", even when rewritten as directed. Fix or document as unsupported.
 `Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *` returns no results; the stored data has 9
 persons with more than 15 outgoing `Know` relationships.
 
-### Q8 — `WHERE p:A OR p:B` on an untyped node crashes · **fixed**
+### Q8 — `WHERE p:A OR p:B` on an untyped node crashes · **partly fixed, open**
+The M2 rewrite no longer crashes, but e2e run 3 shows the ASG validator rejecting the query: `Property type
+mismatch parent entity: EUntyped`.
 `match (p) where p:Person OR p:Dragon return *` → HTTP 500 `EUntyped cannot be cast to ETyped`. This is the
 documented replacement for the unsupported label union.
 

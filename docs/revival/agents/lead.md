@@ -49,6 +49,13 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
   - `match (p)` is capped at 1,000 results
   - make the e2e suite clean up its own `projection` index
 
+## Update — e2e run 3 (2026-11-20)
+- Pushed `56621b0af`. Run 3 on an image built from it: **21/22 pass**; L4, Q7, Q8 counts and Q9 confirmed live.
+- Posted GitHub commit status `e2e/docker` = failure on `56621b0af`. From now on use `docker/e2e/verify_and_mark.sh`.
+- **Open: QB** (`WHERE p:A OR p:B` rejected by the ASG validator). Stream A hit the usage limit (resets 14:50
+  Pacific); the lead is investigating. Next: fix QB → full build → rebuild → `verify_and_mark.sh` → ask the
+  maintainer before pushing.
+
 ## Discoveries
 - Run 2 bisect, done by swapping jars into the container and restarting it:
   - A's `AggregatedRelationDirectionOpValidator` rejects plain directed plans; Q9 passes with it reverted.

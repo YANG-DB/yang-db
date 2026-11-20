@@ -19,7 +19,7 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
 | C — Service & loader | A1, L4 | **A1 merged to local main**; L4 → stream E | `worktree-agent-acdc794fa7038a886` | `54896dc37` A1 | — |
 | D — Data, docs & e2e | D1, D2, S13 | **merged to local main** | `worktree-agent-a28d8e52a88b602de` | `5e32376ca` D1, `4588df726` S13, `a37981c53` D2 | needs rebuilt image to go green |
 | E — Time partitions | L4 range buckets | **done, all merged** (r2 `e498ad46a`); e2e confirmation pending | `worktree-agent-a7164b98179501307` | `6b0a1c346` L4 | — |
-| Lead — Stage 2 merge | S14 | all merged; `mvn clean test` green (1,120); **pushed 2026-11-20**; next: e2e run 3 on a rebuilt image | `main` | — | — |
+| Lead — Stage 2 merge | S14 | pushed `56621b0af`; e2e run 3: **21/22** (commit status ✗); QB open | `main` | — | QB |
 
 ## Timeline
 - 2026-11-20 — Stage 0 done and pushed (`3ace71186`): 1,064 tests, 0 failures, ITs running.
@@ -151,6 +151,16 @@ Full log: `/tmp/yangdb-e2e-run1.log`. Stack is **up** (fuse :8888, OpenSearch :9
   - **Q8** — `match (p) where p:Person OR p:Dragon` (stream A's recommended label-union alternative) → HTTP 500
     `EUntyped cannot be cast to ETyped`. → stream A
   - Q6 (cycle pattern rejected by validator) still open. → stream A
+
+## e2e run 3 — 2026-11-20, image built from pushed `main` `56621b0af` → commit status `e2e/docker`: ✗ (21/22)
+- Loader: all 13 indices have the exact counts. **L4 confirmed:** all Fire (23,006) and Freeze (9,814) docs are in
+  `idx_*_2000`, and the other buckets are empty.
+- **PASS (16):** Q1, Q2a, Q2, Q3, Q5, Q6, Q7 (91 persons / 9 matching p1), Q8 (56 / 16), Q9 (2,964 distinct Fire
+  pairs), QA, QC, QD, QE, QF, QG, count cursor. All five cursor types respond.
+- **FAIL (1): QB** `match (p) where p:Person OR p:Dragon` → `CompositeValidatorStrategy: Property type mismatch
+  parent entity: EUntyped`. The Q8 rewrite crash is gone, but the ASG validator rejects the query. This is the form
+  the docs recommend instead of label union. → stream A round 4; A hit the usage limit (resets 14:50 Pacific), lead
+  investigating meanwhile.
 
 ## e2e run 2 — 2026-11-20, image from main after all merges
 Full `mvn clean test` first: **1,113 tests, 0 failures**. Log: `scratchpad/e2e-run2.log`.
