@@ -79,9 +79,10 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy, Asg
 
         Ontology.Accessor ont = new Ontology.Accessor(ontology.get());
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get(ont.get());
-        //currently supporting only ETyped or EConcrete
+        //currently supporting only ETyped or EConcrete: an untyped node (e.g. `match (p) where p:A OR p:B`) has no
+        // single vertex schema, so its constraints stay on the generic path instead of failing a cast
         Optional<AsgEBase<ETyped>> eTypedAsgEBase = AsgQueryUtil.ancestor(ePropGroupAsgEBase, EEntityBase.class);
-        if (!eTypedAsgEBase.isPresent()) {
+        if (!eTypedAsgEBase.isPresent() || !(eTypedAsgEBase.get().geteBase() instanceof ETyped)) {
             return;
         }
 
