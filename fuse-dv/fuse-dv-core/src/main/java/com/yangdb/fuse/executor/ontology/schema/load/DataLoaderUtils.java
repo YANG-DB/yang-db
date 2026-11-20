@@ -210,6 +210,8 @@ public interface DataLoaderUtils {
                 }
             case "date":
             case "dateValue":
+                if (isEpochMillis(value.toString()))
+                    return sdf.format(new Date(Long.parseLong(value.toString())));
                 try {
                     return sdf.format(sdf.parse(value.toString()));
                 } catch (ParseException e) {
@@ -226,6 +228,14 @@ public interface DataLoaderUtils {
                         Double.valueOf(value.toString().split("[,]")[0]));
         }
         return value;
+    }
+
+    /**
+     * Signed epoch milliseconds (negative = before 1970). At least 5 digits so a bare year like "1999"
+     * keeps going through the regular date parsers.
+     */
+    static boolean isEpochMillis(String value) {
+        return value.matches("-?\\d{5,}");
     }
 
     static boolean validateValue(String explicitType, Object value, DateFormat sdf) {
@@ -265,6 +275,8 @@ public interface DataLoaderUtils {
                 }
             case "date":
             case "dateValue":
+                if (isEpochMillis(value.toString()))
+                    return true;
                 try {
                     sdf.parse(value.toString());
                     return true;
