@@ -7,7 +7,7 @@ graph database.
 
 - **Logical ontology over physical indices** — entities, relationships and enumerations are mapped onto OpenSearch
   indices through an index provider (static, time-partitioned, unified, nested, or redundant layouts).
-  See [IndexProvider](../docs/info/components/IndexProvider.md).
+  See [IndexProvider](docs/info/components/IndexProvider.md).
 - **Several query front-ends** — the native V1 query language, plus Cypher, GraphQL and SPARQL translators.
   Ontologies can also be imported from OWL, GraphQL schemas and SQL DDL.
 - **Cost-based planning** — queries are compiled into an execution plan using index statistics, then translated
@@ -29,10 +29,10 @@ docker compose -f docker-compose-os.yml up -d
 curl http://localhost:8888/fuse/health
 ```
 
-Then open the Swagger UI at http://localhost:8888/swagger#. Full details in [docker/README.md](../docker/README.md),
-and the [Dragons tutorial](../docs/tutorial/sample/dragons/create-ontology.md) walks through creating the ontology,
-[loading data](../docs/tutorial/sample/dragons/load-data.md) and
-[querying it](../docs/tutorial/sample/dragons/query-the-data.md).
+Then open the Swagger UI at http://localhost:8888/swagger#. Full details in [docker/README.md](docker/README.md),
+and the [Dragons tutorial](docs/tutorial/sample/dragons/create-ontology.md) walks through creating the ontology,
+[loading data](docs/tutorial/sample/dragons/load-data.md) and
+[querying it](docs/tutorial/sample/dragons/query-the-data.md).
 
 ## Building from source
 
@@ -55,19 +55,19 @@ mvn clean install -P core,dragons-assembly # also builds the Dragons sample dist
 
 ## Documentation
 
-- [Project overview](../yang-db-high-level.md)
-- [Architecture](../docs/info/components/architecture.md) · [Ontology](../docs/info/components/ontology.md) ·
-  [Query language](../docs/info/components/query_language.md) · [Execution planner](../docs/info/components/execution_planner.md)
-- [REST API](../docs/info/api.md)
+- [Project overview](yang-db-high-level.md)
+- [Architecture](docs/info/components/architecture.md) · [Ontology](docs/info/components/ontology.md) ·
+  [Query language](docs/info/components/query_language.md) · [Execution planner](docs/info/components/execution_planner.md)
+- [REST API](docs/info/api.md)
 
 ## Contributing
 
-Contributions are welcome — see [CONTRIBUTING.md](../CONTRIBUTING.md) and the [Code of Conduct](../CODE_OF_CONDUCT.md).
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
 Open pull requests against `main`; `master` is a frozen 2019 snapshot.
 
 ## License
 
-[Apache License 2.0](../LICENSE)
+[Apache License 2.0](LICENSE)
 
 ## Maintainer
 

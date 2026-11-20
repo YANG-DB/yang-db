@@ -11,7 +11,7 @@ Please note we have a code of conduct, please follow it in all your interactions
    `master` is a frozen 2019 snapshot).
 2. Build and test with JDK 11 and Maven 3.6+: `mvn clean install` must pass.
 3. If your change affects how YANG-DB is run (config keys, ports, docker setup), update the project
-   README ([.github/README.md](.github/README.md)) and [docker/README.md](docker/README.md) accordingly.
+   README ([PROJECT.md](PROJECT.md)) and [docker/README.md](docker/README.md) accordingly.
    The root `README.MD` is the maintainer's GitHub profile page, not project documentation.
 4. A maintainer will review and merge.
 
