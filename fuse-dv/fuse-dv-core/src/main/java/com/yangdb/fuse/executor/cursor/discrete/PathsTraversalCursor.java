@@ -146,11 +146,17 @@ public class PathsTraversalCursor extends BaseCursor {
                 builder.withEntity(toEntity((Vertex) pathObject, this.eEntityBases.get(pathLabel)));
             } else if (Edge.class.isAssignableFrom(pathObject.getClass()) && this.includeRelationships) {
                 Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
-                builder.withRelationship(toRelationship(
+                Relationship relationship = toRelationship(
                         (Edge) pathObject,
                         relTuple._1(),
                         relTuple._2(),
-                        relTuple._3()));
+                        relTuple._3());
+                if (relTuple._2().getDir() == Rel.Direction.RL && objectIndex > 0 &&
+                        pathObjects.get(objectIndex - 1) instanceof Vertex) {
+                    setUndirectedEndTags(relationship, (Edge) pathObject, (Vertex) pathObjects.get(objectIndex - 1),
+                            relTuple._1(), relTuple._3());
+                }
+                builder.withRelationship(relationship);
             } else {
                 throw new UnsupportedOperationException("unexpected object in path");
             }
@@ -203,6 +209,19 @@ public class PathsTraversalCursor extends BaseCursor {
         }
 
         return builder.build();
+    }
+
+    /**
+     * An undirected pattern {@code (prev)-[r]-(next)} matches relationships stored either way. eID1/eID2 are the
+     * stored out/in vertices, so eTag1/eTag2 name the pattern entity each of them is: the vertex the path came from
+     * is {@code prev}.
+     */
+    protected static void setUndirectedEndTags(Relationship relationship, Edge edge, Vertex prevVertex,
+                                               EEntityBase prevEntity, EEntityBase nextEntity) {
+        Vertex out = edge.outVertex();
+        boolean outIsPrev = Objects.equals(out.id(), prevVertex.id()) && Objects.equals(out.label(), prevVertex.label());
+        relationship.seteTag1(outIsPrev ? prevEntity.geteTag() : nextEntity.geteTag());
+        relationship.seteTag2(outIsPrev ? nextEntity.geteTag() : prevEntity.geteTag());
     }
 
     protected Optional<Property> toProperty(org.apache.tinkerpop.gremlin.structure.Property vertexProperty) {
