@@ -61,6 +61,20 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
   `docker/e2e/verify_and_mark.sh` (it reuses the loaded data; the image must match HEAD) to post ✓ on the pushed
   commit.
 
+## Queue (maintainer-approved, 2026-11-20)
+1. **Phase 1 PR**: branch `phase1-examples-layout` (assembly → `distribution/`, ext/datagen → `examples/dragons/`,
+   dragons-sys-test retired). Verify (full build + image + e2e), push the branch, mark `e2e/docker` on the branch
+   commit, open the PR for the maintainer to review. Don't merge it yourself.
+2. **Dragons playground at `/dragons/swagger`** on a new branch after the Phase 1 PR, in its own PR:
+   - a hand-written OpenAPI spec served by the Dragons extension (`examples/dragons/ext`), separate from the generated
+     `/swagger`
+   - `POST /fuse/dragons/tutorial/load`: one click runs idgen → catalog → init → all tutorial CSVs, bundled into the
+     distribution
+   - the query endpoint gets a dropdown of named examples for every documented query and cursor type
+   - the e2e suite reads its query list from that spec (single source of truth)
+   - link it from the service home page and the tutorial
+   - check that the bundled Swagger UI is 3.x (needed for the examples dropdown); otherwise ship one with the page
+
 ## Discoveries
 - Run 2 bisect, done by swapping jars into the container and restarting it:
   - A's `AggregatedRelationDirectionOpValidator` rejects plain directed plans; Q9 passes with it reverted.
