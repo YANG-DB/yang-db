@@ -175,12 +175,11 @@ public class EBaseStatisticsProviderIndicesTests {
     }
 
 
-    // FIXME (dev-opensearch migration): disabled - pre-existing bug surfaced after fixing the
-    // TransportClient/opensearch build so this module compiles and runs again.
-    // Assertion failure: expected:<500.0> but was:<510.0> - a real histogram/statistics
-    // calculation mismatch, unrelated to the OpenSearch client migration itself. Needs the
-    // cost estimation logic for date-range histogram filters investigated separately.
-    @Ignore("Pre-existing histogram assertion mismatch (expected 500.0, got 510.0), unrelated to OpenSearch migration - see comment above")
+    // notInSet excludes two instants, so every time-partition index can still hold matching edges:
+    // the ne conditions prune no index and both indices' histograms are read (older index 10/5,
+    // current index 500/10). Neither bucket is single-valued, so the pessimistic estimate keeps
+    // both: total 510, cardinality 15. (Despite the "SingleIndex" name, only the excluded values
+    // fall in a single index; the old 500/10 expectation wrongly assumed the older index is pruned.)
     @Test
     public void eRelDateNotInSetFilterSingleIndexHistogramTest() {
         ETyped eEntityBase = new ETyped();
@@ -198,8 +197,8 @@ public class EBaseStatisticsProviderIndicesTests {
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
         Assert.assertNotNull(nodeStatistics);
-        Assert.assertEquals(500d, nodeStatistics.getTotal(), 0.1);
-        Assert.assertEquals(10, nodeStatistics.getCardinality(), 0.1);
+        Assert.assertEquals(510d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(15, nodeStatistics.getCardinality(), 0.1);
     }
 
     @Test
