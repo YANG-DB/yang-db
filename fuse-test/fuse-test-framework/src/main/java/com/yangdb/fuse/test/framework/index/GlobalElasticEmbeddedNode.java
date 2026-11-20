@@ -39,7 +39,7 @@ public class GlobalElasticEmbeddedNode {
 
     public static Optional<MainResponse> isRunningLocally() {
         try {
-            final RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+            final RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", ElasticEmbeddedNode.HTTP_PORT, "http")));
             MainResponse response = client.info(RequestOptions.DEFAULT);
             return Optional.of(response);
         } catch (Throwable err) {
@@ -55,11 +55,11 @@ public class GlobalElasticEmbeddedNode {
     public static ElasticEmbeddedNode getInstance(Settings setting) throws Exception {
         synchronized (ElasticEmbeddedNode.class) {
             if (instance == null) {
-                instance = new ElasticEmbeddedNode(setting, "target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(setting, ElasticEmbeddedNode.DATA_DIR, ElasticEmbeddedNode.HTTP_PORT, ElasticEmbeddedNode.TRANSPORT_PORT, nodeName);
                 System.out.println("Starting embedded Elasticsearch Node " + nodeName);
             } else if (!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
                 close();
-                instance = new ElasticEmbeddedNode(setting, "target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(setting, ElasticEmbeddedNode.DATA_DIR, ElasticEmbeddedNode.HTTP_PORT, ElasticEmbeddedNode.TRANSPORT_PORT, nodeName);
             }
             GlobalElasticEmbeddedNode.nodeName = nodeName;
             return instance;
@@ -70,11 +70,11 @@ public class GlobalElasticEmbeddedNode {
     public static ElasticEmbeddedNode getInstance(String nodeName) throws Exception {
         synchronized (ElasticEmbeddedNode.class) {
             if (instance == null) {
-                instance = new ElasticEmbeddedNode(Settings.EMPTY, "target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(Settings.EMPTY, ElasticEmbeddedNode.DATA_DIR, ElasticEmbeddedNode.HTTP_PORT, ElasticEmbeddedNode.TRANSPORT_PORT, nodeName);
                 System.out.println("Starting embedded Elasticsearch Node " + nodeName);
             } else if (!GlobalElasticEmbeddedNode.nodeName.equals(nodeName)) {
                 close();
-                instance = new ElasticEmbeddedNode(Settings.EMPTY, "target/es", 9200, 9300, nodeName);
+                instance = new ElasticEmbeddedNode(Settings.EMPTY, ElasticEmbeddedNode.DATA_DIR, ElasticEmbeddedNode.HTTP_PORT, ElasticEmbeddedNode.TRANSPORT_PORT, nodeName);
             }
             GlobalElasticEmbeddedNode.nodeName = nodeName;
             return instance;

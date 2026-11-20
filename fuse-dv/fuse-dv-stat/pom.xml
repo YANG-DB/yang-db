@@ -126,7 +126,6 @@
                     <includes>
                         <include>**/*Suite.java</include>
                     </includes>
-                    <parallel>methods</parallel>
                     <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
                 </configuration>
             </plugin>

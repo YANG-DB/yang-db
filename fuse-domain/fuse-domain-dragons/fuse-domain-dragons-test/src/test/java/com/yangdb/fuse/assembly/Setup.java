@@ -61,7 +61,7 @@ public abstract class Setup {
             client = ElasticEmbeddedNode.getClient();
         } else {
             //use existing running ES
-            client = ElasticEmbeddedNode.getClient("Dragons", 9300);
+            client = ElasticEmbeddedNode.getClient("Dragons", ElasticEmbeddedNode.TRANSPORT_PORT);
         }
 
         if(init) {

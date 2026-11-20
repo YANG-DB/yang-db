@@ -79,7 +79,7 @@ public class ElasticStatProviderTest {
     private static final String[] DATA_HOSTS = new String[]{"localhost"};
 
     // The transport port for the cluster
-    private static final int DATA_TRANSPORT_PORT = 9300;
+    private static final int DATA_TRANSPORT_PORT = ElasticEmbeddedNode.TRANSPORT_PORT;
 
     // The name of the statistics cluster
     private static final String STAT_CLUSTER_NAME = "fuse.test_elastic";
@@ -88,7 +88,7 @@ public class ElasticStatProviderTest {
     private static final String[] STAT_HOSTS = new String[]{"localhost"};
 
     // The transport port for the statistics cluster
-    private static final int STAT_TRANSPORT_PORT = 9300;
+    private static final int STAT_TRANSPORT_PORT = ElasticEmbeddedNode.TRANSPORT_PORT;
     //endregion
 
     //todo Add more tests

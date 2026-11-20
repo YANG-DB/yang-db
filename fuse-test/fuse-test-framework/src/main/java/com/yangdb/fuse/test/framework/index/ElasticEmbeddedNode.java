@@ -23,12 +23,15 @@ package com.yangdb.fuse.test.framework.index;
 import org.opensearch.client.Client;
 import org.opensearch.client.core.MainResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
+import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +42,11 @@ import static com.yangdb.fuse.test.framework.TestUtil.deleteFolder;
 
 public class ElasticEmbeddedNode implements AutoCloseable {
     public static final String FUSE_TEST_ELASTIC = "fuse.test_elastic";
+    /** Override with -Dfuse.test.http.port / -Dfuse.test.transport.port to run several test JVMs side by side. */
+    public static final int HTTP_PORT = Integer.getInteger("fuse.test.http.port", 9200);
+    public static final int TRANSPORT_PORT = Integer.getInteger("fuse.test.transport.port", 9300);
+    /** Override with -Dfuse.test.data.dir, e.g. to keep node data off filesystems where index deletion can't complete. */
+    public static final String DATA_DIR = System.getProperty("fuse.test.data.dir", "target/es");
 
     static {
         //see https://github.com/testcontainers/testcontainers-java/issues/1009 issue with netty & E/S
@@ -68,27 +76,29 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     static String nodeName = FUSE_TEST_ELASTIC;
 
-    static int httpPort = 9200;
-    static int httpTransportPort = 9300;
+    static int httpPort = HTTP_PORT;
+    static int httpTransportPort = TRANSPORT_PORT;
 
     static Client client = null;
+    // true when the client is a transport client to an externally running cluster (not owned by an embedded node)
+    private static boolean remoteClient = false;
     //endregion
 
     //region Constructors
     ElasticEmbeddedNode(String clusterName) throws Exception {
-        this(Settings.EMPTY, "target/es", 9200, 9300, clusterName);
+        this(Settings.EMPTY, DATA_DIR, HTTP_PORT, TRANSPORT_PORT, clusterName);
     }
 
     ElasticEmbeddedNode(Settings settings, String clusterName, int numberOfShards) throws Exception {
-        this(settings, "target/es", 9200, 9300, clusterName, numberOfShards);
+        this(settings, DATA_DIR, HTTP_PORT, TRANSPORT_PORT, clusterName, numberOfShards);
     }
 
     ElasticEmbeddedNode() throws Exception {
-        this(Settings.EMPTY, "target/es", 9200, 9300, "fuse.test_elastic");
+        this(Settings.EMPTY, DATA_DIR, HTTP_PORT, TRANSPORT_PORT, "fuse.test_elastic");
     }
 
     ElasticEmbeddedNode(Settings settings, ElasticIndexConfigurer... configurers) throws Exception {
-        this(settings, "target/es", 9200, 9300, "fuse.test_elastic", configurers);
+        this(settings, DATA_DIR, HTTP_PORT, TRANSPORT_PORT, "fuse.test_elastic", configurers);
     }
 
     ElasticEmbeddedNode(Settings settings, String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
@@ -122,22 +132,27 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //region Methods
 
     public static Client getClient(MainResponse info) {
-        if (client == null) {
-            System.out.println("Setting client " + info.getNodeName());
-            client = node.client();
-        }
-
-        return client;
+        return getClient(info.getClusterName(), httpTransportPort);
     }
 
     public static Client getClient(String nodeName) {
         return getClient(nodeName, httpTransportPort);
     }
 
-    public static Client getClient(String nodeName, int httpTransportPort) {
+    /**
+     * Client of the embedded node when one is running in this JVM; otherwise a transport client to an already
+     * running cluster named {@code clusterName} on localhost:{@code transportPort}.
+     */
+    public static Client getClient(String clusterName, int transportPort) {
         if (client == null) {
-            System.out.println("Setting client " + nodeName);
-            client = node.client();
+            System.out.println("Setting client " + clusterName);
+            if (node != null) {
+                client = node.client();
+            } else {
+                client = new PreBuiltTransportClient(Settings.builder().put("cluster.name", clusterName).build())
+                        .addTransportAddress(new TransportAddress(InetAddress.getLoopbackAddress(), transportPort));
+                remoteClient = true;
+            }
         }
 
         return client;
@@ -157,8 +172,12 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public static void closeClient() {
-        // the client is owned by the embedded Node and is closed with it; just drop the reference
+        // an embedded node's client is closed together with the node; only a remote transport client is ours to close
+        if (client != null && remoteClient) {
+            client.close();
+        }
         client = null;
+        remoteClient = false;
     }
 
     private void prepare(Settings additional) throws Exception {
@@ -186,6 +205,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("transport.type", "netty4")
                 .put("http.type", "netty4")
                 .put("http.cors.enabled", "true")
+                // a nearly full developer disk must not turn test indices read-only
+                .put("cluster.routing.allocation.disk.threshold_enabled", false)
 //                .put("script.auto_reload_enabled", "false")
                 .put("transport.port", httpTransportPort)
                 .put(additional)

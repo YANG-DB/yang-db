@@ -93,7 +93,7 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration.setBulkStart(1000);
         MetricRegistry registry = new MetricRegistry();
 
-        client = getClient(CLUSTER_NAME, 9300);
+        client = getClient(CLUSTER_NAME, ElasticEmbeddedNode.TRANSPORT_PORT);
         graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {

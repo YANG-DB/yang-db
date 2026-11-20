@@ -1,6 +1,7 @@
 package com.yangdb.fuse.epb.plan.statistics.util;
 
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.yangdb.fuse.test.framework.index.ElasticEmbeddedNode;
 import com.yangdb.fuse.stat.model.configuration.StatContainer;
 
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class StatConfigTestUtil {
     public static StatConfig getStatConfig (StatContainer statContainer) {
         return new StatConfig("fuse.test_elastic",
                 Collections.singletonList("localhost"),
-                9300,
+                ElasticEmbeddedNode.TRANSPORT_PORT,
                 STAT_INDEX_NAME,
                 STAT_TERM_TYPE_NAME,
                 STAT_STRING_TYPE_NAME,
