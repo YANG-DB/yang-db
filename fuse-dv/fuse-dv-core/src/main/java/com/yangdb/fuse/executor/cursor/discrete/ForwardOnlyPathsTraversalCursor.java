@@ -64,7 +64,8 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
         builder.withPattern(pattern);
         (getContext().getTraversal().next(numResults)).forEach(path -> {
             //makes sure no circle exists in path (no getting back - forward only assignments)
-            if (path.objects().stream().map(p -> ((UniElement) p).id().toString()).collect(Collectors.toSet()).size() == path.objects().size())
+            //an element is its kind, type and id: Guild 0 -> Kingdom 0 is not a circle
+            if (path.objects().stream().map(p -> elementKey((UniElement) p)).collect(Collectors.toSet()).size() == path.objects().size())
                 builder.withAssignment(toAssignment(path));
         });
         return AssignmentsQueryResult.distinct(builder
@@ -72,6 +73,12 @@ public class ForwardOnlyPathsTraversalCursor extends PathsTraversalCursor {
                 .withCursorId(context.getQueryResource().getCurrentCursorId())
                 .withTimestamp(context.getQueryResource().getQueryMetadata().getCreationTime())
                 .build());
+    }
+
+    private static String elementKey(UniElement element) {
+        return String.join("\u0000",
+                element instanceof org.apache.tinkerpop.gremlin.structure.Vertex ? "V" : "E",
+                element.label(), element.id().toString());
     }
 
 }
