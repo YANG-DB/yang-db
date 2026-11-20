@@ -2,6 +2,7 @@
 
 Living plan for bringing YANG-DB back to a maintained, promotable state. Update the checklists as work lands.
 Bugs referenced by ID (e.g. `L1`, `Q2`) are described in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+Live progress and blockers of the running work: [STATUS.md](STATUS.md). Resume points per agent: [agents/](agents/README.md).
 
 ## Goals
 1. Simpler to test-drive
@@ -32,24 +33,28 @@ Loader
 - [x] `L1` relation endpoint types rewritten — fixed in `CSVTransformer`, test `CSVTransformerTest#testRelationKeepsSourceTypeWhenPairsShareDestination`
 - [x] `L2` pre-1970 epoch-millis dates dropped — fixed in `DataLoaderUtils`, test `DataLoaderUtilsTest`
 - [x] `L3` `INSERT` silently overwrites — fixed in `LoadUtils` and both loaders, IT `IndexProviderBasedCSVLoaderIT#testInsertDoesNotOverwriteButUpsertDoes`
+- [x] `L4` time-partition buckets — numeric range buckets (inclusive upper bounds) across loader, query and stats, out-of-range dates fail loudly (`TimeSeriesBuckets`)
 
 Test infrastructure
 - [x] `T1` integration suite crashed when an OpenSearch was already running locally, and the build reported false green
 
 Query engine
-- [ ] `Q1` undirected pattern `-[r]-` executes as `->`
-- [ ] `Q2` relationship endpoint type ignored (horses returned as dragons)
-- [ ] `Q3` edge whose endpoints share an id is dropped
-- [ ] `Q4` relationship ids concatenated without a delimiter; per-pair collapse even without `distinct`
-- [ ] `Q5` untyped `match (p)` returns nothing; label union `(p:A | B)` is a syntax error — fix or document as unsupported
-- [ ] `A1` API renders Java `toString()` unless `Accept: application/json`
+- [x] `Q1` undirected pattern `-[r]-` executes as `->`
+- [x] `Q2` relationship endpoint type ignored (horses returned as dragons)
+- [x] `Q3` edge whose endpoints share an id is dropped
+- [x] `Q4` relationship ids concatenated without a delimiter; per-pair collapse even without `distinct`
+- [x] `Q5` (label union rejected explicitly; untyped match fixed) untyped `match (p)` returns nothing; label union `(p:A | B)` is a syntax error — fix or document as unsupported
+- [x] `A1` API renders Java `toString()` unless `Accept: application/json`
 
 Tutorial data & docs
-- [ ] `D1` tutorial CSV defects (header/row mismatches, header typo, duplicate edge ids)
-- [ ] `D2` doc examples and claims that don't match reality (Queries.md, projection-and-count.md, api.md, load-data.md)
+- [x] `D1` tutorial CSV defects (header/row mismatches, header typo, duplicate edge ids)
+- [ ] `D2` doc examples and claims that don't match reality (engine-independent parts done; rest after B/C)
+- [x] `D3` dangling ids in tutorial relationship data — count examples rewritten to use `Know`
+- [ ] `Q6` cycle-closing pattern rejected by the validator
+- [ ] `A2` whole-file load failure easy to misread
 
 Verification
-- [ ] `S13` end-to-end doc-query suite committed to the repo and passing
+- [ ] `S13` end-to-end doc-query suite committed to the repo (✅ `docker/e2e/`) and passing
 - [ ] `S14` full `mvn clean test` green with ITs running → **push the batch**
 
 ### Parallel execution plan for the Stabilize workstream

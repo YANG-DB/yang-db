@@ -22,34 +22,61 @@ The `directive` parameter was accepted but ignored: every write used `OpType.IND
 Dragon 10 *and* Horse 10 → both edges `10_367`) silently overwrote each other while reporting success. `INSERT` now uses
 `OpType.CREATE` (duplicates reported as failed items); `UPSERT` overwrites.
 
-### L4 — Time-partition bucket choice · open, investigate
-All Fire/Freeze documents (years 1900–1999) land in `idx_*_1000`; the other three partitions stay empty.
+### L4 — Time-partition bucket choice · **fixed** (range buckets: each value is the inclusive upper bound)
+All Fire/Freeze documents (years 1900–1999) land in `idx_*_1000`; the other three partitions stay empty. Root cause:
+a date is routed to the index named exactly after its formatted value (1950 → `idx_fire_1950`, which doesn't exist),
+then falls back to the first index in text order (`_1000`). Queries use the same exact-name rule. The Dragons config
+and IndexProvider.md describe range buckets that nothing implements. The pattern `YYYY` is week-year (should be `yyyy`).
 
 ## Query engine
 
-### Q1 — Undirected pattern executes as directed · open
+### Q1 — Undirected pattern executes as directed · **fixed**
 `(a)-[r]-(b)` behaves exactly like `(a)-[r]->(b)`. Tutorial query 2 returns 245 of 349 correct relationships.
 
-### Q2 — Relationship endpoint type ignored · open
+### Q2 — Relationship endpoint type ignored · **fixed**
 Endpoints are matched by id only. Person 42 owns Horse 7 → returned as Dragon 7. Undirected is worse: Person 42 gets
 21 "dragons" (the owners of Dragon 42, via the reverse-direction documents).
 
-### Q3 — Edge between two entities with the same id is dropped · open
+### Q3 — Edge between two entities with the same id is dropped · **fixed**
 `Person:22 → Dragon:22` is stored correctly but never returned.
 
-### Q4 — Relationship ids built without a delimiter · open
+### Q4 — Relationship ids built without a delimiter · **fixed**
 `rType + idA + idB` (e.g. `Fire4465`) collides for different pairs (4→465 and 44→65), so `distinct` loses pairs. All
 relationships between the same two entities also collapse into one even without `distinct`, contradicting
 query-the-data.md.
 
-### Q5 — Untyped node / label union unsupported · open
+### Q5 — Untyped node / label union unsupported · **fixed**
 `match (p) return *` returns nothing; `match (p:Person | Dragon)` is a syntax error. Both appear in Queries.md.
+Fix: undirected steps use each stored document's own direction and endpoint types; relationship ids are
+`<label>:<csv id>`; results key entities by type+id; untyped match skips nested types' nonexistent indices.
+Label union: **decided unsupported** (openCypher 9 has no node-label union) — now rejected with an explicit error
+suggesting `WHERE p:A OR p:B`. Untyped match: the ASG is correct; the loss is in execution (stream B).
+
+### Q6 — Cycle-closing pattern rejected · **unsupported, explicit error** (docs updated)
+Queries.md's "owners who know each other" pattern is rejected by the ontology validator with "Relation with No entity
+Attached", even when rewritten as directed. Fix or document as unsupported.
+
+### Q7 — Count filter returns nothing · **fixed** (planner reversed the counted relation)
+`Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 return *` returns no results; the stored data has 9
+persons with more than 15 outgoing `Know` relationships.
+
+### Q8 — `WHERE p:A OR p:B` on an untyped node crashes · **fixed**
+`match (p) where p:Person OR p:Dragon return *` → HTTP 500 `EUntyped cannot be cast to ETyped`. This is the
+documented replacement for the unsupported label union.
+
+### End-to-end status of Q1–Q4 (2026-11-20)
+The fixes hold in the traversal-level IT but **not** through the REST service: on the rebuilt image, undirected and
+mixed-type queries still return wrong results (e.g. `Person-[Own]-Dragon` returns horses). Reopened for stream B.
 
 ## API
 
-### A1 — Non-JSON responses by default · open
+### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends
 `Accept: application/json`.
+
+### A2 — Whole-file load failure easy to miss · open, minor
+When a whole CSV fails (e.g. Fire/Freeze before L2), the response carries a top-level `error` with empty
+success/failure lists, which reads like "0 of 0 loaded".
 
 ## Test infrastructure
 
@@ -62,14 +89,20 @@ configurable test ports / data dir, and the disk-threshold decider is disabled o
 
 ## Tutorial data & docs
 
-### D1 — Tutorial CSV defects · open
+### D1 — Tutorial CSV defects · **fixed**
 - `Person.csv`: 7 header columns, 8 values per row (full name unlabeled) → `name` never loaded
 - `horses.csv`: 6 header columns, 5 values per row
 - `Freeze.csv`: 7 header columns, 8 values per row
 - `RegisteredGuilds.csv`: header typo `""startDate"`; duplicate edge ids
 - Edge ids don't encode entity types, so files sharing a relationship collide (see L3)
 
-### D2 — Docs that don't match reality · open
+### D3 — Dangling ids in tutorial relationship data · **resolved (examples rewritten)**
+OwnsDragon owners range 0–999 but only 100 persons exist; MembersOfGuilds references guilds up to ~97 of 15. Each
+stored person owns at most one dragon, so `count(o) > 50` examples can never match. Decision (maintainer): keep the
+data, rewrite the count examples in query-the-data.md to use `Know` (`count(k) > 15` → 9 persons; with
+`p2.gender = FEMALE`, `count(k) > 10` → 5).
+
+### D2 — Docs that don't match reality · engine-independent parts **fixed**; engine-dependent parts pending
 - Queries.md: references data that doesn't exist (`Bonaparte`, `merchant`), wrong relationship type `memberOf`,
   typo `Preson`, nonexistent property `fire.color`
 - projection-and-count.md: shows the count result of a different query

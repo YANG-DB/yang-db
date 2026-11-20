@@ -31,3 +31,6 @@ dependency-reduced-pom.xml
 *.zip
 /distrib/
 /distrib/knowledge-knowledge/
+
+# python bytecode (docker/e2e)
+__pycache__/
