@@ -1,7 +1,9 @@
 #!/bin/bash
+# Stop on the first failure: otherwise a failed Maven build still produces an image from a stale distrib/ folder.
+set -euo pipefail
 
 # Set the tag name or take the current date as the default tag
-if [ -z "$1" ]; then
+if [ -z "${1:-}" ]; then
   tagname=$(date +'%Y%m%d')
 else
   tagname=$1
@@ -9,6 +11,7 @@ fi
 
 # build the project for the dragons assembly distrib folder
 cd ..
+rm -rf distrib/dragon distrib/dragon.tar
 echo "mvn clean install -DskipTests=true -P core,dragons-assembly"
 mvn clean install -DskipTests=true -P core,dragons-assembly
 
