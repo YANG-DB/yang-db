@@ -58,14 +58,21 @@ public class LoadUtils {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public static Tuple2<Response, BulkRequestBuilder> load(PartitionResolver schema, Client client, DataTransformerContext<Object> context) {
+    /**
+     * INSERT must not overwrite: an existing id is reported as a failed item instead of being silently replaced.
+     */
+    public static IndexRequest.OpType opType(GraphDataLoader.Directive directive) {
+        return directive == GraphDataLoader.Directive.UPSERT ? IndexRequest.OpType.INDEX : IndexRequest.OpType.CREATE;
+    }
+
+    public static Tuple2<Response, BulkRequestBuilder> load(PartitionResolver schema, Client client, DataTransformerContext<Object> context, IndexRequest.OpType opType) {
         Response upload = new Response("upload");
         BulkRequestBuilder bulk = client.prepareBulk();
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {
                 if (documentBuilder.isSuccess())
-                    buildIndexRequest(schema, client, bulk, documentBuilder);
+                    buildIndexRequest(schema, client, bulk, documentBuilder, opType);
             } catch (FuseError.FuseErrorException e) {
                 upload.failure(e.getError());
             }
@@ -74,7 +81,7 @@ public class LoadUtils {
         for (DocumentBuilder e : context.getRelations()) {
             try {
                 if (e.isSuccess())
-                    buildIndexRequest(schema, client, bulk, e);
+                    buildIndexRequest(schema, client, bulk, e, opType);
             } catch (FuseError.FuseErrorException err) {
                 upload.failure(err.getError());
             }
@@ -82,14 +89,14 @@ public class LoadUtils {
         return new Tuple2<>(upload, bulk);
     }
 
-    public static IndexRequestBuilder buildIndexRequest(PartitionResolver schema, Client client, BulkRequestBuilder bulk, DocumentBuilder node) {
+    public static IndexRequestBuilder buildIndexRequest(PartitionResolver schema, Client client, BulkRequestBuilder bulk, DocumentBuilder node, IndexRequest.OpType opType) {
         try {
             String index = resolveIndex(schema, node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
                     .setType(node.getType())
                     .setId(node.getId())
-                    .setOpType(IndexRequest.OpType.INDEX)
+                    .setOpType(opType)
                     .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);
             node.getRouting().ifPresent(request::setRouting);
             bulk.add(request);

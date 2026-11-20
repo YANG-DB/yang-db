@@ -18,6 +18,7 @@ import org.opensearch.action.admin.indices.refresh.RefreshResponse;
 import org.opensearch.action.search.SearchRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.index.query.MatchAllQueryBuilder;
+import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,9 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         provider = mapper.readValue(stream, IndexProvider.class);
         stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/Dragons.json");
         ontology = mapper.readValue(stream, Ontology.class);
+
+        // every test starts from empty indices: tests share one node, and INSERT refuses to overwrite existing ids
+        DataLoaderUtils.init(client, nestedSchema);
     }
 
     @Test
@@ -124,5 +128,24 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         SearchResponse resp = builder.setSize(1000).setQuery(new MatchAllQueryBuilder()).get();
         Assert.assertEquals(4,resp.getHits().getTotalHits().value);
 
+    }
+
+    @Test
+    public void testInsertDoesNotOverwriteButUpsertDoes() throws IOException {
+        CSVTransformer transformer = new CSVTransformer(config, ontologyProvider, nestedProviderIfc, nestedSchema, Mockito.mock(IdGeneratorDriver.class), client);
+        IndexProviderBasedCSVLoader csvLoader = new IndexProviderBasedCSVLoader(client, transformer, nestedSchema);
+        String header = "id,name,description,iconId,url,establishDate\n";
+
+        LoadResponse<String, FuseError> first = csvLoader.load("Entity", "Guild", header + "G-DUP-1,first,,,,30/6/1020\n", GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(1, first.getResponses().get(1).getSuccesses().size());
+
+        LoadResponse<String, FuseError> insertAgain = csvLoader.load("Entity", "Guild", header + "G-DUP-1,second,,,,30/6/1020\n", GraphDataLoader.Directive.INSERT);
+        Assert.assertEquals(0, insertAgain.getResponses().get(1).getSuccesses().size());
+        Assert.assertEquals(1, insertAgain.getResponses().get(1).getFailures().size());
+        Assert.assertEquals("first", client.prepareGet("guild", null, "G-DUP-1").get().getSource().get("name"));
+
+        LoadResponse<String, FuseError> upsert = csvLoader.load("Entity", "Guild", header + "G-DUP-1,third,,,,30/6/1020\n", GraphDataLoader.Directive.UPSERT);
+        Assert.assertEquals(1, upsert.getResponses().get(1).getSuccesses().size());
+        Assert.assertEquals("third", client.prepareGet("guild", null, "G-DUP-1").get().getSource().get("name"));
     }
 }

@@ -114,7 +114,7 @@ public class IndexProviderBasedCSVLoader implements CSVDataLoader {
      */
     private LoadResponse<String, FuseError> load(DataTransformerContext context, GraphDataLoader.Directive directive) {
         //load bulk requests
-        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(schema, client, context);
+        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(schema, client, context, LoadUtils.opType(directive));
         //submit bulk request
         LoadUtils.submit(tuple._2(), tuple._1());
         return new LoadResponseImpl().response(context.getTransformationResponse()).response(tuple._1());

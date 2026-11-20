@@ -36,6 +36,7 @@ import com.yangdb.fuse.model.results.LoadResponse;
 import com.yangdb.fuse.model.results.LoadResponse.LoadResponseImpl;
 import javaslang.Tuple2;
 import org.opensearch.action.bulk.BulkRequestBuilder;
+import org.opensearch.action.index.IndexRequest;
 import org.opensearch.client.Client;
 
 import java.util.Collections;
@@ -154,7 +155,7 @@ public class IndexProjectionCursor extends PathsTraversalCursor {
      */
     private LoadResponse<String, FuseError> load(Client client, DataTransformerContext context) {
         //load bulk requests
-        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(resolver, client, context);
+        Tuple2<Response, BulkRequestBuilder> tuple = LoadUtils.load(resolver, client, context, IndexRequest.OpType.INDEX);
         //submit bulk request
         LoadUtils.submit(tuple._2(), tuple._1());
         return new LoadResponseImpl().response(context.getTransformationResponse()).response(tuple._1());

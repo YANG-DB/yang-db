@@ -14,7 +14,9 @@ import org.opensearch.action.admin.indices.refresh.RefreshResponse;
 import org.opensearch.action.search.SearchRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.index.query.MatchAllQueryBuilder;
+import com.yangdb.fuse.executor.ontology.schema.load.DataLoaderUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -32,6 +34,11 @@ import static org.mockito.Mockito.when;
 
 public class IndexProviderBasedGraphLoaderIT implements BaseITMarker {
 
+    @Before
+    public void resetIndices() {
+        // every test starts from empty indices: tests share one node, and INSERT refuses to overwrite existing ids
+        DataLoaderUtils.init(client, nestedSchema);
+    }
 
     @Test
     public void testSchema() throws IOException {

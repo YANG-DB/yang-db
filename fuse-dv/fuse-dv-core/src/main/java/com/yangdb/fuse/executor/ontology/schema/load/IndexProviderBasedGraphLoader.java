@@ -93,7 +93,7 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         Response upload = new Response("Upload");
         DataTransformerContext<LogicalGraphModel> context = transformer.transform(root, directive);
         //load bulk requests
-        load(bulk, upload, context);
+        load(bulk, upload, context, LoadUtils.opType(directive));
         //submit bulk request
         submit(bulk, upload);
 
@@ -122,11 +122,11 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         }
     }
 
-    private void load(BulkRequestBuilder bulk, Response upload, DataTransformerContext<LogicalGraphModel> context) {
+    private void load(BulkRequestBuilder bulk, Response upload, DataTransformerContext<LogicalGraphModel> context, IndexRequest.OpType opType) {
         //populate bulk entities documents index requests
         for (DocumentBuilder documentBuilder : context.getEntities()) {
             try {
-                buildIndexRequest(bulk, documentBuilder);
+                buildIndexRequest(bulk, documentBuilder, opType);
             } catch (FuseError.FuseErrorException e) {
                 upload.failure(e.getError());
             }
@@ -134,21 +134,21 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
         //populate bulk relations document index requests
         for (DocumentBuilder e : context.getRelations()) {
             try {
-                buildIndexRequest(bulk, e);
+                buildIndexRequest(bulk, e, opType);
             } catch (FuseError.FuseErrorException err) {
                 upload.failure(err.getError());
             }
         }
     }
 
-    public IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node) {
+    public IndexRequestBuilder buildIndexRequest(BulkRequestBuilder bulk, DocumentBuilder node, IndexRequest.OpType opType) {
         try {
             String index = resolveIndex(node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
                     .setType(node.getType())
                     .setId(node.getId())
-                    .setOpType(IndexRequest.OpType.INDEX)
+                    .setOpType(opType)
                     .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);
             node.getRouting().ifPresent(request::setRouting);
             bulk.add(request);
