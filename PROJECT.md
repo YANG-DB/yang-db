@@ -9,7 +9,7 @@ graph database.
   indices through an index provider (static, time-partitioned, unified, nested, or redundant layouts).
   See [IndexProvider](docs/info/components/IndexProvider.md).
 - **Several query front-ends** — the native V1 query language, plus Cypher, GraphQL and SPARQL translators.
-  Ontologies can also be imported from OWL, GraphQL schemas and SQL DDL.
+  Ontologies are defined as JSON and registered through the catalog API.
 - **Cost-based planning** — queries are compiled into an execution plan using index statistics, then translated
   into TinkerPop graph traversals executed against OpenSearch.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
@@ -45,7 +45,7 @@ mvn clean install -P core,dragons-assembly # also builds the Dragons sample dist
 |---|---|
 | `fuse-model` | Core model: ontology, query, results, and index-provider schema |
 | `fuse-asg` | Query abstract-syntax-graph and the Cypher / GraphQL / SPARQL translators |
-| `fuse-core` | Query dispatching, ontology import (OWL, GraphQL schema, SQL DDL), Java client |
+| `fuse-core` | Query dispatching, Java client, ontology transformers for OWL / GraphQL schema / SQL DDL (not exposed via the REST API) |
 | `fuse-dv` | OpenSearch data layer: execution planning (`epb`), statistics (`stat`), plan-to-traversal translation (`gta`), traversal execution (`unipop`, `core`) |
 | `unipop-core` | TinkerPop structure/predicate layer the traversals run on |
 | `fuse-service` | REST server and Swagger UI |
