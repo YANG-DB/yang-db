@@ -114,10 +114,10 @@ public class EpbJoinSelectionTests {
             GraphEdgeSchema graphEdgeSchema = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
             Rel.Direction direction = invocationOnMock.getArgument(1, Rel.Direction.class);
             if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction.name().equals(Rel.Direction.L.name())){
-                return 10000;
+                return 10000L;
             }
             if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction.name().equals(Rel.Direction.R)){
-                return 1;
+                return 1L;
             }
             return 5L;
         });
@@ -333,13 +333,6 @@ public class EpbJoinSelectionTests {
         return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
 
-    // FIXME (dev-opensearch migration): disabled - pre-existing bug surfaced after fixing the
-    // TransportClient/opensearch build so this module compiles and runs again.
-    // java.lang.ClassCastException: Integer cannot be cast to Long at line 354 (now shifted).
-    // Likely a numeric field deserialized as Integer somewhere upstream (JSON/config parsing)
-    // where this code assumes Long - needs the actual producer traced and fixed, not just
-    // patched at the cast site. Unrelated to the OpenSearch client migration itself.
-    @Ignore("Pre-existing Integer->Long ClassCastException, unrelated to OpenSearch migration - see comment above")
     @Test
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
