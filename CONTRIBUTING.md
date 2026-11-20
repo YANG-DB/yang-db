@@ -7,14 +7,12 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Pull Request Process
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this
-   Pull Request would represent.
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you 
-   do not have permission to do that, you may request the second reviewer to merge it for you.
+1. Branch from `main` and open your pull request against `main` (the only actively developed branch;
+   `master` is a frozen 2019 snapshot).
+2. Build and test with JDK 11 and Maven 3.6+: `mvn clean install` must pass.
+3. If your change affects how YANG-DB is run (config keys, ports, docker setup), update
+   [README.MD](README.MD) and [docker/README.md](docker/README.md) accordingly.
+4. A maintainer will review and merge.
 
 ## Code of Conduct
 
@@ -73,7 +71,7 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
+reported by contacting the project team at yang.db.dev@gmail.com. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.

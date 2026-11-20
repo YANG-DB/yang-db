@@ -9,8 +9,8 @@ fi
 
 # build the project for the dragons assembly distrib folder
 cd ..
-echo "mvn clean install -DskipTests=true install -P core,dragons-assembly"
-mvn clean install -DskipTests=true install -P core,dragons-assembly
+echo "mvn clean install -DskipTests=true -P core,dragons-assembly"
+mvn clean install -DskipTests=true -P core,dragons-assembly
 
 # Copy Dockerfile to the distrib folder
 cd docker

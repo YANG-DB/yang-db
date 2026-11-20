@@ -1,31 +1,45 @@
-# Running The Dragons Graph 
-This tutorial explains how to run the Dragons graph sample distrib application on top of the Opensearch engine using the docker-compose.
+# Running The Dragons Graph
+This is the quickstart for YANG-DB: it runs the Dragons sample graph on top of OpenSearch using docker compose.
 
-The next [docker-compose](docker-compose-os.yml) is used to run the next services
- - OpenSearch
- - OpenSearch-dashboards
- - Fuse - (The Dragons Graph engine)
+[docker-compose-os.yml](docker-compose-os.yml) starts three services:
+ - OpenSearch 1.3.0 (single node, security plugin disabled - for local testing only)
+ - OpenSearch Dashboards 1.3.0
+ - Fuse - the YANG-DB graph engine, preloaded with the Dragons ontology
+
+## Prerequisites
+- Docker with the `docker compose` plugin
+- JDK 11 and Maven 3.6+ (the image is built locally - there is no current prebuilt image on Docker Hub)
+
+The OpenSearch version is set by `OS_VERSION` in [.env](.env) and must match `<opensearch.version>` in the root `pom.xml`.
 
 ## Building
-First we need to build the distribution folder that includes the dragons assemble.
-run the next bash script `./buildDocker.sh Dragons` [here](runDocker.sh)
-> Note: to make the script executable run `chmod +x start-fuse-service.sh`
+From this `docker/` folder run:
+```bash
+chmod +x buildDocker.sh
+./buildDocker.sh Dragons
+```
 
-Running this will result in the following steps:
-- It will take the tag name (Dragons) given by the command line to create the docker image (`yangdb/yang.db:Dragons`)
-- It will run the maven build command (`mvn clean install -DskipTests=true install -P core,dragons-assembly`)
-- It will generate the target folder (distrib/dragons) which include the jars and script for running the graph engine (Fuse)
-- It will generate the docker image based on the above folder
-
-Once this process is complete - Run the docker-compose command:
+This will:
+- Run the maven build (`mvn clean install -DskipTests=true -P core,dragons-assembly`)
+- Generate the `distrib/dragon` folder, which holds the jars and the start script for the graph engine (Fuse)
+- Build the docker image `yangdb/yang.db:Dragons` from that folder
 
 ## Running the Docker-compose services
-The docker compose command `docker-compose -f docker-compose-os.yml up -d` will start all the relevant services
- - OpenSearch - http://localhost:9200 
- - OpenSearch-Dashboard - http://localhost:5601 
- - Fuse-Graph - http://localhost:8888
+```bash
+docker compose -f docker-compose-os.yml up -d
+```
+This starts:
+ - OpenSearch - http://localhost:9200
+ - OpenSearch Dashboards - http://localhost:5601
+ - Fuse (graph engine) - http://localhost:8888
 
-Once all services are up - navigate to the http://localhost:8888/swagger# url to verify the correctness of the Graph engine.
+Fuse waits for OpenSearch to report healthy before starting. Check it's up with:
+```bash
+curl http://localhost:8888/fuse/health
+```
+Then open http://localhost:8888/swagger# to explore the API.
+
+To stop everything: `docker compose -f docker-compose-os.yml down` (add `-v` to also delete the data volumes).
 
 ## Swagger API
 The next API references allows access to all the Graph's functionality and configuration.
@@ -34,7 +48,7 @@ The next API references allows access to all the Graph's functionality and confi
 ![](../docs/info/img/swagger.png)
 
 ### Calling the Get Info API
-Navigate to the next URL `http://localhost:8888/swagger#/API/get_` and call the `execute `
+Run `curl http://localhost:8888/fuse`, or navigate to `http://localhost:8888/swagger#/API/get_` and call `execute`.
 
 The next response is expected:
 ```json5
@@ -56,7 +70,6 @@ The next response is expected:
 ```
 ## Dragons Tutorial
 For more advanced usage and tutorial please refer to the [Tutorials folder](../docs/tutorial)
-- [Dragons Tutorial Installation](../docs/tutorial/sample/dragons/installation.md)
 - [Dragons Tutorial Ontology](../docs/tutorial/sample/dragons/create-ontology.md)
 - [Dragons Tutorial Data](../docs/tutorial/sample/dragons/load-data.md)
 - [Dragons Tutorial Query](../docs/tutorial/sample/dragons/query-the-data.md)

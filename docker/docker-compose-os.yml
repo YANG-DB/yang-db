@@ -21,13 +21,12 @@ networks:
 services:
   # OpenSearch store - node (not for production - no security - only for test purpose )
   opensearch:
-    image: opensearchstaging/opensearch:${OS_VERSION}
+    image: opensearchproject/opensearch:${OS_VERSION}
     container_name: opensearch
     environment:
       - cluster.name=Dragons
       - node.name=opensearch
-      - discovery.seed_hosts=opensearch
-      - cluster.initial_cluster_manager_nodes=opensearch
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
@@ -55,7 +54,7 @@ services:
 
   # OpenSearch store - dashboard
   opensearch-dashboards:
-    image: opensearchstaging/opensearch-dashboards:${OS_VERSION}
+    image: opensearchproject/opensearch-dashboards:${OS_VERSION}
     container_name: opensearch-dashboards
     ports:
       - 5601:5601 # Map host port 5601 to container port 5601
@@ -63,6 +62,7 @@ services:
       - "5601" # Expose port 5601 for web access to OpenSearch Dashboards
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch:9200"]' # Define the OpenSearch nodes that OpenSearch Dashboards will query
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true" # the opensearch node above runs without the security plugin
     depends_on:
       - opensearch
 
@@ -73,12 +73,13 @@ services:
 #      dockerfile: Dockerfile
 #      args:
 #        - VERSION=${VERSION}
+    # Connection settings come from the config bundled in the image (opensearch.hosts = ["opensearch"],
+    # opensearch.port = 9300, opensearch.cluster_name = Dragons), which match the opensearch service above.
+    # start-fuse-service.sh does not read environment variables, so they are not set here.
     depends_on:
-      - opensearch
+      opensearch:
+        condition: service_healthy
     ports:
       - 8888:8888
-    environment:
-      - "opensearch.hosts=opensearch"
-      - "opensearch.cluster_name=Dragons"
     volumes:
       - fuse-data:/usr/share/fuse

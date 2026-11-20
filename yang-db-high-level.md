@@ -14,8 +14,8 @@
 
 #### Latest News
  * opensearch community lecture given on yangDb
- * https://github.com/YANG-DB/yang-db/blob/develop/docs/info/YangDbOpenSearch.pdf
- * https://github.com/YANG-DB/yang-db/blob/develop/docs/info/KnowledgeGraphDeck.md
+ * https://github.com/YANG-DB/yang-db/blob/main/docs/info/YangDbOpenSearch.pdf
+ * https://github.com/YANG-DB/yang-db/blob/main/docs/info/KnowledgeGraphDeck.md
 
 
 #### Project YANG-DB
@@ -269,20 +269,20 @@ Please review the following tutorial pages:
 ---------------
 Installaiton tutorial:
 
- - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/installation.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/installation.md
 
 Schema creation tutorial:
 
- - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/create-ontology.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/create-ontology.md
 
 Data Loading tutorial:
 
- - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/load-data.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/load-data.md
 
 Query the Graph tutorial:
 
- - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/query-the-data.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/query-the-data.md
 
 Projection materialization & count tutorial:
 
- - https://github.com/YANG-DB/yang-db/blob/develop/docs/tutorial/sample/dragons/projection-and-count.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/projection-and-count.md
