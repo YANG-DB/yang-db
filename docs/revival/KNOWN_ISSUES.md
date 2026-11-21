@@ -114,6 +114,22 @@ Its index patterns include every type name (`dragon`, `horse`, `own`…), so it 
 those names. This is the "leftover templates break later index creation" trap. Pinned by
 `OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex`.
 
+## GraphQL (found while preparing the Phase 4 baseline)
+
+### G1 — GraphQL queries fail on ontologies registered from JSON (e.g. Dragons) · open
+`GET /fuse/query/graphQL/run?ontology=Dragons&graphQL={ Dragon { name } }` returns `A schema MUST have a 'query'
+operation defined`: the GraphQL schema generated from the ontology has no `Query` root type.
+
+### G2 — GraphQL schema import keeps state across requests · open
+A second `POST /fuse/graphql/ontology/{id}` with the same SDL fails with "tried to redefine existing 'Query' type …
+There is already a schema defined". Only a service restart clears it.
+
+### G3 — GraphQL schema import can't take a schema split across files · open
+`starWars.graphql` needs the `WhereClause` types from `whereSchema.graphql`. The endpoint takes one document; on its
+own it fails ("input type 'WhereClause' is not present"), and the two concatenated returned an empty response.
+Through REST, GraphQL is therefore not usable end to end today. Only the in-process unit tests (fuse-core
+`GraphQL*Test`, fuse-asg) exercise it successfully.
+
 ## Count filter
 
 ### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
