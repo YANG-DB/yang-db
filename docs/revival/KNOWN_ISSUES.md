@@ -88,11 +88,16 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 
 ## Found by the legacy-test triage (Phase 3, stream I; see [IGNORED_TESTS.md](IGNORED_TESTS.md))
 
-### Q9 — Cypher keeps only the first type of a multi-type relationship · open
+### Q9 — Cypher keeps only the first type of a multi-type relationship · **now an explicit error**
 `[r:A|B]` translates to a relation of type `A` only (`CypherMatchSimpleTranslatorTest:86`).
 
-### Q10 — Cypher drops relationship properties in the pattern · open
-`-[c {k: v}]-` loses the `{k: v}` constraint during translation.
+### Q10 — Cypher relationship property maps: unnamed relationships crash, extra properties ignored · **fixed**
+Verified live (e2e R4–R6): a named relationship with one property works. An **unnamed** one (`-[:Fire {t: 1}]->`)
+fails with HTTP 500 `None.get`, and with **several** properties only the first is applied.
+
+### Q12 — Cypher node property maps: unnamed nodes crash, extra properties ignored · **fixed**
+`(p:Person {gender: FEMALE, name: 'X'})` applies only the first property; `(:Person {name: 'X'})-[…]` fails with HTTP
+500 `None.get`. The node-pattern sibling of Q10 (found by the bug-fix round's agent K). Pinned by e2e R7/R8.
 
 ### Q11 — Relationship property plus an end-pattern filter fails validation · open
 "No Parent Element found" (`RelationRangeAsgStrategyWithFiltersInRangTest:318`).
@@ -111,16 +116,23 @@ those names. This is the "leftover templates break later index creation" trap. P
 
 ## Count filter
 
-### C1 — Count-filter script uses the wrong operators for `=` and `>=` · open
+### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
 `AggregationBuilder.BuildFilterScript` emits `a=120` for `eq`, which is an *assignment* in Painless rather than a
 comparison, and `a>120` for `gte`. So `WHERE count(r) = n` and `>= n` don't filter as written. `>` and `<` (used by
-the docs) are correct. Found by Phase 3 stream H; the tests pin the current output with a NOTE.
+the docs) are correct. A second cause, for `=` / `<>`: the Cypher translator routed `count(k) = n` to plain
+equality, so no count filter was built at all (fixed: `CountExpression` now owns `=`/`<>` on `count(...)`). Fixed: `==`, `>=`, and `!=` (which produced an uncompilable `a120`). An unknown operator now
+throws. Pinned by e2e R1/R2.
 
-### C2 — Count filter may only consider the top 10 groups · unverified
-The count-filter terms aggregation built in `AggregationBuilder` uses the default `size` of 10 (stream H). But e2e
-Q8 matches 16 start persons and passes, so the service's path may not be limited this way. Verify before fixing.
+### C3 — Two count conditions on the same relationship give wrong results · open
+`WHERE count(k) > 15 AND count(k) < 17` returns 99 persons and 358 relationships; the data has 4 start persons with
+exactly 16 (found live during the bug-fix round). A single count condition works. Not investigated yet.
 
-### T2 — Test-code slips found in Phase 3 (minor) · open
+### C2 — Count filter may only consider the top 10 groups · **not a bug**
+The service runs the count filter as its own request sized to the vertex bulk (`DiscreteVertexController.filterByAggregation`
+→ `setSize(bulkSize)`, applied to top-level terms aggregations by `SearchBuilder.enforceSize`). Pinned by
+`testCountFilterTermsSizeIsTheBulkSizeNotTheDefault` and e2e R3 (36 of 36).
+
+### T2 — Test-code slips found in Phase 3 (minor) · **fixed** (except the duplicated Distinct test, kept)
 - `QueryTest.testDeSerialization`: the "q11" block reads Q005.json, so Q011.json is never tested; the q2 block
   null-checks `q1Obj` instead of `q2Obj`.
 - `DistinctFilterQueryTranslatorTest` is a copy of the count-filter test; no distinct translator exists.
@@ -128,7 +140,7 @@ Q8 matches 16 start persons and passes, so the service's path may not be limited
 
 ## Planner statistics
 
-### P1 — Statistics treat a time-field `inSet` as an intersection · open
+### P1 — Statistics treat a time-field `inSet` as an intersection · **fixed**
 `EBaseStatisticsProvider.findRelevantTimeSeriesIndices` turns `inSet` into one `eq` per value, and each `eq` drops
 every other partition index. So values that fall in different time buckets leave no index at all, where it should
 be a union. This only affects cost estimates. Found by streams E and G; not covered by a test yet.

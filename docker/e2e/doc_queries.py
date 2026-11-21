@@ -93,6 +93,21 @@ def expectations(os_url):
         return {"ents": {"Person": len(p1 | set().union(*[out[a] for a in p1]))},
                 "note": f"({len(p1)} matching p1 persons)"}
     exp["Q7"] = count_filter(15, lambda b: True)
+    # regressions: count-filter operators (C1), more than 10 matching groups (C2), relationship property map (Q10)
+    def count_cmp(ok):
+        p1 = {a for a, bs in know_out_all.items() if ok(len(bs))}
+        return {"ents": {"Person": len(p1 | set().union(*[know_out_all[a] for a in p1]))}, "note": f"({len(p1)} matching p1 persons)"}
+    know_out_all = defaultdict(set)
+    for _, a, _, b, _ in know: know_out_all[a].add(b)
+    exp["R1"] = count_cmp(lambda n: n == 16)
+    exp["R2"] = count_cmp(lambda n: n >= 15)
+    exp["R3"] = count_cmp(lambda n: n > 3)
+    exp["R4"] = {"rels": sum(1 for e in fire if e[4] is not None and float(e[4]) == 373)}
+    exp["R5"] = exp["R4"]
+    exp["R6"] = {"rels": 0}
+    braden = {i for i, d in ent["Person"].items() if d.get("name") == "Braden Heaney"}
+    exp["R7"] = {"ents": {"Person": sum(1 for i in braden if ent["Person"][i].get("gender") == "FEMALE")}}
+    exp["R8"] = {"rels": sum(1 for _, a, _, b, _ in know if a in braden)}  # no fire has date == 1 ms; before the fix the second property was ignored (32)
     # the count is taken over all Know edges (they don't store p2's gender); the row filter then restricts the p2s
     know_out = defaultdict(set)
     for _, a, _, b, _ in know: know_out[a].add(b)

@@ -482,92 +482,70 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, EPropGroup entityFilter) {
-        List<EProp> timeConditions = new ArrayList<>();
-        for (EProp eProp : entityFilter.getProps()){
-            Property property =  ont.$property$(eProp.getpType());
-            if(property.getName().equals(indexPartitions.getTimeField())){
-                switch(eProp.getCon().getOp()){
-                    case inRange:
-                        List<Date> values = (List<Date>)eProp.getCon().getExpr();
-                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
-                        break;
-                    case inSet:
-                        values = (List<Date>)eProp.getCon().getExpr();
-                        for(Date value : values){
-                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
-                        }
-                        break;
-                    case notInSet:
-                        values = (List<Date>)eProp.getCon().getExpr();
-                        for(Date value : values){
-                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
-                        }
-                        break;
-                    default:
-                        timeConditions.add(eProp);
-                        break;
-                }
+        List<Constraint> timeConstraints = new ArrayList<>();
+        for (EProp eProp : entityFilter.getProps()) {
+            if (ont.$property$(eProp.getpType()).getName().equals(indexPartitions.getTimeField())) {
+                timeConstraints.add(eProp.getCon());
             }
         }
-
-        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
-        if(timeConditions.size() == 0) {
-            return relevantIndices;
-        }
-
-        for(EProp timeCondition : timeConditions) {
-            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
-            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName, indexPartitions.getIndexFormat()));
-        }
-        return relevantIndices;
-
+        return findRelevantTimeSeriesIndices(indexPartitions, timeConstraints);
     }
 
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, RelPropGroup relPropGroup) {
-        List<RelProp> timeConditions = new ArrayList<>();
-        for (RelProp relProp : relPropGroup.getProps()){
+        List<Constraint> timeConstraints = new ArrayList<>();
+        for (RelProp relProp : relPropGroup.getProps()) {
             if (ont.$property$(relProp.getpType()).getName().equals(indexPartitions.getTimeField())) {
-                switch(relProp.getCon().getOp()){
-                    case inRange:
-                        List<Date> values = (List<Date>)relProp.getCon().getExpr();
-                        if(!values.isEmpty()) {
-                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
-                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
-                        }
-                        break;
-                    case inSet:
-                        values = (List<Date>)relProp.getCon().getExpr();
-                        for(Date value : values){
-                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
-                        }
-                        break;
-                    case notInSet:
-                        values = (List<Date>)relProp.getCon().getExpr();
-                        for(Date value : values){
-                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
-                        }
-                        break;
-                    default:
-                        timeConditions.add(relProp);
-                        break;
-                }
+                timeConstraints.add(relProp.getCon());
             }
         }
+        return findRelevantTimeSeriesIndices(indexPartitions, timeConstraints);
+    }
 
+    /**
+     * the partition indices that may hold elements matching all the time-field constraints (an AND of them).
+     * An inSet keeps the union of the buckets covering its values; notInSet/ne prune nothing, since a bucket
+     * holds a range of values.
+     */
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, List<Constraint> timeConstraints) {
         List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
 
-        if(timeConditions.size() == 0) {
-            return relevantIndices;
-        }
-
-        for(RelProp timeCondition : timeConditions) {
-
-            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
-            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName, indexPartitions.getIndexFormat()));
+        for (Constraint con : timeConstraints) {
+            switch (con.getOp()) {
+                case inRange: {
+                    List<Date> values = (List<Date>) con.getExpr();
+                    if (!values.isEmpty()) {
+                        removeIndices(indexPartitions, relevantIndices,
+                                Constraint.of(con.getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0)));
+                        removeIndices(indexPartitions, relevantIndices,
+                                Constraint.of(con.getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1)));
+                    }
+                    break;
+                }
+                case inSet: {
+                    List<Date> values = (List<Date>) con.getExpr();
+                    if (!values.isEmpty()) {
+                        Set<String> buckets = values.stream()
+                                .map(indexPartitions::getIndexName)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toSet());
+                        relevantIndices.retainAll(buckets);
+                    }
+                    break;
+                }
+                case notInSet:
+                    // like ne: excluding single values cannot rule out a bucket
+                    break;
+                default:
+                    removeIndices(indexPartitions, relevantIndices, con);
+                    break;
+            }
         }
         return relevantIndices;
+    }
 
+    private void removeIndices(TimeSeriesIndexPartitions indexPartitions, List<String> relevantIndices, Constraint timeCondition) {
+        String indexName = indexPartitions.getIndexName((Date) timeCondition.getExpr());
+        relevantIndices.removeAll(findIndicesToRemove(timeCondition, relevantIndices, indexName, indexPartitions.getIndexFormat()));
     }
 
     /**

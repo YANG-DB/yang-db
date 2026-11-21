@@ -113,10 +113,10 @@ public class EpbJoinSelectionTests {
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema graphEdgeSchema = invocationOnMock.getArgument(0, GraphEdgeSchema.class);
             Rel.Direction direction = invocationOnMock.getArgument(1, Rel.Direction.class);
-            if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction.name().equals(Rel.Direction.L.name())){
+            if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction == Rel.Direction.L){
                 return 10000L;
             }
-            if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction.name().equals(Rel.Direction.R)){
+            if(graphEdgeSchema.getLabel().equals(SUBJECT.getName()) && direction == Rel.Direction.R){
                 return 1L;
             }
             return 5L;
