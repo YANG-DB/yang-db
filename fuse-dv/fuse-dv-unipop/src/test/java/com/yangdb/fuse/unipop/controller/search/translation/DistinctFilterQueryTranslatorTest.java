@@ -9,6 +9,11 @@ import org.unipop.process.predicate.CountFilterP;
 
 import java.util.Collections;
 
+import static com.yangdb.fuse.unipop.controller.search.QueryDslAssert.assertDsl;
+import static com.yangdb.fuse.unipop.controller.search.translation.CountFilterQueryTranslatorTest.countFilterAggregation;
+
+// NOTE: despite its name this class exercises CountFilterQueryTranslator, duplicating CountFilterQueryTranslatorTest;
+// there is no distinct-filter translator.
 public class DistinctFilterQueryTranslatorTest extends TestCase {
 
     public static final String ENTITY_A_ID = "entityA.id";
@@ -25,7 +30,8 @@ public class DistinctFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a=120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        // NOTE: pins current output; "a=120" is an assignment, not a comparison (see CountFilterQueryTranslatorTest)
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a=120"), aggregations.iterator().next().toString());
 
     }
 
@@ -39,6 +45,7 @@ public class DistinctFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        Assert.assertEquals("{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a>120\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}",aggregations.iterator().next().toString());
+        // NOTE: pins current output; gte renders as ">" (see CountFilterQueryTranslatorTest)
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>120"), aggregations.iterator().next().toString());
     }
 }

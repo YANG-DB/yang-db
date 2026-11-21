@@ -128,7 +128,7 @@ public class StatisticsMockUtils {
         });*/
 
 
-        when(mock.getGlobalSelectivity(any(), any(), any(), any())).thenAnswer(invocationOnMock -> 10);
+        when(mock.getGlobalSelectivity(any(), any(), any(), any())).thenAnswer(invocationOnMock -> 10L);
 
         return mock;
     }

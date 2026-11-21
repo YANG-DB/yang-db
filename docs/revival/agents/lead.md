@@ -67,7 +67,8 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
    dragons-sys-test retired). Verify (full build + image + e2e), push the branch, mark `e2e/docker` on the branch
    commit, open the PR for the maintainer to review. Don't merge it yourself.
 2. ~~**Dragons playground at `/dragons/swagger`**~~: merged as #161 (`ddcd553bf`, 2026-11-20), with the tutorial main page.
-3. **Next: Phase 2** (one shared source of test fixtures), unless the maintainer reprioritizes. Use a branch and a PR, as for Phases 1 and 2.
+3. ~~Phase 2~~: merged as #162. **Now: Phase 3** (streams F–I; see ROADMAP), on branch `phase3-structural-assertions`, merged into one PR.
+   Previous plan text: **Next: Phase 2** (one shared source of test fixtures), unless the maintainer reprioritizes. Use a branch and a PR, as for Phases 1 and 2.
    Original playground plan:
    - a hand-written OpenAPI spec served by the Dragons extension (`examples/dragons/ext`), separate from the generated
      `/swagger`

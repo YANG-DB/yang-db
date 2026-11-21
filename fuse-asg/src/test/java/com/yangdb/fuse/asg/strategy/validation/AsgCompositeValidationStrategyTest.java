@@ -26,7 +26,6 @@ import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.eq;
  * Created by lior.perry on 6/6/2017.
  */
 //todo implement
-@Ignore
 public class AsgCompositeValidationStrategyTest {
     Ontology ontology;
 

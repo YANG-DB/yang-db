@@ -176,14 +176,6 @@ public class StatisticalCostEstimatorTests {
 
     }
 
-    // FIXME (dev-opensearch migration): disabled - pre-existing bug surfaced after fixing the
-    // TransportClient/opensearch build so this module compiles and runs again.
-    // java.lang.ClassCastException: Integer cannot be cast to Long (same root cause as
-    // EpbJoinSelectionTests.testJoinPlanSelection and BasicPatternCostEstimatorTest.calculateFullStep).
-    // Likely a numeric field deserialized as Integer somewhere upstream (JSON/config parsing)
-    // where this code assumes Long - needs the actual producer traced and fixed, not just
-    // patched at the cast site. Unrelated to the OpenSearch client migration itself.
-    @Ignore("Pre-existing Integer->Long ClassCastException, unrelated to OpenSearch migration - see comment above")
     @Test
     public void calculateStepPattern() throws Exception {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
