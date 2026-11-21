@@ -130,6 +130,15 @@ own it fails ("input type 'WhereClause' is not present"), and the two concatenat
 Through REST, GraphQL is therefore not usable end to end today. Only the in-process unit tests (fuse-core
 `GraphQL*Test`, fuse-asg) exercise it successfully.
 
+### A4 — Dragons clause routes are broken once registered · open
+Now that Phase 4 registers them, the clause routes fail (per code reading): no `clause` language is registered,
+`createClause` is never called and its transformer is null, and `/clause/run` sends JSON to `runCypher`. `/ext`
+redirects to a file that doesn't exist.
+
+### A5 — The SPARQL language key is `sparkQL` · open, minor
+The generic route `/fuse/query/sparql/run` returns 404 because the registered key is `sparkQL`; the old `/sparql` URL
+works. Register `sparql` as the key (or an alias).
+
 ## Count filter
 
 ### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
