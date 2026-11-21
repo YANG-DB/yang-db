@@ -29,7 +29,10 @@ import com.yangdb.fuse.model.query.properties.FunctionEProp;
 import com.yangdb.fuse.model.query.properties.FunctionRelProp;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.CountConstraintOp;
+import org.opencypher.v9_0.expressions.BinaryOperatorExpression;
+import org.opencypher.v9_0.expressions.Equals;
 import org.opencypher.v9_0.expressions.FunctionInvocation;
+import org.opencypher.v9_0.expressions.NotEquals;
 import org.opencypher.v9_0.expressions.Variable;
 
 import java.util.Optional;
@@ -37,13 +40,17 @@ import java.util.Optional;
 import static com.yangdb.fuse.model.query.properties.constraint.Constraint.of;
 import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.*;
 
-public class CountExpression extends BaseEqualityExpression<org.opencypher.v9_0.expressions.InequalityExpression> {
+/**
+ * A count filter on a relationship: {@code count(r) op n} for every comparison op ({@code <, <=, >, >=, =, <>}).
+ * {@link EqualityExpression} and {@link NotEqualExpression} leave {@code count(...)} comparisons to this strategy.
+ */
+public class CountExpression extends BaseEqualityExpression<BinaryOperatorExpression> {
 
     public static final String COUNT = "count";
 
     @Override
-    protected org.opencypher.v9_0.expressions.InequalityExpression get(org.opencypher.v9_0.expressions.Expression expression) {
-        return (org.opencypher.v9_0.expressions.InequalityExpression) expression;
+    protected BinaryOperatorExpression get(org.opencypher.v9_0.expressions.Expression expression) {
+        return (BinaryOperatorExpression) expression;
     }
 
     @Override
@@ -62,6 +69,8 @@ public class CountExpression extends BaseEqualityExpression<org.opencypher.v9_0.
             case "<=":return of(CountConstraintOp.le,literal.asCanonicalStringVal());
             case ">": return of(CountConstraintOp.gt,literal.asCanonicalStringVal());
             case ">=":return of(CountConstraintOp.ge,literal.asCanonicalStringVal());
+            case "=": return of(CountConstraintOp.eq,literal.asCanonicalStringVal());
+            case "<>":return of(CountConstraintOp.ne,literal.asCanonicalStringVal());
         }
         throw new IllegalArgumentException("condition "+literal.asCanonicalStringVal()+" doesn't match any supported V1 constraints");
     }
@@ -77,9 +86,19 @@ public class CountExpression extends BaseEqualityExpression<org.opencypher.v9_0.
 
     @Override
     public boolean isApply(Expression expression) {
-        return (expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
-                (((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof org.opencypher.v9_0.expressions.InequalityExpression) &&
-                !(((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression()).findAggregate().isEmpty() &&
-                ((org.opencypher.v9_0.expressions.FunctionInvocation)(((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression()).findAggregate().get()).name().equals(COUNT);
+        if (!(expression instanceof com.bpodgursky.jbool_expressions.Variable)) return false;
+        org.opencypher.v9_0.expressions.Expression cypher =
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression();
+        return (cypher instanceof org.opencypher.v9_0.expressions.InequalityExpression
+                || cypher instanceof Equals
+                || cypher instanceof NotEquals)
+                && isCount(cypher);
+    }
+
+    /** true when the comparison is on a {@code count(...)} aggregate */
+    public static boolean isCount(org.opencypher.v9_0.expressions.Expression cypher) {
+        return !cypher.findAggregate().isEmpty()
+                && cypher.findAggregate().get() instanceof FunctionInvocation
+                && ((FunctionInvocation) cypher.findAggregate().get()).name().equalsIgnoreCase(COUNT);
     }
 }
