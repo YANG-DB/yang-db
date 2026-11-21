@@ -125,9 +125,14 @@ public abstract class QueryDriverBase implements QueryDriver {
 
     @Override
     public Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType) {
+        return run(cypher, TYPE_CYPHERQL, ontology, pageSize, cursorType);
+    }
+
+    @Override
+    public Optional<Object> run(String query, String type, String ontology, int pageSize, String cursorType) {
         String id = UUID.randomUUID().toString();
         try {
-            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, TYPE_CYPHERQL, cypher, ontology,
+            CreateJsonQueryRequest queryRequest = new CreateJsonQueryRequest(id, id, type, query, ontology,
                     request(ontology,cursorType,new CreatePageRequest(pageSize)));
             Optional<QueryResourceInfo> resourceInfo = create(queryRequest);
             if (!resourceInfo.isPresent())

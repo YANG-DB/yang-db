@@ -238,6 +238,24 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
+    public ContentResponse<Object> run(String query, String type, String ontology, int pageSize, String cursorType) {
+        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
+                this.logger,
+                this.metricRegistry,
+                run,
+                this.primerMdcWriter(),
+                Collections.singletonList(trace),
+                Arrays.asList(info, trace))
+                .decorate(() -> {
+                    if (query != null) {
+                        new LogMessage.Impl(this.logger, debug, "{} query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
+                                .with(type, query).log();
+                    }
+                    return this.controller.run(query, type, ontology, pageSize, cursorType);
+                }, this.resultHandler());
+    }
+
+    @Override
     public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,

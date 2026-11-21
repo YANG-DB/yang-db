@@ -97,6 +97,18 @@ public interface QueryDriver {
     Optional<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
 
     /**
+     * run a query in any registered query language (see {@code com.yangdb.fuse.extension.QueryLanguages}) by creating
+     * all the resources that are needed to execute it, and return the (first page) data that matches it
+     * @param query the query text
+     * @param type the language: the query type it is registered under (e.g. {@code cypher})
+     * @param ontology
+     * @param pageSize
+     * @param cursorType
+     * @return
+     */
+    Optional<Object> run(String query, String type, String ontology, int pageSize, String cursorType);
+
+    /**
      * run the given (graphQL) query by creating all the resources that are needed to execute and return the (first page) data
      * that matches the given query
      * @param graphQL
