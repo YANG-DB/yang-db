@@ -36,6 +36,10 @@
         </dependency>
         <dependency>
             <groupId>com.yangdb</groupId>
+            <artifactId>fuse-extension-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
             <artifactId>fuse-dv-epb</artifactId>
         </dependency>
         <dependency>

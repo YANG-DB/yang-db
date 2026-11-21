@@ -48,8 +48,10 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.epb.plan.statistics.Statistics;
+import com.yangdb.fuse.extension.YangDbExtension;
 import com.yangdb.fuse.logging.StatusReportedJob;
 import com.yangdb.fuse.services.appRegistrars.*;
+import com.yangdb.fuse.services.extensions.YangDbExtensions;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
 import org.jooby.RequestLogger;
@@ -65,6 +67,7 @@ import org.reflections.Reflections;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -119,8 +122,18 @@ public class FuseApp extends Jooby {
         new HomeAppRegistrar().register(this, localUrlSupplier);
         new HealthAppRegistrar().register(this, localUrlSupplier);
 
+        //extensions on the classpath (META-INF/services/com.yangdb.fuse.extension.YangDbExtension): their Guice modules
+        List<YangDbExtension> extensions = YangDbExtensions.load(FuseApp.class.getClassLoader());
+        YangDbExtensions.installModules(this, extensions);
+
         //dynamically load AppControllerRegistrar that comply with com.yangdb.fuse.services package and derive from AppControllerRegistrarBase
-        additionalRegistrars(this, localUrlSupplier);
+        Set<Class<?>> registered = additionalRegistrars(this, localUrlSupplier);
+
+        //the extensions' route registrars, except those the package scan already registered
+        YangDbExtensions.registerRoutes(this, localUrlSupplier, extensions, registered);
+
+        //generic /query/:lang routes for every registered query language: last, since they also match fixed paths
+        new QueryLanguageRoutesRegistrar().register(this, localUrlSupplier);
 
         //callbacks
         onStop(() -> System.out.println("Stopping YangDb app..."));
@@ -133,13 +146,16 @@ public class FuseApp extends Jooby {
      *
      * @param fuseApp
      * @param localUrlSupplier
+     * @return the registrar classes it registered
      */
-    private void additionalRegistrars(FuseApp fuseApp, AppUrlSupplier localUrlSupplier) {
+    private Set<Class<?>> additionalRegistrars(FuseApp fuseApp, AppUrlSupplier localUrlSupplier) {
+        Set<Class<?>> registered = new HashSet<>();
         Reflections reflections = new Reflections(FuseApp.class.getPackage().getName());
         Set<Class<? extends AppControllerRegistrarBase>> allClasses = reflections.getSubTypesOf(AppControllerRegistrarBase.class);
         allClasses.forEach(clazz -> {
             try {
                 clazz.getConstructor().newInstance().register(fuseApp, localUrlSupplier);
+                registered.add(clazz);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -150,6 +166,7 @@ public class FuseApp extends Jooby {
                 e.printStackTrace();
             }
         });
+        return registered;
     }
     //endregion
 

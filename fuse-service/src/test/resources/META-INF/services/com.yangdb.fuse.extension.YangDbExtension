@@ -1,0 +1,2 @@
+# the hello-world test extension: an "echo" query language and a GET /hello route
+com.yangdb.fuse.extension.hello.HelloWorldExtension
