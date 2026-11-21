@@ -24,8 +24,21 @@ package com.yangdb.fuse.dispatcher.query;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.QueryInfo;
 
+import java.util.Collections;
+import java.util.Set;
+
+/**
+ * Resolves a query language (the query's type, e.g. {@code cypher}) to its transformer. Languages are registered with
+ * {@link com.yangdb.fuse.extension.QueryLanguages}.
+ */
 public interface JsonQueryTransformerFactory {
+    /** the transformer of the given language; throws a {@code FuseErrorException} naming the available languages if none */
     QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type);
+
+    /** the registered language names */
+    default Set<String> languages() {
+        return Collections.emptySet();
+    }
 
 
 }

@@ -21,6 +21,8 @@ package com.yangdb.fuse.asg.translator.graphql;
  */
 
 
+import com.yangdb.fuse.extension.QueryLanguages;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
@@ -44,6 +46,9 @@ public class AsgGraphQLModule extends ModuleBase {
                 .annotatedWith(named(transformerName))
                 .to(AsgGraphQLTransformer.class)
                 .asEagerSingleton();
+
+        // the query-language registry, looked up by query type (BasicJsonQueryTransformerFactory)
+        QueryLanguages.register(binder, CreateQueryRequestMetadata.TYPE_GRAPHQL).to(AsgGraphQLTransformer.class);
 
     }
 

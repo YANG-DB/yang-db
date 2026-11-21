@@ -20,6 +20,7 @@ package com.yangdb.fuse.asg;
  * #L%
  */
 
+import com.yangdb.fuse.extension.QueryLanguages;
 import com.google.inject.Binder;
 import com.yangdb.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.yangdb.fuse.asg.translator.BasicJsonQueryTransformerFactory;
@@ -37,6 +38,8 @@ public class M2AsgModule extends AsgModule {
         super.configureInner(env,conf,binder);
         //configure the different query languages transformer factory
         binder.bind(JsonQueryTransformerFactory.class).to(BasicJsonQueryTransformerFactory.class);
+        // declare the language registry even when no language module is configured
+        QueryLanguages.mapBinder(binder);
     }
     //endregion
 
