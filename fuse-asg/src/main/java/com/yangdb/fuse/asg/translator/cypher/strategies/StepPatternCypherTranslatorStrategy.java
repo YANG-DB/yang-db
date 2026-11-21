@@ -96,6 +96,18 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         return new FuseError.FuseErrorException("Unsupported Cypher pattern", new FuseError("Unsupported Cypher pattern", description));
     }
 
+    /**
+     * Q9: a relationship matches a single type. Keeping only the first of {@code [r:A|B]} would silently drop results,
+     * so a type union is rejected until it is supported.
+     */
+    private static FuseError.FuseErrorException relationshipTypeUnion(String variable, List<String> types) {
+        final String pattern = "[" + variable + ":" + String.join("|", types) + "]";
+        final String description = String.format("Relationship type union such as %s is not supported: a relationship " +
+                        "pattern can have only one type. Run one query per type instead (%s) and combine the results.",
+                pattern, types.stream().map(t -> "[" + variable + ":" + t + "]").collect(Collectors.joining(", ")));
+        return new FuseError.FuseErrorException("Unsupported Cypher syntax", new FuseError("Unsupported Cypher syntax", description));
+    }
+
     private static Optional<String> name(NodePattern node) {
         return node.variable().isEmpty() ? Optional.empty() : Optional.of(node.variable().get().name());
     }
@@ -122,8 +134,11 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
             name = logicalVariable.name();
         }
 
-        if (!element.types().isEmpty()) {
-            //todo
+        //labels
+        Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();
+        final List<String> rTypes = labels.stream().map(l -> l.name()).collect(Collectors.toList());
+        if (rTypes.size() > 1) {
+            throw relationshipTypeUnion(variable.isEmpty() ? "" : variable.get().name(), rTypes);
         }
 
         final SemanticDirection direction = element.direction();
@@ -132,14 +147,7 @@ public class StepPatternCypherTranslatorStrategy implements CypherElementTransla
         AsgEBase<? extends EBase> quant = CypherUtils.quant(context.getScope(), Optional.empty(), query, context);
         context.scope(quant);
 
-        //labels
-        Collection<RelTypeName> labels = asJavaCollectionConverter((element).types()).asJavaCollection();
-        final List<String> rTypes = labels.stream().map(l -> l.name()).collect(Collectors.toList());
-        AsgEBase<Rel> rel = new AsgEBase<>(new Rel(current, "*", resolve(direction), name, current + 1, 0));
-        if (!rTypes.isEmpty()) {
-            //todo add solution for multi-type labels
-            rel = new AsgEBase<>(new Rel(current, rTypes.get(0), resolve(direction), name, current + 1, 0));
-        }
+        AsgEBase<Rel> rel = new AsgEBase<>(new Rel(current, rTypes.isEmpty() ? "*" : rTypes.get(0), resolve(direction), name, current + 1, 0));
 
         context.getScope().addNext(rel);
         context.scope(rel);

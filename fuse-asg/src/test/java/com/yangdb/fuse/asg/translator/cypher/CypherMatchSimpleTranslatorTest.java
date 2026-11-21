@@ -7,7 +7,6 @@ import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.query.Rel;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -81,25 +80,6 @@ public class CypherMatchSimpleTranslatorTest {
 
         assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
     }
-
-    @Test
-    @Ignore("Not supported multi labels on edges")
-    public void testMatch_A_ofRelType_Dragon_Person_Return_A() {
-        AsgTranslator<QueryInfo<String>,AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));
-        String s = "MATCH (a:Dragon)-[c:Fire|Freeze]-(b:Person) RETURN *";
-        final AsgQuery query = translator.translate(new QueryInfo<>(s,"q", TYPE_CYPHERQL, "ont"));
-
-        AsgQuery expected = AsgQuery.Builder
-                .start("cypher_", "Dragons")
-                .next(typed(1, "Dragon","a"))
-                .next(quant1(100, all))
-                .in(
-                        rel(2, null, Rel.Direction.RL,"c")
-                                .next(typed(3,"Person", "b"))
-                ).build();
-        assertEquals(print(expected), print(query.withProjectedFields(Collections.EMPTY_MAP)));
-    }
-
 
     @Test
     public void testMatch_NodeA_NodeB_Return_A() {

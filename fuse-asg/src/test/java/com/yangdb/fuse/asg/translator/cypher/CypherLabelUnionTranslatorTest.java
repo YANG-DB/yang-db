@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 /**
  * Q5: the openCypher 9 parser has no node-label union ({@code (n:A|B)}), so such a query must fail with an explicit,
  * actionable error instead of a bare parser message. Relationship-type unions ({@code [r:A|B]}) are valid openCypher 9
- * and must keep parsing.
+ * and must keep parsing; the translator rejects them separately (Q9).
  */
 public class CypherLabelUnionTranslatorTest {
     private CypherTranslator translator;
@@ -69,12 +69,14 @@ public class CypherLabelUnionTranslatorTest {
 
     @Test
     public void relationshipTypeUnionIsNotReportedAsLabelUnion() {
+        // valid openCypher 9 syntax, rejected later by the translator as its own unsupported case (Q9)
         try {
             translate("match (a:Dragon)-[c:Fire|Freeze]-(b:Person) return *");
+            fail("expected relationship type union to be rejected");
         } catch (FuseError.FuseErrorException e) {
-            fail("relationship type union is valid openCypher 9 syntax: " + e.getError().getErrorDescription());
-        } catch (RuntimeException ignored) {
-            // multi-type relationships are a separate, known limitation; only the label-union path is under test
+            String description = e.getError().getErrorDescription();
+            assertFalse(description, description.contains("label union"));
+            assertTrue(description, description.contains("Relationship type union"));
         }
     }
 
