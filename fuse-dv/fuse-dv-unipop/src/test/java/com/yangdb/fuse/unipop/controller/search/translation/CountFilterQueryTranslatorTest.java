@@ -5,9 +5,13 @@ import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opensearch.script.Script;
 import org.unipop.process.predicate.CountFilterP;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
 
 import static com.yangdb.fuse.unipop.controller.search.QueryDslAssert.assertDsl;
 
@@ -38,9 +42,7 @@ public class CountFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        // NOTE: pins current output. "a=120" is a painless assignment, not a comparison (should be "a==120");
-        // see AggregationBuilder.BuildFilterScript.
-        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a=120"), aggregations.iterator().next().toString());
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a==120"), aggregations.iterator().next().toString());
 
     }
 
@@ -54,7 +56,26 @@ public class CountFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        // NOTE: pins current output. gte renders as ">" (should be ">="); see AggregationBuilder.BuildFilterScript.
-        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>120"), aggregations.iterator().next().toString());
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>=120"), aggregations.iterator().next().toString());
+    }
+
+    @Test
+    public void testEveryCompareRendersAPainlessComparison() {
+        Map<CountFilterP.CountFilterCompare, String> expected = new EnumMap<>(CountFilterP.CountFilterCompare.class);
+        expected.put(CountFilterP.CountFilterCompare.eq, "==");
+        expected.put(CountFilterP.CountFilterCompare.neq, "!=");
+        expected.put(CountFilterP.CountFilterCompare.gt, ">");
+        expected.put(CountFilterP.CountFilterCompare.gte, ">=");
+        expected.put(CountFilterP.CountFilterCompare.lt, "<");
+        expected.put(CountFilterP.CountFilterCompare.lte, "<=");
+        // fails here if a new compare value is added without a rendering
+        Assert.assertEquals(EnumSet.allOf(CountFilterP.CountFilterCompare.class), expected.keySet());
+
+        for (Map.Entry<CountFilterP.CountFilterCompare, String> entry : expected.entrySet()) {
+            Script script = AggregationBuilder.BuildFilterScript.script(
+                    "entityA_id_Count", entry.getKey(), Collections.singletonList("120"));
+            Assert.assertEquals(entry.getKey().name(),
+                    "def a=params.entityA_id_Count;a" + entry.getValue() + "120", script.getIdOrCode());
+        }
     }
 }
