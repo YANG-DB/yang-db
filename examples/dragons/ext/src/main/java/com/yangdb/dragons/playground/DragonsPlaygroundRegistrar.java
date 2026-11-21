@@ -1,4 +1,4 @@
-package com.yangdb.fuse.services.dragons;
+package com.yangdb.dragons.playground;
 
 /*-
  * #%L
@@ -46,8 +46,8 @@ import java.util.*;
  * The Dragons playground: a Swagger UI page at {@code /dragons/swagger} with the tutorial's queries as ready-made
  * examples, plus {@code POST /fuse/dragons/tutorial/load}, which runs the whole tutorial setup in one call.
  * <p>
- * It lives in the {@code com.yangdb.fuse.services} package tree because {@code FuseApp} only discovers registrars
- * there. The spec ({@code dragons/playground/openapi.json}) is also the e2e suite's list of queries to verify.
+ * The service registers it through the Dragons extension ({@code com.yangdb.dragons.DragonsExtension}, listed in
+ * {@code META-INF/services/com.yangdb.fuse.extension.YangDbExtension}). The spec ({@code dragons/playground/openapi.json}) is also the e2e suite's list of queries to verify.
  */
 public class DragonsPlaygroundRegistrar extends AppControllerRegistrarBase<DataLoaderController> {
     static final String ONTOLOGY = "Dragons";

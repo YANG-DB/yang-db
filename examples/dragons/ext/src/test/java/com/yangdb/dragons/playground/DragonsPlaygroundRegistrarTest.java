@@ -1,4 +1,4 @@
-package com.yangdb.fuse.services.dragons;
+package com.yangdb.dragons.playground;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

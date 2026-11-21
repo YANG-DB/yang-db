@@ -24,6 +24,7 @@ import com.yangdb.fuse.services.appRegistrars.QueryLanguageRoutesRegistrar;
 import com.yangdb.fuse.services.controllers.QueryController;
 import com.yangdb.fuse.services.modules.LoggingJacksonModule;
 import org.jooby.Jooby;
+import org.jooby.Route;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -188,8 +189,20 @@ public class YangDbExtensionsTest {
     @Test
     public void fuseAppRegistersExtensionRoutesExactlyOnce() {
         int before = HelloWorldExtension.HelloRegistrar.REGISTRATIONS.get();
-        new FuseApp(URLS);
+        FuseApp fuseApp = new FuseApp(URLS);
         Assert.assertEquals(before + 1, HelloWorldExtension.HelloRegistrar.REGISTRATIONS.get());
+
+        // the service's route table (without starting it): the extension route once, the generic language routes last
+        List<String> routes = new ArrayList<>();
+        for (Route.Definition route : Jooby.exportRoutes(fuseApp)) {
+            routes.add(route.method() + " " + route.pattern());
+        }
+        Assert.assertEquals(routes.toString(), 1, Collections.frequency(routes, "GET /hello"));
+        Assert.assertEquals(routes.toString(), Arrays.asList(
+                "POST /fuse/query/:lang", "GET /fuse/query/:lang/run", "POST /fuse/query/:lang/run"),
+                routes.subList(routes.size() - 3, routes.size()));
+        Assert.assertTrue(routes.toString(), routes.indexOf("POST /fuse/query/v1/run") < routes.indexOf("POST /fuse/query/:lang/run"));
+        Assert.assertTrue(routes.toString(), routes.contains("GET /fuse/query/cypher/run"));
     }
 
     @Test

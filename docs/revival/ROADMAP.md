@@ -141,7 +141,7 @@ Parallel streams, one agent and worktree each:
 
 ## Phase 4 — A real extension point (in progress: branch `phase4-extension-api`)
 Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** folder (default build, bundled in the distribution).
-- [ ] **A** `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
+- [x] **A** (done: `fuse-extension-api`, ServiceLoader discovery, MapBinder languages, generic routes, A3 fixed) `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
       registrars); languages in a `MapBinder<String, QueryTransformer>` instead of the hard-coded switch; generic
       `/fuse/query/{lang}` routes with today's URLs unchanged; fixes A3 (Dragons routes); a hello-world test extension
 - [x] **Baseline**: GraphQL turned out not to work end to end through REST (G1–G3 in KNOWN_ISSUES); only its
@@ -151,6 +151,7 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       (stateless schema import) and G3 (multi-document schemas). Add Dragons GraphQL queries to the e2e suite and the
       playground. Drop `graphql-java` from core if possible; the existing GraphQL unit tests move along and must
       still pass
+- [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
 
 ## Phase 5 — Support a current OpenSearch: 2.19.x
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.

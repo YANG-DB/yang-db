@@ -163,11 +163,24 @@ be a union. This only affects cost estimates. Found by streams E and G; not cove
 
 ## API
 
-### A3 — Dragons extension routes are never registered · open
-`FuseApp` only discovers `AppControllerRegistrarBase` subclasses under `com.yangdb.fuse.services`. The Dragons
-extension's `DragonsExtensionRegistrar` lives in `com.yangdb.dragons.services`, so `/ext`, `/fuse/query/clause/run`,
-`/fuse/query/cypher/logical/run` and `/fuse/query/query/v1/logical/run` all return 404. The playground's registrar
-sits in `com.yangdb.fuse.services.dragons` to be found. A proper fix belongs to Phase 4 (extension discovery).
+### A3 — Dragons extension routes are never registered · **fixed** (Phase 4)
+`FuseApp` only discovered `AppControllerRegistrarBase` subclasses under `com.yangdb.fuse.services`, so the Dragons
+extension's `DragonsExtensionRegistrar` (`com.yangdb.dragons.services`) was never registered. Now the Dragons jar
+declares `com.yangdb.dragons.DragonsExtension` in `META-INF/services/com.yangdb.fuse.extension.YangDbExtension`, which
+registers it and the playground (moved to `com.yangdb.dragons.playground`). `DragonsExtensionTest` checks every route
+is in the service's route table exactly once. What those routes do once reachable is A4.
+
+### A4 — Dragons extension query routes: clause routes broken, `/ext` dead · open
+Found when A3 made them reachable (static reading, not run against the stack):
+- `POST /fuse/query/clause` passes the body's `queryType` (`clause`) to the standard create path; no `clause` language
+  is registered, so it fails with "No Query translator found". `ExtensionQueryDriver.createClause` handles `clause` but
+  nothing calls it, and its `transformer` field is never set (would NPE).
+- `POST /fuse/query/clause/run` sends `{"clause": ...}` JSON to `runCypher`, which parses it as cypher.
+- `GET /ext` redirects to `/public/assets/swagger/swagger-ext.json`, which doesn't exist.
+- `GET /fuse/query/cypher/logical/run` and `POST /fuse/query/query/v1/logical/run` reuse the core run handlers and
+  behave like `/cypher/run` and `/v1/run`.
+A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
+chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
 
 ### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends
