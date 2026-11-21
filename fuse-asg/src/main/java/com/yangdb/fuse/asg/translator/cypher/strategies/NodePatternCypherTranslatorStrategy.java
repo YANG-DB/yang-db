@@ -88,14 +88,14 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
 
                 final Option<Expression> properties = ((NodePattern) element).properties();
                 if (properties.nonEmpty()) {
-                    addProps(query, context, variable, properties);
+                    addProps(query, context, name, variable, properties);
                 }
             } else {
                 //todo validate same label on existing node
                 node = byTag.get();
                 final Option<Expression> properties = ((NodePattern) element).properties();
                 if (properties.nonEmpty()) {
-                    addProps(query, context, variable, properties);
+                    addProps(query, context, name, variable, properties);
                 }
 
             }
@@ -105,12 +105,19 @@ public class NodePatternCypherTranslatorStrategy implements CypherElementTransla
 
     }
 
-    protected void addProps(AsgQuery query, CypherStrategyContext context, Option<LogicalVariable> variable, Option<Expression> properties) {
-        Collection<Tuple2<PropertyKeyName, Expression>> collection = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
-        Property property = new Property(variable.get(), collection.iterator().next()._1, InputPosition.NONE());
-        Equals equals = new Equals(property, collection.iterator().next()._2, InputPosition.NONE());
-        CypherUtils.Wrapper wrapper = CypherUtils.Wrapper.of(equals);
-        equalityExpression.apply(Optional.empty(), com.bpodgursky.jbool_expressions.Variable.of(wrapper), query, context);
+    /**
+     * Each {@code {k: v}} entry of the pattern becomes {@code node.k = v}, translated exactly like the same equality in
+     * a WHERE clause: one EProp per entry on the node. An unnamed node is addressed by its generated tag.
+     */
+    protected void addProps(AsgQuery query, CypherStrategyContext context, String name, Option<LogicalVariable> variable, Option<Expression> properties) {
+        final LogicalVariable nodeVariable = variable.isEmpty() ? new Variable(name, InputPosition.NONE()) : variable.get();
+        Collection<Tuple2<PropertyKeyName, Expression>> items = asJavaCollectionConverter(((MapExpression) properties.get()).items()).asJavaCollection();
+        for (Tuple2<PropertyKeyName, Expression> item : items) {
+            Property property = new Property(nodeVariable, item._1, InputPosition.NONE());
+            Equals equals = new Equals(property, item._2, InputPosition.NONE());
+            equalityExpression.apply(Optional.empty(),
+                    com.bpodgursky.jbool_expressions.Variable.of(CypherUtils.Wrapper.of(equals)), query, context);
+        }
     }
 
     private EqualityExpression equalityExpression;
