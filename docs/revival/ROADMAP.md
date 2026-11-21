@@ -112,7 +112,7 @@ merge step. Beyond these four streams, more agents would mostly add merge confli
       `POST /fuse/dragons/tutorial/load`. Its spec is the e2e suite's query list.
 - [x] Tutorial main page `docs/tutorial/sample/dragons/README.md` (Docker setup through queries); the wiki links it
 
-## Phase 2 — One source of truth for test fixtures (in review: branch `phase2-shared-fixtures`)
+## Phase 2 — One source of truth for test fixtures ✅ done 2026-11-20 (PR #162, merged)
 Phase 1 had already removed most of the copies this phase targeted (they lived in the retired sys-test module).
 Scope chosen by the maintainer:
 - [x] Remove dead fixtures. `fuse-test-framework/src/test/resources` (`dragons/`, `dragons_dual/`, `IndexDocs`,
@@ -127,8 +127,17 @@ Scope chosen by the maintainer:
   - fuse-model's golden expected-output JSONs
   - fuse-dv-core's deliberate index-provider variants (Embedded / Nested / Single)
 
-## Phase 3 — Structural assertions instead of golden JSON strings
-- [ ] Rewrite `OpensearchIndexProviderMappingFactoryIT` and similar tests; re-enable the tests `@Ignore`d during the OpenSearch migration
+## Phase 3 — Structural assertions instead of golden JSON strings (in progress: branch `phase3-structural-assertions`)
+Survey (2026-11-20): 95 `@Ignore`s. 9 date from the OpenSearch migration; ~85 are legacy (2017–2021), 70 of them
+bare with no reason. The long JSON-literal assertions are concentrated in one IT (58) and a few unit tests.
+Parallel streams, one agent and worktree each:
+- [x] **F** (done: 5 tests re-enabled, all JSON literals replaced by structural checks derived from the ontology and configs, self-cleaning; 2 product bugs pinned as M1/M2) `OpensearchIndexProviderMappingFactoryIT` (fuse-dv-core): rewrite the 4 stale golden-JSON tests as
+      structural assertions against real cluster output, then re-enable them
+- [x] **G** fuse-dv-epb: 4 tests re-enabled. Both causes were test bugs: Mockito stubs returned `int` for a `long`, and a wrong `notInSet` histogram expectation (510 is correct). Suite: 433, 0 failures
+- [x] **H** (done: `QueryDslAssert` helper in unipop and `JsonTreeAssert` in model; 5 and 3 deliberate breaks each caught; counts unchanged) brittle passing golden-string tests → structural assertions: `ConstraintSearchAppenderTest`,
+      `Count/DistinctFilterQueryTranslatorTest` (fuse-dv-unipop) and `QueryTest` (fuse-model)
+- [x] **I** triage report: [IGNORED_TESTS.md](IGNORED_TESTS.md). Of 86: 21 obsolete, 8 fixable, 52 keep-disabled, 5 unknown; 4 product bugs filed (Q9–Q11, P2). Actions await the maintainer
+- Later (maintainer call): migrate the older lowercase Dragons test ontology (fuse-asg; deferred from Phase 2)
 
 ## Phase 4 — A real extension point
 - [ ] `fuse-extension-api` module + `ServiceLoader` discovery; dogfood by extracting the SPARQL or GraphQL front-end

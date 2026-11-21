@@ -86,6 +86,53 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 - The projection cursor projects nothing for a count-filtered query (`WHERE count(k) > n`); plain queries project
   normally (found 2026-11-20 while reviewing the tutorial).
 
+## Found by the legacy-test triage (Phase 3, stream I; see [IGNORED_TESTS.md](IGNORED_TESTS.md))
+
+### Q9 — Cypher keeps only the first type of a multi-type relationship · open
+`[r:A|B]` translates to a relation of type `A` only (`CypherMatchSimpleTranslatorTest:86`).
+
+### Q10 — Cypher drops relationship properties in the pattern · open
+`-[c {k: v}]-` loses the `{k: v}` constraint during translation.
+
+### Q11 — Relationship property plus an end-pattern filter fails validation · open
+"No Parent Element found" (`RelationRangeAsgStrategyWithFiltersInRangTest:318`).
+
+### P2 — Range operators on enumerated values crash planner statistics · open
+`ClassCastException: ontology.Value cannot be cast to Comparable` (`SmartEpbRedundancyTests:262`).
+
+### M1 — Single-index provider never maps relationship fields · open
+`direction`, `entityA`/`entityB` and redundant fields fall to dynamic mapping. Pinned by the ignored test
+`OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingMapsRelationSides` (Phase 3, stream F).
+
+### M2 — Single-index provider's "ontology" template matches every bare type-named index · open
+Its index patterns include every type name (`dragon`, `horse`, `own`…), so it merges into unrelated indices with
+those names. This is the "leftover templates break later index creation" trap. Pinned by
+`OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex`.
+
+## Count filter
+
+### C1 — Count-filter script uses the wrong operators for `=` and `>=` · open
+`AggregationBuilder.BuildFilterScript` emits `a=120` for `eq`, which is an *assignment* in Painless rather than a
+comparison, and `a>120` for `gte`. So `WHERE count(r) = n` and `>= n` don't filter as written. `>` and `<` (used by
+the docs) are correct. Found by Phase 3 stream H; the tests pin the current output with a NOTE.
+
+### C2 — Count filter may only consider the top 10 groups · unverified
+The count-filter terms aggregation built in `AggregationBuilder` uses the default `size` of 10 (stream H). But e2e
+Q8 matches 16 start persons and passes, so the service's path may not be limited this way. Verify before fixing.
+
+### T2 — Test-code slips found in Phase 3 (minor) · open
+- `QueryTest.testDeSerialization`: the "q11" block reads Q005.json, so Q011.json is never tested; the q2 block
+  null-checks `q1Obj` instead of `q2Obj`.
+- `DistinctFilterQueryTranslatorTest` is a copy of the count-filter test; no distinct translator exists.
+- The `EpbJoinSelectionTests` mock compares `direction.name()` (a String) with an enum, which is always false.
+
+## Planner statistics
+
+### P1 — Statistics treat a time-field `inSet` as an intersection · open
+`EBaseStatisticsProvider.findRelevantTimeSeriesIndices` turns `inSet` into one `eq` per value, and each `eq` drops
+every other partition index. So values that fall in different time buckets leave no index at all, where it should
+be a union. This only affects cost estimates. Found by streams E and G; not covered by a test yet.
+
 ## API
 
 ### A3 — Dragons extension routes are never registered · open

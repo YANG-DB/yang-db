@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
  * https://dzone.com/articles/sparql-and-cypher
  * https://www.w3.org/2009/Talks/0615-qbe/
  */
-@Ignore
 public class SparqlSimpleSelectQueryTranslatorTest {
     private static AsgSparQLTransformer sparQLTransformer;
 
@@ -321,6 +320,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
 
     }
 
+    @Ignore("Fails against the current translator - see docs/revival/IGNORED_TESTS.md")
     @Test
     /**
      * Projection
@@ -836,6 +836,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
 
     }
 
+    @Ignore("Fails against the current translator - see docs/revival/IGNORED_TESTS.md")
     @Test
     /**
      * Distinct

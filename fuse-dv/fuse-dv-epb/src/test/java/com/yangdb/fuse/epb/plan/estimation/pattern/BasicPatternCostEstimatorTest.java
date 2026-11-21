@@ -71,47 +71,6 @@ public class BasicPatternCostEstimatorTest {
     }
 
     @Test
-    @Ignore("No more single op pattern - all patterns are now with ***OpFilter along the entity / Relation")
-    public void calculateEntityOnlyPattern() throws Exception {
-        StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
-                new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, new OntologyProvider() {
-                    @Override
-                    public Optional<Ontology> get(String id) {
-                        return Optional.of(ont.get());
-                    }
-
-                    @Override
-                    public Collection<Ontology> getAll() {
-                        return Collections.singleton(ont.get());
-                    }
-
-                    @Override
-                    public Ontology add(Ontology ontology) {
-                        return ontology;
-                    }
-                });
-
-
-        HashMap<RegexPatternCostEstimator.PatternPart, PlanOp> map = new HashMap<>();
-        AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", "4", "name", "A").next(AsgQuery.Builder.ePropGroup(101, EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
-        Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));
-
-
-        map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONLY, plan.getOps().get(0));
-        PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(Pattern.buildEntityPattern(map), new IncrementalEstimationContext<>(Optional.empty(), query));
-        List<PlanWithCost<Plan, CountEstimatesCost>> costs = result.getPlanStepCosts();
-
-        Assert.assertNotNull(costs);
-        Assert.assertEquals(costs.size(), 1);
-        Assert.assertEquals(costs.get(0).getPlan().getOps().size(), 2);
-        Assert.assertTrue(costs.get(0).getPlan().getOps().get(0) instanceof EntityOp);
-        Assert.assertTrue(costs.get(0).getPlan().getOps().get(1) instanceof EntityFilterOp);
-        Assert.assertEquals(costs.get(0).getCost().getCost(), 1, 0);
-    }
-
-    @Test
     public void calculateFullStep() throws Exception {
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()

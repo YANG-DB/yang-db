@@ -19,7 +19,7 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
 | C — Service & loader | A1, L4 | **A1 merged to local main**; L4 → stream E | `worktree-agent-acdc794fa7038a886` | `54896dc37` A1 | — |
 | D — Data, docs & e2e | D1, D2, S13 | **merged to local main** | `worktree-agent-a28d8e52a88b602de` | `5e32376ca` D1, `4588df726` S13, `a37981c53` D2 | needs rebuilt image to go green |
 | E — Time partitions | L4 range buckets | **done, all merged** (r2 `e498ad46a`); e2e confirmation pending | `worktree-agent-a7164b98179501307` | `6b0a1c346` L4 | — |
-| Lead | — | Stabilize done; Phase 1 merged (#160); Dragons playground merged (#161); next: Phase 2 | `main` | — | — |
+| Lead | — | Phases 1, 2 and the playground merged (#160–#162); **Phase 3 started**: streams F, G, H, I | `phase3-structural-assertions` | — | — |
 
 ## Timeline
 - 2026-11-20 — Stage 0 done and pushed (`3ace71186`): 1,064 tests, 0 failures, ITs running.

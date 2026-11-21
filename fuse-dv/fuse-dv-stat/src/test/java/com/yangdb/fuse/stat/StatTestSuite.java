@@ -16,7 +16,6 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DemoStatTest.class,
         EsUtilTest.class,
         StatCalculatorDynamicFieldTest.class,
         StatCalculatorTest.class,

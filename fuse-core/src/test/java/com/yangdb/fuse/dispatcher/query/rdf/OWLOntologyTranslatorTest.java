@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-@Ignore
 public class OWLOntologyTranslatorTest {
     public static Ontology ontology;
 
