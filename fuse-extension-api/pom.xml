@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fuse</artifactId>
+        <groupId>com.yangdb</groupId>
+        <version>0.80-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>fuse-extension-api</artifactId>
+    <name>fuse-extension-api</name>
+    <description>
+        The YANG-DB extension SPI: what an extension jar implements to add Guice modules, REST routes and query
+        languages to the service without editing core. Interfaces only; depends on fuse-model (query model types),
+        Jooby and Guice.
+    </description>
+
+    <properties>
+        <top.dir>${project.basedir}/..</top.dir>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
+
+    <dependencies>
+        <!-- AsgQuery, QueryInfo -->
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-model</artifactId>
+        </dependency>
+        <!-- Jooby (route registration) and Guice (modules) -->
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+        </dependency>
+
+        <!-- tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

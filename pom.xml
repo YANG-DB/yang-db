@@ -204,6 +204,11 @@
             </dependency>
             <dependency>
                 <groupId>com.yangdb</groupId>
+                <artifactId>fuse-extension-api</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-core</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -1343,6 +1348,7 @@
             <modules>
                 <module>unipop-core</module>
                 <module>fuse-model</module>
+                <module>fuse-extension-api</module>
                 <module>fuse-test</module>
                 <module>fuse-asg</module>
                 <module>fuse-core</module>
