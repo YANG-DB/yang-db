@@ -26,7 +26,7 @@
     {
       "eNum": 3,
       "type": "Rel",
-      "rType": 6,
+      "rType": "subject",
       "dir": "R",
       "next": 5,
       "b": 4
@@ -46,7 +46,7 @@
       "type": "EConcrete",
       "eTag": "B",
       "eID": "22345670",
-      "eType": 4,
+      "eType": "Guild",
       "eName": "Masons"
     },
     {
@@ -78,7 +78,7 @@
     {
       "eNum": 9,
       "type": "Rel",
-      "rType": 6,
+      "rType": "subject",
       "dir": "R",
       "next": 11,
       "b": 10
@@ -96,7 +96,7 @@
     },
     {
       "eNum": 11,
-      "type": "Quant2",
+      "type": "Quant1",
       "qType": "some",
       "next": [
         12,

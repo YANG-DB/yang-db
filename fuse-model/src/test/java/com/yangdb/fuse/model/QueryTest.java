@@ -241,7 +241,7 @@ public class QueryTest {
 
         String q2ExpectedJson = readJsonToString("Q002.json");
         Query q2Obj = new ObjectMapper().readValue(q2ExpectedJson, Query.class);
-        Assert.assertNotNull(q1Obj);
+        Assert.assertNotNull(q2Obj);
         String q2ActualJSON = mapper.writeValueAsString(q2Obj);
         JSONAssert.assertEquals(q2ExpectedJson, q2ActualJSON, false);
 
@@ -272,7 +272,7 @@ public class QueryTest {
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
         JSONAssert.assertEquals(q5ExpectedJson, q5ActualJSON, false);
 
-        String q11ExpectedJson = readJsonToString("Q005.json");
+        String q11ExpectedJson = readJsonToString("Q011.json");
         Query q11Obj = new ObjectMapper().readValue(q11ExpectedJson, Query.class);
         Assert.assertNotNull(q11Obj);
         String q11ActualJSON = mapper.writeValueAsString(q11Obj);

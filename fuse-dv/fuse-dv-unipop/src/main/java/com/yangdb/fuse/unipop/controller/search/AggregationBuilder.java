@@ -1187,7 +1187,10 @@ public class AggregationBuilder implements Cloneable {
                 script.append(variable);
                 switch ((CountFilterP.CountFilterCompare)operator) {
                     case eq:
-                        script.append("=");
+                        script.append("==");
+                        break;
+                    case neq:
+                        script.append("!=");
                         break;
                     case lt:
                         script.append("<");
@@ -1199,8 +1202,10 @@ public class AggregationBuilder implements Cloneable {
                         script.append(">");
                         break;
                     case gte:
-                        script.append(">");
+                        script.append(">=");
                         break;
+                    default:
+                        throw new UnsupportedOperationException("count filter operator not supported: " + operator);
                 }
             }
             if(!operands.isEmpty()) {

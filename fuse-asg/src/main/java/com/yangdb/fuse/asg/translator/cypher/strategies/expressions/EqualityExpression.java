@@ -48,6 +48,8 @@ public class EqualityExpression extends BaseEqualityExpression<Equals> {
     @Override
     public boolean isApply(Expression expression) {
         return ((expression instanceof com.bpodgursky.jbool_expressions.Variable) &&
-                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof Equals);
+                ((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression() instanceof Equals) &&
+                // count(r) = n / count(r) <> n is a count filter, handled by CountExpression
+                !CountExpression.isCount(((CypherUtils.Wrapper) ((com.bpodgursky.jbool_expressions.Variable) expression).getValue()).getExpression());
     }
 }

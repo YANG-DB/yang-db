@@ -71,6 +71,7 @@ public class EBaseStatisticsProviderIndicesTests {
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000L, 1000L));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),eq(Date.class))).thenAnswer(invocationOnMock -> {
             List<String> providedIndices = (List<String>) invocationOnMock.getArgument(1, List.class );
+            dateHistogramIndices = new ArrayList<>(providedIndices);
             List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
             if(providedIndices.contains(indices.get(0))){
                 buckets.addAll(firstDateBuckets);
@@ -199,6 +200,52 @@ public class EBaseStatisticsProviderIndicesTests {
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(510d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(15, nodeStatistics.getCardinality(), 0.1);
+    }
+
+    // P1: an inSet on the time field is a union. Its values fall in different hourly partitions (09 and 10),
+    // so both partition indices must remain; treating each value as an eq used to leave no index at all.
+    @Test
+    public void eRelDateInSetFilterTwoIndicesKeepsBothIndicesTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
+        Rel rel = new Rel();
+        rel.setrType(OWN.getrType());
+
+        RelProp prop = new RelProp();
+        prop.setpType(START_DATE.type);
+        Constraint constraint = new Constraint();
+        constraint.setExpr(Arrays.asList(new Date(nowTime - 60*60*1000), new Date(nowTime)));
+        constraint.setOp(ConstraintOp.inSet);
+        prop.setCon(constraint);
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
+
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(new HashSet<>(Arrays.asList(
+                        String.format(INDEX_FORMAT, DATE_FORMAT.format(new Date(nowTime - 60*60*1000))),
+                        String.format(INDEX_FORMAT, DATE_FORMAT.format(new Date(nowTime))))),
+                new HashSet<>(dateHistogramIndices));
+    }
+
+    // P1: a single eq still keeps only the partition covering its value
+    @Test
+    public void eRelDateEqFilterKeepsOnlyItsIndexTest() {
+        ETyped eEntityBase = new ETyped();
+        eEntityBase.seteType("Person");
+        Rel rel = new Rel();
+        rel.setrType(OWN.getrType());
+
+        RelProp prop = new RelProp();
+        prop.setpType(START_DATE.type);
+        Constraint constraint = new Constraint();
+        constraint.setExpr(new Date(nowTime - 60*60*1000));
+        constraint.setOp(ConstraintOp.eq);
+        prop.setCon(constraint);
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
+
+        statisticsProvider.getEdgeFilterStatistics(rel, relFilter, eEntityBase);
+        Assert.assertEquals(Collections.singletonList(String.format(INDEX_FORMAT, DATE_FORMAT.format(new Date(nowTime - 60*60*1000)))),
+                dateHistogramIndices);
     }
 
     @Test
@@ -356,5 +403,6 @@ public class EBaseStatisticsProviderIndicesTests {
     private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
     private long nowTime;
+    private List<String> dateHistogramIndices;
     //endregion
 }

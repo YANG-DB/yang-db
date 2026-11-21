@@ -30,8 +30,7 @@ public class DistinctFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        // NOTE: pins current output; "a=120" is an assignment, not a comparison (see CountFilterQueryTranslatorTest)
-        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a=120"), aggregations.iterator().next().toString());
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a==120"), aggregations.iterator().next().toString());
 
     }
 
@@ -45,7 +44,6 @@ public class DistinctFilterQueryTranslatorTest extends TestCase {
 
         Iterable<org.opensearch.search.aggregations.AggregationBuilder> aggregations = builder.getAggregations();
         Assert.assertTrue(aggregations.iterator().hasNext());
-        // NOTE: pins current output; gte renders as ">" (see CountFilterQueryTranslatorTest)
-        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>120"), aggregations.iterator().next().toString());
+        assertDsl(countFilterAggregation("def a=params.entityA_id_Count;a>=120"), aggregations.iterator().next().toString());
     }
 }
