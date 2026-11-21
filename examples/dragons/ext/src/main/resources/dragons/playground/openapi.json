@@ -201,6 +201,70 @@
                   "Q2",
                   "Q3"
                 ]
+              },
+              "R1": {
+                "summary": "R1 - People who know exactly 16 others (count = n)",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) = 16 return *",
+                "x-doc": "regression (C1)",
+                "x-known": [
+                  "C1"
+                ]
+              },
+              "R2": {
+                "summary": "R2 - People who know at least 15 others (count >= n)",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) >= 15 return *",
+                "x-doc": "regression (C1)",
+                "x-known": [
+                  "C1"
+                ]
+              },
+              "R3": {
+                "summary": "R3 - People who know more than 3 others (many matches)",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 3 return *",
+                "x-doc": "regression (C2)",
+                "x-known": [
+                  "C2"
+                ]
+              },
+              "R4": {
+                "summary": "R4 - Fires at exactly 373 degrees (property map on a relationship)",
+                "value": "Match (d1:Dragon)-[f:Fire {temperature: 373}]->(d2:Dragon) return *",
+                "x-doc": "regression (Q10)",
+                "x-known": [
+                  "Q10"
+                ]
+              },
+              "R5": {
+                "summary": "R5 - Same, on an unnamed relationship",
+                "value": "Match (d1:Dragon)-[:Fire {temperature: 373}]->(d2:Dragon) return *",
+                "x-doc": "regression (Q10)",
+                "x-known": [
+                  "Q10"
+                ]
+              },
+              "R6": {
+                "summary": "R6 - Two properties in the map: every one must apply (no fire matches both)",
+                "value": "Match (d1:Dragon)-[f:Fire {temperature: 373, date: 1}]->(d2:Dragon) return *",
+                "x-doc": "regression (Q10)",
+                "x-known": [
+                  "Q10"
+                ]
+              },
+              "R7": {
+                "summary": "R7 - Two properties on a node: both must apply (Braden Heaney is not FEMALE)",
+                "value": "Match (p:Person {gender: FEMALE, name: 'Braden Heaney'}) return *",
+                "x-doc": "regression (Q12)",
+                "x-known": [
+                  "Q12"
+                ]
+              },
+              "R8": {
+                "summary": "R8 - Properties on an unnamed node",
+                "value": "Match (:Person {name: 'Braden Heaney'})-[k:Know]->(p2:Person) return *",
+                "x-doc": "regression (Q12)",
+                "x-known": [
+                  "Q12"
+                ]
               }
             }
           },
