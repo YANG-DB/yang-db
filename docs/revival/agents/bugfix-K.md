@@ -12,7 +12,7 @@ Q9: reject `[r:A|B]` with "Unsupported Cypher syntax".
 
 ## Status
 Q9/Q10 merged. Q12 (node-pattern sibling) committed f590f863f; full suites green (fuse-asg 304, fuse-dv-asg 35).
-Next step: coordinator cherry-picks f590f863f; e2e R7/R8 verify live.
+Q12 merged. C1 second half committed a9a4def9e. Next step: coordinator cherry-picks a9a4def9e; e2e R1 verifies live.
 
 ## Discoveries
 - Coordinator: single named prop worked live; unnamed crashed (None.get), multi-prop dropped all but the first.
@@ -26,3 +26,4 @@ Next step: coordinator cherry-picks f590f863f; e2e R7/R8 verify live.
 - tests failed before: None.get x2, multi-prop kept only timestamp, Q9 no error x2
 - Q10 + Q9 fixed; full suites green
 - Q12: tests failed before (None.get x3 fuse-asg + x1 M2, multi-prop kept only gender); fixed, f590f863f
+- C1 (count = / <>): tests failed before (no RelPropGroup on k; M2 countOps [] instead of [eq]/[ne]); fixed a9a4def9e; fuse-asg 307, fuse-dv-asg 38, 0 failures

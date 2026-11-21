@@ -119,8 +119,13 @@ those names. This is the "leftover templates break later index creation" trap. P
 ### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
 `AggregationBuilder.BuildFilterScript` emits `a=120` for `eq`, which is an *assignment* in Painless rather than a
 comparison, and `a>120` for `gte`. So `WHERE count(r) = n` and `>= n` don't filter as written. `>` and `<` (used by
-the docs) are correct. Fixed: `==`, `>=`, and `!=` (which produced an uncompilable `a120`). An unknown operator now
+the docs) are correct. A second cause, for `=` / `<>`: the Cypher translator routed `count(k) = n` to plain
+equality, so no count filter was built at all (fixed: `CountExpression` now owns `=`/`<>` on `count(...)`). Fixed: `==`, `>=`, and `!=` (which produced an uncompilable `a120`). An unknown operator now
 throws. Pinned by e2e R1/R2.
+
+### C3 — Two count conditions on the same relationship give wrong results · open
+`WHERE count(k) > 15 AND count(k) < 17` returns 99 persons and 358 relationships; the data has 4 start persons with
+exactly 16 (found live during the bug-fix round). A single count condition works. Not investigated yet.
 
 ### C2 — Count filter may only consider the top 10 groups · **not a bug**
 The service runs the count filter as its own request sized to the vertex bulk (`DiscreteVertexController.filterByAggregation`
