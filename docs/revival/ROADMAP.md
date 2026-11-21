@@ -127,7 +127,7 @@ Scope chosen by the maintainer:
   - fuse-model's golden expected-output JSONs
   - fuse-dv-core's deliberate index-provider variants (Embedded / Nested / Single)
 
-## Phase 3 — Structural assertions instead of golden JSON strings (in progress: branch `phase3-structural-assertions`)
+## Phase 3 — Structural assertions instead of golden JSON strings ✅ done 2026-11-21 (PR #163; bug fixes #164/#165)
 Survey (2026-11-20): 95 `@Ignore`s. 9 date from the OpenSearch migration; ~85 are legacy (2017–2021), 70 of them
 bare with no reason. The long JSON-literal assertions are concentrated in one IT (58) and a few unit tests.
 Parallel streams, one agent and worktree each:
@@ -139,11 +139,39 @@ Parallel streams, one agent and worktree each:
 - [x] **I** triage report: [IGNORED_TESTS.md](IGNORED_TESTS.md). Of 86: 21 obsolete, 8 fixable, 52 keep-disabled, 5 unknown; 4 product bugs filed (Q9–Q11, P2). Actions await the maintainer
 - Later (maintainer call): migrate the older lowercase Dragons test ontology (fuse-asg; deferred from Phase 2)
 
-## Phase 4 — A real extension point
-- [ ] `fuse-extension-api` module + `ServiceLoader` discovery; dogfood by extracting the SPARQL or GraphQL front-end
+## Phase 4 — A real extension point (in progress: branch `phase4-extension-api`)
+Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** folder (default build, bundled in the distribution).
+- [ ] **A** `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
+      registrars); languages in a `MapBinder<String, QueryTransformer>` instead of the hard-coded switch; generic
+      `/fuse/query/{lang}` routes with today's URLs unchanged; fixes A3 (Dragons routes); a hello-world test extension
+- [x] **Baseline**: GraphQL turned out not to work end to end through REST (G1–G3 in KNOWN_ISSUES); only its
+      in-process unit tests pass. The maintainer chose to extract it **and make it work**.
+- [ ] **B** move GraphQL (query translator, schema translation + routes, GraphQL cursor) to `extensions/graphql`,
+      plugged in through the SPI. Fix G1 (a `Query` root generated for JSON-registered ontologies such as Dragons), G2
+      (stateless schema import) and G3 (multi-document schemas). Add Dragons GraphQL queries to the e2e suite and the
+      playground. Drop `graphql-java` from core if possible; the existing GraphQL unit tests move along and must
+      still pass
 
-## Phase 5 — Ongoing hygiene
-- [ ] Clear the Dependabot backlog, including the OpenSearch 2.x bump (needs a REST-backed `Client` adapter for the remote-cluster connections)
+## Phase 5 — Support a current OpenSearch: 2.19.x
+Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
+Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
+Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
+- [ ] 5.0 Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
+- [ ] 5.1 Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
+- [ ] 5.2 Package relocations, two module groups (agents Q1, Q2)
+- [ ] 5.3 Mapping-type removal: templates, loaders, search and term vectors (agent R)
+- [ ] 5.4 Dependency alignment: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
+- [ ] 5.5 Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
+- [ ] 5.6 Integration: full build green, test count ≥ 1,157 (lead)
+- [ ] 5.7 Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
+- [ ] 5.8 Docs, wiki, upgrade guide, release notes → PR (lead)
+
+## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
+- [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
+      per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
+
+## Phase 7 — Ongoing hygiene
+- [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
 - [ ] Prune stale remote branches
 
