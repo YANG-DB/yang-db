@@ -25,6 +25,10 @@ is non-zero if anything is not passing, known or not.
 
 Options: `--fuse` (default `http://localhost:8888/fuse`), `--opensearch` (default `http://localhost:9200`).
 
+## In CI
+The same suite runs on every pull request as the **Docker e2e** job of [CI](../../.github/workflows/ci.yml). On a
+failure, the job uploads the suite output and the YANG-DB and OpenSearch container logs as the `e2e-logs` artifact.
+
 ## Marking a commit as verified on Docker
 `verify_and_mark.sh` runs the suite with `--load --reset` and publishes the result as a GitHub **commit status**
 named `e2e/docker` on the current commit. It shows as ✓ or ✗ next to the commit on GitHub, like a CI check, so
