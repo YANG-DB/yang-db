@@ -38,6 +38,7 @@ import org.opensearch.action.admin.indices.template.get.GetIndexTemplatesRequest
 import org.opensearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.opensearch.action.admin.indices.template.put.PutIndexTemplateAction;
 import org.opensearch.action.admin.indices.template.put.PutIndexTemplateRequest;
+import org.opensearch.cluster.metadata.MappingMetadata;
 import org.opensearch.action.bulk.BulkAction;
 import org.opensearch.action.bulk.BulkRequest;
 import org.opensearch.action.bulk.BulkResponse;
@@ -203,7 +204,7 @@ public class RestBridgeClientTest {
 
     @Test
     public void get() {
-        GetRequest request = client.prepareGet("idx", "pge", "1").request();
+        GetRequest request = client.prepareGet("idx", "1").request();
         assertForwarded(GetAction.INSTANCE, request, GetResponse.class, "getAsync");
     }
 
@@ -215,7 +216,7 @@ public class RestBridgeClientTest {
 
     @Test
     public void explain() {
-        ExplainRequest request = client.prepareExplain("idx", "pge", "1").setQuery(QueryBuilders.matchAllQuery()).request();
+        ExplainRequest request = client.prepareExplain("idx", "1").setQuery(QueryBuilders.matchAllQuery()).request();
         assertForwarded(ExplainAction.INSTANCE, request, ExplainResponse.class, "explainAsync");
     }
 
@@ -229,39 +230,46 @@ public class RestBridgeClientTest {
     //region writes
     @Test
     public void index() {
-        IndexRequest request = client.prepareIndex("idx", "pge", "1").setSource("{\"a\":1}", XContentType.JSON).request();
+        IndexRequest request = client.prepareIndex("idx").setId("1").setSource("{\"a\":1}", XContentType.JSON).request();
         assertForwarded(IndexAction.INSTANCE, request, IndexResponse.class, "indexAsync");
     }
 
     @Test
     public void bulk() {
         BulkRequest request = client.prepareBulk()
-                .add(client.prepareIndex("idx", "pge", "1").setSource("{\"a\":1}", XContentType.JSON))
-                .add(client.prepareDelete("idx", "pge", "2"))
+                .add(client.prepareIndex("idx").setId("1").setSource("{\"a\":1}", XContentType.JSON))
+                .add(client.prepareDelete("idx", "2"))
                 .request();
         assertForwarded(BulkAction.INSTANCE, request, BulkResponse.class, "bulkAsync");
     }
 
     @Test
     public void delete() {
-        DeleteRequest request = client.prepareDelete("idx", "pge", "1").request();
+        DeleteRequest request = client.prepareDelete("idx", "1").request();
         assertForwarded(DeleteAction.INSTANCE, request, DeleteResponse.class, "deleteAsync");
     }
 
     @Test
     public void update() {
-        UpdateRequest request = client.prepareUpdate("idx", "pge", "1").setDoc("{\"a\":2}", XContentType.JSON).request();
+        UpdateRequest request = client.prepareUpdate("idx", "1").setDoc("{\"a\":2}", XContentType.JSON).request();
         assertForwarded(UpdateAction.INSTANCE, request, UpdateResponse.class, "updateAsync");
     }
     //endregion
 
     //region admin
     @Test
-    public void createIndex() {
+    public void createIndexConvertsToTheUntypedClientRequest() {
         CreateIndexRequest request = client.admin().indices().prepareCreate("idx")
-                .addMapping("pge", "{\"pge\":{\"properties\":{\"name\":{\"type\":\"keyword\"}}}}", XContentType.JSON)
+                .setMapping("{\"properties\":{\"name\":{\"type\":\"keyword\"}}}")
                 .request();
-        assertForwarded(CreateIndexAction.INSTANCE, request, CreateIndexResponse.class, "createAsync");
+        CreateIndexResponse result = roundTrip(CreateIndexAction.INSTANCE, request,
+                new org.opensearch.client.indices.CreateIndexResponse(true, true, "idx"), "createAsync");
+        assertTrue(result.isAcknowledged());
+        assertTrue(result.isShardsAcknowledged());
+        assertEquals("idx", result.index());
+        org.opensearch.client.indices.CreateIndexRequest sent = (org.opensearch.client.indices.CreateIndexRequest) lastRequest;
+        assertEquals("idx", sent.index());
+        assertUntypedNameMapping(sent.mappings());
     }
 
     @Test
@@ -283,23 +291,49 @@ public class RestBridgeClientTest {
     }
 
     @Test
-    public void putMapping() {
-        PutMappingRequest request = client.admin().indices().preparePutMapping("idx").setType("pge")
+    public void putMappingConvertsToTheUntypedClientRequest() {
+        PutMappingRequest request = client.admin().indices().preparePutMapping("idx")
                 .setSource("{\"properties\":{\"name\":{\"type\":\"keyword\"}}}", XContentType.JSON).request();
-        assertForwarded(PutMappingAction.INSTANCE, request, AcknowledgedResponse.class, "putMappingAsync");
+        AcknowledgedResponse response = new AcknowledgedResponse(true);
+        assertSame(response, roundTrip(PutMappingAction.INSTANCE, request, response, "putMappingAsync"));
+        org.opensearch.client.indices.PutMappingRequest sent = (org.opensearch.client.indices.PutMappingRequest) lastRequest;
+        assertEquals(Arrays.asList("idx"), Arrays.asList(sent.indices()));
+        assertUntypedNameMapping(sent.source());
     }
 
     @Test
-    public void getMappings() {
+    public void getMappingsConvertsRequestAndResponse() {
         GetMappingsRequest request = client.admin().indices().prepareGetMappings("idx").request();
-        assertForwarded(GetMappingsAction.INSTANCE, request, GetMappingsResponse.class, "getMappingAsync");
+        java.util.Map<String, MappingMetadata> mappings = java.util.Collections.singletonMap("idx",
+                new MappingMetadata("_doc", java.util.Collections.singletonMap("properties", java.util.Collections.emptyMap())));
+        GetMappingsResponse result = roundTrip(GetMappingsAction.INSTANCE, request,
+                new org.opensearch.client.indices.GetMappingsResponse(mappings), "getMappingAsync");
+        assertEquals(mappings, result.mappings());
+        assertEquals(Arrays.asList("idx"), Arrays.asList(((org.opensearch.client.indices.GetMappingsRequest) lastRequest).indices()));
     }
 
     @Test
-    public void putTemplate() {
+    public void putTemplateConvertsToTheUntypedClientRequest() {
         PutIndexTemplateRequest request = client.admin().indices().preparePutTemplate("tpl")
-                .setPatterns(Arrays.asList("idx_*")).request();
-        assertForwarded(PutIndexTemplateAction.INSTANCE, request, AcknowledgedResponse.class, "putTemplateAsync");
+                .setPatterns(Arrays.asList("idx_*"))
+                .setOrder(2)
+                .setMapping("{\"properties\":{\"name\":{\"type\":\"keyword\"}}}", XContentType.JSON)
+                .request();
+        AcknowledgedResponse response = new AcknowledgedResponse(true);
+        assertSame(response, roundTrip(PutIndexTemplateAction.INSTANCE, request, response, "putTemplateAsync"));
+        org.opensearch.client.indices.PutIndexTemplateRequest sent = (org.opensearch.client.indices.PutIndexTemplateRequest) lastRequest;
+        assertEquals("tpl", sent.name());
+        assertEquals(Arrays.asList("idx_*"), sent.patterns());
+        assertEquals(2, sent.order());
+        assertUntypedNameMapping(sent.mappings());
+    }
+
+    /** the mapping sent over REST is untyped: {"properties": {"name": {"type": "keyword"}}} */
+    @SuppressWarnings("unchecked")
+    private static void assertUntypedNameMapping(org.opensearch.core.common.bytes.BytesReference source) {
+        java.util.Map<String, Object> mapping = org.opensearch.common.xcontent.XContentHelper.convertToMap(source, false, XContentType.JSON).v2();
+        assertEquals(java.util.Collections.singleton("properties"), mapping.keySet());
+        assertEquals("keyword", ((java.util.Map<String, Object>) ((java.util.Map<String, Object>) mapping.get("properties")).get("name")).get("type"));
     }
 
     @Test
@@ -309,13 +343,28 @@ public class RestBridgeClientTest {
     }
 
     @Test
-    public void getTemplatesConvertsTheRequest() {
-        GetIndexTemplatesResponse response = new GetIndexTemplatesResponse(java.util.Collections.emptyList());
+    public void getTemplatesConvertsRequestAndResponse() {
+        MappingMetadata mapping = new MappingMetadata("_doc",
+                java.util.Collections.singletonMap("properties", java.util.Collections.emptyMap()));
+        org.opensearch.client.indices.IndexTemplateMetadata template = new org.opensearch.client.indices.IndexTemplateMetadata(
+                "tpl1", 3, 7, Arrays.asList("idx_*"), Settings.builder().put("index.number_of_shards", 1).build(),
+                mapping, java.util.Collections.emptyMap());
+        org.opensearch.client.indices.GetIndexTemplatesResponse response = org.mockito.Mockito.mock(
+                org.opensearch.client.indices.GetIndexTemplatesResponse.class);
+        org.mockito.Mockito.when(response.getIndexTemplates()).thenReturn(java.util.Collections.singletonList(template));
+
         GetIndexTemplatesResponse result = roundTrip(GetIndexTemplatesAction.INSTANCE,
-                new GetIndexTemplatesRequest("tpl1", "tpl2"), response, "getTemplateAsync");
-        assertSame(response, result);
+                new GetIndexTemplatesRequest("tpl1", "tpl2"), response, "getIndexTemplateAsync");
         assertEquals(Arrays.asList("tpl1", "tpl2"),
                 ((org.opensearch.client.indices.GetIndexTemplatesRequest) lastRequest).names());
+        assertEquals(1, result.getIndexTemplates().size());
+        org.opensearch.cluster.metadata.IndexTemplateMetadata converted = result.getIndexTemplates().get(0);
+        assertEquals("tpl1", converted.name());
+        assertEquals(3, converted.order());
+        assertEquals(Integer.valueOf(7), converted.version());
+        assertEquals(Arrays.asList("idx_*"), converted.patterns());
+        assertEquals("1", converted.settings().get("index.number_of_shards"));
+        assertEquals("{\"_doc\":{\"properties\":{}}}", converted.mappings().string());
     }
 
     @Test
@@ -344,7 +393,7 @@ public class RestBridgeClientTest {
                 + "\"aliases_version\":1,\"routing_num_shards\":1,\"state\":\"open\","
                 + "\"settings\":{\"index\":{\"number_of_shards\":\"1\",\"number_of_replicas\":\"0\",\"uuid\":\"x1\","
                 + "\"version\":{\"created\":\"136227827\"},\"provided_name\":\"person\",\"creation_date\":\"1\"}},"
-                + "\"mappings\":{\"pge\":{\"properties\":{\"name\":{\"type\":\"keyword\"}}}},"
+                + "\"mappings\":{\"_doc\":{\"properties\":{\"name\":{\"type\":\"keyword\"}}}},"
                 + "\"aliases\":[],\"primary_terms\":{\"0\":1},\"in_sync_allocations\":{\"0\":[]},"
                 + "\"rollover_info\":{},\"system\":false}}}}";
         ClusterStateResponse response = RestBridgeClient.parseClusterState(
@@ -370,7 +419,7 @@ public class RestBridgeClientTest {
             assertEquals(ClusterHealthAction.NAME, e.getMessage());
         }
         try {
-            client.prepareTermVectors("idx", "pge", "1").get();
+            client.prepareTermVectors("idx", "1").get();
             fail("term vectors are not bridged");
         } catch (UnsupportedOperationException e) {
             assertEquals(TermVectorsAction.NAME, e.getMessage());
@@ -422,7 +471,7 @@ public class RestBridgeClientTest {
                 "OpenSearch exception [type=version_conflict_engine_exception, reason=[1]: version conflict, document already exists]",
                 RestStatus.CONFLICT);
         try {
-            client.prepareIndex("idx", "pge", "1").setCreate(true).setSource("{}", XContentType.JSON).get();
+            client.prepareIndex("idx").setId("1").setCreate(true).setSource("{}", XContentType.JSON).get();
             fail();
         } catch (VersionConflictEngineException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("version conflict"));

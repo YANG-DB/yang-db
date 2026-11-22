@@ -68,7 +68,6 @@ public class RestBridgeClientRemoteIT {
     private static final String CLUSTER = "yangdb-bridge-it";
 
     private static final String INDEX = "bridge_it_person";
-    private static final String TYPE = "pge";
     private static final String TEMPLATE = "bridge_it_template";
 
     private static Node node;
@@ -109,8 +108,8 @@ public class RestBridgeClientRemoteIT {
         }
         client.admin().indices().prepareCreate(INDEX)
                 .setSettings(Settings.builder().put("index.number_of_shards", 1).put("index.number_of_replicas", 0))
-                .addMapping(TYPE, "{\"" + TYPE + "\":{\"properties\":{"
-                        + "\"name\":{\"type\":\"keyword\"},\"age\":{\"type\":\"integer\"}}}}", XContentType.JSON)
+                .setMapping("{\"properties\":{"
+                        + "\"name\":{\"type\":\"keyword\"},\"age\":{\"type\":\"integer\"}}}")
                 .get();
     }
 
@@ -131,28 +130,28 @@ public class RestBridgeClientRemoteIT {
 
     @Test
     public void indexGetUpdateDelete() {
-        DocWriteResponse indexed = client.prepareIndex(INDEX, TYPE, "doc-1")
+        DocWriteResponse indexed = client.prepareIndex(INDEX).setId("doc-1")
                 .setSource("{\"name\":\"Rhaegar\",\"age\":24}", XContentType.JSON).get();
         assertEquals(DocWriteResponse.Result.CREATED, indexed.getResult());
 
-        GetResponse get = client.prepareGet(INDEX, TYPE, "doc-1").get();
+        GetResponse get = client.prepareGet(INDEX, "doc-1").get();
         assertTrue(get.isExists());
         assertEquals("Rhaegar", get.getSourceAsMap().get("name"));
 
-        DocWriteResponse updated = client.prepareUpdate(INDEX, TYPE, "doc-1").setDoc("{\"age\":25}", XContentType.JSON).get();
+        DocWriteResponse updated = client.prepareUpdate(INDEX, "doc-1").setDoc("{\"age\":25}", XContentType.JSON).get();
         assertEquals(DocWriteResponse.Result.UPDATED, updated.getResult());
-        assertEquals(25, client.prepareGet(INDEX, TYPE, "doc-1").get().getSourceAsMap().get("age"));
+        assertEquals(25, client.prepareGet(INDEX, "doc-1").get().getSourceAsMap().get("age"));
 
-        DocWriteResponse deleted = client.prepareDelete(INDEX, TYPE, "doc-1").get();
+        DocWriteResponse deleted = client.prepareDelete(INDEX, "doc-1").get();
         assertEquals(DocWriteResponse.Result.DELETED, deleted.getResult());
-        assertFalse(client.prepareGet(INDEX, TYPE, "doc-1").get().isExists());
+        assertFalse(client.prepareGet(INDEX, "doc-1").get().isExists());
     }
 
     @Test
     public void bulkRefreshSearchScroll() {
         BulkRequestBuilder bulk = client.prepareBulk();
         for (int i = 0; i < 25; i++) {
-            bulk.add(client.prepareIndex(INDEX, TYPE, "bulk-" + i)
+            bulk.add(client.prepareIndex(INDEX).setId("bulk-" + i)
                     .setSource("{\"name\":\"dragon-" + i + "\",\"age\":" + i + "}", XContentType.JSON));
         }
         BulkResponse bulkResponse = bulk.get();
@@ -161,7 +160,7 @@ public class RestBridgeClientRemoteIT {
 
         assertEquals(0, client.admin().indices().prepareRefresh(INDEX).get().getFailedShards());
 
-        SearchResponse first = client.prepareSearch(INDEX).setTypes(TYPE)
+        SearchResponse first = client.prepareSearch(INDEX)
                 .setQuery(QueryBuilders.prefixQuery("name", "dragon-"))
                 .setSize(10).setScroll(TimeValue.timeValueMinutes(1)).get();
         assertEquals(25, first.getHits().getTotalHits().value);
@@ -182,12 +181,12 @@ public class RestBridgeClientRemoteIT {
 
     @Test
     public void multiGetMultiSearchExplainFieldCaps() {
-        client.prepareIndex(INDEX, TYPE, "m-1").setSource("{\"name\":\"Viserion\",\"age\":3}", XContentType.JSON)
+        client.prepareIndex(INDEX).setId("m-1").setSource("{\"name\":\"Viserion\",\"age\":3}", XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
-        client.prepareIndex(INDEX, TYPE, "m-2").setSource("{\"name\":\"Rhaegal\",\"age\":3}", XContentType.JSON)
+        client.prepareIndex(INDEX).setId("m-2").setSource("{\"name\":\"Rhaegal\",\"age\":3}", XContentType.JSON)
                 .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
 
-        MultiGetResponse mget = client.prepareMultiGet().add(INDEX, TYPE, "m-1", "m-2", "m-missing").get();
+        MultiGetResponse mget = client.prepareMultiGet().add(INDEX, "m-1", "m-2", "m-missing").get();
         assertEquals(3, mget.getResponses().length);
         assertTrue(mget.getResponses()[0].getResponse().isExists());
         assertFalse(mget.getResponses()[2].getResponse().isExists());
@@ -199,7 +198,7 @@ public class RestBridgeClientRemoteIT {
         assertEquals(2, msearch.getResponses().length);
         assertEquals(1, msearch.getResponses()[0].getResponse().getHits().getTotalHits().value);
 
-        ExplainResponse explain = client.prepareExplain(INDEX, TYPE, "m-1").setQuery(QueryBuilders.termQuery("name", "Viserion")).get();
+        ExplainResponse explain = client.prepareExplain(INDEX, "m-1").setQuery(QueryBuilders.termQuery("name", "Viserion")).get();
         assertTrue(explain.isMatch());
 
         FieldCapabilitiesResponse caps = client.prepareFieldCaps(INDEX).setFields("name", "age").get();
@@ -207,13 +206,13 @@ public class RestBridgeClientRemoteIT {
     }
 
     @Test
-    public void mappingsAreTypedAndUpdatable() {
-        assertTrue(client.admin().indices().preparePutMapping(INDEX).setType(TYPE)
+    public void mappingsAreUntypedAndUpdatable() {
+        assertTrue(client.admin().indices().preparePutMapping(INDEX)
                 .setSource("{\"properties\":{\"title\":{\"type\":\"text\"}}}", XContentType.JSON).get().isAcknowledged());
 
         GetMappingsResponse mappings = client.admin().indices().prepareGetMappings(INDEX).get();
-        MappingMetadata mapping = mappings.getMappings().get(INDEX).get(TYPE);
-        assertNotNull("the custom mapping type name survives on 1.3, as with the TransportClient", mapping);
+        MappingMetadata mapping = mappings.mappings().get(INDEX);
+        assertNotNull("the index has its (single, untyped) mapping", mapping);
         Map<?, ?> properties = (Map<?, ?>) mapping.sourceAsMap().get("properties");
         assertTrue(properties.containsKey("name"));
         assertTrue(properties.containsKey("title"));
@@ -223,12 +222,15 @@ public class RestBridgeClientRemoteIT {
     public void templatesPutGetDelete() {
         assertTrue(client.admin().indices().preparePutTemplate(TEMPLATE)
                 .setPatterns(Arrays.asList("bridge_it_tpl_*"))
-                .addMapping(TYPE, "{\"" + TYPE + "\":{\"properties\":{\"name\":{\"type\":\"keyword\"}}}}", XContentType.JSON)
+                .setMapping("{\"properties\":{\"name\":{\"type\":\"keyword\"}}}", XContentType.JSON)
                 .get().isAcknowledged());
 
         GetIndexTemplatesResponse templates = client.admin().indices().prepareGetTemplates(TEMPLATE).get();
         assertEquals(1, templates.getIndexTemplates().size());
         assertEquals(Arrays.asList("bridge_it_tpl_*"), templates.getIndexTemplates().get(0).patterns());
+        // as from the transport action: the untyped mapping under OpenSearch's single internal mapping name
+        Map<?, ?> templateMapping = new MappingMetadata(templates.getIndexTemplates().get(0).mappings()).sourceAsMap();
+        assertEquals("keyword", ((Map<?, ?>) ((Map<?, ?>) templateMapping.get("properties")).get("name")).get("type"));
 
         assertTrue(client.admin().indices().prepareDeleteTemplate(TEMPLATE).get().isAcknowledged());
         assertTrue("unknown template -> empty list, as from the transport action",
@@ -249,7 +251,7 @@ public class RestBridgeClientRemoteIT {
         IndexMetadata personMetadata = state.getState().getMetadata().index(INDEX);
         assertNotNull(personMetadata);
         assertNotNull(state.getState().getMetadata().index(index));
-        assertNotNull("mappings come through the cluster state", personMetadata.getMappings().get(TYPE));
+        assertNotNull("mappings come through the cluster state", personMetadata.mapping());
 
         try {
             client.admin().indices().prepareCreate(index).get();
@@ -271,9 +273,9 @@ public class RestBridgeClientRemoteIT {
             assertEquals("bridge_it_no_such_index", e.getIndex().getName());
         }
 
-        client.prepareIndex(INDEX, TYPE, "dup").setSource("{\"name\":\"a\"}", XContentType.JSON).get();
+        client.prepareIndex(INDEX).setId("dup").setSource("{\"name\":\"a\"}", XContentType.JSON).get();
         try {
-            client.prepareIndex(INDEX, TYPE, "dup").setCreate(true).setSource("{\"name\":\"b\"}", XContentType.JSON).get();
+            client.prepareIndex(INDEX).setId("dup").setCreate(true).setSource("{\"name\":\"b\"}", XContentType.JSON).get();
             fail();
         } catch (VersionConflictEngineException expected) {
             // as with the TransportClient

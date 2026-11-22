@@ -32,6 +32,7 @@ import org.opensearch.action.admin.cluster.state.ClusterStateRequest;
 import org.opensearch.action.admin.cluster.state.ClusterStateResponse;
 import org.opensearch.action.admin.indices.create.CreateIndexAction;
 import org.opensearch.action.admin.indices.create.CreateIndexRequest;
+import org.opensearch.action.admin.indices.create.CreateIndexResponse;
 import org.opensearch.action.admin.indices.delete.DeleteIndexAction;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.exists.indices.IndicesExistsAction;
@@ -39,6 +40,7 @@ import org.opensearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.opensearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.opensearch.action.admin.indices.mapping.get.GetMappingsAction;
 import org.opensearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.opensearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.opensearch.action.admin.indices.mapping.put.PutMappingAction;
 import org.opensearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshAction;
@@ -85,7 +87,9 @@ import org.opensearch.client.support.AbstractClient;
 import org.opensearch.cluster.ClusterName;
 import org.opensearch.cluster.ClusterState;
 import org.opensearch.cluster.metadata.IndexMetadata;
+import org.opensearch.cluster.metadata.IndexTemplateMetadata;
 import org.opensearch.cluster.metadata.Metadata;
+import org.opensearch.common.compress.CompressedXContent;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.core.xcontent.DeprecationHandler;
@@ -113,6 +117,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * An {@link org.opensearch.client.Client} for a <b>remote</b> cluster, implemented on top of the
@@ -225,7 +230,7 @@ public class RestBridgeClient extends AbstractClient {
         h.put(IndicesExistsAction.INSTANCE, RestBridgeClient::indicesExists);
         h.put(GetSettingsAction.INSTANCE, (c, r, l) -> c.rest.indices().getSettingsAsync((GetSettingsRequest) r, c.options, l(l)));
         h.put(DeleteIndexTemplateAction.INSTANCE, (c, r, l) -> c.rest.indices().deleteTemplateAsync((DeleteIndexTemplateRequest) r, c.options, l(l)));
-        // admin: indices, typed (1.x) variants -- see "After the 2.x bump" in the README
+        // admin: indices, translated to the RHLC's untyped client-side requests
         h.put(CreateIndexAction.INSTANCE, RestBridgeClient::createIndex);
         h.put(PutMappingAction.INSTANCE, RestBridgeClient::putMapping);
         h.put(GetMappingsAction.INSTANCE, RestBridgeClient::getMappings);
@@ -252,47 +257,135 @@ public class RestBridgeClient extends AbstractClient {
     }
 
     /*
-     * The five handlers below use the RHLC's typed (server-request) admin variants. On 1.3 they are the only faithful
-     * mapping: they send include_type_name=true, so custom mapping type names survive exactly as with the
-     * TransportClient. They are deprecated in 1.x and removed in 2.0; at the bump they become the untyped
-     * org.opensearch.client.indices.* requests (CreateIndexRequest, PutMappingRequest, GetMappingsRequest,
-     * PutIndexTemplateRequest, GetIndexTemplatesRequest), converted from the server request.
+     * The five handlers below translate the server-side admin requests the Client API builds into the RHLC's untyped
+     * org.opensearch.client.indices.* requests (OpenSearch 2.x has no mapping types), and the RHLC's client-side
+     * responses back into the server-side responses callers of the Client API expect.
      */
-    @SuppressWarnings("deprecation")
     private static void createIndex(RestBridgeClient c, ActionRequest r, ActionListener<Object> l) {
-        c.rest.indices().createAsync((CreateIndexRequest) r, c.options, l(l));
+        CreateIndexRequest request = (CreateIndexRequest) r;
+        org.opensearch.client.indices.CreateIndexRequest create = new org.opensearch.client.indices.CreateIndexRequest(request.index())
+                .settings(request.settings())
+                .aliases(request.aliases())
+                .waitForActiveShards(request.waitForActiveShards());
+        Map<String, Object> mapping = untypedMapping(request.mappings());
+        if (mapping != null) {
+            create.mapping(mapping);
+        }
+        create.setTimeout(request.timeout());
+        create.setClusterManagerTimeout(request.clusterManagerNodeTimeout());
+        c.rest.indices().createAsync(create, c.options, ActionListener.wrap(
+                response -> l.onResponse(new CreateIndexResponse(response.isAcknowledged(), response.isShardsAcknowledged(), response.index())),
+                l::onFailure));
     }
 
-    @SuppressWarnings("deprecation")
     private static void putMapping(RestBridgeClient c, ActionRequest r, ActionListener<Object> l) {
-        c.rest.indices().putMappingAsync((PutMappingRequest) r, c.options, l(l));
+        PutMappingRequest request = (PutMappingRequest) r;
+        org.opensearch.client.indices.PutMappingRequest put = new org.opensearch.client.indices.PutMappingRequest(request.indices())
+                .indicesOptions(request.indicesOptions());
+        Map<String, Object> mapping = untypedMapping(request.source());
+        put.source(mapping != null ? mapping : Collections.emptyMap());
+        put.setTimeout(request.timeout());
+        put.setClusterManagerTimeout(request.clusterManagerNodeTimeout());
+        c.rest.indices().putMappingAsync(put, c.options, l(l));
     }
 
-    @SuppressWarnings("deprecation")
     private static void getMappings(RestBridgeClient c, ActionRequest r, ActionListener<Object> l) {
-        c.rest.indices().getMappingAsync((GetMappingsRequest) r, c.options, l(l));
+        GetMappingsRequest request = (GetMappingsRequest) r;
+        org.opensearch.client.indices.GetMappingsRequest get = new org.opensearch.client.indices.GetMappingsRequest()
+                .indices(request.indices())
+                .indicesOptions(request.indicesOptions())
+                .local(request.local());
+        get.setClusterManagerTimeout(request.clusterManagerNodeTimeout());
+        c.rest.indices().getMappingAsync(get, c.options, ActionListener.wrap(
+                response -> l.onResponse(new GetMappingsResponse(response.mappings())), l::onFailure));
     }
 
-    @SuppressWarnings("deprecation")
     private static void putTemplate(RestBridgeClient c, ActionRequest r, ActionListener<Object> l) {
-        c.rest.indices().putTemplateAsync((PutIndexTemplateRequest) r, c.options, l(l));
+        PutIndexTemplateRequest request = (PutIndexTemplateRequest) r;
+        org.opensearch.client.indices.PutIndexTemplateRequest put = new org.opensearch.client.indices.PutIndexTemplateRequest(request.name())
+                .patterns(request.patterns())
+                .order(request.order())
+                .version(request.version())
+                .create(request.create())
+                .settings(request.settings());
+        if (request.cause() != null) {
+            put.cause(request.cause());
+        }
+        for (org.opensearch.action.admin.indices.alias.Alias alias : request.aliases()) {
+            put.alias(alias);
+        }
+        Map<String, Object> mapping = untypedMapping(request.mappings());
+        if (mapping != null) {
+            put.mapping(mapping);
+        }
+        put.clusterManagerNodeTimeout(request.clusterManagerNodeTimeout());
+        c.rest.indices().putTemplateAsync(put, c.options, l(l));
     }
 
-    @SuppressWarnings("deprecation")
     private static void getTemplates(RestBridgeClient c, ActionRequest r, ActionListener<Object> l) {
         GetIndexTemplatesRequest request = (GetIndexTemplatesRequest) r;
         org.opensearch.client.indices.GetIndexTemplatesRequest get =
                 new org.opensearch.client.indices.GetIndexTemplatesRequest(request.names());
         get.setLocal(request.local());
-        get.setMasterNodeTimeout(request.masterNodeTimeout());
-        c.rest.indices().getTemplateAsync(get, c.options, ActionListener.wrap(l::onResponse, e -> {
-            // the transport action answers an unknown template name with an empty list, REST with a 404
-            if (e instanceof OpenSearchStatusException && ((OpenSearchStatusException) e).status() == RestStatus.NOT_FOUND) {
-                l.onResponse(new GetIndexTemplatesResponse(Collections.emptyList()));
-            } else {
-                l.onFailure(e);
-            }
-        }));
+        get.setClusterManagerNodeTimeout(request.clusterManagerNodeTimeout());
+        c.rest.indices().getIndexTemplateAsync(get, c.options, ActionListener.wrap(
+                response -> l.onResponse(new GetIndexTemplatesResponse(response.getIndexTemplates().stream()
+                        .map(RestBridgeClient::serverTemplate)
+                        .collect(Collectors.toList()))),
+                e -> {
+                    // the transport action answers an unknown template name with an empty list, REST with a 404
+                    if (e instanceof OpenSearchStatusException && ((OpenSearchStatusException) e).status() == RestStatus.NOT_FOUND) {
+                        l.onResponse(new GetIndexTemplatesResponse(Collections.emptyList()));
+                    } else {
+                        l.onFailure(e);
+                    }
+                }));
+    }
+
+    /**
+     * client-side template metadata -> the server-side one the Client API returns. REST answers with an untyped
+     * mapping ({@code {"properties": ...}}); the transport layer stores it under OpenSearch's single internal mapping
+     * name ({@code {"_doc": {"properties": ...}}}), which is what server-side readers such as {@code MappingMetadata}
+     * expect, so it is wrapped the same way.
+     */
+    static IndexTemplateMetadata serverTemplate(org.opensearch.client.indices.IndexTemplateMetadata template) {
+        Map<String, CompressedXContent> mappings = template.mappings() == null
+                ? Collections.emptyMap()
+                : Collections.singletonMap(SINGLE_MAPPING_NAME, wrapped(template.mappings().source()));
+        return new IndexTemplateMetadata(template.name(), template.order(), template.version(), template.patterns(),
+                template.settings(), mappings, template.aliases());
+    }
+
+    /** {@code {...}} -> {@code {"_doc": {...}}}; an already wrapped mapping is kept as it is */
+    private static CompressedXContent wrapped(CompressedXContent source) {
+        Map<String, Object> mapping = XContentHelper.convertToMap(XContentType.JSON.xContent(), source.string(), true);
+        if (mapping.size() == 1 && mapping.get(SINGLE_MAPPING_NAME) instanceof Map) {
+            return source;
+        }
+        try {
+            return new CompressedXContent(BytesReference.bytes(
+                    XContentFactory.jsonBuilder().map(Collections.singletonMap(SINGLE_MAPPING_NAME, mapping))));
+        } catch (IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+    }
+
+    private static final String SINGLE_MAPPING_NAME = "_doc";
+
+    /**
+     * the server-side requests hold their mapping as a JSON string that may be wrapped in OpenSearch's single mapping
+     * name ({@code {"_doc": {...}}}); the RHLC's untyped requests take the bare mapping. null when there is none.
+     */
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> untypedMapping(String source) {
+        if (source == null || source.isEmpty()) {
+            return null;
+        }
+        Map<String, Object> mapping = XContentHelper.convertToMap(XContentType.JSON.xContent(), source, true);
+        if (mapping.size() == 1 && mapping.get(SINGLE_MAPPING_NAME) instanceof Map) {
+            return (Map<String, Object>) mapping.get(SINGLE_MAPPING_NAME);
+        }
+        return mapping;
     }
 
     /**
