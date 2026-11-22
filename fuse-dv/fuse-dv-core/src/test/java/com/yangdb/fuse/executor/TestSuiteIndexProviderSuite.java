@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        com.yangdb.fuse.executor.opensearch.ClientProviderBridgeIT.class,
         GraphInitiatorIT.class,
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,

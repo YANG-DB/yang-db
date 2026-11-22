@@ -24,19 +24,16 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.executor.mock.opensearch.MockClient;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
-import javaslang.collection.Stream;
 import org.opensearch.client.Client;
-import org.opensearch.client.transport.TransportClient;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
-import org.opensearch.transport.client.PreBuiltTransportClient;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by roman.margolis on 04/01/2018.
+ * <p>
+ * The remote client is a REST bridge (fuse-opensearch-client) on the cluster's HTTP port: {@code opensearch.http.port},
+ * else (deprecated) {@code opensearch.port - 100}.
  */
 public class ClientProvider implements Provider<Client> {
     public static final String createMockParameter = "ClientProvider.@createMock";
@@ -63,16 +60,10 @@ public class ClientProvider implements Provider<Client> {
                 .put("cluster.name", this.configuration.getClusterName())
                 .put("client.transport.ignore_cluster_name", this.configuration.getClientTransportIgnoreClusterName())
                 .build();
-        TransportClient client = new PreBuiltTransportClient(settings);
-        Stream.of(this.configuration.getClusterHosts()).forEach(host -> {
-            try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), this.configuration.getClusterPort()));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return client;
+        Integer httpPort = this.configuration.getClusterHttpPort();
+        return ClientFactory.remote(this.configuration.getClusterHosts(),
+                httpPort != null ? httpPort : ClientFactory.httpPortFromTransportPort(this.configuration.getClusterPort()),
+                settings);
     }
     //endregion
 

@@ -37,20 +37,16 @@ import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.opensearch.action.search.SearchResponse;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import org.opensearch.client.Client;
-import org.opensearch.client.transport.TransportClient;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.SearchHits;
-import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -72,8 +68,12 @@ import static com.typesafe.config.ConfigFactory.defaultApplication;
  * fuse.base.uri = /fuse
  *
  * opensearch.hosts = [ "127.0.0.1" ]
- * opensearch.port = 9300
+ * opensearch.http.port = 9200      (REST port; if absent, opensearch.port - 100 is used - deprecated)
+ * opensearch.port = 9300           (legacy transport port)
  * opensearch.cluster_name = clusterName
+ *
+ * The OpenSearch connection is the REST bridge from fuse-opensearch-client. The "sniffing" here is of YANG-DB nodes
+ * (the fuse_node_info index), not of OpenSearch nodes, so no REST node sniffer is attached.
  */
 public class SnifferFuseClient implements FuseClient{
     public static final String SYSTEM = "fuse_node_info";
@@ -362,7 +362,10 @@ public class SnifferFuseClient implements FuseClient{
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts")).toJavaArray(String.class));
-        configuration.setClusterPort(conf.getInt("opensearch.port"));
+        // the REST bridge needs the HTTP port: opensearch.http.port, else (deprecated) opensearch.port - 100
+        configuration.setClusterPort(ClientFactory.resolveHttpPort(
+                conf.hasPath("opensearch.http.port") ? conf.getInt("opensearch.http.port") : null,
+                conf.getInt("opensearch.port")));
         configuration.setClusterName(conf.getString("opensearch.cluster_name"));
 
         configuration.setClientTransportIgnoreClusterName(conf.hasPath("client.transport.ignore_cluster_name") &&
@@ -376,19 +379,12 @@ public class SnifferFuseClient implements FuseClient{
                 .put("cluster.name", configuration.getClusterName())
                 .put("client.transport.ignore_cluster_name", configuration.isClientTransportIgnoreClusterName())
                 .build();
-        TransportClient client = new PreBuiltTransportClient(settings);
-        configuration.getClusterHosts().forEach(host -> {
-            try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(String.valueOf(host)), configuration.getClusterPort()));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        });
-        return client;
+        return ClientFactory.remote(configuration.getClusterHosts(), configuration.getClusterPort(), settings);
     }
 
     private class ElasticGraphConfiguration {
         private List<String> clusterHosts;
+        /** the HTTP (REST) port */
         private int clusterPort;
         private String clusterName;
         private boolean clientTransportIgnoreClusterName;

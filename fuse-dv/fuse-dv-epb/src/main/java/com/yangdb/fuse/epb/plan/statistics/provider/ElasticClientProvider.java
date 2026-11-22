@@ -21,16 +21,14 @@ package com.yangdb.fuse.epb.plan.statistics.provider;
  */
 
 import com.yangdb.fuse.epb.plan.statistics.configuration.StatConfig;
-import org.opensearch.client.transport.TransportClient;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
-import org.opensearch.transport.client.PreBuiltTransportClient;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by benishue on 24-May-17.
+ * <p>
+ * The statistics client is a REST bridge (fuse-opensearch-client) on the HTTP port {@link StatConfig#getStatHttpPort()}.
  */
 public class ElasticClientProvider {
 
@@ -41,17 +39,9 @@ public class ElasticClientProvider {
     //endregion
 
     //region Public Methods
-    public TransportClient getStatClient() {
+    public Client getStatClient() {
         Settings settings = Settings.builder().put("cluster.name", config.getStatClusterName()).build();
-        TransportClient esClient = new PreBuiltTransportClient(settings);
-        for (String node : config.getStatNodesHosts()) {
-            try {
-                esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
-            } catch (UnknownHostException e) {
-                throw new RuntimeException("Fatal Error: Unable getTo get host information");
-            }
-        }
-        return esClient;
+        return ClientFactory.remote(config.getStatNodesHosts(), config.getStatHttpPort(), settings);
     }
     //endregion
 

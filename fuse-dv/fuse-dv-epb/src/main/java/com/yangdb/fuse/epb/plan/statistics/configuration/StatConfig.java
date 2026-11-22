@@ -21,6 +21,7 @@ package com.yangdb.fuse.epb.plan.statistics.configuration;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import com.yangdb.fuse.stat.model.configuration.StatContainer;
 import com.yangdb.fuse.stat.util.StatUtil;
 import com.typesafe.config.Config;
@@ -39,6 +40,7 @@ public class StatConfig {
         this.statClusterName = config.getString("opensearch.stat.cluster.name");
         this.statNodesHosts = config.getStringList("opensearch.stat.hosts");
         this.statTransportPort = config.getInt("opensearch.stat.port");
+        this.statHttpPort = config.hasPath("opensearch.stat.http.port") ? config.getInt("opensearch.stat.http.port") : null;
         this.statIndexName = config.getString("opensearch.stat.index.name");
         this.statTermTypeName = config.getString("opensearch.stat.type.term.name");
         this.statStringTypeName = config.getString("opensearch.stat.type.string.name");
@@ -135,6 +137,11 @@ public class StatConfig {
         return statTransportPort;
     }
 
+    /** HTTP port of the statistics cluster: opensearch.stat.http.port, else (deprecated) opensearch.stat.port - 100. */
+    public int getStatHttpPort() {
+        return ClientFactory.resolveHttpPort(statHttpPort, statTransportPort);
+    }
+
     public String getStatIndexName() {
         return statIndexName;
     }
@@ -201,6 +208,7 @@ public class StatConfig {
     private String statClusterName;
     private List<String> statNodesHosts;
     private int statTransportPort;
+    private Integer statHttpPort;
     private String statIndexName;
     private String statTermTypeName;
     private String statStringTypeName;

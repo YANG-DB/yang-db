@@ -20,15 +20,14 @@ package com.yangdb.fuse.test.framework.index;
  * #L%
  */
 
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import org.opensearch.client.Client;
 import org.opensearch.client.core.MainResponse;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
-import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -80,7 +79,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     static int httpTransportPort = TRANSPORT_PORT;
 
     static Client client = null;
-    // true when the client is a transport client to an externally running cluster (not owned by an embedded node)
+    // true when the client is a REST bridge client to an externally running cluster (not owned by an embedded node)
     private static boolean remoteClient = false;
     //endregion
 
@@ -140,8 +139,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     /**
-     * Client of the embedded node when one is running in this JVM; otherwise a transport client to an already
-     * running cluster named {@code clusterName} on localhost:{@code transportPort}.
+     * Client of the embedded node when one is running in this JVM; otherwise a REST bridge client
+     * (fuse-opensearch-client) to an already running cluster named {@code clusterName} on localhost. The bridge talks
+     * HTTP: for the configured transport port it uses the configured HTTP port ({@code -Dfuse.test.http.port}), for
+     * any other transport port it uses {@code transportPort - 100}.
      */
     public static Client getClient(String clusterName, int transportPort) {
         if (client == null) {
@@ -149,13 +150,18 @@ public class ElasticEmbeddedNode implements AutoCloseable {
             if (node != null) {
                 client = node.client();
             } else {
-                client = new PreBuiltTransportClient(Settings.builder().put("cluster.name", clusterName).build())
-                        .addTransportAddress(new TransportAddress(InetAddress.getLoopbackAddress(), transportPort));
+                client = ClientFactory.remote(new String[]{InetAddress.getLoopbackAddress().getHostAddress()},
+                        remoteHttpPort(transportPort),
+                        Settings.builder().put("cluster.name", clusterName).build());
                 remoteClient = true;
             }
         }
 
         return client;
+    }
+
+    static int remoteHttpPort(int transportPort) {
+        return transportPort == httpTransportPort ? httpPort : ClientFactory.httpPortFromTransportPort(transportPort);
     }
 
     @Override
@@ -172,7 +178,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public static void closeClient() {
-        // an embedded node's client is closed together with the node; only a remote transport client is ours to close
+        // an embedded node's client is closed together with the node; only a remote bridge client is ours to close
         if (client != null && remoteClient) {
             client.close();
         }

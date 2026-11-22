@@ -20,17 +20,18 @@ package com.yangdb.fuse.stat.es.client;
  * #L%
  */
 
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import org.apache.commons.configuration.Configuration;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
-import org.opensearch.transport.client.PreBuiltTransportClient;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
  * Created by benishue on 03-May-17.
+ * <p>
+ * Clients are REST bridges (fuse-opensearch-client) on the clusters' HTTP ports: {@code es.client.http.port} /
+ * {@code statistics.client.http.port}, else (deprecated) the {@code *.client.transport.port} - 100.
  */
 public class ClientProvider {
 
@@ -39,29 +40,31 @@ public class ClientProvider {
     }
 
     //region Static Methods
-    public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
+    public static Client getDataClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("es.cluster.name");
-        int transportPort = configuration.getInt("es.client.transport.port");
+        int httpPort = httpPort(configuration, "es.client.http.port", "es.client.transport.port");
         String[] hosts = configuration.getStringArray("es.nodes.hosts");
 
-        return getTransportClient(clusterName, transportPort, hosts);
+        return getClient(clusterName, httpPort, hosts);
     }
 
-    public static TransportClient getStatClient(Configuration configuration) throws UnknownHostException {
+    public static Client getStatClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("statistics.cluster.name");
-        int transportPort = configuration.getInt("statistics.client.transport.port");
+        int httpPort = httpPort(configuration, "statistics.client.http.port", "statistics.client.transport.port");
         String[] hosts = configuration.getStringArray("statistics.nodes.hosts");
 
-        return getTransportClient(clusterName, transportPort, hosts);
+        return getClient(clusterName, httpPort, hosts);
     }
 
-    public static TransportClient getTransportClient(String clusterName, int transportPort, String[] hosts) throws UnknownHostException {
+    public static Client getClient(String clusterName, int httpPort, String[] hosts) {
         Settings settings = Settings.builder().put("cluster.name", clusterName).build();
-        TransportClient esClient = new PreBuiltTransportClient(settings);
-        for(String node: hosts) {
-            esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), transportPort));
-        }
-        return esClient;
+        return ClientFactory.remote(hosts, httpPort, settings);
+    }
+
+    static int httpPort(Configuration configuration, String httpPortKey, String transportPortKey) {
+        return ClientFactory.resolveHttpPort(
+                configuration.containsKey(httpPortKey) ? configuration.getInt(httpPortKey) : null,
+                configuration.containsKey(transportPortKey) ? configuration.getInt(transportPortKey) : null);
     }
     //endregion
 }

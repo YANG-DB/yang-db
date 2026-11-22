@@ -68,6 +68,10 @@
             <artifactId>fuse-geojson</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-opensearch-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
         </dependency>
