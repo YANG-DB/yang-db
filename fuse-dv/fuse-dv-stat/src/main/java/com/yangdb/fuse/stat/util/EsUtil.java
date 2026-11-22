@@ -445,14 +445,14 @@ public class EsUtil {
      *
      * @param client:   Client used to index data
      * @param index:    Document is stored in this index
-     * @param type:     Document stored in this type
+     * @param type:     ignored: OpenSearch 2.x has no mapping types (the stat document carries its own "type" field)
      * @param id:       Specifies _id of the document
      * @param document: Represents body of the document
      * @return {@link IndexResponse}
      */
     public static IndexResponse indexData(Client client, String index,
                                           String type, String id, String document) {
-        return client.prepareIndex(index, type, id)
+        return client.prepareIndex(index).setId(id)
                 .setSource(document).execute().actionGet();
     }
 

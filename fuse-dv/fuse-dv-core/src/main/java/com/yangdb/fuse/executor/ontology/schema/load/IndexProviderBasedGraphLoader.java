@@ -146,7 +146,6 @@ public class IndexProviderBasedGraphLoader implements GraphDataLoader<String, Fu
             String index = resolveIndex(node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
-                    .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(opType)
                     .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);

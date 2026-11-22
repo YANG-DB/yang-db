@@ -144,6 +144,7 @@ public class StatTestUtil {
     }
 
 
+    //type: ignored since OpenSearch 2.x removed mapping types (it used to restrict the search to that type)
     public static List<Map<String, Object>> getAllDocs(Client client, String index, String type) {
         int scrollSize = 1000;
         List<Map<String, Object>> esData = new ArrayList<>();
@@ -151,7 +152,6 @@ public class StatTestUtil {
         int i = 0;
         while (response == null || response.getHits().getHits().length != 0) {
             response = client.prepareSearch(index)
-                    .setTypes(type)
                     .setQuery(QueryBuilders.matchAllQuery())
                     .setSize(scrollSize)
                     .setFrom(i * scrollSize)

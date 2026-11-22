@@ -1800,10 +1800,23 @@ public class QueryBuilder {
                     ids.add(obj.toString());
                 }
 
-                return QueryBuilders.idsQuery(this.types).addIds(Stream.ofAll(ids).toJavaArray(String.class));
+                return withTypes(QueryBuilders.idsQuery().addIds(Stream.ofAll(ids).toJavaArray(String.class)));
             }
 
-            return QueryBuilders.idsQuery(this.types).addIds(this.value.toString());
+            return withTypes(QueryBuilders.idsQuery().addIds(this.value.toString()));
+        }
+
+        /**
+         * OpenSearch 2.x ids queries take no mapping types: a type restriction becomes a filter on the element's
+         * type field (the same value the former mapping type carried)
+         */
+        private org.opensearch.index.query.QueryBuilder withTypes(org.opensearch.index.query.IdsQueryBuilder ids) {
+            if (this.types == null || this.types.length == 0) {
+                return ids;
+            }
+            return QueryBuilders.boolQuery()
+                    .filter(ids)
+                    .filter(QueryBuilders.termsQuery(com.yangdb.fuse.model.GlobalConstants.TYPE, this.types));
         }
 
         @Override
@@ -1837,9 +1850,13 @@ public class QueryBuilder {
         //endregion
 
         //region Composite Implementation
+        /**
+         * OpenSearch 2.x removed mapping types (and the type query): match on the element's type field instead,
+         * which holds the same value the former mapping type did
+         */
         @Override
         protected Object build() {
-            return QueryBuilders.typeQuery(this.value);
+            return QueryBuilders.termQuery(com.yangdb.fuse.model.GlobalConstants.TYPE, this.value);
         }
         //endregion
 
