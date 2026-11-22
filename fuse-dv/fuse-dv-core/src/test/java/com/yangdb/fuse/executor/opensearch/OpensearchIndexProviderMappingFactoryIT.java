@@ -45,10 +45,11 @@ import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
  * {@code schema/DragonsSingleIndexProvider.conf}). The only hand-written knowledge is the ontology-primitive to
  * OpenSearch field type table in {@link #esType}.
  * <p>
- * Shape facts (OpenSearch 1.3, transport client):
+ * Shape facts (OpenSearch 2.x, no mapping types):
  * <ul>
- *     <li>legacy index templates still store their mapping under the type name the factory passes
- *     (e.g. {@code {"Person":{"properties":...}}});</li>
+ *     <li>the factory sends untyped template mappings ({@code {"properties":...}}); a legacy index template stores
+ *     them under OpenSearch's single internal mapping name {@code _doc} ({@code {"_doc":{"properties":...}}}), never
+ *     under a YANG-DB type or label name (up to 1.3 it was {@code {"Person":{"properties":...}}});</li>
  *     <li>concrete indices created from those templates have no type wrapper ({@code {"mappings":{"properties":...}}}).</li>
  * </ul>
  * The templates this class creates (notably the single-index "ontology" template, whose patterns match
@@ -58,6 +59,10 @@ import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
 public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
 
     private static final String PROJECTION = "projection";
+    /**
+     * the one mapping name OpenSearch 2.x uses internally (MapperService.SINGLE_MAPPING_NAME)
+     */
+    private static final String SINGLE_MAPPING_NAME = "_doc";
     private static final String DATE_FORMAT = "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS";
 
     //region cleanup
@@ -96,7 +101,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     public void testGenerateNestedMapping() throws Exception {
         assertGeneratedTemplates(nestedSchema, nestedProvider);
         //the nested provider maps Person.Profession as a "child" -> a nested-type field
-        JsonNode people = templateProperties(templates("people").get(0), "Person");
+        JsonNode people = templateProperties(templates("people").get(0));
         Assert.assertEquals("nested", people.at("/Profession/type").asText());
     }
 
@@ -104,7 +109,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     public void testGenerateEmbeddedMapping() throws Exception {
         assertGeneratedTemplates(embeddedSchema, embeddedProvider);
         //the embedded provider maps Person.Profession as "embedded" -> a plain object field
-        JsonNode profession = templateProperties(templates("people").get(0), "Person").get("Profession");
+        JsonNode profession = templateProperties(templates("people").get(0)).get("Profession");
         Assert.assertNotNull(profession);
         Assert.assertFalse("embedded Profession must not be a nested field", profession.has("type"));
         Assert.assertTrue(profession.path("properties").size() > 0);
@@ -145,7 +150,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     @Test
     public void testGenerateSingleMappingMapsRelationSides() throws Exception {
         new ElasticIndexProviderMappingFactory(client, singleIndexSchema, ontology, singleIndexProvider).generateMappings();
-        JsonNode properties = templateProperties(templates("ontology").get(0), "ontology");
+        JsonNode properties = templateProperties(templates("ontology").get(0));
         Assert.assertEquals("keyword", properties.at("/direction/type").asText());
         Assert.assertEquals("keyword", properties.at("/entityA/properties/id/type").asText());
         Assert.assertEquals("keyword", properties.at("/entityB/properties/id/type").asText());
@@ -193,7 +198,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
             Assert.assertEquals("patterns of " + name, exp.patterns, new HashSet<>(template.patterns()));
             Assert.assertEquals("patterns of " + name + " are distinct", template.patterns().size(), new HashSet<>(template.patterns()).size());
             assertSettings(name, template.settings(), exp);
-            assertProperties(name, templateProperties(template, exp.typeKey), exp.mapping.props);
+            assertProperties(name, templateProperties(template), exp.mapping.props);
         }
 
         //every concrete (partition) index of the schema is covered by exactly the one template it belongs to
@@ -281,13 +286,17 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     }
 
     /**
-     * legacy templates keep the mapping under the type name the factory used: {typeKey: {properties: ...}}
+     * templates are untyped: {properties: ...}, stored by OpenSearch under its single internal mapping name
+     * {_doc: {properties: ...}} - never under a type/label name of the ontology
      */
-    private static JsonNode templateProperties(IndexTemplateMetadata template, String typeKey) throws Exception {
-        Assert.assertEquals("mapping types of template " + template.name(), Collections.singleton(typeKey), toSet(template.mappings().keysIt()));
-        JsonNode root = mapper.readTree(template.mappings().get(typeKey).string());
-        Assert.assertEquals("type wrapper of template " + template.name(), Collections.singleton(typeKey), toSet(root.fieldNames()));
-        return root.get(typeKey).get("properties");
+    private static JsonNode templateProperties(IndexTemplateMetadata template) throws Exception {
+        Assert.assertNotNull("template " + template.name() + " has a mapping", template.mappings());
+        JsonNode root = mapper.readTree(template.mappings().string());
+        if (toSet(root.fieldNames()).equals(Collections.singleton(SINGLE_MAPPING_NAME))) {
+            root = root.get(SINGLE_MAPPING_NAME);
+        }
+        Assert.assertEquals("template " + template.name() + " mapping has no type wrapper", Collections.singleton("properties"), toSet(root.fieldNames()));
+        return root.get("properties");
     }
 
     /**
@@ -319,13 +328,11 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     }
 
     private static final class Expected {
-        final String typeKey;
         final Set<String> patterns = new HashSet<>();
         final String sortField;
         final Obj mapping = new Obj(null);
 
-        Expected(String typeKey, String sortField) {
-            this.typeKey = typeKey;
+        Expected(String sortField) {
             this.sortField = sortField;
         }
     }
@@ -355,7 +362,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
             switch (partition(entity.getPartition())) {
                 case STATIC:
                     for (String value : entity.getProps().getValues()) {
-                        Expected exp = new Expected(entity.getType(), entity.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
+                        Expected exp = new Expected(entity.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
                         exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
                         exp.mapping.props.putAll(entityProps(acc, entity));
                         result.put(value.toLowerCase(), exp);
@@ -363,7 +370,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                     break;
                 case UNIFIED:
                     for (String value : entity.getProps().getValues()) {
-                        Expected exp = result.computeIfAbsent(value, v -> new Expected(v, null));
+                        Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
                         exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
                         exp.mapping.props.putAll(entityProps(acc, entity));
                     }
@@ -381,14 +388,14 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
             switch (partition(relation.getPartition())) {
                 case STATIC:
                     for (String value : relation.getProps().getValues()) {
-                        Expected exp = new Expected(relation.getType(), relation.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
+                        Expected exp = new Expected(relation.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
                         exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
                         exp.mapping.props.putAll(relationProps(acc, relation));
                         result.put(relation.getType().toLowerCase(), exp);
                     }
                     break;
                 case TIME: {
-                    Expected exp = new Expected(relation.getType(), relation.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
+                    Expected exp = new Expected(relation.getNested().isEmpty() ? BaseElement.idFieldName(type.getIdField()) : null);
                     exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(),
                             String.format(relation.getProps().getIndexFormat(), "*")));
                     exp.mapping.props.putAll(relationProps(acc, relation));
@@ -397,7 +404,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                 }
                 case UNIFIED:
                     for (String value : relation.getProps().getValues()) {
-                        Expected exp = result.computeIfAbsent(value, v -> new Expected(v, null));
+                        Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
                         exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
                         //only the ontology fields reach the unified mapping - see testGenerateSingleMappingMapsRelationSides
                         exp.mapping.props.putAll(fields(acc, type));
@@ -486,7 +493,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
      * flattened "entityB.id"/"entityB.type"
      */
     private static Expected expectedProjection(Ontology.Accessor acc, IndexProvider provider) {
-        Expected exp = new Expected(PROJECTION, null);
+        Expected exp = new Expected(null);
         exp.patterns.add(PROJECTION + "*");
         exp.mapping.props.put("queryId", "keyword");
         exp.mapping.props.put("cursorId", "keyword");

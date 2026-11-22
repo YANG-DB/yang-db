@@ -32,8 +32,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Index-template request builder that keeps the template mapping as a mutable map until the request is sent, so the
+ * mapping factory can keep adding properties to a shared (unified) template.
+ * <p>
+ * OpenSearch 2.x has no mapping types: the mapping is untyped, {@code {"properties": {...}}}. (Up to 1.3 it was
+ * wrapped in a type name, {@code {"Person": {"properties": {...}}}}.)
+ */
 public class ESPutIndexTemplateRequestBuilder extends PutIndexTemplateRequestBuilder {
-    private String type;
     private Map<String, Object> mappings;
 
     public ESPutIndexTemplateRequestBuilder(OpenSearchClient client, PutIndexTemplateAction action) {
@@ -44,25 +50,25 @@ public class ESPutIndexTemplateRequestBuilder extends PutIndexTemplateRequestBui
         super(client, action, name);
     }
 
-    @Override
-    public PutIndexTemplateRequestBuilder addMapping(String type, Map<String, Object> source) {
-        this.type = type;
+    /**
+     * set the untyped template mapping: {@code {"properties": {...}}}
+     */
+    public ESPutIndexTemplateRequestBuilder setMapping(Map<String, Object> source) {
         this.mappings = source;
         return this;
     }
 
+    /**
+     * @return the untyped template mapping, or null when none was set yet
+     */
     public Map<String, Object> getMappings() {
         return mappings;
-    }
-
-    public String getType() {
-        return type;
     }
 
     @Override
     public PutIndexTemplateRequest request() {
         if (!Objects.isNull(mappings)) {
-            super.request.mapping(type, mappings);
+            super.request.mapping(mappings);
         }
         return super.request();
     }
@@ -73,11 +79,14 @@ public class ESPutIndexTemplateRequestBuilder extends PutIndexTemplateRequestBui
         return super.execute();
     }
 
-    public Map<String, Object> getMappingsProperties(String type) {
+    /**
+     * @return the (mutable) root properties of the mapping, or an empty map when there are none
+     */
+    public Map<String, Object> getMappingsProperties() {
         try {
-            Map<String, Object> map = (Map<String, Object>) mappings.get(type);
-            return (Map<String, Object>) map.get("properties");
-        }catch (Throwable notFound) {
+            Map<String, Object> properties = (Map<String, Object>) mappings.get("properties");
+            return properties != null ? properties : Collections.emptyMap();
+        } catch (Throwable notFound) {
             return Collections.emptyMap();
         }
     }
