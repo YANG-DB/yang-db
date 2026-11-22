@@ -20,6 +20,15 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Maven Central rate-limits GitHub's shared runners (HTTP 429), especially with several jobs downloading at once.
+  # Retry 429/503 responses with back-off instead of failing the build (Maven 3.9+ resolver).
+  MVN: >-
+    mvn -B -ntp
+    -Daether.connector.http.retryHandler.count=8
+    -Daether.connector.http.retryHandler.interval=15000
+    -Daether.connector.http.retryHandler.serviceUnavailable=429,503
+
 jobs:
   build-test:
     name: Build & test
@@ -34,8 +43,11 @@ jobs:
           java-version: '11'
           cache: maven
 
+      - name: Show the Maven version (429 retries need 3.9+)
+        run: mvn -v | head -1
+
       - name: mvn clean test (unit + integration)
-        run: mvn -B -ntp clean test
+        run: $MVN clean test
 
       - name: Test summary
         if: always()
@@ -72,7 +84,7 @@ jobs:
           cache: maven
 
       - name: Build the distribution (core + Dragons assembly)
-        run: mvn -B -ntp install -DskipTests -P core,dragons-assembly
+        run: $MVN install -DskipTests -P core,dragons-assembly
 
       - name: Build the YANG-DB image
         run: |
