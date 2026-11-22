@@ -88,6 +88,9 @@
              transport-netty4-client 2.19.7 declares. Jooby 1.x (jooby-netty, built on 4.1.43) links on it. Never let two
              netty versions meet on one classpath: that broke every HTTP request once (A1). -->
         <netty.version>4.1.139.Final</netty.version>
+        <!-- antlr4-runtime: the version lang-painless 2.19.7's parser is generated with. graphql-java (>= 20) shades its
+             own ANTLR under graphql.org.antlr, so it no longer competes for this one. -->
+        <antlr4.version>4.13.1</antlr4.version>
         <resilience4jVersion>1.6.1</resilience4jVersion>
 
         <!-- com.github.cnsvili.snowflake.version -->
@@ -112,8 +115,8 @@
         <openCypher.frontend.version>9.0.20181012</openCypher.frontend.version>
         <openCypher.spark.version>0.2.3</openCypher.spark.version>
 
-        <!--graph ql java-->
-        <graphql.java.version>2020-01-17T02-41-10-578985f</graphql.java.version>
+        <!-- graphql-java: >= 20 shades its own ANTLR (graphql.org.antlr), so it no longer needs antlr4-runtime 4.7.2 -->
+        <graphql.java.version>24.3</graphql.java.version>
 
         <!-- commons -->
         <commons-io.version>2.7</commons-io.version>
@@ -446,15 +449,15 @@
             </dependency>
 
             <!--
-              ANTLR 4 runtime: graphql-java's parser is generated with 4.7.2 (CharStreams etc.); lang-painless (via
-              fuse-service) brings 4.5.3. graphql-java used to sit in fuse-model/fuse-asg, which made 4.7.2 win
-              everywhere; with GraphQL in an extension, 4.5.3 won in the distribution and every GraphQL query failed
-              with NoClassDefFoundError. Pinned to keep the version every module had before.
+              ANTLR 4 runtime: lang-painless 2.19.7's parser is generated with 4.13.1 (it checks the runtime version
+              and ANTLR's serialized ATN format changed in 4.10, so an older runtime cannot load Painless scripts).
+              graphql-java used to need 4.7.2 from this same artifact; since graphql-java 20 it ships a relocated
+              copy (graphql.org.antlr), so the two parsers no longer share a runtime.
             -->
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
-                <version>4.7.2</version>
+                <version>${antlr4.version}</version>
             </dependency>
             <!-- graphql -->
             <dependency>

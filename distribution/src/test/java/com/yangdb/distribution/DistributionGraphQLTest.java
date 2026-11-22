@@ -107,9 +107,18 @@ public class DistributionGraphQLTest {
     }
 
     @Test
-    public void theShippedAntlrRuntimeIsTheOneTheGraphQLParserWasGeneratedWith() {
-        // graphql-java 2020-01-17 is generated with ANTLR 4.7.2; lang-painless (fuse-service) brings 4.5.3
+    public void theGraphQLParserUsesItsOwnAntlrRuntime() throws Exception {
+        // graphql-java >= 20 ships a relocated copy of ANTLR; its parser must never depend on the shared runtime
+        Class<?> shaded = Class.forName("graphql.org.antlr.v4.runtime.RuntimeMetaData");
+        Assert.assertEquals(shaded.getProtectionDomain().getCodeSource().getLocation(),
+                graphql.parser.Parser.class.getProtectionDomain().getCodeSource().getLocation());
+    }
+
+    @Test
+    public void theShippedAntlrRuntimeIsTheOnePainlessWasGeneratedWith() {
+        // lang-painless 2.19.7's parser is generated with ANTLR 4.13.1 (the serialized ATN changed in 4.10, so
+        // older runtimes cannot load it); graphql-java no longer competes for this artifact
         Assert.assertTrue(org.antlr.v4.runtime.RuntimeMetaData.getRuntimeVersion(),
-                org.antlr.v4.runtime.RuntimeMetaData.getRuntimeVersion().startsWith("4.7"));
+                org.antlr.v4.runtime.RuntimeMetaData.getRuntimeVersion().startsWith("4.13"));
     }
 }

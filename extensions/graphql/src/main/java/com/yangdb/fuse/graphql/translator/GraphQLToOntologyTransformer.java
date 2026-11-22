@@ -57,6 +57,44 @@ import static graphql.schema.GraphQLTypeReference.typeRef;
 public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<String, Ontology>, GraphQLSchemaUtils {
     //where input object
     public static final String QUERY = "Query";
+    /**
+     * The "Long" scalar: graphql-java dropped its non-spec scalars (GraphQLLong, GraphQLShort, ...) in v15; this is the
+     * same name and coercion (a 64-bit integer).
+     */
+    public static final GraphQLScalarType LONG = GraphQLScalarType.newScalar()
+            .name("Long")
+            .description("Long type")
+            .coercing(new Coercing<Object, Object>() {
+                private Object toLong(Object value) {
+                    if (value instanceof Number) return ((Number) value).longValue();
+                    if (value instanceof String) {
+                        try {
+                            return Long.parseLong((String) value);
+                        } catch (NumberFormatException e) {
+                            throw new CoercingParseValueException("Not a Long: " + value);
+                        }
+                    }
+                    if (value instanceof graphql.language.IntValue) return ((graphql.language.IntValue) value).getValue().longValue();
+                    if (value instanceof graphql.language.StringValue) return toLong(((graphql.language.StringValue) value).getValue());
+                    throw new CoercingParseValueException("Not a Long: " + value);
+                }
+
+                @Override
+                public Object serialize(Object dataFetcherResult) {
+                    return toLong(dataFetcherResult);
+                }
+
+                @Override
+                public Object parseValue(Object input) {
+                    return toLong(input);
+                }
+
+                @Override
+                public Object parseLiteral(Object input) {
+                    return toLong(input);
+                }
+            })
+            .build();
 
 
     //graph QL reader and schema parts
@@ -142,11 +180,10 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
             // add query for all concrete types with the where input type
             builder.query(buildQuery(accessor));
             graphQLSchema = builder.build();
-        } else {
-            Ontology.Accessor accessor = new Ontology.Accessor(source);
-            accessor.getEnumeratedTypes().forEach(t -> graphQLSchema.getAllTypesAsList().add(buildEnum(t, accessor)));
-            accessor.entities().forEach(e -> graphQLSchema.getAllTypesAsList().add(buildGraphQLObject(e, accessor)));
         }
+        // there used to be an else branch adding the ontology's types to graphQLSchema.getAllTypesAsList(). That list
+        // was always a fresh copy (graphql-java 2020), so it never changed the schema; graphql-java >= 20 returns an
+        // immutable list and the add throws. Dropped; the existing schema is returned as before.
         return graphQLSchema;
 
     }
@@ -185,7 +222,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
         return new GraphQLEnumType.Builder()
                 .name(type.geteType())
                 .values(type.getValues().stream()
-                        .map(v -> new GraphQLEnumValueDefinition(v.getName(), v.getName(), v.getVal()))
+                        .map(v -> GraphQLEnumValueDefinition.newEnumValueDefinition().name(v.getName()).description(v.getName()).value(v.getVal()).build())
                         .collect(Collectors.toList()))
                 //build definition
                 .definition(EnumTypeDefinition.newEnumTypeDefinition()
@@ -251,7 +288,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
             case "String":
                 return GraphQLString;
             case "Long":
-                return GraphQLLong;
+                return LONG;
             case "Int":
                 return GraphQLInt;
             default:
@@ -288,7 +325,7 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
                 registry.merge(new SchemaParser().parse(OntologyToGraphQLSdl.WHERE_SCHEMA));
             }
             schema = new SchemaGenerator().makeExecutableSchema(
-                    SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
+                    SchemaGenerator.Options.defaultOptions(),
                     registry,
                     EchoingWiringFactory.newEchoingWiring());
         } catch (GraphQLException e) {
@@ -578,8 +615,8 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
             //where enum
             builder.additionalType(new GraphQLEnumType.Builder()
                     .name(WHERE_OPERATOR)
-                    .values(Arrays.asList(new GraphQLEnumValueDefinition(OR, OR, OR),
-                            new GraphQLEnumValueDefinition(AND, AND, AND)))
+                    .values(Arrays.asList(GraphQLEnumValueDefinition.newEnumValueDefinition().name(OR).description(OR).value(OR).build(),
+                            GraphQLEnumValueDefinition.newEnumValueDefinition().name(AND).description(AND).value(AND).build()))
                     //definition
                     .definition(EnumTypeDefinition.newEnumTypeDefinition()
                             .name(WHERE_OPERATOR)
