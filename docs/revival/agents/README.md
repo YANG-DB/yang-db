@@ -11,10 +11,14 @@ session, machine or agent restart. [STATUS.md](../STATUS.md) is the one-page ove
 | [stream-C.md](stream-C.md) | `stream-C-service` | `.claude/worktrees/agent-acdc794fa7038a886` | done |
 | [stream-D.md](stream-D.md) | `stream-D-data-docs` | `.claude/worktrees/agent-a28d8e52a88b602de` | done |
 | [stream-E.md](stream-E.md) | `stream-E-partitions` | `.claude/worktrees/agent-a7164b98179501307` | done (r1–r2 merged) |
-| stream-F.md *(in its worktree)* | `stream-F-mapping-it` | `.claude/worktrees/agent-a1f7bd8185045a11c` | Phase 3, active |
-| stream-G.md *(in its worktree)* | `stream-G-epb` | `.claude/worktrees/agent-aa531fd1fcc70396d` | Phase 3, active |
-| stream-H.md *(in its worktree)* | `stream-H-golden-strings` | `.claude/worktrees/agent-aa60af3443834b482` | Phase 3, active |
-| stream-I.md *(in its worktree)* | `stream-I-ignore-triage` | `.claude/worktrees/agent-a2aeef755c12c5519` | Phase 3, active (read-only triage) |
+| stream-F.md *(in its worktree)* | `stream-F-mapping-it` | `.claude/worktrees/agent-a1f7bd8185045a11c` | done (Phase 3, merged) |
+| stream-G.md *(in its worktree)* | `stream-G-epb` | `.claude/worktrees/agent-aa531fd1fcc70396d` | done (Phase 3, merged) |
+| stream-H.md *(in its worktree)* | `stream-H-golden-strings` | `.claude/worktrees/agent-aa60af3443834b482` | done (Phase 3, merged) |
+| stream-I.md *(in its worktree)* | `stream-I-ignore-triage` | `.claude/worktrees/agent-a2aeef755c12c5519` | done (Phase 3, merged) |
+| bugfix-J/K/L.md | `bugfix-J-count-filter`, `bugfix-K-cypher-rels`, `bugfix-L-stats-tests` | worktrees agent-aab2…, agent-a8ae…, agent-ae8d… | done (merged, #164/#165) |
+| phase4-M.md, phase4-N.md | `phase4-M-extension-api`, `phase4-N-graphql` | worktrees agent-a6875e345ca28e9c6, agent-ac582b184814bd670 | done (merged, #167) |
+| phase5-census.md *(in its worktree)* | `phase5-census` | `.claude/worktrees/agent-aa60a66d7ebf83086` | **Phase 5.0, active at pause** |
+| phase5-P.md *(in its worktree)* | `phase5-P-bridge` | `.claude/worktrees/agent-a14055631ebbe64db` | **Phase 5.1, active at pause** |
 
 ## Every file has the same sections
 1. **Goal**: what "done" means for this agent.

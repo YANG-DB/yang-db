@@ -27,6 +27,47 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
+## ▶ RESUME HERE (checkpoint 2026-11-22, session paused)
+**Where things stand**
+- `main` = `a24dd19fd`. Everything through Phase 4 and CI (#168) is merged.
+  - Merged PRs: #160 Phase 1, #161 playground, #162 Phase 2, #163 Phase 3, #164/#165 bug fixes, #167 Phase 4 (+ planning),
+    #168 CI. #166 was closed as covered.
+- Full build: **1,189 tests, 0 failures**. Docker e2e: **34/34** (tutorial, R1–R8, GraphQL GQ1–GQ3, cursors, playground).
+- **CI** (`.github/workflows/ci.yml`) runs Build & test and Docker e2e on every PR (~2.5 min). **CodeQL** runs on main
+  pushes and weekly only (~6 min, Java only, no build).
+- **Phase 5 (OpenSearch 2.19.7) in progress** on branch `phase5-opensearch-2.19` (= main + roadmap/handoff commit).
+  Plan: [OPENSEARCH_UPGRADE.md](../OPENSEARCH_UPGRADE.md). Conclusions: [OPENSEARCH_MIGRATION.md](../OPENSEARCH_MIGRATION.md).
+
+**Agents running at the pause** (both based on the pre-#168 main `09b1c8699`; their commits cherry-pick cleanly. The
+only possible overlap is the root pom module list.)
+| Agent | Step | Worktree | State at pause |
+|---|---|---|---|
+| `phase5-census` | 5.0 census | `.claude/worktrees/agent-aa60a66d7ebf83086` | versions bumped (Lucene → 9.12.3; `transport` client → `transport-netty4-client` as a temporary fix); first online compile pending. Deliverable: `docs/revival/os2-census.md` (the only file it commits; the rest is throwaway) |
+| `phase5-P-bridge` | 5.1 bridge | `.claude/worktrees/agent-a14055631ebbe64db` | survey done, writing module `fuse-opensearch-client` (`RestBridgeClient`, `ClientFactory`); nothing committed |
+
+**How to resume**
+1. Same Claude session: `SendMessage` to `phase5-census` and `phase5-P-bridge`, saying "resume; update your handoff file
+   first". Each has a handoff file in its worktree (`docs/revival/agents/phase5-census.md` / `phase5-P.md`).
+2. New session: read [COORDINATOR.md](COORDINATOR.md). For each worktree above, check `git -C <wt> status` and
+   `git -C <wt> log`, then spawn a fresh agent IN THAT WORKTREE, briefed from ROADMAP Phase 5 + OPENSEARCH_UPGRADE.md +
+   its handoff file. Census: if its uncommitted bump is lost, redo it; it's cheap.
+3. When the census lands, split 5.2 (package relocations, Q1/Q2), 5.3 (mapping types, R), 5.4 (dependencies, S) and
+   5.5 (test harness, T) per its recommendation. Lanes and ports are in OPENSEARCH_UPGRADE.md. Merge in the order
+   5.4 → 5.2 → 5.3 → 5.1 → 5.5.
+4. Every merge to the branch: full `mvn clean test` (Docker stopped); then image + e2e (COORDINATOR §7, or
+   `scratchpad/pipeline.sh`. If the scratchpad is gone, the steps are in COORDINATOR §7). The PR then gets checked by CI.
+
+**Open items for the maintainer** (asked, not done)
+- Create the branch **ruleset** for `main`: require a PR (0 approvals), require the `Build & test` and `Docker e2e`
+  checks, block force pushes and deletions (steps were given in chat). Offered to do it via `gh api` with explicit OK.
+- Uninstall stale GitHub Apps: LGTM.com, Redocly (the always-red `yangDb/v0.51` check), CodeLingo, Mend Bolt,
+  SpectralOps; Jules if unused.
+- Optional: triage CodeQL's 7 security findings (2 int/long loop conditions, an SVG temp-file permission; dismiss the 3
+  hashing and 1 vendored-JS findings).
+
+**Machine notes:** Docker VM on `/Volumes/DockerVM` (attach the sparsebundle before colima). Always set JAVA_HOME inside
+scripts; `._*` cleanup before git and Maven; never force-push; never push to main directly (PRs only).
+
 ## Status (2026-11-20, end of session 1)
 - All five streams are done. A, C, D and E are fully merged. **B round 4 (3 commits) is NOT merged yet.**
 - Docker was migrated to the external drive (done and verified). The stack runs, and the data survived. The
