@@ -80,9 +80,14 @@
         <fuse.version>${project.version}</fuse.version>
         <!-- json ld-->
         <json.ld>0.13.4</json.ld>
-        <!-- jackson -->
-        <jackson.version>2.13.4.2</jackson.version>
-        <jackson.core.version>2.13.4</jackson.core.version>
+        <!-- jackson: one version for every Jackson artifact (jackson-bom), the one OpenSearch 2.19.7 declares.
+             opensearch-x-content needs Jackson >= 2.15 (StreamReadConstraints); an older jackson-core fails every
+             XContent parse at runtime. -->
+        <jackson.version>2.18.9</jackson.version>
+        <!-- netty: one version for every netty artifact (netty-bom, which also manages netty-tcnative 2.0.84), the one
+             transport-netty4-client 2.19.7 declares. Jooby 1.x (jooby-netty, built on 4.1.43) links on it. Never let two
+             netty versions meet on one classpath: that broke every HTTP request once (A1). -->
+        <netty.version>4.1.139.Final</netty.version>
         <resilience4jVersion>1.6.1</resilience4jVersion>
 
         <!-- com.github.cnsvili.snowflake.version -->
@@ -168,7 +173,17 @@
         <!-- logging -->
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
-        <log4j.version>2.17.1</log4j.version>
+        <!-- the version OpenSearch 2.19.7 declares; every log4j artifact through log4j-bom -->
+        <log4j.version>2.25.5</log4j.version>
+        <!-- the version the OpenSearch 2.19.7 rest client declares -->
+        <commons-codec.version>1.18.0</commons-codec.version>
+        <!-- the version opensearch-x-content 2.19.7 declares (jackson-dataformat-yaml 2.18 needs snakeyaml 2.x);
+             tinkerpop 3.2.5 and jooby-apitool would otherwise bring 1.15 / 1.19 -->
+        <snakeyaml.version>2.1</snakeyaml.version>
+        <!-- Apache HTTP components: the versions the OpenSearch 2.19.7 rest client declares (rdf4j brings httpcore 4.4.14) -->
+        <httpclient.version>4.5.14</httpclient.version>
+        <httpcore.version>4.4.16</httpcore.version>
+        <httpasyncclient.version>4.1.5</httpasyncclient.version>
         <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
         <!-- metrics -->
@@ -448,28 +463,68 @@
                 <version>${graphql.java.version}</version>
             </dependency>
 
-            <!-- jackson -->
+            <!-- jackson: core, databind, annotations, every dataformat (csv, cbor, smile, yaml) and the jooby
+                 modules (jdk8, jsr310, afterburner, parameter-names) -->
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
                 <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- netty: every artifact, including jooby-netty's codec-http2 / native-epoll and netty-tcnative -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- log4j: api, core, jul (OpenSearch), slf4j bridges -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.core.version}</version>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <!-- Apache HTTP components (the OpenSearch rest client) -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-csv</artifactId>
-                <version>${jackson.core.version}</version>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
             </dependency>
-            <!-- jackson -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore-nio</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore-osgi</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpasyncclient</artifactId>
+                <version>${httpasyncclient.version}</version>
+            </dependency>
+            <!-- commons-codec: fuse-dv-stat uses it directly; it used to arrive through the 1.x transport client -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
 
             <!-- snowflake ids -->
             <dependency>
@@ -562,32 +617,7 @@
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-netty</artifactId>
                 <version>${jooby.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-transport</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-common</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-codec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-codec-http</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-resolver</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-handler</artifactId>
-                    </exclusion>
-                </exclusions>
+                <!-- its netty dependencies (4.1.43) resolve to ${netty.version} through netty-bom -->
             </dependency>
             <dependency>
                 <groupId>org.jooby</groupId>
@@ -775,16 +805,7 @@
                 <artifactId>logback-elasticsearch-appender</artifactId>
                 <version>${logback-elasticsearch-appender.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
+            <!-- log4j: log4j-bom, above -->
             <!-- logging -->
 
             <!-- metrics -->

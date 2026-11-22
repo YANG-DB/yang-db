@@ -73,7 +73,9 @@ public enum CountConstraintOp {
     @JsonProperty("le")
     le,
 
-    @JsonProperty("within")
+    // was @JsonProperty("within"), the same name as `within`: Jackson >= 2.15 rejects duplicate enum names, and with
+    // Jackson 2.13 "within" always read back as `within` anyway, so `between` could not round-trip
+    @JsonProperty("between")
     between,
 
     @JsonProperty("within")
