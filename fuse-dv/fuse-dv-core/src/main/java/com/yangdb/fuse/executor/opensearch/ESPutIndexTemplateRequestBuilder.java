@@ -21,7 +21,7 @@ package com.yangdb.fuse.executor.opensearch;
  * #L%
  */
 
-import org.opensearch.action.ActionFuture;
+import org.opensearch.common.action.ActionFuture;
 import org.opensearch.action.admin.indices.template.put.PutIndexTemplateAction;
 import org.opensearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.opensearch.action.admin.indices.template.put.PutIndexTemplateRequestBuilder;

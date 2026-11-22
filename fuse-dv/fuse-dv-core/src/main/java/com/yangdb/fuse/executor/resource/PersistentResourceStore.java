@@ -46,7 +46,7 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.support.ActiveShardCount;
 import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
-import org.opensearch.rest.RestStatus;
+import org.opensearch.core.rest.RestStatus;
 
 import java.io.IOException;
 import java.util.*;

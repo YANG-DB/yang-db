@@ -33,7 +33,7 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.ActiveShardCount;
 import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
-import org.opensearch.rest.RestStatus;
+import org.opensearch.core.rest.RestStatus;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

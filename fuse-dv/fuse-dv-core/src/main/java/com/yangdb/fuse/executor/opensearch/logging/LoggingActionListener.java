@@ -22,7 +22,7 @@ package com.yangdb.fuse.executor.opensearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.opensearch.action.ActionListener;
+import org.opensearch.core.action.ActionListener;
 
 import java.io.Closeable;
 import java.io.IOException;
