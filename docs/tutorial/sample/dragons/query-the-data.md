@@ -234,6 +234,34 @@ for every pair of dragons (2,964 pairs in the tutorial data) - if a dragon fired
 Match (d1:Dragon)-[f:Fire]->(d2:Dragon)  return d1, distinct(f), d2
 ```
 
+### The same questions in GraphQL
+GraphQL is provided by the GraphQL extension (`extensions/graphql`, shipped in the distribution). Every ontology can
+be queried with it, including ones registered from JSON such as Dragons: the root query has one field per entity
+type, named like the type with a lower-case first letter (`dragon`, `person`, `horse`, `kingdom`, `guild`), and each
+type has a field per property plus a list field per relationship it starts (`Fire`, `Own`, `Know`, ...).
+
+```
+GET /fuse/query/graphQL/run?ontology=Dragons&graphQL={ dragon { name color } }
+```
+
+#### GraphQL:1 - all dragons, with their name and color
+```
+{ dragon { name color } }
+```
+
+#### GraphQL:2 - black dragons (a `where` argument)
+```
+{ dragon(where: {operator: AND, constraints: [{operand: "color", operator: "eq", expression: "BLACK"}]}) { name color } }
+```
+`operator` combines the constraints (`AND` / `OR`); each constraint's `operator` is a YANG-DB constraint operator
+(`eq`, `ne`, `gt`, `like`, `inSet`, ...).
+
+#### GraphQL:3 - people and the dragons they own
+```
+{ person { name Own { name } } }
+```
+When a relationship leads to several types (`Own` leads to dragons and horses), its field has the first one's type.
+
 > Every query on this page is checked against the tutorial data by the end-to-end suite
 > ([docker/e2e](../../../../docker/e2e/README.md)), and the counts above come from it.
 

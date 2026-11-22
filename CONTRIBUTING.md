@@ -60,9 +60,9 @@ language is then available through the generic routes:
   the request body)
 
 The name is matched exactly first, then ignoring case. An unknown name gets a 404 that lists the available languages.
-The built-in languages are registered the same way under `cypher`, `sparkQL` and `graphQL`
-(`CreateQueryRequestMetadata.TYPE_*`); their original URLs (`/fuse/query/cypher/run` etc.) still work. Registering a
-name twice fails at startup.
+The built-in languages are registered the same way under `cypher` and `sparkQL` (`CreateQueryRequestMetadata.TYPE_*`);
+their original URLs (`/fuse/query/cypher/run` etc.) still work. `graphQL` is an extension (`extensions/graphql`) and
+registers the same way. Registering a name twice fails at startup.
 
 ### Adding routes
 
@@ -104,7 +104,10 @@ public class HelloExtension implements YangDbExtension {
 
 with `META-INF/services/com.yangdb.fuse.extension.YangDbExtension` containing `com.example.hello.HelloExtension`.
 This is the hello-world extension of `fuse-service`'s tests (`HelloWorldExtension`, checked by `YangDbExtensionsTest`).
-For a real one, see the Dragons example: `examples/dragons/ext`, class `com.yangdb.dragons.DragonsExtension`.
+For real ones, see the Dragons example (`examples/dragons/ext`, class `com.yangdb.dragons.DragonsExtension`: routes
+only) and GraphQL (`extensions/graphql`, class `com.yangdb.fuse.graphql.GraphQLExtension`: a query language, a
+cursor, routes and controllers). Extensions under `extensions/` are part of the default build and ship in the
+distribution's `lib/`.
 
 ## Code of Conduct
 

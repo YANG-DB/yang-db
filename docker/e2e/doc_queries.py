@@ -22,15 +22,17 @@ SPEC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "exa
                     "resources", "dragons", "playground", "openapi.json")
 
 
-def spec_queries(spec_path=SPEC):
-    """[(doc, id, cypher, known issues)] from the cypher parameter's examples, in spec order."""
+def spec_queries(spec_path=SPEC, path="/query/cypher/run", param="cypher"):
+    """[(doc, id, query, known issues)] from a run operation's query parameter examples, in spec order."""
     spec = json.load(open(spec_path))
-    params = spec["paths"]["/query/cypher/run"]["get"]["parameters"]
-    examples = next(p for p in params if p["name"] == "cypher")["examples"]
+    params = spec["paths"][path]["get"]["parameters"]
+    examples = next(p for p in params if p["name"] == param)["examples"]
     return [(e["x-doc"], qid, e["value"], e.get("x-known", [])) for qid, e in examples.items()]
 
 
 QUERIES = spec_queries()
+# GraphQL (the GraphQL extension): GET /query/graphQL/run?graphQL=...
+GRAPHQL_QUERIES = spec_queries(path="/query/graphQL/run", param="graphQL")
 
 
 def scan(os_url, index):
@@ -139,14 +141,21 @@ def expectations(os_url):
                 for p2 in owner_of[d2]:
                     qg_p |= {p1, p2}; qg_d |= {d1, d2}
     exp["QG"] = {"ents": {"Person": len(qg_p), "Dragon": len(qg_d)}}
+    # GraphQL examples
+    exp["GQ1"] = {"ents": {"Dragon": len(ent["Dragon"])}, "rels": 0}
+    exp["GQ2"] = {"ents": {"Dragon": sum(1 for d in ent["Dragon"].values() if d.get("color") == "BLACK")}, "rels": 0}
+    owners = {p for p, ds in own_pd.items() if ds}
+    exp["GQ3"] = {"ents": {"Person": len(owners), "Dragon": len(set().union(*own_pd.values()))},
+                  "rels": sum(len(ds) for ds in own_pd.values())}
     return exp
 
 
-def run(fuse, cypher, cursor=None):
-    params = {"cypher": cypher, "ontology": "Dragons", "pageSize": "100000"}
+def run(fuse, query, cursor=None, language="cypher"):
+    """runs a query through GET /query/<language>/run (the query is the <language> parameter)"""
+    params = {language: query, "ontology": "Dragons", "pageSize": "100000"}
     if cursor: params["cursorType"] = cursor
     try:
-        d = http("GET", f"{fuse}/query/cypher/run?" + urllib.parse.urlencode(params))
+        d = http("GET", f"{fuse}/query/{language}/run?" + urllib.parse.urlencode(params))
     except urllib.error.HTTPError as e:
         body = e.read().decode(errors="replace")
         try:
@@ -238,6 +247,17 @@ def main(argv=None):
         shown = got.get("error") or f"ents={got['ents']} rels={got['rels']}" + (f" errors={got['errors'][:1]}" if got["errors"] else "")
         want = ", ".join(f"{k}={x}" for k, x in e.items() if k != "note")
         print(f"  {qid:4} {label} - {doc}\n       {cypher}\n       got:      {shown}\n       expected: {want} {e.get('note', '')}")
+
+    print("\nGraphQL queries (the GraphQL extension; expected = computed from stored data)")
+    for doc, qid, query, known in GRAPHQL_QUERIES:
+        if a.only and qid not in a.only: continue
+        got, e = run(a.fuse, query, language="graphQL"), exp.get(qid, {})
+        v = verdict(got, e)
+        failed += not v.startswith("PASS")
+        label = v if v.startswith("PASS") or not known else f"{v} (known: {', '.join(known)})"
+        shown = got.get("error") or f"ents={got['ents']} rels={got['rels']}" + (f" errors={got['errors'][:1]}" if got["errors"] else "")
+        want = ", ".join(f"{k}={x}" for k, x in e.items() if k != "note")
+        print(f"  {qid:4} {label} - {doc}\n       {query}\n       got:      {shown}\n       expected: {want}")
 
     # Cursor types used in projection-and-count.md / api.md
     print("\nCursor types")

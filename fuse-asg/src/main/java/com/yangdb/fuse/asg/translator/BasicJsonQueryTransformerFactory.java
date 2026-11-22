@@ -35,8 +35,8 @@ import java.util.TreeSet;
 /**
  * Looks a query language up in the language registry: the
  * {@link com.yangdb.fuse.extension.QueryLanguages} map binder, keyed by query type
- * ({@code CreateQueryRequestMetadata.TYPE_*} for the built-in cypher, sparql and graphQL languages, which their
- * {@code Asg*Module}s register). Extensions add languages the same way.
+ * ({@code CreateQueryRequestMetadata.TYPE_*} for the built-in cypher and sparql languages, which their
+ * {@code Asg*Module}s register). Extensions add languages the same way (graphQL: extensions/graphql).
  */
 public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFactory {
     public static final String NO_TRANSLATOR = "No Query translator found";

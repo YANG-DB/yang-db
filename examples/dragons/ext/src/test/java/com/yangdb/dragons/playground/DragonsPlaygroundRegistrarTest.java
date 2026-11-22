@@ -59,6 +59,21 @@ public class DragonsPlaygroundRegistrarTest {
             Assert.assertTrue(e.getKey() + " summary should start with its id", e.getValue().path("summary").asText().startsWith(e.getKey()));
         }
         Assert.assertTrue("expected every tutorial query, got " + count, count >= 17);
+
+        // the GraphQL examples (the GraphQL extension's run route), checked by the e2e suite the same way
+        JsonNode graphQL = null;
+        for (JsonNode p : spec.path("paths").path("/query/graphQL/run").path("get").path("parameters")) {
+            if ("graphQL".equals(p.path("name").asText())) graphQL = p;
+        }
+        Assert.assertNotNull(graphQL);
+        int graphQLCount = 0;
+        for (Iterator<Map.Entry<String, JsonNode>> it = graphQL.path("examples").fields(); it.hasNext(); graphQLCount++) {
+            Map.Entry<String, JsonNode> e = it.next();
+            Assert.assertTrue(e.getKey() + " is not a GraphQL query", e.getValue().path("value").asText().startsWith("{"));
+            Assert.assertTrue(e.getKey() + " has no x-doc (the e2e suite needs it)", e.getValue().has("x-doc"));
+            Assert.assertTrue(e.getKey() + " summary should start with its id", e.getValue().path("summary").asText().startsWith(e.getKey()));
+        }
+        Assert.assertTrue("expected the GraphQL examples, got " + graphQLCount, graphQLCount >= 3);
     }
 
     @Test

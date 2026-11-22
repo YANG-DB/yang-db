@@ -151,6 +151,8 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       (stateless schema import) and G3 (multi-document schemas). Add Dragons GraphQL queries to the e2e suite and the
       playground. Drop `graphql-java` from core if possible; the existing GraphQL unit tests move along and must
       still pass
+      *(agent N: implemented, unit/REST tests green; e2e GQ1–GQ3 pending the lead's Docker run. graphql-java left
+      core entirely.)*
 - [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
 
 ## Phase 5 — Support a current OpenSearch: 2.19.x

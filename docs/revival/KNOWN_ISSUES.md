@@ -116,19 +116,26 @@ those names. This is the "leftover templates break later index creation" trap. P
 
 ## GraphQL (found while preparing the Phase 4 baseline)
 
-### G1 — GraphQL queries fail on ontologies registered from JSON (e.g. Dragons) · open
+### G1 — GraphQL queries fail on ontologies registered from JSON (e.g. Dragons) · **fixed**
 `GET /fuse/query/graphQL/run?ontology=Dragons&graphQL={ Dragon { name } }` returns `A schema MUST have a 'query'
 operation defined`: the GraphQL schema generated from the ontology has no `Query` root type.
+Cause: every query ran against one global type registry, the last SDL schema imported (empty for JSON ontologies).
+Fixed (Phase 4, stage B): queries run against a schema generated from their ontology (`OntologyToGraphQLSdl`), with a
+root field per entity type named like the type with a lower-case first letter: `{ dragon { name color } }`. Pinned by
+`GraphQLDragonsQueryTest`, `GraphQLRoutesTest` and e2e GQ1–GQ3.
 
-### G2 — GraphQL schema import keeps state across requests · open
+### G2 — GraphQL schema import keeps state across requests · **fixed**
 A second `POST /fuse/graphql/ontology/{id}` with the same SDL fails with "tried to redefine existing 'Query' type …
 There is already a schema defined". Only a service restart clears it.
+Fixed: each import parses into a new registry and schema (`GraphQLSchemaImportTest`, `GraphQLRoutesTest`).
 
-### G3 — GraphQL schema import can't take a schema split across files · open
+### G3 — GraphQL schema import can't take a schema split across files · **fixed**
 `starWars.graphql` needs the `WhereClause` types from `whereSchema.graphql`. The endpoint takes one document; on its
 own it fails ("input type 'WhereClause' is not present"), and the two concatenated returned an empty response.
 Through REST, GraphQL is therefore not usable end to end today. Only the in-process unit tests (fuse-core
 `GraphQL*Test`, fuse-asg) exercise it successfully.
+Fixed: the where-clause types are added when a schema defines none of them, concatenated documents import as one,
+and an invalid schema answers 400 with the GraphQL errors. GraphQL now lives in the `extensions/graphql` extension.
 
 ### A4 — Dragons clause routes are broken once registered · open
 Now that Phase 4 registers them, the clause routes fail (per code reading): no `clause` language is registered,
