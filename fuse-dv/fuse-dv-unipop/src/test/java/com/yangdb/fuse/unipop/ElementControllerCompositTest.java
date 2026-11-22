@@ -21,7 +21,7 @@ import org.opensearch.action.search.SearchScrollRequestBuilder;
 import org.opensearch.action.search.SearchType;
 import org.opensearch.client.Client;
 import org.opensearch.common.document.DocumentField;
-import org.opensearch.common.text.Text;
+import org.opensearch.core.common.text.Text;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;

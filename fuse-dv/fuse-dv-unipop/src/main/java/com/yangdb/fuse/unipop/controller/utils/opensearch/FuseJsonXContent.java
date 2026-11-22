@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import org.opensearch.common.xcontent.*;
+import org.opensearch.core.xcontent.*;
 import org.opensearch.common.xcontent.json.JsonXContentGenerator;
 
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class FuseJsonXContent implements XContent {
     }
 
     @Override
-    public XContentType type() {
+    public XContentType mediaType() {
         return XContentType.JSON;
     }
 

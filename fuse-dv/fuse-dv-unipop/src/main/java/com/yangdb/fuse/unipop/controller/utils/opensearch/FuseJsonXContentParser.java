@@ -27,6 +27,7 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
 import org.opensearch.common.CheckedFunction;
 import org.opensearch.common.xcontent.*;
+import org.opensearch.core.xcontent.*;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -192,6 +193,11 @@ public class FuseJsonXContentParser extends AbstractFuseXContentParser {
     @Override
     public double doDoubleValue() throws IOException {
         return parser.getDoubleValue();
+    }
+
+    @Override
+    protected java.math.BigInteger doBigIntegerValue() throws IOException {
+        return parser.getBigIntegerValue();
     }
 
     @Override

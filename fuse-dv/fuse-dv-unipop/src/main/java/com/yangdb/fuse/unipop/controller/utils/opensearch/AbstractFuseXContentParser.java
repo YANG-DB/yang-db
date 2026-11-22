@@ -22,8 +22,8 @@ package com.yangdb.fuse.unipop.controller.utils.opensearch;
 
 import org.opensearch.OpenSearchParseException;
 import org.opensearch.common.Booleans;
-import org.opensearch.common.xcontent.NamedXContentRegistry;
-import org.opensearch.common.xcontent.XContentParser;
+import org.opensearch.core.xcontent.NamedXContentRegistry;
+import org.opensearch.core.xcontent.XContentParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -198,6 +198,23 @@ public abstract class AbstractFuseXContentParser implements XContentParser {
     }
 
     protected abstract double doDoubleValue() throws IOException;
+
+    @Override
+    public java.math.BigInteger bigIntegerValue() throws IOException {
+        return bigIntegerValue(DEFAULT_NUMBER_COERCE_POLICY);
+    }
+
+    @Override
+    public java.math.BigInteger bigIntegerValue(boolean coerce) throws IOException {
+        Token token = currentToken();
+        if (token == Token.VALUE_STRING) {
+            checkCoerceString(coerce, java.math.BigInteger.class);
+            return new java.math.BigInteger(text());
+        }
+        return doBigIntegerValue();
+    }
+
+    protected abstract java.math.BigInteger doBigIntegerValue() throws IOException;
 
     @Override
     public final String textOrNull() throws IOException {
