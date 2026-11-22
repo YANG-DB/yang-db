@@ -99,8 +99,8 @@
             <artifactId>jansi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opensearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <groupId>org.opensearch.plugin</groupId>
+            <artifactId>transport-netty4-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opensearch</groupId>

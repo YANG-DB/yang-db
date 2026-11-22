@@ -125,12 +125,12 @@
         <caffeine.version>2.6.2</caffeine.version>
 
         <!-- opensearch -->
-        <opensearch.version>1.3.0</opensearch.version>
-        <opensearch.client.version>1.3.0</opensearch.client.version>
+        <opensearch.version>2.19.7</opensearch.version>
+        <opensearch.client.version>2.19.7</opensearch.client.version>
         <elasticsearch.client.version>6.5.4</elasticsearch.client.version>
 
         <!-- lucene -->
-        <lucene.version>8.10.1</lucene.version>
+        <lucene.version>9.12.3</lucene.version>
 
         <!-- vividsolutions -->
         <vividsolutions.version>1.13</vividsolutions.version>
@@ -642,8 +642,8 @@
                 <version>${opensearch.client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.opensearch.client</groupId>
-                <artifactId>transport</artifactId>
+                <groupId>org.opensearch.plugin</groupId>
+                <artifactId>transport-netty4-client</artifactId>
                 <version>${opensearch.client.version}</version>
             </dependency>
             <!-- lucene -->
