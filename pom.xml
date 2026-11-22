@@ -199,6 +199,11 @@
             <!-- fuse -->
             <dependency>
                 <groupId>com.yangdb</groupId>
+                <artifactId>fuse-opensearch-client</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
                 <artifactId>fuse-model</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
@@ -1365,6 +1370,7 @@
             </activation>
             <modules>
                 <module>unipop-core</module>
+                <module>fuse-opensearch-client</module>
                 <module>fuse-model</module>
                 <module>fuse-extension-api</module>
                 <module>fuse-test</module>
