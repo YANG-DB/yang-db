@@ -24,7 +24,7 @@ import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 
 import org.opensearch.client.transport.TransportClient;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
+import org.opensearch.core.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
 import org.opensearch.painless.PainlessPlugin;
