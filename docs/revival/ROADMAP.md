@@ -159,11 +159,11 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
 Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
 Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
-- [ ] 5.0 (running: agent `phase5-census`) Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
+- [x] 5.0 (done: `os2-census.md`, 207 errors; new blocker: ANTLR 4.13.1 for Painless vs 4.7.2 for graphql-java) Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
 - [ ] 5.1 (running: agent `phase5-P-bridge`) Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
-- [ ] 5.2 Package relocations, two module groups (agents Q1, Q2)
-- [ ] 5.3 Mapping-type removal: templates, loaders, search and term vectors (agent R)
-- [ ] 5.4 Dependency alignment: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
+- [ ] 5.2 (running: agent Q, one stream per the census) Package relocations + the Client wrapper classes
+- [ ] 5.3 (running: agent R) Mapping-type removal: templates, loaders, search and term vectors (agent R)
+- [ ] 5.4 (running: agent S; critical path) Dependency alignment, including upgrading graphql-java for ANTLR 4.13: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
 - [ ] 5.5 Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
 - [ ] 5.6 Integration: full build green, test count ≥ 1,157 (lead)
 - [ ] 5.7 Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)

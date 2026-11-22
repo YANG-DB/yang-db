@@ -27,7 +27,21 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (checkpoint 2026-11-22, session paused)
+## ▶ RESUME HERE (updated 2026-11-22, after the census)
+**Latest:** census done (`docs/revival/os2-census.md`). Baseline bump pushed: `76a4bd12e` on `phase5-opensearch-2.19`
+(2.19.7, Lucene 9.12.3, transport artifact swapped, docker OS_VERSION 2.19.7; does NOT compile until the streams land).
+Running agents, all from `76a4bd12e` except P (pre-#168 base):
+| Agent | Step | Worktree |
+|---|---|---|
+| `phase5-P-bridge` | 5.1 REST bridge | `.claude/worktrees/agent-a14055631ebbe64db` |
+| `phase5-S-deps` | 5.4 netty 4.1.139, Jackson ≥2.15, log4j, **ANTLR 4.13.1 + graphql-java upgrade** (blocker), commons-codec | `.claude/worktrees/agent-a7ca49b8b525cbecc` |
+| `phase5-Q-relocations` | 5.2 relocations + the 3 Client wrapper classes (PIT methods) | `.claude/worktrees/agent-abc737161747a09a9` |
+| `phase5-R-mapping-types` | 5.3 untyped templates, loaders, search, system-index kind field | `.claude/worktrees/agent-a8801cce507a1a01b` |
+Merge order: S → Q → R → P, then spawn **T** (5.5 test harness, runtime) on the merged result. All use the census's
+TransportClient stubs locally only (never committed). Expect import-line collisions between Q and R: resolve with Q's
+imports and R's logic.
+
+### Earlier checkpoint (2026-11-22, session paused)
 **Where things stand**
 - `main` = `a24dd19fd`. Everything through Phase 4 and CI (#168) is merged.
   - Merged PRs: #160 Phase 1, #161 playground, #162 Phase 2, #163 Phase 3, #164/#165 bug fixes, #167 Phase 4 (+ planning),
