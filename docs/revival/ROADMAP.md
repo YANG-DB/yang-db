@@ -139,7 +139,7 @@ Parallel streams, one agent and worktree each:
 - [x] **I** triage report: [IGNORED_TESTS.md](IGNORED_TESTS.md). Of 86: 21 obsolete, 8 fixable, 52 keep-disabled, 5 unknown; 4 product bugs filed (Q9–Q11, P2). Actions await the maintainer
 - Later (maintainer call): migrate the older lowercase Dragons test ontology (fuse-asg; deferred from Phase 2)
 
-## Phase 4 — A real extension point (in review: branch `phase4-extension-api`)
+## Phase 4 — A real extension point ✅ done 2026-11-22 (PR #167, merged)
 Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** folder (default build, bundled in the distribution).
 - [x] **A** (done: `fuse-extension-api`, ServiceLoader discovery, MapBinder languages, generic routes, A3 fixed) `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
       registrars); languages in a `MapBinder<String, QueryTransformer>` instead of the hard-coded switch; generic
@@ -155,12 +155,12 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       core entirely.)*
 - [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
 
-## Phase 5 — Support a current OpenSearch: 2.19.x
+## Phase 5 — Support a current OpenSearch: 2.19.x (in progress: branch `phase5-opensearch-2.19`)
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
 Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
 Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
-- [ ] 5.0 Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
-- [ ] 5.1 Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
+- [ ] 5.0 (running: agent `phase5-census`) Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
+- [ ] 5.1 (running: agent `phase5-P-bridge`) Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
 - [ ] 5.2 Package relocations, two module groups (agents Q1, Q2)
 - [ ] 5.3 Mapping-type removal: templates, loaders, search and term vectors (agent R)
 - [ ] 5.4 Dependency alignment: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)

@@ -67,7 +67,10 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
    dragons-sys-test retired). Verify (full build + image + e2e), push the branch, mark `e2e/docker` on the branch
    commit, open the PR for the maintainer to review. Don't merge it yourself.
 2. ~~**Dragons playground at `/dragons/swagger`**~~: merged as #161 (`ddcd553bf`, 2026-11-20), with the tutorial main page.
-4. **Phase 4 status (2026-11-21):** stage A merged and pushed to `origin/phase4-extension-api`, verified live (1,171
+5. **Phase 5 (2026-11-22)**, branch `phase5-opensearch-2.19` (created from main before #168, the CI workflow; rebase
+   onto main once #168 merges). Running: `phase5-census` (5.0, report `docs/revival/os2-census.md`) and `phase5-P-bridge`
+   (5.1). Next: when the census lands, split 5.2–5.5 per its recommendation (OPENSEARCH_UPGRADE.md lanes and ports).
+4. ~~Phase 4~~: merged as #167. **Phase 4 status (2026-11-21):** stage A merged and pushed to `origin/phase4-extension-api`, verified live (1,171
    tests, e2e 31/31, generic routes OK). Stage B (agent `phase4-N-graphql`, worktree
    `.claude/worktrees/agent-ac582b184814bd670`) **stopped on the usage limit** mid-refactor: 51 modified + 5 new files,
    no commits, `extensions/graphql` created. **Next:** after the reset, `SendMessage` to `phase4-N-graphql` to continue.
