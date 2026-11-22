@@ -49,6 +49,11 @@
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
         </dependency>
+        <!-- the runtime graphql-java's parser needs (version pinned in the root pom: lang-painless brings an older one) -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby</artifactId>

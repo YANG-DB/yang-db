@@ -115,7 +115,8 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(resourceInfo.get());
         } catch (Throwable e) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType
+                            + ": " + e)));
         } finally {
             //remove stateless query
 //            delete(id);
@@ -144,7 +145,8 @@ public abstract class QueryDriverBase implements QueryDriver {
             return Optional.of(resourceInfo.get());
         } catch (Throwable e) {
             return Optional.of(new QueryResourceInfo().error(
-                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType)));
+                    new FuseError(Query.class.getSimpleName(), "failed building the cursor request " + cursorType
+                            + ": " + e)));
 
         } finally {
             //remove stateless query

@@ -425,6 +425,17 @@
                 <version>${openCypher.spark.version}</version>
             </dependency>
 
+            <!--
+              ANTLR 4 runtime: graphql-java's parser is generated with 4.7.2 (CharStreams etc.); lang-painless (via
+              fuse-service) brings 4.5.3. graphql-java used to sit in fuse-model/fuse-asg, which made 4.7.2 win
+              everywhere; with GraphQL in an extension, 4.5.3 won in the distribution and every GraphQL query failed
+              with NoClassDefFoundError. Pinned to keep the version every module had before.
+            -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.7.2</version>
+            </dependency>
             <!-- graphql -->
             <dependency>
                 <groupId>com.graphql-java</groupId>
