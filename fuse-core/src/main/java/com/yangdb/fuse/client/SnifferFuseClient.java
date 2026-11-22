@@ -33,6 +33,7 @@ import com.yangdb.fuse.model.resourceInfo.*;
 import com.yangdb.fuse.model.results.QueryResultBase;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
 import com.yangdb.fuse.model.transport.PlanTraceOptions;
+import com.yangdb.fuse.dispatcher.resource.store.SystemResourceKind;
 import com.yangdb.fuse.model.transport.cursor.CreateCursorRequest;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
@@ -115,10 +116,10 @@ public class SnifferFuseClient implements FuseClient{
     }
 
     private void loadClusterState() {
-        QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+        //node status documents (formerly the mapping type "resource"; OpenSearch 2.x has no types)
+        QueryBuilder queryBuilder = SystemResourceKind.filter(SystemResourceKind.NODE);
         final SearchResponse response = client.prepareSearch()
                 .setIndices(SYSTEM)
-                .setTypes(RESOURCE)
                 .setQuery(queryBuilder)
                 .execute().actionGet();
 

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.DashboardDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.resource.store.SystemResourceKind;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.resource.PersistantNodeStatusResource;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -230,7 +231,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         ObjectNode node = objectMapper.createObjectNode();
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices(PersistantNodeStatusResource.SYSTEM);
-        builder.setQuery(matchAllQuery());
+        builder.setQuery(SystemResourceKind.filter(SystemResourceKind.NODE));
         builder.setSize(0);
         SearchResponse response = builder.get();
         return node.put("count", response.getHits().getTotalHits().value);
