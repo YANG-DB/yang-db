@@ -40,7 +40,6 @@ import org.opensearch.client.Client;
 import org.opensearch.client.Requests;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MappingMetadata;
-import org.opensearch.common.collect.ImmutableOpenMap;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.aggregations.AggregationBuilders;
 import org.opensearch.search.aggregations.bucket.filter.Filters;
@@ -421,12 +420,12 @@ public class EsUtil {
      * @param index  Index Name
      * @return
      */
-    public static ImmutableOpenMap<String, MappingMetadata> getMappingsOfIndex(
+    public static Map<String, MappingMetadata> getMappingsOfIndex(
             Client client, String index) {
         ClusterStateResponse clusterStateResponse = client.admin().cluster()
                 .prepareState().execute().actionGet();
-        return clusterStateResponse.getState().getMetadata().index(index)
-                .getMappings();
+        MappingMetadata mapping = clusterStateResponse.getState().getMetadata().index(index).mapping();
+        return mapping == null ? Collections.emptyMap() : Collections.singletonMap(mapping.type(), mapping);
     }
 
     /**
@@ -438,7 +437,7 @@ public class EsUtil {
      */
     public static String[] getAllTypesFromIndex(
             Client client, String index) {
-        return getMappingsOfIndex(client, index).keys().toArray(String.class);
+        return getMappingsOfIndex(client, index).keySet().toArray(new String[0]);
     }
 
     /**
