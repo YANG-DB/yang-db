@@ -17,6 +17,13 @@ Code done. Next: confirm the second full build (full2.log) is green, commit e2e/
 run e2e (doc_queries.py) for GQ1-GQ3: expectations GQ1 = all Dragon docs, GQ2 = Dragon docs with color BLACK,
 GQ3 = Own Person->Dragon edges (rels) + owners + owned dragons.
 
+## Round 2 (lead's e2e: GQ1-GQ3 "failed building the cursor request forwardPaths")
+Root cause: antlr4-runtime 4.5.3 (lang-painless via fuse-service) won mediation in the distribution once
+graphql-java left fuse-model/fuse-asg; graphql-java needs 4.7.2 -> NoClassDefFoundError CharStreams, an Error that
+QueryDriverBase.run swallowed into that message. Fixed in ead811cf7 (pin 4.7.2 in root depMgmt, explicit dep in the
+extension, cause appended to the error, distribution tests on the shipped classpath: DistributionGraphQLTest).
+Next: full core,examples,dragons-assembly run (full3.log) green -> report; lead rebuilds image and reruns e2e.
+
 ## Discoveries
 - ServiceModule's bindSparqlController / bindSqlController bind their inner SchemaTranslatorController to
   StandardGraphQLController (copy-paste); the routes use getController(StandardSqlController.class) directly, so the

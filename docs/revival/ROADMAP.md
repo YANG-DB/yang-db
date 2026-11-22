@@ -139,14 +139,14 @@ Parallel streams, one agent and worktree each:
 - [x] **I** triage report: [IGNORED_TESTS.md](IGNORED_TESTS.md). Of 86: 21 obsolete, 8 fixable, 52 keep-disabled, 5 unknown; 4 product bugs filed (Q9–Q11, P2). Actions await the maintainer
 - Later (maintainer call): migrate the older lowercase Dragons test ontology (fuse-asg; deferred from Phase 2)
 
-## Phase 4 — A real extension point (in progress: branch `phase4-extension-api`)
+## Phase 4 — A real extension point (in review: branch `phase4-extension-api`)
 Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** folder (default build, bundled in the distribution).
 - [x] **A** (done: `fuse-extension-api`, ServiceLoader discovery, MapBinder languages, generic routes, A3 fixed) `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
       registrars); languages in a `MapBinder<String, QueryTransformer>` instead of the hard-coded switch; generic
       `/fuse/query/{lang}` routes with today's URLs unchanged; fixes A3 (Dragons routes); a hello-world test extension
 - [x] **Baseline**: GraphQL turned out not to work end to end through REST (G1–G3 in KNOWN_ISSUES); only its
       in-process unit tests pass. The maintainer chose to extract it **and make it work**.
-- [ ] **B** move GraphQL (query translator, schema translation + routes, GraphQL cursor) to `extensions/graphql`,
+- [x] **B** (done: `extensions/graphql` ships in the distribution; graphql-java out of core; G1–G3 fixed; GraphQL e2e GQ1–GQ3 pass live) move GraphQL (query translator, schema translation + routes, GraphQL cursor) to `extensions/graphql`,
       plugged in through the SPI. Fix G1 (a `Query` root generated for JSON-registered ontologies such as Dragons), G2
       (stateless schema import) and G3 (multi-document schemas). Add Dragons GraphQL queries to the e2e suite and the
       playground. Drop `graphql-java` from core if possible; the existing GraphQL unit tests move along and must
