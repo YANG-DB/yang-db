@@ -243,6 +243,7 @@ public class RestBridgeClientRemoteIT {
                 .setSettings(Settings.builder().put("index.number_of_shards", 1).put("index.number_of_replicas", 0))
                 .get().isAcknowledged());
         assertTrue(client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists());
+        assertEquals("1", client.admin().indices().prepareGetSettings(index).get().getSetting(index, "index.number_of_shards"));
 
         ClusterStateResponse state = client.admin().cluster().prepareState().get();
         IndexMetadata personMetadata = state.getState().getMetadata().index(INDEX);

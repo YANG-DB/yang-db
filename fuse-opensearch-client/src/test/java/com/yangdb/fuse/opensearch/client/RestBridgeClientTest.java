@@ -28,6 +28,9 @@ import org.opensearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshAction;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshResponse;
+import org.opensearch.action.admin.indices.settings.get.GetSettingsAction;
+import org.opensearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.opensearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.opensearch.action.admin.indices.template.delete.DeleteIndexTemplateAction;
 import org.opensearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.opensearch.action.admin.indices.template.get.GetIndexTemplatesAction;
@@ -274,6 +277,12 @@ public class RestBridgeClientTest {
     }
 
     @Test
+    public void getSettings() {
+        GetSettingsRequest request = client.admin().indices().prepareGetSettings("idx").request();
+        assertForwarded(GetSettingsAction.INSTANCE, request, GetSettingsResponse.class, "getSettingsAsync");
+    }
+
+    @Test
     public void putMapping() {
         PutMappingRequest request = client.admin().indices().preparePutMapping("idx").setType("pge")
                 .setSource("{\"properties\":{\"name\":{\"type\":\"keyword\"}}}", XContentType.JSON).request();
@@ -376,6 +385,7 @@ public class RestBridgeClientTest {
                 GetAction.INSTANCE, MultiGetAction.INSTANCE, ExplainAction.INSTANCE, FieldCapabilitiesAction.INSTANCE,
                 IndexAction.INSTANCE, BulkAction.INSTANCE, DeleteAction.INSTANCE, UpdateAction.INSTANCE,
                 CreateIndexAction.INSTANCE, DeleteIndexAction.INSTANCE, IndicesExistsAction.INSTANCE, RefreshAction.INSTANCE,
+                GetSettingsAction.INSTANCE,
                 PutMappingAction.INSTANCE, GetMappingsAction.INSTANCE,
                 PutIndexTemplateAction.INSTANCE, GetIndexTemplatesAction.INSTANCE, DeleteIndexTemplateAction.INSTANCE,
                 ClusterStateAction.INSTANCE)), RestBridgeClient.supportedActions());

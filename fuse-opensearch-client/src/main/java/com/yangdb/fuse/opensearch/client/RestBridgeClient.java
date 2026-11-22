@@ -43,6 +43,8 @@ import org.opensearch.action.admin.indices.mapping.put.PutMappingAction;
 import org.opensearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.opensearch.action.admin.indices.refresh.RefreshAction;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
+import org.opensearch.action.admin.indices.settings.get.GetSettingsAction;
+import org.opensearch.action.admin.indices.settings.get.GetSettingsRequest;
 import org.opensearch.action.admin.indices.template.delete.DeleteIndexTemplateAction;
 import org.opensearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
 import org.opensearch.action.admin.indices.template.get.GetIndexTemplatesAction;
@@ -221,6 +223,7 @@ public class RestBridgeClient extends AbstractClient {
         h.put(DeleteIndexAction.INSTANCE, (c, r, l) -> c.rest.indices().deleteAsync((DeleteIndexRequest) r, c.options, l(l)));
         h.put(RefreshAction.INSTANCE, (c, r, l) -> c.rest.indices().refreshAsync((RefreshRequest) r, c.options, l(l)));
         h.put(IndicesExistsAction.INSTANCE, RestBridgeClient::indicesExists);
+        h.put(GetSettingsAction.INSTANCE, (c, r, l) -> c.rest.indices().getSettingsAsync((GetSettingsRequest) r, c.options, l(l)));
         h.put(DeleteIndexTemplateAction.INSTANCE, (c, r, l) -> c.rest.indices().deleteTemplateAsync((DeleteIndexTemplateRequest) r, c.options, l(l)));
         // admin: indices, typed (1.x) variants -- see "After the 2.x bump" in the README
         h.put(CreateIndexAction.INSTANCE, RestBridgeClient::createIndex);

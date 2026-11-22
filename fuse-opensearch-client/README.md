@@ -39,7 +39,7 @@ explicit HTTP-port key. If it's absent, the old transport-port key is mapped to 
 |---|---|
 | Reads | search → `searchAsync`, scroll → `scrollAsync`, clear-scroll → `clearScrollAsync`, multi-search → `msearchAsync`, get → `getAsync`, multi-get → `mgetAsync`, explain → `explainAsync`, field caps → `fieldCapsAsync` |
 | Writes | index → `indexAsync`, bulk → `bulkAsync`, delete → `deleteAsync`, update → `updateAsync` |
-| Indices admin | create → `indices().createAsync`, delete → `indices().deleteAsync`, exists → `indices().existsAsync` (client `GetIndexRequest`), refresh → `indices().refreshAsync`, put mapping → `putMappingAsync`, get mappings → `getMappingAsync`, put template → `putTemplateAsync`, get templates → `getTemplateAsync` (404 → empty list, as the transport action), delete template → `deleteTemplateAsync` |
+| Indices admin | create → `indices().createAsync`, delete → `indices().deleteAsync`, exists → `indices().existsAsync` (client `GetIndexRequest`), refresh → `indices().refreshAsync`, get settings → `indices().getSettingsAsync`, put mapping → `putMappingAsync`, get mappings → `getMappingAsync`, put template → `putTemplateAsync`, get templates → `getTemplateAsync` (404 → empty list, as the transport action), delete template → `deleteTemplateAsync` |
 | Cluster admin | state → low-level `GET /_cluster/state/metadata[/indices]`, rebuilt into a `ClusterState` holding the cluster name and the indices' metadata (settings, mappings, aliases). Routing, nodes, blocks and templates are not populated |
 
 `RestBridgeClient.supportedActions()` returns this set.
@@ -74,9 +74,15 @@ OpenSearch-node sniffing to carry over. If wanted later, add `org.opensearch.cli
 - `ClientFactoryTest`: port mapping and host parsing.
 - `RestBridgeClientRemoteIT`: starts an OpenSearch node on `-Dfuse.test.http.port`/`-Dfuse.test.transport.port`
   and talks to it **only** through `ClientFactory.remote(...)` over HTTP: typed create index, index/get/update/delete,
-  bulk, refresh, search, scroll, clear-scroll, multi-get, multi-search, explain, field caps, put/get mappings,
+  bulk, refresh, get settings, search, scroll, clear-scroll, multi-get, multi-search, explain, field caps, put/get mappings,
   put/get/delete templates, exists, delete index, cluster state, error types. With
   `-Dfuse.bridge.it.remote=host:port` it runs against an external cluster (e.g. Docker) instead.
+
+- Callers: `ClientProviderBridgeIT` (in fuse-dv-core's `TestSuiteIndexProviderSuite`) and fuse-dv-stat's
+  `ClientProviderTest` round-trip through the swapped providers.
+- Reuse path (T1): start any OpenSearch on `-Dfuse.test.http.port` before running the dv-core suite; the suite then
+  skips its embedded node and every IT goes through the bridge (verified: 34 tests, 0 failures, against a node in a
+  separate JVM).
 
 ## After the 2.x bump
 1. **Typed admin variants are removed from the 2.x RHLC.** Replace the five handlers marked in `RestBridgeClient`
