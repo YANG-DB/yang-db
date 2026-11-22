@@ -146,6 +146,18 @@ redirects to a file that doesn't exist.
 The generic route `/fuse/query/sparql/run` returns 404 because the registered key is `sparkQL`; the old `/sparql` URL
 works. Register `sparql` as the key (or an alias).
 
+### G4 — GraphQL exposes only the first target type of a multi-target relationship · open
+`Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
+
+### G5 — Behaviour change: GraphQL queries always use the schema generated from the ontology · note
+Since G1's fix, a query runs against the schema generated from its ontology. Custom root fields of an imported SDL
+(e.g. StarWars `hero`) are no longer available; the per-entity-type roots (`human`, `droid`) are. Revisit if anyone
+relies on custom roots.
+
+### Q13 — `QueryToAsgTransformer` keeps state across queries · open, check other users
+It kept every element it ever transformed, so one query's elements leaked into the next. The GraphQL translator now
+creates a fresh one per query (Phase 4); other users of the class were not checked.
+
 ## Count filter
 
 ### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
