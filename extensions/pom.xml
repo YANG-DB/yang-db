@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--
+      Optional features built on the extension SPI (fuse-extension-api): each module is a jar that the service
+      discovers through META-INF/services/com.yangdb.fuse.extension.YangDbExtension when it is on the classpath.
+      Part of the default (core) build; the distribution ships them.
+    -->
+    <parent>
+        <artifactId>fuse</artifactId>
+        <groupId>com.yangdb</groupId>
+        <version>0.80-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>fuse-extensions</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>graphql</module>
+    </modules>
+
+    <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
+</project>

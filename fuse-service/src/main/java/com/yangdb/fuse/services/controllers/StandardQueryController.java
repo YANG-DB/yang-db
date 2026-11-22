@@ -143,12 +143,13 @@ public class StandardQueryController implements QueryController<QueryController,
     }
 
     @Override
-    public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
+    public ContentResponse<Object> run(String query, String type, String ontology, int pageSize, String cursorType) {
         return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )
-                .data(driver().runGraphQL(graphQL,ontology,pageSize,cursorType))
+                .data(driver().run(query, type, ontology, pageSize, cursorType))
                 .successPredicate(objectContentResponse -> true)
                 .compose();
     }
+
     @Override
     public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
         return Builder.builder(CREATED, INTERNAL_SERVER_ERROR )

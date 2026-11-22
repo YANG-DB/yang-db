@@ -21,44 +21,52 @@ package com.yangdb.fuse.asg.translator;
  */
 
 import com.google.inject.Inject;
-import com.yangdb.fuse.asg.translator.cypher.AsgCypherTransformer;
-import com.yangdb.fuse.asg.translator.graphql.AsgGraphQLTransformer;
-import com.yangdb.fuse.asg.translator.sparql.AsgSparQLTransformer;
 import com.yangdb.fuse.dispatcher.query.JsonQueryTransformerFactory;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.QueryInfo;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+/**
+ * Looks a query language up in the language registry: the
+ * {@link com.yangdb.fuse.extension.QueryLanguages} map binder, keyed by query type
+ * ({@code CreateQueryRequestMetadata.TYPE_*} for the built-in cypher and sparql languages, which their
+ * {@code Asg*Module}s register). Extensions add languages the same way (graphQL: extensions/graphql).
+ */
 public class BasicJsonQueryTransformerFactory implements JsonQueryTransformerFactory {
+    public static final String NO_TRANSLATOR = "No Query translator found";
 
-    private AsgCypherTransformer cypherTransformer;
-    private AsgGraphQLTransformer graphQueryTransformer;
-    private AsgSparQLTransformer sparQLTransformer;
+    private final Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>> languages;
 
     @Inject
-    public BasicJsonQueryTransformerFactory(AsgCypherTransformer cypherTransformer,
-                                            AsgSparQLTransformer sparQLTransformer,
-                                            AsgGraphQLTransformer graphQueryTransformer) {
-        this.cypherTransformer = cypherTransformer;
-        this.sparQLTransformer = sparQLTransformer;
-        this.graphQueryTransformer = graphQueryTransformer;
+    public BasicJsonQueryTransformerFactory(Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>> languages) {
+        this.languages = languages;
     }
-
 
     @Override
     public QueryTransformer<QueryInfo<String>, AsgQuery> transform(String type) {
-        switch (type) {
-            case CreateQueryRequestMetadata.TYPE_SPARQL:
-                return sparQLTransformer;
-            case CreateQueryRequestMetadata.TYPE_CYPHERQL:
-                return cypherTransformer;
-            case CreateQueryRequestMetadata.TYPE_GRAPHQL:
-                return graphQueryTransformer;
+        QueryTransformer<QueryInfo<String>, AsgQuery> transformer = type == null ? null : languages.get(type);
+        if (transformer == null && type != null) {
+            // tolerate the case of a language name in a URL (/fuse/query/graphql/run)
+            transformer = languages.entrySet().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase(type))
+                    .map(Map.Entry::getValue)
+                    .findFirst().orElse(null);
         }
-        throw new FuseError.FuseErrorException(new FuseError("No Query translator found","No matching json query translator found for type "+type));
+        if (transformer == null) {
+            throw new FuseError.FuseErrorException(new FuseError(NO_TRANSLATOR,
+                    "No matching json query translator found for type " + type + "; available languages: " + languages()));
+        }
+        return transformer;
     }
 
-
+    @Override
+    public Set<String> languages() {
+        return Collections.unmodifiableSet(new TreeSet<>(languages.keySet()));
+    }
 }

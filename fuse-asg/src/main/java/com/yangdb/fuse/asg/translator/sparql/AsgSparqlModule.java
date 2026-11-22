@@ -21,6 +21,8 @@ package com.yangdb.fuse.asg.translator.sparql;
  */
 
 
+import com.yangdb.fuse.extension.QueryLanguages;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
@@ -48,6 +50,9 @@ public class AsgSparqlModule extends ModuleBase {
                 .annotatedWith(named(transformerName))
                 .to(AsgSparQLTransformer.class)
                 .asEagerSingleton();
+
+        // the query-language registry, looked up by query type (BasicJsonQueryTransformerFactory)
+        QueryLanguages.register(binder, CreateQueryRequestMetadata.TYPE_SPARQL).to(AsgSparQLTransformer.class);
 
     }
 

@@ -21,6 +21,8 @@ package com.yangdb.fuse.asg.translator.cypher;
  */
 
 
+import com.yangdb.fuse.extension.QueryLanguages;
+import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.typesafe.config.Config;
@@ -47,6 +49,9 @@ public class AsgCypherModule extends ModuleBase {
                 .annotatedWith(named(transformerName))
                 .to(AsgCypherTransformer.class)
                 .asEagerSingleton();
+
+        // the query-language registry, looked up by query type (BasicJsonQueryTransformerFactory)
+        QueryLanguages.register(binder, CreateQueryRequestMetadata.TYPE_CYPHERQL).to(AsgCypherTransformer.class);
 
     }
 

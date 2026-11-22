@@ -73,6 +73,11 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-domain-dragons-ext</artifactId>
         </dependency>
+        <!-- extensions: discovered by the service through META-INF/services -->
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-extension-graphql</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -129,6 +134,36 @@
     <build>
         <finalName>dragon</finalName>
         <plugins>
+            <!--
+              Tests on the classpath the distribution ships (lib/): a pom module has no default test bindings.
+              DistributionGraphQLTest guards dependency mediation (e.g. which ANTLR runtime wins).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>distribution-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>distribution-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>

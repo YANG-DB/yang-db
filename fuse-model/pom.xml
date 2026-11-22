@@ -54,11 +54,6 @@
             <artifactId>owlapi-apibinding</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java</artifactId>
-        </dependency>
-
         <!-- runtime -->
 
         <!-- tests -->

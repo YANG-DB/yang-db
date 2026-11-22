@@ -115,15 +115,16 @@ public interface QueryController<C,D> extends Controller<C,D> {
     ContentResponse<Object> runCypher(String cypher, String ontology, int pageSize, String cursorType);
 
     /**
-     * run a stateless graphQL query and get immediate graph results (first page only)
-     * type may be volatile or persistent
-     * @param `query
+     * run a stateless query in any registered query language and get immediate graph results (first page only)
+     *
+     * @param query the query text
+     * @param type the language: the query type it is registered under (e.g. {@code cypher})
      * @param ontology
      * @param pageSize
      * @param cursorType
      * @return
      */
-    ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
+    ContentResponse<Object> run(String query, String type, String ontology, int pageSize, String cursorType);
 
     /**
      * run a stateless sparql query and get immediate graph results (first page only)

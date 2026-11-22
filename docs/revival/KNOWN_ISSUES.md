@@ -114,6 +114,50 @@ Its index patterns include every type name (`dragon`, `horse`, `own`…), so it 
 those names. This is the "leftover templates break later index creation" trap. Pinned by
 `OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex`.
 
+## GraphQL (found while preparing the Phase 4 baseline)
+
+### G1 — GraphQL queries fail on ontologies registered from JSON (e.g. Dragons) · **fixed**
+`GET /fuse/query/graphQL/run?ontology=Dragons&graphQL={ Dragon { name } }` returns `A schema MUST have a 'query'
+operation defined`: the GraphQL schema generated from the ontology has no `Query` root type.
+Cause: every query ran against one global type registry, the last SDL schema imported (empty for JSON ontologies).
+Fixed (Phase 4, stage B): queries run against a schema generated from their ontology (`OntologyToGraphQLSdl`), with a
+root field per entity type named like the type with a lower-case first letter: `{ dragon { name color } }`. Pinned by
+`GraphQLDragonsQueryTest`, `GraphQLRoutesTest` and e2e GQ1–GQ3.
+
+### G2 — GraphQL schema import keeps state across requests · **fixed**
+A second `POST /fuse/graphql/ontology/{id}` with the same SDL fails with "tried to redefine existing 'Query' type …
+There is already a schema defined". Only a service restart clears it.
+Fixed: each import parses into a new registry and schema (`GraphQLSchemaImportTest`, `GraphQLRoutesTest`).
+
+### G3 — GraphQL schema import can't take a schema split across files · **fixed**
+`starWars.graphql` needs the `WhereClause` types from `whereSchema.graphql`. The endpoint takes one document; on its
+own it fails ("input type 'WhereClause' is not present"), and the two concatenated returned an empty response.
+Through REST, GraphQL is therefore not usable end to end today. Only the in-process unit tests (fuse-core
+`GraphQL*Test`, fuse-asg) exercise it successfully.
+Fixed: the where-clause types are added when a schema defines none of them, concatenated documents import as one,
+and an invalid schema answers 400 with the GraphQL errors. GraphQL now lives in the `extensions/graphql` extension.
+
+### A4 — Dragons clause routes are broken once registered · open
+Now that Phase 4 registers them, the clause routes fail (per code reading): no `clause` language is registered,
+`createClause` is never called and its transformer is null, and `/clause/run` sends JSON to `runCypher`. `/ext`
+redirects to a file that doesn't exist.
+
+### A5 — The SPARQL language key is `sparkQL` · open, minor
+The generic route `/fuse/query/sparql/run` returns 404 because the registered key is `sparkQL`; the old `/sparql` URL
+works. Register `sparql` as the key (or an alias).
+
+### G4 — GraphQL exposes only the first target type of a multi-target relationship · open
+`Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
+
+### G5 — Behaviour change: GraphQL queries always use the schema generated from the ontology · note
+Since G1's fix, a query runs against the schema generated from its ontology. Custom root fields of an imported SDL
+(e.g. StarWars `hero`) are no longer available; the per-entity-type roots (`human`, `droid`) are. Revisit if anyone
+relies on custom roots.
+
+### Q13 — `QueryToAsgTransformer` keeps state across queries · open, check other users
+It kept every element it ever transformed, so one query's elements leaked into the next. The GraphQL translator now
+creates a fresh one per query (Phase 4); other users of the class were not checked.
+
 ## Count filter
 
 ### C1 — Count-filter script uses the wrong operators for `=` and `>=` · **fixed**
@@ -147,11 +191,24 @@ be a union. This only affects cost estimates. Found by streams E and G; not cove
 
 ## API
 
-### A3 — Dragons extension routes are never registered · open
-`FuseApp` only discovers `AppControllerRegistrarBase` subclasses under `com.yangdb.fuse.services`. The Dragons
-extension's `DragonsExtensionRegistrar` lives in `com.yangdb.dragons.services`, so `/ext`, `/fuse/query/clause/run`,
-`/fuse/query/cypher/logical/run` and `/fuse/query/query/v1/logical/run` all return 404. The playground's registrar
-sits in `com.yangdb.fuse.services.dragons` to be found. A proper fix belongs to Phase 4 (extension discovery).
+### A3 — Dragons extension routes are never registered · **fixed** (Phase 4)
+`FuseApp` only discovered `AppControllerRegistrarBase` subclasses under `com.yangdb.fuse.services`, so the Dragons
+extension's `DragonsExtensionRegistrar` (`com.yangdb.dragons.services`) was never registered. Now the Dragons jar
+declares `com.yangdb.dragons.DragonsExtension` in `META-INF/services/com.yangdb.fuse.extension.YangDbExtension`, which
+registers it and the playground (moved to `com.yangdb.dragons.playground`). `DragonsExtensionTest` checks every route
+is in the service's route table exactly once. What those routes do once reachable is A4.
+
+### A4 — Dragons extension query routes: clause routes broken, `/ext` dead · open
+Found when A3 made them reachable (static reading, not run against the stack):
+- `POST /fuse/query/clause` passes the body's `queryType` (`clause`) to the standard create path; no `clause` language
+  is registered, so it fails with "No Query translator found". `ExtensionQueryDriver.createClause` handles `clause` but
+  nothing calls it, and its `transformer` field is never set (would NPE).
+- `POST /fuse/query/clause/run` sends `{"clause": ...}` JSON to `runCypher`, which parses it as cypher.
+- `GET /ext` redirects to `/public/assets/swagger/swagger-ext.json`, which doesn't exist.
+- `GET /fuse/query/cypher/logical/run` and `POST /fuse/query/query/v1/logical/run` reuse the core run handlers and
+  behave like `/cypher/run` and `/v1/run`.
+A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
+chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
 
 ### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends

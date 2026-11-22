@@ -309,6 +309,84 @@
         }
       }
     },
+    "/query/graphQL/run": {
+      "get": {
+        "tags": [
+          "2. Query the dragons"
+        ],
+        "summary": "Run a tutorial GraphQL query",
+        "description": "Pick a query from the **Examples** list of the `graphQL` parameter (the GraphQL extension). You can also edit it or type your own.",
+        "parameters": [
+          {
+            "name": "graphQL",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "A GraphQL query. The root fields are the entity types with a lower-case first letter (`dragon`, `person`, ...).",
+            "examples": {
+              "GQ1": {
+                "summary": "GQ1 - All dragons, with their name and color",
+                "value": "{ dragon { name color } }",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "GQ2": {
+                "summary": "GQ2 - Black dragons (a where argument)",
+                "value": "{ dragon(where: {operator: AND, constraints: [{operand: \"color\", operator: \"eq\", expression: \"BLACK\"}]}) { name color } }",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "GQ3": {
+                "summary": "GQ3 - People and the dragons they own",
+                "value": "{ person { name Own { name } } }",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              }
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "Dragons"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "paths",
+                "graph",
+                "count",
+                "csv",
+                "forwardPaths",
+                "projection"
+              ]
+            },
+            "description": "Leave empty for the default result shape. `paths` returns assignments; `count` returns label counts only; `projection` materializes the results into the `projection` index."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query resource with the first page of results"
+          }
+        }
+      }
+    },
     "/catalog/ontology/{id}": {
       "get": {
         "tags": [

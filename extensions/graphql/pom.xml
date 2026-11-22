@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fuse-extensions</artifactId>
+        <groupId>com.yangdb</groupId>
+        <version>0.80-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>fuse-extension-graphql</artifactId>
+    <name>fuse-extension-graphql</name>
+    <description>
+        GraphQL for YANG-DB as an extension: the graphQL query language, GraphQL SDL to ontology translation
+        (POST /fuse/graphql/ontology/{id}), the graphQL cursor and the /fuse/query/graphQL routes.
+    </description>
+
+    <properties>
+        <top.dir>${project.basedir}/../..</top.dir>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-extension-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-core</artifactId>
+        </dependency>
+        <!-- GraphQLTraversalCursor extends PathsTraversalCursor -->
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-dv-core</artifactId>
+        </dependency>
+        <!-- the routes reuse the service's controllers, registrar base and logging decorators -->
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+        </dependency>
+        <!-- the runtime graphql-java's parser needs (version pinned in the root pom: lang-painless brings an older one) -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby</artifactId>
+        </dependency>
+
+        <!-- tests -->
+        <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-model</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

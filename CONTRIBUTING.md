@@ -15,6 +15,100 @@ Please note we have a code of conduct, please follow it in all your interactions
    The root `README.MD` is the maintainer's GitHub profile page, not project documentation.
 4. A maintainer will review and merge.
 
+## Writing an extension
+
+You can add query languages, REST routes and Guice bindings to YANG-DB from your own jar, without editing core and
+without touching the application config.
+
+### The SPI
+
+Depend on `com.yangdb:fuse-extension-api` (plus `fuse-service` if your routes reuse its controllers). It holds:
+
+| Type | Package | Role |
+|---|---|---|
+| `YangDbExtension` | `com.yangdb.fuse.extension` | the entry point: returns your Guice modules, config-aware Jooby modules and route registrars (all optional) |
+| `QueryLanguages` | `com.yangdb.fuse.extension` | the language registry: a Guice `MapBinder` from a language name to a transformer |
+| `QueryTransformer<QueryInfo<String>, AsgQuery>` | `com.yangdb.fuse.dispatcher.query` | what a language implements: query text (with its ontology) to an ASG query |
+| `AppRegistrar` | `com.yangdb.fuse.services.appRegistrars` | what a route registrar implements: `register(Jooby app, AppUrlSupplier urls)` |
+
+### Discovery: `META-INF/services`
+
+The service finds extensions with `java.util.ServiceLoader`. List your implementation's fully qualified class name, one
+per line, in this file of your jar:
+
+```
+src/main/resources/META-INF/services/com.yangdb.fuse.extension.YangDbExtension
+```
+
+Put the jar on the service's classpath (in the distribution, its `lib/` folder). At startup the service installs every
+extension's modules, registers its routes after the core ones and logs `Loaded YANG-DB extension <name>`. The class needs
+a public no-argument constructor.
+
+### Adding a query language
+
+Register a transformer under the language's name from one of your modules:
+
+```java
+QueryLanguages.register(binder, "echo").to(EchoTransformer.class);
+```
+
+The transformer is created by Guice, so it can inject anything the service binds (e.g. `OntologyProvider`). The
+language is then available through the generic routes:
+
+- `POST /fuse/query/echo`: create a query (a `CreateJsonQueryRequest` body; its `type` is set to `echo`)
+- `GET|POST /fuse/query/echo/run?ontology=<ont>&query=<text>`: run it and get the first page (the query text can also be
+  the request body)
+
+The name is matched exactly first, then ignoring case. An unknown name gets a 404 that lists the available languages.
+The built-in languages are registered the same way under `cypher` and `sparkQL` (`CreateQueryRequestMetadata.TYPE_*`);
+their original URLs (`/fuse/query/cypher/run` etc.) still work. `graphQL` is an extension (`extensions/graphql`) and
+registers the same way. Registering a name twice fails at startup.
+
+### Adding routes
+
+Return `AppRegistrar`s from `registrars()`. Each is called once, after the core routes and before the generic language
+routes, so a fixed path like `/fuse/query/myfeature/run` wins over `/fuse/query/:lang/run`. To call a core controller,
+extend `AppControllerRegistrarBase<SomeController>` (in `fuse-service`) and use `getController(app)`.
+
+### Modules
+
+`modules()` returns plain Guice modules; `joobyModules()` returns modules that need the config
+(`configure(env, config, binder)`). Don't return a `ModuleBase` subclass from either: a `ModuleBase` only configures
+itself when its class is listed under `modules.<profile>` in the application config.
+
+### A minimal extension
+
+```java
+package com.example.hello;
+
+public class HelloExtension implements YangDbExtension {
+    @Override
+    public List<Module> modules() {
+        return List.of(binder -> QueryLanguages.register(binder, "echo").to(EchoTransformer.class));
+    }
+
+    @Override
+    public List<AppRegistrar> registrars() {
+        return List.of((app, urls) -> app.get("/hello", () -> "hello from an extension"));
+    }
+
+    /** "translates" a query into an empty ASG query named after the query text */
+    public static class EchoTransformer implements QueryTransformer<QueryInfo<String>, AsgQuery> {
+        @Override
+        public AsgQuery transform(QueryInfo<String> query) {
+            return AsgQuery.Builder.start(query.getQuery(), query.getOntology()).build();
+        }
+    }
+}
+```
+
+with `META-INF/services/com.yangdb.fuse.extension.YangDbExtension` containing `com.example.hello.HelloExtension`.
+This is the hello-world extension of `fuse-service`'s tests (`HelloWorldExtension`, checked by `YangDbExtensionsTest`).
+For real ones, see the Dragons example (`examples/dragons/ext`, class `com.yangdb.dragons.DragonsExtension`: routes
+only) and GraphQL (`extensions/graphql`, class `com.yangdb.fuse.graphql.GraphQLExtension`: a query language, a
+cursor, routes and controllers). Extensions under `extensions/` are part of the default build and ship in the
+distribution's `lib/`.
+
 ## Code of Conduct
 
 ### Our Pledge

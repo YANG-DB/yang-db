@@ -61,10 +61,7 @@ public class CursorsModule extends ModuleBase {
                 CreateGraphCursorRequest.class,
                 new GraphTraversalCursor.Factory()));
 
-        Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
-                CreateGraphQLCursorRequest.CursorType,
-                CreateGraphQLCursorRequest.class,
-                new GraphQLTraversalCursor.Factory()));
+        // the graphQL cursor is bound by the GraphQL extension (extensions/graphql)
 
         Multibinder.newSetBinder(binder, Binding.class).addBinding().toInstance(new Binding(
                 CreateGraphHierarchyCursorRequest.CursorType,
