@@ -109,27 +109,6 @@ public interface QueryDriver {
     Optional<Object> run(String query, String type, String ontology, int pageSize, String cursorType);
 
     /**
-     * run the given (graphQL) query by creating all the resources that are needed to execute and return the (first page) data
-     * that matches the given query
-     * @param graphQL
-     * @param ontology
-     * @return
-     */
-    Optional<Object> runGraphQL(String graphQL, String ontology);
-
-    /**
-     * run the given (graphQL) query by creating all the resources that are needed to execute and return the (first page) data
-     * that matches the given query
-
-     * @param graphQL
-     * @param ontology
-     * @param pageSize
-     * @param cursorType
-     * @return
-     */
-    Optional<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
-
-    /**
      * run the given (sparql) query by creating all the resources that are needed to execute and return the (first page) data
      * that matches the given query
 

@@ -127,17 +127,6 @@ public interface QueryController<C,D> extends Controller<C,D> {
     ContentResponse<Object> run(String query, String type, String ontology, int pageSize, String cursorType);
 
     /**
-     * run a stateless graphQL query and get immediate graph results (first page only)
-     * type may be volatile or persistent
-     * @param `query
-     * @param ontology
-     * @param pageSize
-     * @param cursorType
-     * @return
-     */
-    ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType);
-
-    /**
      * run a stateless sparql query and get immediate graph results (first page only)
      * type may be volatile or persistent
      * @param `query

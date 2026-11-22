@@ -81,11 +81,6 @@ public class DragonsExtensionQueryController implements QueryController<QueryCon
     }
 
     @Override
-    public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
-        return controller.runGraphQL(graphQL, ontology, pageSize, cursorType);
-    }
-
-    @Override
     public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
         return controller.runSparql(sparql, ontology, pageSize, cursorType);
     }

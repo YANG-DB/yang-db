@@ -256,24 +256,6 @@ public class LoggingQueryController extends LoggingControllerBase<QueryControlle
     }
 
     @Override
-    public ContentResponse<Object> runGraphQL(String graphQL, String ontology, int pageSize, String cursorType) {
-        return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
-                this.logger,
-                this.metricRegistry,
-                run,
-                this.primerMdcWriter(),
-                Collections.singletonList(trace),
-                Arrays.asList(info, trace))
-                .decorate(() -> {
-                    if (graphQL != null) {
-                        new LogMessage.Impl(this.logger, debug, "query: {}", Sequence.incr(), LogType.of(log), createAndFetch)
-                                .with(graphQL).log();
-                    }
-                    return this.controller.runGraphQL(graphQL,ontology , pageSize, cursorType);
-                }, this.resultHandler());
-    }
-
-    @Override
     public ContentResponse<Object> runSparql(String sparql, String ontology, int pageSize, String cursorType) {
         return new LoggingSyncMethodDecorator<ContentResponse<Object>>(
                 this.logger,

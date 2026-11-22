@@ -262,6 +262,11 @@
                 <artifactId>fuse-geojson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.yangdb</groupId>
+                <artifactId>fuse-extension-graphql</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
 
             <!-- Dragons Deployment Assemblies   -->
             <dependency>
@@ -1355,6 +1360,7 @@
                 <module>fuse-dv</module>
                 <module>fuse-service</module>
                 <module>fuse-geojson</module>
+                <module>extensions</module>
             </modules>
         </profile>
 

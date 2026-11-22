@@ -10,8 +10,6 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import com.yangdb.fuse.asg.translator.cypher.AsgCypherModule;
 import com.yangdb.fuse.asg.translator.cypher.AsgCypherTransformer;
-import com.yangdb.fuse.asg.translator.graphql.AsgGraphQLModule;
-import com.yangdb.fuse.asg.translator.graphql.AsgGraphQLTransformer;
 import com.yangdb.fuse.asg.translator.sparql.AsgSparQLTransformer;
 import com.yangdb.fuse.asg.translator.sparql.AsgSparqlModule;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
@@ -89,20 +87,18 @@ public class BasicJsonQueryTransformerFactoryTest {
         Config config = ConfigFactory.empty()
                 .withValue("application.profile", ConfigValueFactory.fromAnyRef("test"))
                 .withValue("modules.test", ConfigValueFactory.fromIterable(Arrays.asList(
-                        AsgCypherModule.class.getName(), AsgSparqlModule.class.getName(), AsgGraphQLModule.class.getName())));
+                        AsgCypherModule.class.getName(), AsgSparqlModule.class.getName())));
         AsgCypherTransformer cypher = new AsgCypherTransformer(null);
         AsgSparQLTransformer sparql = new AsgSparQLTransformer(null);
-        AsgGraphQLTransformer graphQL = new AsgGraphQLTransformer(null, null);
 
         Injector injector = Guice.createInjector(
-                jooby(new AsgCypherModule(), config), jooby(new AsgSparqlModule(), config), jooby(new AsgGraphQLModule(), config),
+                jooby(new AsgCypherModule(), config), jooby(new AsgSparqlModule(), config),
                 new AbstractModule() {
                     @Override
                     protected void configure() {
                         // the real transformers need a whole ontology stack: these instances stand in for them
                         bind(AsgCypherTransformer.class).toInstance(cypher);
                         bind(AsgSparQLTransformer.class).toInstance(sparql);
-                        bind(AsgGraphQLTransformer.class).toInstance(graphQL);
                         bind(OntologyProvider.class).toInstance(stub(OntologyProvider.class));
                         bind(OntologyTransformerProvider.class).toInstance(stub(OntologyTransformerProvider.class));
                         bind(JsonQueryTransformerFactory.class).to(BasicJsonQueryTransformerFactory.class);
@@ -111,13 +107,13 @@ public class BasicJsonQueryTransformerFactoryTest {
 
         Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>> languages = injector.getInstance(
                 com.google.inject.Key.get(new TypeLiteral<Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>>>() {}));
+        // graphQL is registered by the GraphQL extension (extensions/graphql), not by core
         Assert.assertEquals(new HashSet<>(Arrays.asList(CreateQueryRequestMetadata.TYPE_CYPHERQL,
-                CreateQueryRequestMetadata.TYPE_SPARQL, CreateQueryRequestMetadata.TYPE_GRAPHQL)), languages.keySet());
+                CreateQueryRequestMetadata.TYPE_SPARQL)), languages.keySet());
 
         JsonQueryTransformerFactory factory = injector.getInstance(JsonQueryTransformerFactory.class);
         Assert.assertSame(cypher, factory.transform(CreateQueryRequestMetadata.TYPE_CYPHERQL));
         Assert.assertSame(sparql, factory.transform(CreateQueryRequestMetadata.TYPE_SPARQL));
-        Assert.assertSame(graphQL, factory.transform(CreateQueryRequestMetadata.TYPE_GRAPHQL));
     }
 
     private static Module jooby(Jooby.Module module, Config config) {

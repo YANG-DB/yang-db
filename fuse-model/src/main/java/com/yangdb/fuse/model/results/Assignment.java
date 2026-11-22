@@ -33,7 +33,6 @@ import com.google.common.hash.Hashing;
 import com.yangdb.fuse.model.logical.Edge;
 import com.yangdb.fuse.model.logical.Vertex;
 import javaslang.collection.Stream;
-import org.antlr.v4.runtime.misc.MurmurHash;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -67,8 +67,6 @@ import com.yangdb.fuse.model.transport.PlanTraceOptions;
 import com.yangdb.fuse.model.transport.cursor.*;
 import com.yangdb.fuse.services.FuseUtils;
 import com.yangdb.fuse.services.controllers.*;
-import com.yangdb.fuse.services.controllers.languages.graphql.LoggingGraphQLController;
-import com.yangdb.fuse.services.controllers.languages.graphql.StandardGraphQLController;
 import com.yangdb.fuse.services.controllers.languages.sparql.LoggingSparqlController;
 import com.yangdb.fuse.services.controllers.languages.sparql.StandardSparqlController;
 import com.yangdb.fuse.services.controllers.languages.sql.LoggingSqlController;
@@ -118,7 +116,6 @@ public class ServiceModule extends ModuleBase {
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
         bindCatalogController(env, config, binder);
-        bindGraphQLController(env, config, binder);
         bindSparqlController(env, config, binder);
         bindSqlController(env, config, binder);
         bindDataLoaderController(env, config, binder);
@@ -134,7 +131,6 @@ public class ServiceModule extends ModuleBase {
         binder.bind(CreateCsvCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreateGraphHierarchyCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreateGraphCursorRequest.class).in(RequestScoped.class);
-        binder.bind(CreateGraphQLCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePathsCursorRequest.class).in(RequestScoped.class);
 
         //execution scope
@@ -328,39 +324,17 @@ public class ServiceModule extends ModuleBase {
         });
     }
 
-    private void bindGraphQLController(Env env, Config config, Binder binder) {
-        binder.install(new PrivateModule() {
-            @Override
-            protected void configure() {
-                this.bind(SchemaTranslatorController.class)
-                        .annotatedWith(named(LoggingGraphQLController.controllerParameter))
-                        .to(StandardGraphQLController.class);
-
-                this.bind(Logger.class)
-                        .annotatedWith(named(LoggingGraphQLController.loggerParameter))
-                        .toInstance(LoggerFactory.getLogger(StandardGraphQLController.class));
-
-                this.bind(SchemaTranslatorController.class)
-                        .annotatedWith(named(StandardGraphQLController.transformerName))
-                        .to(LoggingGraphQLController.class);
-
-                this.expose(SchemaTranslatorController.class)
-                        .annotatedWith(named(StandardGraphQLController.transformerName));
-            }
-        });
-    }
-
     private void bindSparqlController(Env env, Config config, Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
                 this.bind(SchemaTranslatorController.class)
                         .annotatedWith(named(LoggingSparqlController.controllerParameter))
-                        .to(StandardGraphQLController.class);
+                        .to(StandardSparqlController.class);
 
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingSparqlController.loggerParameter))
-                        .toInstance(LoggerFactory.getLogger(StandardGraphQLController.class));
+                        .toInstance(LoggerFactory.getLogger(StandardSparqlController.class));
 
                 this.bind(SchemaTranslatorController.class)
                         .annotatedWith(named(StandardSparqlController.transformerName))
@@ -378,11 +352,11 @@ public class ServiceModule extends ModuleBase {
             protected void configure() {
                 this.bind(SchemaTranslatorController.class)
                         .annotatedWith(named(LoggingSqlController.controllerParameter))
-                        .to(StandardGraphQLController.class);
+                        .to(StandardSqlController.class);
 
                 this.bind(Logger.class)
                         .annotatedWith(named(LoggingSqlController.loggerParameter))
-                        .toInstance(LoggerFactory.getLogger(StandardGraphQLController.class));
+                        .toInstance(LoggerFactory.getLogger(StandardSqlController.class));
 
                 this.bind(SchemaTranslatorController.class)
                         .annotatedWith(named(StandardSqlController.transformerName))

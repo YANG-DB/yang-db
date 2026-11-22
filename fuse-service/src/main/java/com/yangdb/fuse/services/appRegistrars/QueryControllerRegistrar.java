@@ -81,7 +81,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
      */
     public static final int TIMEOUT = 1000 * 60 * 10;
     public static final int PAGE_SIZE = 1000;
-    public static final String GRAPH_QL = "graphQL";
     public static final String PAGE_SIZE_KEY = "pageSize";
     public static final String CURSOR_TYPE_KEY = "cursorType";
     public static final String QUERY_ID_KEY = "queryId";
@@ -122,9 +121,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         /**  register cypher API context **/
         cypherContext(app, appUrlSupplier);
-
-        /**  register graphQL API context **/
-        graphQLContext(app, appUrlSupplier);
 
         /**  register sparql API context **/
         sparqlContext(app, appUrlSupplier);
@@ -251,14 +247,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.post(appUrlSupplier.queryStoreUrl() + "/sparql/run", (req, res) -> API.runSparql(app, req, res, this.getController(app)));
     }
 
-    private void graphQLContext(Jooby app, AppUrlSupplier appUrlSupplier) {
-        /** create a cypher query */
-        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL", req -> API.postGraphQL(app, req, this.getController(app)));
-        /** run a cypher query (support both get/post protocols) */
-        app.get(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
-        app.post(appUrlSupplier.queryStoreUrl() + "/graphQL/run", (req, res) -> API.runGraphQL(app, req, res, this.getController(app)));
-    }
-
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
         /** validate a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate", req -> API.validateV1(app, req, this.getController(app)));
@@ -288,10 +276,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         public static final String CYPHER = "cypher";
         public static final String SPARQL = "sparql";
-
-        public static Result postGraphQL(Jooby app, final Request req, QueryController controller) throws Exception {
-            return postJsonQuery("postGraphQL", req, null, controller);
-        }
 
         public static Result validateV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("validateAndRewriteQuery").write();
@@ -421,10 +405,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         public static void runSparql(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             // runSparql keeps its own cursor choice (a logical-graph cursor), so it is not the generic run
             runJsonQuery("runSparql", req, resp, SPARQL, controller::runSparql);
-        }
-
-        public static void runGraphQL(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
-            runJsonQuery("runGraphQL", req, resp, GRAPH_QL, controller::runGraphQL);
         }
 
         /**
