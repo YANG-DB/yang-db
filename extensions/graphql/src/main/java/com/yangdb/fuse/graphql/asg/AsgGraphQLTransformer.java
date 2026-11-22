@@ -22,6 +22,7 @@ package com.yangdb.fuse.graphql.asg;
 
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.yangdb.fuse.dispatcher.asg.QueryToAsgTransformer;
 import com.yangdb.fuse.dispatcher.query.QueryTransformer;
 import com.yangdb.fuse.graphql.translator.GraphQL2QueryTransformer;
@@ -37,12 +38,13 @@ public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>
     public static final String transformerName = "AsgGraphQLTransformer.@transformer";
 
     private GraphQL2QueryTransformer graphQL2QueryTransformer;
-    private final QueryToAsgTransformer queryTransformer;
+    /** QueryToAsgTransformer keeps the elements of every query it transformed: one per query */
+    private final Provider<QueryToAsgTransformer> queryTransformer;
 
     //region Constructors
     @Inject
     public AsgGraphQLTransformer(GraphQL2QueryTransformer graphQL2QueryTransformer,
-                                 QueryToAsgTransformer queryTransformer) {
+                                 Provider<QueryToAsgTransformer> queryTransformer) {
         this.graphQL2QueryTransformer = graphQL2QueryTransformer;
         this.queryTransformer = queryTransformer;
     }
@@ -57,7 +59,7 @@ public class AsgGraphQLTransformer implements QueryTransformer<QueryInfo<String>
     @Override
     public AsgQuery transform(QueryInfo<String> query) {
         Query transform = graphQL2QueryTransformer.transform(query);
-        return queryTransformer.transform(transform);
+        return queryTransformer.get().transform(transform);
     }
 
     //endregion

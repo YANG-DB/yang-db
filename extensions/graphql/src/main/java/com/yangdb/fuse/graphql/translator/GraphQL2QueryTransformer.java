@@ -52,7 +52,11 @@ public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<Stri
         if(!ontology.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("No ontology was found","Ontology not found "+query.getOntology()));
 
-        return transform(schemaUtils,ontology.get(),query.getQuery());
+        Query result = transform(schemaUtils, ontology.get(), query.getQuery());
+        // the ASG query and its plan need these (the translated query has neither)
+        result.setOnt(query.getOntology());
+        result.setName(query.getQueryName());
+        return result;
     }
 
     /**
@@ -77,8 +81,8 @@ public class GraphQL2QueryTransformer implements QueryTransformer<QueryInfo<Stri
     private static GraphQLSchema createSchema(GraphQLSchemaUtils schemaUtils,Ontology ontology,Query.Builder builder) {
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(
-                schemaUtils.getTypeRegistry(),
-                TraversalWiringFactory.newEchoingWiring(schemaUtils,ontology,builder));
+                schemaUtils.getTypeRegistry(ontology),
+                TraversalWiringFactory.newEchoingWiring(ontology,builder));
     }
 
 }

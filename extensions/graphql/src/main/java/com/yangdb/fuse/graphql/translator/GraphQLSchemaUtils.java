@@ -20,11 +20,26 @@ package com.yangdb.fuse.graphql.translator;
  * #L%
  */
 
+import com.yangdb.fuse.model.ontology.Ontology;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.TypeDefinitionRegistry;
 
 public interface GraphQLSchemaUtils {
+    /** a schema this instance holds (e.g. the last one it translated), if any */
     GraphQLSchema getGraphQLSchema();
 
+    /** the type definitions of {@link #getGraphQLSchema()}, if any */
     TypeDefinitionRegistry getTypeRegistry();
+
+    /**
+     * The type definitions GraphQL queries on this ontology run against. By default, this instance's registry when it
+     * has a {@code Query} type, else one generated from the ontology ({@link OntologyToGraphQLSdl}).
+     */
+    default TypeDefinitionRegistry getTypeRegistry(Ontology ontology) {
+        TypeDefinitionRegistry registry = getTypeRegistry();
+        if (registry != null && registry.getType(OntologyToGraphQLSdl.QUERY).isPresent()) {
+            return registry;
+        }
+        return OntologyToGraphQLSdl.registry(ontology);
+    }
 }

@@ -33,8 +33,13 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import javaslang.Tuple2;
 import org.apache.commons.io.IOUtils;
 
+import graphql.GraphQLError;
+import graphql.GraphQLException;
+import graphql.schema.idl.errors.SchemaProblem;
+
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -55,10 +60,10 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
 
 
     //graph QL reader and schema parts
+    private static final List<String> WHERE_TYPES = Arrays.asList(WHERE_OPERATOR, WHERE_CLAUSE, CONSTRAINT);
+
     private GraphQLSchema graphQLSchema;
-    private SchemaParser schemaParser = new SchemaParser();
     private TypeDefinitionRegistry typeRegistry = new TypeDefinitionRegistry();
-    private SchemaGenerator schemaGenerator = new SchemaGenerator();
 
     private Set<String> languageTypes = new HashSet<>();
     private Set<String> objectTypes = new HashSet<>();
@@ -76,35 +81,46 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
      * @return
      */
     @Override
-    public GraphQLSchema getGraphQLSchema() {
+    public synchronized GraphQLSchema getGraphQLSchema() {
         return graphQLSchema;
     }
 
-    public TypeDefinitionRegistry getTypeRegistry() {
+    public synchronized TypeDefinitionRegistry getTypeRegistry() {
         return typeRegistry;
     }
 
 
-    @Override
     /**
-     * API that will transform a GraphQL schema into YangDb ontology schema
+     * Translates a GraphQL schema (SDL; one document, or several concatenated) into an ontology named
+     * {@code ontologyName}. The where-clause input types ({@code WhereClause}, {@code Constraint},
+     * {@code WhereOperator}) are added when the schema defines none of them. Each call parses its schema afresh: nothing
+     * is kept from earlier calls, so importing the same schema twice gives the same ontology.
      *
-     * @param source
-     * @return
+     * @throws IllegalArgumentException when the schema is not valid, with the GraphQL errors
      */
+    @Override
     public Ontology transform(String ontologyName, String source) {
-        Ontology ontology = transform(IOUtils.toInputStream(source));
+        Ontology ontology = transformSdl(source);
         ontology.setOnt(ontologyName);
         return ontology;
     }
 
-    @Override
     /**
-     * API that will translate a YangDb ontology schema to GraphQL schema
+     * API that will translate a YangDb ontology schema to GraphQL schema (SDL): the schema GraphQL queries on that
+     * ontology run against
      */
+    @Override
     public String translate(Ontology source) {
-        //Todo
-        throw new RuntimeException("Not Implemented");
+        return OntologyToGraphQLSdl.sdl(source);
+    }
+
+    /**
+     * Queries always run against a schema generated from their ontology, whatever this instance translated last
+     * (the service shares one instance between all requests).
+     */
+    @Override
+    public TypeDefinitionRegistry getTypeRegistry(Ontology ontology) {
+        return OntologyToGraphQLSdl.registry(ontology);
     }
 
     /**
@@ -251,25 +267,57 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
      * @return
      */
     public Ontology transform(InputStream... streams) {
-        if (graphQLSchema == null) {
-            // each registry is merged into the main registry
-            Arrays.asList(streams).forEach(s -> typeRegistry.merge(schemaParser.parse(new InputStreamReader(s))));
-            //create schema
-            graphQLSchema = schemaGenerator.makeExecutableSchema(
-                    SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
-                    typeRegistry,
-                    EchoingWiringFactory.newEchoingWiring());
+        StringBuilder source = new StringBuilder();
+        for (InputStream stream : streams) {
+            try {
+                source.append(IOUtils.toString(stream, StandardCharsets.UTF_8)).append('\n');
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not read the GraphQL schema: " + e.getMessage(), e);
+            }
         }
-        //create a curated list of names for typed schema elements
-        return transform(graphQLSchema);
+        return transformSdl(source.toString());
+    }
 
+    /** parses an SDL document (adding the where-clause types if it has none of them) into a new schema, then an ontology */
+    private Ontology transformSdl(String source) {
+        TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
+        GraphQLSchema schema;
+        try {
+            registry.merge(new SchemaParser().parse(source == null ? "" : source));
+            if (WHERE_TYPES.stream().noneMatch(t -> registry.getType(t).isPresent())) {
+                registry.merge(new SchemaParser().parse(OntologyToGraphQLSdl.WHERE_SCHEMA));
+            }
+            schema = new SchemaGenerator().makeExecutableSchema(
+                    SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false),
+                    registry,
+                    EchoingWiringFactory.newEchoingWiring());
+        } catch (GraphQLException e) {
+            throw new IllegalArgumentException("Invalid GraphQL schema: " + describe(e), e);
+        }
+        Ontology ontology = transform(schema);
+        // the last schema translated (getGraphQLSchema / getTypeRegistry), replaced on each call
+        synchronized (this) {
+            this.graphQLSchema = schema;
+            this.typeRegistry = registry;
+        }
+        return ontology;
+    }
+
+    private static String describe(GraphQLException e) {
+        if (e instanceof SchemaProblem && !((SchemaProblem) e).getErrors().isEmpty()) {
+            return ((SchemaProblem) e).getErrors().stream().map(GraphQLError::getMessage).collect(Collectors.joining("; "));
+        }
+        return e.getMessage();
     }
 
     /**
      * @param graphQLSchema
      * @return
      */
-    public Ontology transform(GraphQLSchema graphQLSchema) {
+    public synchronized Ontology transform(GraphQLSchema graphQLSchema) {
+        // a fresh context per schema
+        objectTypes.clear();
+        properties.clear();
         validateLanguageType(graphQLSchema);
         populateObjectTypes(graphQLSchema);
 
@@ -290,7 +338,8 @@ public class GraphQLToOntologyTransformer implements OntologyTransformerIfc<Stri
                 .collect(Collectors.toList());
 
         if (types.size() != languageTypes.size())
-            throw new IllegalArgumentException("GraphQL schema doesnt include Query/Where types");
+            throw new IllegalArgumentException("GraphQL schema doesnt include Query/Where types: it needs a Query type"
+                    + " and the WhereClause, Constraint and WhereOperator types");
     }
 
     private void populateObjectTypes(GraphQLSchema graphQLSchema) {

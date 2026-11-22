@@ -21,7 +21,6 @@ package com.yangdb.fuse.graphql.translator.wiring;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yangdb.fuse.graphql.translator.GraphQLSchemaUtils;
 import com.yangdb.fuse.model.ontology.EntityType;
 import com.yangdb.fuse.model.ontology.Ontology;
 import com.yangdb.fuse.model.ontology.Property;
@@ -65,23 +64,25 @@ public class TraversalWiringFactory implements WiringFactory {
     private Query.Builder builder;
     private Ontology.Accessor accessor;
     private Map<String, Integer> pathContext;
-    private GraphQLSchema schema;
 
-    public static RuntimeWiring newEchoingWiring(GraphQLSchemaUtils schema, Ontology ontology, Query.Builder queryBuilder) {
-        return newEchoingWiring(schema,x -> {
+    public static RuntimeWiring newEchoingWiring(Ontology ontology, Query.Builder queryBuilder) {
+        return newEchoingWiring(x -> {
         }, ontology, queryBuilder);
     }
 
-    public static RuntimeWiring newEchoingWiring(GraphQLSchemaUtils schema, Consumer<RuntimeWiring.Builder> builderConsumer, Ontology ontology, Query.Builder queryBuilder) {
+    public static RuntimeWiring newEchoingWiring(Consumer<RuntimeWiring.Builder> builderConsumer, Ontology ontology, Query.Builder queryBuilder) {
         RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
         builderConsumer.accept(builder);
         return builder
-                .wiringFactory(new TraversalWiringFactory(schema,ontology, queryBuilder))
+                .wiringFactory(new TraversalWiringFactory(ontology, queryBuilder))
                 .build();
     }
 
-    public TraversalWiringFactory(GraphQLSchemaUtils schemaUtils,Ontology ontology, Query.Builder builder) {
-        this.schema = schemaUtils.getGraphQLSchema();
+    /**
+     * @param ontology the ontology the query is translated against
+     * @param builder  collects the translated query
+     */
+    public TraversalWiringFactory(Ontology ontology, Query.Builder builder) {
         this.builder = builder;
         this.accessor = new Ontology.Accessor(ontology);
         this.pathContext = new HashMap<>();
@@ -98,7 +99,8 @@ public class TraversalWiringFactory implements WiringFactory {
 
     @Override
     public TypeResolver getTypeResolver(InterfaceWiringEnvironment environment) {
-        return env -> schema.getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
+        // the schema being executed: it is generated per query, so it is not known when the wiring is built
+        return env -> env.getSchema().getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
     }
 
     @Override
@@ -157,7 +159,7 @@ public class TraversalWiringFactory implements WiringFactory {
             //todo create concrete union types from abstract interface
         } else if (fieldType instanceof GraphQLInterfaceType) {
             //select the first implementing of interface (no matter which one since all share same common fields)
-            List<GraphQLObjectType> implementations = schema.getImplementations((GraphQLInterfaceType) fieldType);
+            List<GraphQLObjectType> implementations = env.getGraphQLSchema().getImplementations((GraphQLInterfaceType) fieldType);
             //populate vertex or relation
             Optional<EntityType> realType = populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
             addWhereClause(env, realType);
