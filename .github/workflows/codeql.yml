@@ -1,42 +1,45 @@
+# Security scanning of the Java code with CodeQL.
+# - Java only: the repository's JavaScript is vendored third-party UI assets (Swagger UI, bigdesk, ...).
+# - build-mode none: CodeQL extracts Java straight from source, with no Maven build (faster, and no Maven Central
+#   downloads, which get rate-limited on shared runners).
+# - Default (security) query suite. The earlier security-and-quality suite produced ~650 style notes that no one
+#   triaged.
 name: "CodeQL"
 
+# Runs after every merge to main and weekly, not on pull requests: the analysis takes ~6 minutes, three times
+# longer than the CI checks. Findings appear in the Security tab within minutes of a merge.
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   schedule:
     - cron: "29 12 * * 0"
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
-    name: Analyze
+    name: Analyze (java)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
       security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ javascript, java ]
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-          queries: +security-and-quality
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-        if: ${{ matrix.language == 'javascript' || matrix.language == 'java' }}
+          languages: java-kotlin
+          build-mode: none
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{ matrix.language }}"
+          category: "/language:java-kotlin"

@@ -34,3 +34,6 @@ dependency-reduced-pom.xml
 
 # python bytecode (docker/e2e)
 __pycache__/
+
+# macOS AppleDouble sidecar files (created on non-APFS drives)
+._*

@@ -183,3 +183,12 @@ available at [http://contributor-covenant.org/version/1/4][version]
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
+
+## Continuous integration
+Every pull request to `main` runs two checks ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+- **Build & test**: `mvn clean test`, unit and integration tests against an embedded OpenSearch node.
+- **Docker e2e**: builds the distribution and the Docker image, starts it next to OpenSearch, loads the Dragons
+  tutorial data, and checks every documented query, the regression queries and the GraphQL examples
+  ([docker/e2e](docker/e2e/README.md)).
+
+Both must be green before merging. To reproduce the e2e check locally, see [docker/e2e/README.md](docker/e2e/README.md).

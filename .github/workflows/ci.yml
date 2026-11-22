@@ -1,0 +1,126 @@
+# Every pull request to main (and every push to main) is checked twice, in parallel:
+#   1. "Build & test": the full Maven build with unit and integration tests (embedded OpenSearch node)
+#   2. "Docker e2e": the distribution is built into the Docker image, started next to OpenSearch, loaded with the
+#      Dragons tutorial data, and every documented query, regression query and GraphQL example is checked against
+#      results computed from the stored data (docker/e2e/doc_queries.py)
+# Public repository: GitHub-hosted runner minutes are free. Superseded runs on the same branch are cancelled.
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Maven Central rate-limits GitHub's shared runners (HTTP 429), especially with several jobs downloading at once.
+  # Retry 429/503 responses with back-off instead of failing the build (Maven 3.9+ resolver).
+  MVN: >-
+    mvn -B -ntp
+    -Daether.connector.http.retryHandler.count=8
+    -Daether.connector.http.retryHandler.interval=15000
+    -Daether.connector.http.retryHandler.serviceUnavailable=429,503
+
+jobs:
+  build-test:
+    name: Build & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
+      - name: Show the Maven version (429 retries need 3.9+)
+        run: mvn -v | head -1
+
+      - name: mvn clean test (unit + integration)
+        run: $MVN clean test
+
+      - name: Test summary
+        if: always()
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as ET
+          t = f = e = s = 0
+          for p in glob.glob('**/target/surefire-reports/TEST-*.xml', recursive=True):
+              r = ET.parse(p).getroot()
+              t += int(r.get('tests', 0)); f += int(r.get('failures', 0))
+              e += int(r.get('errors', 0)); s += int(r.get('skipped', 0))
+          print(f"### Tests: {t} run, {f} failures, {e} errors, {s} skipped")
+          EOF
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/'
+          retention-days: 7
+
+  docker-e2e:
+    name: Docker e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
+      - name: Build the distribution (core + Dragons assembly)
+        run: $MVN install -DskipTests -P core,dragons-assembly
+
+      - name: Build the YANG-DB image
+        run: |
+          test -f distrib/dragon.tar
+          cp docker/Dockerfile distrib/
+          docker build -t yangdb/yang.db:Dragons distrib
+
+      - name: Start OpenSearch and YANG-DB
+        working-directory: docker
+        run: |
+          sudo sysctl -w vm.max_map_count=262144
+          docker compose -f docker-compose-os.yml up -d opensearch fuse
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null http://localhost:8888/fuse/health && echo "YANG-DB is up" && exit 0
+            sleep 5
+          done
+          echo "YANG-DB did not become healthy"; docker compose -f docker-compose-os.yml ps; exit 1
+
+      - name: End-to-end doc-query suite
+        run: |
+          set -o pipefail
+          python3 docker/e2e/doc_queries.py --load --reset | tee e2e.log
+          echo "### Docker e2e: $(grep -E 'ALL PASS|not passing' e2e.log | tail -1)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          mkdir -p ci-logs
+          cp e2e.log ci-logs/ 2>/dev/null || true
+          docker logs dragons-graph > ci-logs/yangdb.log 2>&1 || true
+          docker logs opensearch > ci-logs/opensearch.log 2>&1 || true
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: ci-logs/
+          retention-days: 7
