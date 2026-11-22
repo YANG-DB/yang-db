@@ -24,6 +24,7 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.graphql.services.controllers.StandardGraphQLController;
 import com.yangdb.fuse.logging.Route;
 import com.yangdb.fuse.model.ontology.Ontology;
+import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
 import com.yangdb.fuse.services.appRegistrars.AppControllerRegistrarBase;
@@ -61,8 +62,14 @@ public class GraphQLControllerRegistrar extends AppControllerRegistrarBase<Stand
                     Route.of("translateGraphQLSchema").write();
                     String graphQLSchemas = req.body(String.class);
                     req.set(String.class, graphQLSchemas);
-                    ContentResponse<Ontology> response = this.getController(app).translate(req.param("id").value(), graphQLSchemas);
-                    return Results.with(response, response.status().getStatus());
+                    try {
+                        ContentResponse<Ontology> response = this.getController(app).translate(req.param("id").value(), graphQLSchemas);
+                        return Results.with(response, response.status().getStatus());
+                    } catch (IllegalArgumentException e) {
+                        // an invalid schema: say why, as JSON
+                        return Results.with(new FuseError("GraphQL schema translation failed", e.getMessage()), 400)
+                                .type("application/json");
+                    }
                 });
 
         /** create a graphQL query */
