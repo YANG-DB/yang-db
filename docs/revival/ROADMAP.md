@@ -53,7 +53,7 @@ Tutorial data & docs
 - [x] `Q6` cycle-closing pattern → explicit "Cyclic patterns are not supported" error, documented
 - [x] `Q7` count filter returned nothing (planner reversed the counted relation)
 - [x] `Q8` `WHERE p:A OR p:B` on an untyped node crashed
-- [ ] `A2` whole-file load failure easy to misread (minor, open)
+- [x] `A2` whole-file load failure easy to misread (fixed in bug-fix round 2)
 
 Verification
 - [x] `S13` end-to-end doc-query suite committed (`docker/e2e/`) and **passing**: run 4 (2026-11-20), all 21 checks
@@ -153,7 +153,7 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       still pass
       *(agent N: implemented, unit/REST tests green; e2e GQ1–GQ3 pending the lead's Docker run. graphql-java left
       core entirely.)*
-- [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
+- [x] A4: the Dragons clause routes are broken once registered (fixed in bug-fix round 2: the dead routes are removed)
 
 ## Phase 5 — Support a current OpenSearch: 2.19.x ✅ (merged 2026-11-23, PR #169; released as **[v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0)**)
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
@@ -172,6 +172,11 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
   from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
   distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
   fixes. Phase 5 shipped as v0.9.0 from `release/0.9.x` (label `opensearch-2.19`); main moves on to `0.10.0-SNAPSHOT`.
+
+## Bug-fix round 2 ✅ (2026-11-23)
+Every open issue in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) fixed, each with a test that failed first: A2, A4–A10, C3, G4,
+M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Four agents in parallel; handoff files
+`agents/bugfix2-*.md`.
 
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
