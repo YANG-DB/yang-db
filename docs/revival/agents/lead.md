@@ -31,9 +31,9 @@ Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e
 **Phase 5 merged (#169) and released as v0.9.0** (tag on `release/0.9.x`, poms `0.9.0`, notes
 `docs/releases/v0.9.0.md`, label `opensearch-2.19`, distribution attached by the Release workflow). Main is now
 `0.10.0-SNAPSHOT`. The 1.3 → 2.19 upgrade rehearsal **passed** (2026-11-23,
-OPENSEARCH_MIGRATION.md §9). The v0.9.0 GitHub release text says so too. **Next:** (1) update the wiki for 2.19.7 and the REST port
-(`opensearch.http.port`, 9200); (2) Phase 6
-(OpenSearch 3.x, JDK 21). Releasing: cut `release/X.Y.x` from main, set the poms to `X.Y.0`, add
+OPENSEARCH_MIGRATION.md §9). The v0.9.0 GitHub release text says so too. The wiki (Home + Revival 2026; clone
+`https://github.com/YANG-DB/yang-db.wiki.git`) is updated for 2.19.7, the releases and the REST port. **Phase 5 is
+fully done. Next:** Phase 6 (OpenSearch 3.x, JDK 21). Releasing: cut `release/X.Y.x` from main, set the poms to `X.Y.0`, add
 `docs/releases/vX.Y.0.md`, push, `gh release create vX.Y.0 --target release/X.Y.x --latest`; the workflow attaches
 the download.
 

@@ -167,7 +167,7 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
 - [x] 5.5 (done: the fuse-service embedded node uses the bridge; Painless runs on ANTLR 4.13.1) Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
 - [x] 5.6 Integration: full build green on 2.19.7, **1,249 tests, 0 failures** (lead)
 - [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; **in-place upgrade rehearsed 2026-11-23**: data loaded with v0.8.0 on 1.3.0, cluster upgraded to 2.19.7 on the same volume, v0.9.0 returned identical results for all 28 queries plus the cursor checks, with no reload; see OPENSEARCH_MIGRATION.md §9) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
-- [x] 5.8 (docs, upgrade guide and [release notes](../releases/v0.9.0.md) done; **wiki still to update**) Docs, wiki, upgrade guide, release notes → PR (lead)
+- [x] 5.8 (docs, upgrade guide and [release notes](../releases/v0.9.0.md) done; wiki updated 2026-11-23: Home + Revival 2026) Docs, wiki, upgrade guide, release notes → PR (lead)
 - [x] 5.9 (done 2026-11-23) Release the OpenSearch 1.3 line before the switch: **[v0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)**
   from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
   distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
