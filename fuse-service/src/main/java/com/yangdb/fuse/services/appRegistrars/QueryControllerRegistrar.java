@@ -187,11 +187,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status().getStatus());
         });
 
-        /** view the elastic query with d3 html*/
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view",
-                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.queryStoreUrl() + "/" + req.param(QUERY_ID_KEY).value() + "/elastic"));
-
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/json", req -> {
             ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param(QUERY_ID_KEY).value());

@@ -371,8 +371,8 @@ for i in person own dragon; do curl -s -X PUT localhost:9200/$i/_settings -H 'Co
   -d '{"index.search.slowlog.threshold.query.trace":null,"index.search.slowlog.level":null}'; done
 ```
 
-The `elastic/view` links that the query and page resources advertise currently answer 404 (KNOWN_ISSUES A8), so use
-the slow log as shown.
+The service doesn't keep the OpenSearch requests of a query (they are built step by step while the pages are fetched),
+so the slow log is the way to see them.
 
 For the code side, the module page lists the classes for each stage. Good starting points for a debugger are
 `QueryDriverBase.run`, `BottomUpPlanSearcher.search`, `ChainedPlanOpTraversalTranslator.translate` and

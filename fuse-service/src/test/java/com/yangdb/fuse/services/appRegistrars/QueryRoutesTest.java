@@ -8,6 +8,7 @@ import com.typesafe.config.ConfigValueFactory;
 import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.resourceInfo.PageResourceInfo;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.ContentResponse;
 import com.yangdb.fuse.model.transport.CreateJsonQueryRequest;
@@ -102,6 +103,7 @@ public class QueryRoutesTest {
         });
         // the service's order: the fixed routes, then the generic language routes
         new QueryControllerRegistrar().register(app, URLS);
+        new PageControllerRegistrar().register(app, URLS);
         new QueryLanguageRoutesRegistrar().register(app, URLS);
         app.start("server.join=false");
         awaitServer();
@@ -148,6 +150,28 @@ public class QueryRoutesTest {
             Assert.assertEquals(method + ": " + reply.body, 200, reply.status);
         }
         Assert.assertEquals(CALLS.toString(), 2, CALLS.size());
+    }
+
+    /**
+     * A8: nothing keeps the OpenSearch requests of a query or page, so there is no elastic view: the routes and the
+     * advertised URLs are gone
+     */
+    @Test
+    public void noElasticViewIsAdvertisedOrRouted() throws Exception {
+        for (String path : Arrays.asList("/fuse/query/q1/elastic/view", "/fuse/query/q1/cursor/1/page/1/elastic/view")) {
+            Reply reply = call("GET", path, null);
+            Assert.assertEquals(path + ": " + reply.body, 404, reply.status);
+        }
+        Reply reply = call("POST", "/fuse/query/cypher", "{\"id\":\"q1\",\"name\":\"q1\",\"query\":\"MATCH (n) RETURN n\",\"ontology\":\"Dragons\"}");
+        Assert.assertEquals(reply.body, 200, reply.status);
+        Assert.assertTrue(reply.body, reply.body.contains("\"v1QueryUrl\""));
+        Assert.assertFalse(reply.body, reply.body.contains("elastic"));
+        String page = new ObjectMapper().writeValueAsString(new PageResourceInfo("/fuse/query/q1/cursor/1/page/1", "1", 10, 10, 0, true));
+        Assert.assertTrue(page, page.contains("\"dataUrl\""));
+        Assert.assertFalse(page, page.contains("elastic"));
+        // a resource from before still reads
+        Assert.assertNotNull(new ObjectMapper().readValue("{\"resourceId\":\"q1\",\"elasticQueryUrl\":\"/fuse/query/q1/elastic\"}", QueryResourceInfo.class));
+        Assert.assertNotNull(new ObjectMapper().readValue("{\"resourceId\":\"1\",\"elasticQueryUrl\":\"/fuse/query/q1/cursor/1/page/1/elastic\"}", PageResourceInfo.class));
     }
 
     private static void awaitServer() throws Exception {
