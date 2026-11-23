@@ -1,10 +1,9 @@
 # YANG-DB Project Documentation
 
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
-[![](https://img.shields.io/docker/pulls/yangdb/yang.db?style=flat-square)](https://hub.docker.com/u/yangdb)
+[![CI](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/YANG-DB/yang-db)](https://github.com/YANG-DB/yang-db/releases/latest)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-* Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
 * How it works inside: the [architecture tutorial](docs/tutorial/architecture/README.md) (every module, and one query followed from text to results)
 
 ### Run
@@ -28,7 +27,7 @@
 
 ##### Members:
 
-* [Lior Perry](https://www.linkedin.com/in/lior-perry-62135314/)
+* [Lior Perry](https://www.linkedin.com/in/lior-perry-yang-db/)
 
 
 * [Roman Margolis](https://www.linkedin.com/in/roman-margolis-2b181531/)
@@ -48,13 +47,11 @@
 * [Dana](https://www.linkedin.com/in/dana-perry-51148334/)
 
 ##### License:
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-##### Code Coverage:
-[![Coverage Status](https://coveralls.io/repos/github/YANG-DB/yang-db/badge.svg?branch=develop)](https://coveralls.io/github/YANG-DB/yang-db?branch=develop)
-
-##### Dependencies Tags:
-[![](https://jitpack.io/v/YANG-DB/yang-db.svg)](https://jitpack.io/#YANG-DB/yang-db)
+##### Build:
+[![CI](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml):
+the full build and the Docker end-to-end suite, on every pull request.
 
 
 
