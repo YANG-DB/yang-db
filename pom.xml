@@ -198,7 +198,7 @@
         <easymock.version>3.2</easymock.version>
         <rest-assured.version>3.0.1</rest-assured.version>
         <mockito-core.version>3.12.4</mockito-core.version>
-        <assertj.version>3.6.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <jsonassert.version>1.4.0</jsonassert.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <hamcrest.version>1.3</hamcrest.version>
