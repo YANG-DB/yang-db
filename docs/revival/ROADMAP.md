@@ -155,7 +155,7 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       core entirely.)*
 - [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
 
-## Phase 5 — Support a current OpenSearch: 2.19.x (in review: branch `phase5-opensearch-2.19`)
+## Phase 5 — Support a current OpenSearch: 2.19.x ✅ (merged 2026-11-23, PR #169; released as **[v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0)**)
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
 Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
 Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
@@ -167,11 +167,11 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
 - [x] 5.5 (done: the fuse-service embedded node uses the bridge; Painless runs on ANTLR 4.13.1) Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
 - [x] 5.6 Integration: full build green on 2.19.7, **1,249 tests, 0 failures** (lead)
 - [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; 2.19.7 opened every 1.3-written index with exact counts. A full query rehearsal on 1.3 data is still to repeat after the two live-only fixes) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
-- [ ] 5.8 Docs, wiki, upgrade guide, release notes → PR (lead)
+- [x] 5.8 (docs, upgrade guide and [release notes](../releases/v0.9.0.md) done; **wiki still to update**) Docs, wiki, upgrade guide, release notes → PR (lead)
 - [x] 5.9 (done 2026-11-23) Release the OpenSearch 1.3 line before the switch: **[v0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)**
   from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
   distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
-  fixes. This branch becomes 0.9.0 (OpenSearch 2.19.7) after it merges.
+  fixes. Phase 5 shipped as v0.9.0 from `release/0.9.x` (label `opensearch-2.19`); main moves on to `0.10.0-SNAPSHOT`.
 
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
