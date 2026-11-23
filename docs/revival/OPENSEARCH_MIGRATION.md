@@ -1,5 +1,10 @@
 # Migrating YANG-DB from OpenSearch 1.3.0 to a current OpenSearch
 
+> **Status (2026-11-23):** done for 2.19.7: released as [v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0),
+> and the in-place upgrade was rehearsed (§9). For upgrading a deployment, follow *Upgrading from 0.8.x* in the
+> [0.9.0 release notes](../releases/v0.9.0.md); §5 here has the other paths. Sections 2–4 and 8 are the original
+> planning analysis, written before the work.
+
 Conclusions, decisions and the technical migration guide. The step-by-step execution plan (sub-steps, dependency
 graph, agent lanes) is in [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md). Facts below were verified against this
 repository and Maven Central on 2026-11-21. Items marked *(confirm in census)* are expectations that step 5.0 must

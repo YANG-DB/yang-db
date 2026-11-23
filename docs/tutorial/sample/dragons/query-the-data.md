@@ -67,14 +67,13 @@ After the server completes the execution it returns the following results:
         "cursorRequest": {
           "maxExecutionTime": 600000,
           "profile": false,
-          "cursorType": "LogicalGraphCursorRequest",
+          "cursorType": "forwardPaths",
           "ontology": "Dragons",
           "createPageRequest": {
             "pageSize": 100,
             "fetch": false
           },
-          "include": "all",
-          "format": "JSON"
+          "include": "all"
         },
         "pageStoreUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/cursor/1/page",
         "pageResourceInfos": [
@@ -84,8 +83,11 @@ After the server completes the execution it returns the following results:
             "executionTime": 0,
             "dataUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/cursor/1/page/1/data",
             "requestedPageSize": 100,
-            "actualPageSize": 1,
+            "actualPageSize": 100,
             "data": {
+              "queryId": "4db03973-e509-4263-8a22-c5ad43ae5a96",
+              "cursorId": "1",
+              "timestamp": 1795415535368,
               "pattern": {
                 "ont": "Dragons",
                 "name": "4db03973-e509-4263-8a22-c5ad43ae5a96"
@@ -172,7 +174,8 @@ _Note:_ write a pattern starting from the relationship's source type. `(k:Kingdo
 currently rejected by the ontology validator, even though it is undirected.
 
 #### Query:5
-Now lets see the exciting Dragons battles ... give us the dragons who fire upon black dragons
+Now lets see the exciting Dragons battles ... give us the dragons that fired on, or were fired on by, black dragons
+(`-[f:Fire]-` has no direction)
 ```
     Match (d:Dragon)-[f:Fire]-(d1:Dragon) where d1.color = BLACK return *
 ```
@@ -181,7 +184,7 @@ Now lets see the exciting Dragons battles ... give us the dragons who fire upon 
 As same as before we visualize the results or we can even visualize the actual intermediate query that the engine has generated to fetch the data
 we will use the nest REST API to visualize the AST (Abstract Syntax Tree) that was created:
 
-http://localhost:8888/swagger#/operations/query/get_query__id__asg_visualize
+http://localhost:8888/swagger#/query/get_query__id__asg_visualize
 ![yangdb-page-result-visualize-asg-q3](img/visualize-asg-q3.png)
 
 

@@ -1,8 +1,9 @@
 > **Start here:** the [architecture tutorial](../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
 
 ### Abstract
-YANG-DB is a graph query engine. It is based on elasticsearch as the
+YANG-DB is a graph query engine. It is based on OpenSearch (2.19) as the
 physical graph storage layer and the tinkerpop graph traversing framework.
+(Earlier versions ran on Elasticsearch.)
 
 * ## Preference
 
@@ -25,8 +26,8 @@ it’s all about relationships.
 * Cost based optimizer to enable fast and efficient graph search
 * Customized graph schema definition and enforcement
 * Paging and customized Results Projection
-* Highly scalable using elasticsearch robust scaling facilities
-* Highly searchable using elasticsearch search abilities
+* Highly scalable using OpenSearch robust scaling facilities
+* Highly searchable using OpenSearch search abilities
 * Extendable which allows customization in multiple features
 
 ## Highlight
@@ -39,10 +40,10 @@ It was taken into consideration that the data variety is vast and therefore the
 graph physical model takes into consideration multiple schema constraints.
 
 
-Utilizing **elasticsearch** both as an internal search engine and as graph
+Utilizing **OpenSearch** both as an internal search engine and as graph
 repository gives an improved performance and maintaining abilities.
 
-Over elasticsearch’s API we developed a database with query engine,
+Over OpenSearch’s API we developed a database with query engine,
 
 
 optimized cost based execution planner and a traversing execution driver.
@@ -66,18 +67,22 @@ distinct purpose
 
 ### Graph Query Language
 
-We are using a proprietary Graph traversal language called V
+We are using a proprietary Graph traversal language called V1
 
 This is a logical high-level (property) graph query language which has an
 emphasize on query patterns, and visual attributes.
+
+Cypher and SPARQL queries are also accepted (and GraphQL, through the extensions/graphql plugin); each is translated
+into the same internal form.
 
 
 ### Execution Plan Building
 
 **_Execution plan builder_** utilizes the strong statistics abilities of
-elastcisearch indices and performs a nightly batch of statistics (histogram
-and cardinality) calculations over the graph data elements so that each
-execution plan will always choose the optimized ( time wise) plan.
+OpenSearch indices to choose the optimized ( time wise) plan. The shipped
+configuration estimates each candidate step by running count queries against
+OpenSearch; the alternative is a batch of statistics (histogram and cardinality)
+calculations over the graph data elements (the fuse-dv-stat tool).
 
 ### Traversing and data fetching
 
@@ -98,13 +103,13 @@ the input vertices being filtered out, In such cases we would like to continue
 fetching results from the datastore until the bulk size is reached.
 
 
-#### Elasticsearch storage
+#### OpenSearch storage
 
-Elasticsearch stores the graph elements as documents while defining what type of graph element
+OpenSearch stores the graph elements as documents while defining what type of graph element
 the index will store.
 
-Each index holds a single type of mapping (elastic 6) meaning vertices index will contain the
-vertices documents with properties, the edges index will contain the edges documents with
+Each index holds a single kind of graph element (OpenSearch 2.x has no mapping types), meaning a vertices index
+will contain the vertices documents with properties, an edges index will contain the edges documents with
 properties.
 
 A catalog of types to indices mapping is maintained and the mapping of properties to physical

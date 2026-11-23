@@ -1,4 +1,4 @@
-## Knowledge Assembly Flavor - API
+## YANG-DB REST API
 
 ### Swagger API
 Once the engine has started - please open the swagger API page file 
@@ -10,7 +10,8 @@ Once the engine has started - please open the swagger API page file
 YangDb has multiple API endpoints that serve different purposes:
 
 ### Management
-Allows to query the version & configuration info.
+Allows to query the version & configuration info (`[GET] /fuse/internal/version`, `[GET] /fuse/internal/config`)
+and the service health (`[GET] /fuse/health`).
 
 Allows to initiate a DB sequencer used to generate unique ids to the newly generated graph elements
 (`[GET] /fuse/idgen/init?names=Entity,Relation,Evalue,Rvalue,workerId`; run it once - a second call fails with
@@ -32,9 +33,11 @@ The creation of logical ontologies inside the schema model is done here.
     [GET]  http://localhost:8888/fuse/catalog/schema
     [GET]  http://localhost:8888/fuse/catalog/schema/{id}
 
- * Transform a GraphQL IDL (schema definition) into a V1 ontology:
+ * Transform a schema written in another language into a V1 ontology (the body is the schema text):
 
-    [POST] http://localhost:8888/fuse/graphql/ontology/{id}
+    [POST] http://localhost:8888/fuse/graphql/ontology/{id}   (GraphQL IDL; from the extensions/graphql plugin)
+    [POST] http://localhost:8888/fuse/sparql/ontology/{id}    (OWL)
+    [POST] http://localhost:8888/fuse/sql/ontology/{id}       (SQL DDL)
 
 
 ### Query
@@ -45,10 +48,11 @@ The API supports creating queries in the following languages:
 
 * V1 query language (default language) - `[POST] /fuse/query/v1`, `/fuse/query/v1/run`
 * Cypher query language - `[POST] /fuse/query/cypher`, `[GET] /fuse/query/cypher/run`
-* GraphQL language - `[POST] /fuse/query/graphQL`, `[GET] /fuse/query/graphQL/run`
+* GraphQL language (the extensions/graphql plugin) - `[POST] /fuse/query/graphQL`, `[GET] /fuse/query/graphQL/run`
 * SparQL language - `[POST] /fuse/query/sparql`, `[GET] /fuse/query/sparql/run`
 
-There is no SQL query endpoint.
+There is no SQL query endpoint. Every registered language also answers on `[POST] /fuse/query/{lang}` and
+`[GET|POST] /fuse/query/{lang}/run`; an unknown `{lang}` returns 404 with the list of available languages.
 
 Send `Accept: application/json` with every request: without it the query and load endpoints currently answer with a
 Java object name (e.g. `QueryResourceInfo@48764515`) instead of JSON.
@@ -68,13 +72,17 @@ Each of the cursors is the responsible for the data fetching, the page resource 
 
 ### Plan
 
-The plan API enables the user to understand the execution path taken for the query.
+The plan API enables the user to understand the execution path taken for the query
+(`[GET] /fuse/query/{queryId}/plan`, `/plan/print`, `/plan/visualize`; `[GET] /fuse/query/{queryId}/asg` for the
+rewritten query).
 
 It is also possible to get the generated traversal used to traverse the data - tinkerpop graph traversal
+(`[POST] /fuse/query/v1/traversal` with a V1 query).
 
 ### Cursor
 
-The cursor API is the resource which is responsible to fetch the actual data in bulks (pages) and project the results in the requested view.
+The cursor API is the resource which is responsible to fetch the actual data in bulks (pages) and project the results in the requested view
+(`[POST] /fuse/query/{queryId}/cursor`).
 
 - Paths - view the data as a list of assignments.
 
@@ -92,7 +100,7 @@ matching the query fetched pattern .
 
 This is the actual data structure.
 
-_nextPageData/_ API allows fetching the next page while allowing deletion of the former page is needed.
+`[GET] /fuse/query/{queryId}/cursor/{cursorId}/nextPageData` allows fetching the next page while allowing deletion of the former page is needed.
 
 ### GraphApi
 This is the standard graph api that is used to ask a set of typical graph queries and operations against the DB
@@ -100,19 +108,25 @@ This is the standard graph api that is used to ask a set of typical graph querie
  - find path between vertices
  - get a specific vertex including its properties
  - get a specific vertex including its properties & neighbors
+
+(`[GET] /fuse/query/graph/api/findPath`, `/getVertex`, `/getNeighbors`)
  
    
 
 ### Dashboard
 
 This API allows viewing statistical information regarding the amount of graph elements, types and creation times
+(`[GET] /fuse/dashboard/entities/{ontology}`, `/fuse/dashboard/created/{ontology}`, `/fuse/dashboard/count`)
 
 ### Init
 
 This API is used to generate the physical schema according to the index provider instruction used with the ontology
 logical schema.
 
-This API enables both the creation of the indices mapping templates as well as the actual indices.
+This API enables both the creation of the indices mapping templates as well as the actual indices
+(`[GET] /fuse/load/ontology/{id}/mapping` creates the index templates, `[GET] /fuse/load/ontology/{id}/indices` the
+indices; both read the ontology's index provider from the catalog).
+
 ### Load
 This API is used for initialization of the indices according to the physical ontology;
 

@@ -163,6 +163,17 @@ and `…/page/:pageId/elastic`, and neither route exists. The query resource als
 returns 404. To see the OpenSearch requests, use the search slow log (see the
 [architecture tutorial](../tutorial/architecture/query-lifecycle.md#watch-it-yourself)).
 
+### A9 — `POST /fuse/query/v1/run` answers 404 · open
+`QueryControllerRegistrar.v1Context` registers `/v1/run` as `(req, res) -> API.runV1(...)` and discards the `Result`
+it returns. The query runs, but Jooby then falls through to the generic `/fuse/query/:lang/run` route, which answers
+`404 No query language 'v1'`. Confirmed live with a valid V1 query. `POST /fuse/query/v1` (create) and the
+`/v1/plan`, `/v1/traversal` and `/v1/validate` routes work. Found during the documentation review.
+
+### A10 — `POST /fuse/query/cypher` needs `"type": "cypher"` in the body · open, minor
+The route passes no language to `postJsonQuery`, so a body without `"type"` fails with
+`No matching json query translator found for type null`. The language is already known from the URL. The
+`/fuse/query/cypher/run` route and the generic `/fuse/query/:lang` routes don't have this problem.
+
 ### G4 — GraphQL exposes only the first target type of a multi-target relationship · open
 `Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
 
@@ -223,7 +234,7 @@ Found when A3 made them reachable (static reading, not run against the stack):
 - `POST /fuse/query/clause/run` sends `{"clause": ...}` JSON to `runCypher`, which parses it as cypher.
 - `GET /ext` redirects to `/public/assets/swagger/swagger-ext.json`, which doesn't exist.
 - `GET /fuse/query/cypher/logical/run` and `POST /fuse/query/query/v1/logical/run` reuse the core run handlers and
-  behave like `/cypher/run` and `/v1/run`.
+  behave like `/cypher/run` and `/v1/run` (which is itself broken, A9).
 A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
 chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
 

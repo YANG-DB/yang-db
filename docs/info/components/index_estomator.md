@@ -1,3 +1,5 @@
+> Status: unfinished design note; not implemented.
+
 # Index Estimator
 The purpose of this document is to define a new feature in the lucene index structure which will allow the index to use approximation based queries.
 The index creation will be enhanced with this capability to allow specific fields to be approximated using a pre-defined data sketches with a selected precision.

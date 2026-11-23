@@ -1,3 +1,6 @@
+> Historical: notes from the branch that moved YANG-DB to Elasticsearch 7.4.2. YANG-DB has since moved to
+> OpenSearch (now 2.19.7) and no longer uses Elasticsearch.
+
 Abstract: 
 
 The purpose of this branch is to integrate the E/S version 7.4.2 into yandDb 

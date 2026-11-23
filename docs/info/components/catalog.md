@@ -1,3 +1,6 @@
+> Status: design note; not implemented. Today's catalog is the store of ontologies and index providers behind
+> `/fuse/catalog/ontology` and `/fuse/catalog/schema` (see [ontology.md](ontology.md) and [IndexProvider.md](IndexProvider.md)).
+
 # Catalog
 The purpose of this document is to explain and discuss the need for a generalized metadata catalog .
  - It will discuss the general needs for a data-catalog representation and its usage during query execution and data discovery. 

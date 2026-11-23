@@ -57,9 +57,10 @@ The regular API can be called with the following query:
 Match (p1:Person)-[k:Know]->(p2:Person {gender: FEMALE}) return *
 ```
 
-The only difference would be the type of cursor that is selected - projection. With the tutorial data this writes 980
-documents into the `projection` index (`curl 'localhost:9200/_cat/indices/projection?v'`). The index is kept until
-you delete it (`curl -XDELETE localhost:9200/projection`).
+The only difference would be the type of cursor that is selected - projection. With the tutorial data this writes 245
+documents, one per result row, into the `projection` index (`curl 'localhost:9200/projection/_count'`; the
+`docs.count` of `_cat/indices` is higher because it also counts each row's nested entity and relationship documents).
+The index is kept until you delete it (`curl -XDELETE localhost:9200/projection`).
 
 _Note:_ the projection cursor doesn't support count filters (`WHERE count(k) > n`) yet. Such a query projects
 nothing.

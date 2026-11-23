@@ -1,3 +1,7 @@
+> Status: design note (Elasticsearch era); implemented as the `projection` cursor (`IndexProjectionCursor`, writing to
+> the `projection` index). In the implementation the far side of a nested relation is `entityB.id` / `entityB.type`
+> rather than `sideB.*`. How to use it: [Projection & Count Cursors](../tutorial/sample/dragons/projection-and-count.md).
+
 ##Query to Index Projection
 ###**Abstract** 
 

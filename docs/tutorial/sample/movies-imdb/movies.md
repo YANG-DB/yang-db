@@ -1,3 +1,6 @@
+> Status: dataset description only. This folder holds the tables' SQL DDL (`ontology/*.ddl`) and small data extracts
+> (`data/`), but no YANG-DB ontology, index provider or loading steps yet.
+
 ### IMDB movies dataset
 
 Subsets of IMDb data are available for access to customers for personal and non-commercial use. You can hold local copies of this data, and it is subject to our terms and conditions. Please refer to the Non-Commercial Licensing and copyright/license and verify compliance.

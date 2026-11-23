@@ -1,3 +1,5 @@
+> Status: research links collected for possible integrations; none of them is part of YANG-DB.
+
 ####Machine Learning
 https://github.com/semanticvectors/semanticvectors - 
 

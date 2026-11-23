@@ -74,7 +74,6 @@
         <maven-pmd-plugin.version>3.10.0</maven-pmd-plugin.version>
         <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
         <snapshot-replace-maven-plugin.version>1.0</snapshot-replace-maven-plugin.version>
-        <coveralls.maven.plugin>4.3.0</coveralls.maven.plugin>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
@@ -986,10 +985,6 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
             </plugin>
@@ -1081,17 +1076,6 @@
                             --add-exports java.base/jdk.internal.misc=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         </argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.eluder.coveralls</groupId>
-                    <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>${coveralls.maven.plugin}</version>
-                    <configuration>
-                        <repoToken>4rxwIVZN1Pn7Bpb0LqiTN0PpSfoZvywKS</repoToken>
-                        <jacocoReports>
-                            <jacocoReport>${project.build.directory}/jacoco-ut/jacoco.xml</jacocoReport>
-                        </jacocoReports>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -1252,15 +1236,6 @@
         </pluginManagement>
 
     </build>
-
-    <!--
-        <repositories>
-            <repository>
-                <id>jitpack.io</id>
-                <url>https://jitpack.io</url>
-            </repository>
-        </repositories>
-    -->
 
 
     <distributionManagement>

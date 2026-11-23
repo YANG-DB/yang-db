@@ -1,4 +1,8 @@
 # Integration of YangDb into Open Distro Proposal
+> **Status:** historical draft (Open Distro / Elasticsearch era), not implemented. Open Distro became OpenSearch, and
+> YANG-DB runs as a separate service that talks to OpenSearch 2.19.7 over its REST API, not as a plugin. For the current
+> design see the [architecture tutorial](../tutorial/architecture/README.md); for releases see [v0.9.0](v0.9.0.md).
+
 The next document is an initial draft proposal for integration of YangDB capabilities into AWS Open distro project as 
 a new elasticsearch plugin for graph traversal and query capabilities.
 

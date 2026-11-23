@@ -31,12 +31,12 @@ A filter on entities or relationships which refer to non-concrete entities.
 ### Data Types, Operators, and Functions
 V1 supports the following primitive data types:
 
-* Integer types
-* Real types (floating-point)
-* String
-* Date
-* datetime
-* duration
+* Integer types (`int`)
+* Real types (floating-point, `float`)
+* String (`string`, and full-text `text`)
+* Date (`date`)
+* datetime (`datetime`)
+* Geo point (`geo_point`)
 
 ### Quantifiers
 
@@ -92,10 +92,11 @@ Query as a json document:
 ```
 {
   "name": "Q1",
+  "ont": "Dragons",
   "elements": [
     {
       "eNum": 0,
-      "type": "",
+      "type": "Start",
       "next": 1
     },
     {
@@ -110,7 +111,7 @@ Query as a json document:
     {
       "eNum": 2,
       "type": "Rel",
-      "rType": "own",
+      "rType": "Own",
       "dir": "R",
       "next": 3
     },
@@ -132,11 +133,14 @@ Each v1 query has a name and a (linked) list of elements which are labeled with 
 * eNum - sequence number
 * eTag – a named tag used for results labeling
 
+and names the ontology it runs against in `ont`.
+
 
 Additional Query with quantifier and property constraint 
 ```
 {
   "name": "Q10",
+  "ont": "Dragons",
   "elements": [
     {
       "eNum": 0,
@@ -162,9 +166,9 @@ Additional Query with quantifier and property constraint
     {
       "eNum": 3,
       "type": "EProp",
-      "pType": 1,
-      "pTag": 1,
+      "pType": "firstName",
       "con": {
+        "type": "Constraint",
         "op": "eq",
         "expr": "Brandon"
       }
@@ -172,7 +176,7 @@ Additional Query with quantifier and property constraint
     {
       "eNum": 4,
       "type": "Rel",
-      "eType": "own",
+      "rType": "Own",
       "dir": "R",
       "next": 5
     },
@@ -180,8 +184,7 @@ Additional Query with quantifier and property constraint
       "eNum": 5,
       "type": "ETyped",
       "eTag": "B",
-      "eType": "Dragon",
-      "next": 6
+      "eType": "Dragon"
     }]
 }
 ```
