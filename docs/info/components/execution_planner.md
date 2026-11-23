@@ -1,3 +1,5 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 ## (L)EPB  - Logical Execution Plan Builder
 ![](https://media.licdn.com/dms/image/C4E12AQE1OLxgsJvdew/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=IvcsBixXfakKoY8r3BnvQcr5srbLrYVckW0Veqw1Wjc)
 

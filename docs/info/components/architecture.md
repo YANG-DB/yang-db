@@ -1,3 +1,5 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 ## YangDB Software Architecture
 
 The graph db solution is a multi-modules software project build upon different architecture layers.
