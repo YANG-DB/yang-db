@@ -53,6 +53,8 @@ public class AsgSparqlModule extends ModuleBase {
 
         // the query-language registry, looked up by query type (BasicJsonQueryTransformerFactory)
         QueryLanguages.register(binder, CreateQueryRequestMetadata.TYPE_SPARQL).to(AsgSparQLTransformer.class);
+        // its old name, for clients that still send "type": "sparkQL"
+        QueryLanguages.register(binder, CreateQueryRequestMetadata.TYPE_SPARQL_LEGACY).to(AsgSparQLTransformer.class);
 
     }
 

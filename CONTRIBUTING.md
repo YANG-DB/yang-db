@@ -64,7 +64,8 @@ language is then available through the generic routes:
   the request body)
 
 The name is matched exactly first, then ignoring case. An unknown name gets a 404 that lists the available languages.
-The built-in languages are registered the same way under `cypher` and `sparkQL` (`CreateQueryRequestMetadata.TYPE_*`);
+The built-in languages are registered the same way under `cypher` and `sparql` (`CreateQueryRequestMetadata.TYPE_*`;
+`sparql` also answers to its old name, `sparkQL`);
 their original URLs (`/fuse/query/cypher/run` etc.) still work. `graphQL` is an extension (`extensions/graphql`) and
 registers the same way. Registering a name twice fails at startup.
 

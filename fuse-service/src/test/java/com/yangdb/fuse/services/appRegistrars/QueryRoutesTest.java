@@ -140,6 +140,16 @@ public class QueryRoutesTest {
                 "create " + CreateQueryRequestMetadata.TYPE_SPARQL), CALLS);
     }
 
+    /** A5: the sparql run route */
+    @Test
+    public void runsASparqlQuery() throws Exception {
+        for (String method : Arrays.asList("GET", "POST")) {
+            Reply reply = call(method, "/fuse/query/sparql/run?ontology=Dragons&query=q", null);
+            Assert.assertEquals(method + ": " + reply.body, 200, reply.status);
+        }
+        Assert.assertEquals(CALLS.toString(), 2, CALLS.size());
+    }
+
     private static void awaitServer() throws Exception {
         long deadline = System.currentTimeMillis() + 30_000;
         while (true) {
