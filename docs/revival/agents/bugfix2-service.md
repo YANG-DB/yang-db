@@ -12,9 +12,9 @@ port, QueryControllerRegistrar + PageControllerRegistrar + generic language rout
 | A10 `POST /cypher` needs type | fixed | `postCypher`/`postSparql` passed `null` type to `postJsonQuery` | pass `TYPE_CYPHERQL` / `TYPE_SPARQL` | c18b17aba |
 | A5 `sparkQL` key | fixed | registry key was `sparkQL`; case-insensitive match can't reach `sparql` | `TYPE_SPARQL = "sparql"`, `TYPE_SPARQL_LEGACY = "sparkQL"` also registered by AsgSparqlModule; docs updated | f21de57a6 |
 | A8 `elastic/view` 404 | fixed (removed) | viewer page and `/elastic` routes never existed; OpenSearch requests are built per step by unipop controllers during page fetch and never stored | removed both `/elastic/view` routes and `elasticQueryUrl` from Query/PageResourceInfo (`@JsonIgnoreProperties` keeps old JSON readable) | 44e3b99a5 |
-| A4 Dragons clause routes | **open — needs a product decision** | see below | none | — |
+| A4 Dragons clause routes | fixed (removed; maintainer chose option 1) | see below | deleted `DragonsExtensionRegistrar`, `DragonsExtensionQueryController`, `ExtensionQueryDriver`; `DragonsExtension` contributes only the playground registrar; `DragonsExtensionTest` asserts the routes are gone | see git log |
 
-## A4 findings
+## A4 findings (decision: option 1)
 The `clause` language was the Knowledge domain's JSON clause DSL: `AsgClauseTransformer` →
 `JsonQueryTranslator` (+ `BusinessTypesProvider`, `FolderBasedTypeProvider`, parser model), deleted in 040f4deb8 with
 the knowledge extension. It builds Knowledge-ontology queries (`Entity`/`Evalue`, `ontology` default "Knowledge"), so
