@@ -1,8 +1,11 @@
 > **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
 
 
+> Status: this page describes the statistics (histogram) based cost estimators (`estimation/pattern/**` in fuse-dv-epb,
+> fed by the offline fuse-dv-stat tool). They exist but the shipped Dragons configuration does not use them: it uses
+> `CountCostEstimator` (count queries against OpenSearch) with `NoStatsProvider`.
+
 ## Cost Estimator
-![](https://static.priceandcost.com/wp-content/uploads/2018/03/Your_Guide_to_Project_Management_Cost_Estimation_blog.jpg)
 
 Cost estimator is the process of evaluating a “cost” of an execution plan according to a prior made statistical calculation for the distribution of values in the dataset.
 
@@ -23,13 +26,13 @@ The process of collecting statistical information about elements of the graph �
 In a non-native graph DB that its storage mechanism is based on a document store.
 The graph elements – both node & edges are stored in a document. we need to calculate the histogram (distribution) for every property in the graph.
 
-In a document store like elasticsearch there is an additional level of abstraction for the document location and partitioning:
+In a document store like OpenSearch (Elasticsearch when this was written) there is an additional level of abstraction for the document location and partitioning:
 
 * Indices – indicate the “table” (index) that holds all the “records” of a given type
 
 * Shard – The table’s (index) “partition” factor that partitions the data according to some column (mostly time based)
 
-* Mappings – mappings is Elasticsearch’s schema index structure, we use it to label the graph elements with a distinct type (each type can have named properties).
+* Mappings – mappings is the index schema structure; in the Elasticsearch era we used the mapping type to label the graph elements with a distinct type (each type can have named properties). OpenSearch 2.x has no mapping types: the element type is a `type` field of the document.
 
 ### Types of statistical estimators:
 
@@ -156,7 +159,7 @@ Available Filter Conditions:
 •	ge
 •	lt
 •	le
-•	inset
+•	inSet
 •	notInSet
 •	inRange
 •	notInRange
@@ -171,6 +174,7 @@ Available Filter Conditions:
 •	fuzzyEq
 •	fuzzyNe
 ```
+(These are the `ConstraintOp` names; in V1 JSON several are written with spaces, e.g. `in set`, `not empty`, `starts with`.)
 
 ## Collection Statistics Framework
 

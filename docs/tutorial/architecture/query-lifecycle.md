@@ -85,7 +85,7 @@ The result is an **ASG** (`AsgQuery`): a tree of `AsgEBase` nodes, each wrapping
 the ASG directly, without passing through the V1 JSON language.
 
 The ASG is the shared form for every query language, and the input to every later stage. The same tree written as
-**V1 JSON**, the native language you can post to `/fuse/query/v1`, is a flat list of numbered elements:
+**V1 JSON**, YANG-DB's native language, is a flat list of numbered elements:
 
 ```json
 {"ont": "Dragons", "name": "owners", "elements": [
@@ -98,7 +98,10 @@ The ASG is the shared form for every query language, and the input to every late
 ]}
 ```
 
-V1 queries become ASGs through `QueryToCompositeAsgTransformer` (fuse-core) and then join the pipeline at stage 2.
+To run it, wrap it in a create request, `{"id": "owners", "name": "owners", "query": {…the V1 JSON…}}`, and `POST` it
+to `/fuse/query` (add `"createCursorRequest": {"cursorType": "forwardPaths", "createPageRequest": {"pageSize": 100}}`
+to get the first page in the same response). V1 queries become ASGs through `QueryToCompositeAsgTransformer`
+(fuse-core) and then join the pipeline at stage 2.
 
 ## Stage 2: rewrite and validate (fuse-asg, fuse-dv-asg)
 
@@ -124,8 +127,10 @@ constraints.
 
 An invalid query stops here, with an error that explains why.
 
-The rewritten ASG, from `GET /fuse/query/:id/asg/print`, with the property list shortened:
+The rewritten ASG, from `GET /fuse/query/:id/asg/print` (the `data` field of the response), with the property list
+shortened:
 ```
+Projected fields:{p=[Asg(ETyped(1))], d=[Asg(ETyped(3))], o=[Asg(Rel(2))]}|
 [└── Start,
     ──Typ[:Person p#1]──Q[100:all]:{2|101},
                                       └-> Rel(:Own o#2)──Typ[:Dragon d#3]──?[..][301],
@@ -137,7 +142,8 @@ The rewritten ASG, from `GET /fuse/query/:id/asg/print`, with the property list 
                                               └─?[0]:[firstName<IdentityProjection>], …
 ```
 Each `?[..][N]` is a property group. Group 101 belongs to `p`: the filter `name eq …` plus the projected properties.
-Group 201 belongs to `o` and group 301 to `d`.
+Group 201 belongs to `o` and group 301 to `d`. The print shows ontology property names only: the filter already
+targets `name.keyword` (it's a `SchematicEProp` now), which you'll see in the traversal in stage 4.
 
 ## Stage 3: plan (fuse-dv-epb)
 
@@ -152,19 +158,22 @@ fetches a handful of documents; starting from all 1,000 dragons and walking back
    either direction. It also adds the next entity's filter to the edge when the edge document has a copy of that
    field (a *redundant* field; see [How the data is stored](#how-the-data-is-stored)).
 3. **Validate** each candidate with `M1PlanValidator`.
-4. **Cost** each candidate. In the shipped configuration that is `CountCostEstimator`: it translates the partial plan
-   into a traversal (stage 4) and **runs a count query on OpenSearch**. You can see it in the request log below, as a
-   `size: 0` search on `person`. Counts are cached for 10 minutes, and longer plans reuse the cost of their prefix.
+4. **Cost** each candidate. In the shipped configuration, a plan of at most two operations (a start entity and its
+   filter) goes to `CountCostEstimator`: it translates the partial plan into a traversal (stage 4) and **runs a count
+   query on OpenSearch**. You can see it in the request log below, as a `size: 0` search on `person`. Counts are
+   cached (an entry expires 10 minutes after its last use). Longer plans don't run queries: they take the cost of
+   their prefix.
 5. **Prune and select**: keep the cheapest complete plan.
 
 A plan is an ordered list of operations from `fuse-model` (`execution/plan/`): `EntityOp` (go to an entity),
 `EntityFilterOp` (filter it), `RelationOp` (walk a relationship), `RelationFilterOp`, and `GoToEntityOp` (jump back
 to an earlier entity when the pattern branches). The chosen plan, from `GET /fuse/query/:id/plan/print`:
 ```
-cost: 1.0
-──Typ[:Person p#1]──?[..][101] --> Rel(:Own o#2)──?[..][201]──Typ[:Dragon d#3]──?[..][301]
+[cost:DoubleCost{estimation=1.0}
+, ──Typ[:Person p#1]──?[..][101]--> Rel(:Own o#2)──?[..][201]──Typ[:Dragon d#3]──?[..][301]]
 ```
-Start at the filtered Person (cost 1: one match), walk `Own` outwards, and end at Dragon.
+Start at the filtered Person (cost 1: one match), walk `Own` outwards, and end at Dragon. The whole plan costs 1.0
+because it inherits the cost of its two-operation prefix.
 
 ## Stage 4: plan → Gremlin traversal (fuse-dv-gta)
 
@@ -178,12 +187,14 @@ translator folds each plan operation into a TinkerPop `GraphTraversal`, one stra
 | `EntityOp` d + `EntityFilterOp` | the same entity strategies, for a later entity | `otherV().outE(promiseFilter).has(constraint, label=Dragon).otherV().as(d)` |
 
 Filters travel as a single `has("constraint", …)` step that holds a whole predicate. That way the next stage can turn
-the predicate into one OpenSearch query instead of filtering in memory. The cursor then appends `.path()`, so each
-result is the full path p → o → d.
+the predicate into one OpenSearch query instead of filtering in memory. `StandardCursorDriver` then appends `.path()`,
+so each result is the full path p → o → d.
 
-The traversal, from `POST /fuse/query/v1/traversal` with the V1 query above (shortened):
+The traversal, from `POST /fuse/query/v1/traversal` with the V1 query above (the bare V1 JSON, not wrapped). The
+response is TinkerPop's traversal explanation: the traversal before and after each strategy. Its first and last
+entries, shortened:
 ```
-Original  [GraphStep(vertex)@[p], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(Person)])],
+Original  [GraphStep(vertex,[])@[p], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(Person)])],
            [HasStep([name.keyword.eq(Ezequiel Johnston)])]])])), firstName.raw(firstName), …]),
            VertexStep(OUT,edge)@[p-->d], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(Own)])]…),
            EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge),
@@ -191,9 +202,9 @@ Original  [GraphStep(vertex)@[p], HasStep([constraint.eq(Constraint.by([AndStep(
 Final     [UniGraphStartStep(vertex,[])@[p], UniGraphVertexStep(OUT,edge)@[p-->d], UniGraphEdgeOtherVertexStep,
            UniGraphVertexStep(OUT,[promiseFilter],edge), UniGraphEdgeOtherVertexStep@[d]]
 ```
-"Final" is the traversal after TinkerPop's strategies run. `FuseStandardStrategyProvider` (fuse-dv-unipop) has
-replaced the standard steps with **unipop steps**, which send their work to controllers. The `has` steps have been
-folded into the steps that use them.
+"Final" is the traversal after TinkerPop's strategies run. The `CompositeStrategy` that `FuseStandardStrategyProvider`
+(fuse-dv-unipop) installs has replaced the standard steps with **unipop steps**, which send their work to controllers.
+The `has` steps have been folded into the steps that use them.
 
 Nothing has run yet: the traversal is lazy.
 
@@ -209,18 +220,20 @@ Each unipop step becomes one OpenSearch search:
 | `UniGraphVertexStep(OUT,[promiseFilter])` | `DiscreteVertexFilterController` | the far-end vertices, filtered by type and fetched by id |
 
 Each controller builds its search with a chain of **search appenders** (`controller/common/appender/`):
-- `ElementIndexSearchAppender` and `EdgeIndexSearchAppender` choose the indices from the physical schema, so only
-  `person` or `own` is searched, not every index.
+- `ElementIndexSearchAppender`, `EdgeIndexSearchAppender` and `FilterIndexSearchAppender` choose the indices from the
+  physical schema, so only `person`, `own` or `dragon` is searched, not every index.
 - `ConstraintSearchAppender` translates the Gremlin constraint into an OpenSearch `bool` query.
 - Other appenders set the size, the `_source` fields to fetch (only the projected properties), and the edge
   direction.
 
-The search goes out through the `Client` interface: `LoggingClient` → **`RestBridgeClient`** (fuse-opensearch-client)
-→ the REST high-level client → HTTP on port 9200. Large results are read with scrolling (`SearchHitScrollIterable`).
+The search goes out through the `Client` interface: `TimeoutClientAdvisor` → `LoggingClient` (both fuse-dv-core) →
+**`RestBridgeClient`** (fuse-opensearch-client) → the REST high-level client → HTTP on port 9200. Every search is
+read with a scroll (`SearchHitScrollIterable`), so large results come in batches.
 The converters `DiscreteVertexConverter` and `DiscreteEdgeConverter` turn hits back into graph vertices and edges.
 
 These are the requests OpenSearch received for the query, from its search slow log. `boost` and similar defaults
-were removed.
+were removed, and single-clause `bool` wrappers flattened. In the log itself each search appears once per shard, and
+once more per shard for its scroll follow-up; the planner's count (`size: 0`) isn't scrolled.
 
 ```jsonc
 // planning: CountCostEstimator counts the filtered start entity
@@ -243,8 +256,11 @@ dragon  {"size":10000, "query":{"bool":{"filter":[{"bool":{"must":[
 Some details worth noticing:
 - The `Own` condition appears twice in the `should` clause. The ontology declares `Own` for two pairs, Person → Dragon
   and Person → Horse, and each pair is a separate edge schema.
-- The edge search doesn't filter on the target type. Step 3 does, by asking the `dragon` index for those ids with
-  `type = Dragon`. That is why a horse is never returned as a dragon.
+- The edge search doesn't filter on the target type, so it also returns the person's `Own` edges to horses. Step 3
+  removes them: `DiscreteVertexFilterController` first drops far-end vertices whose type (read from the edge's
+  `entityB.type`) isn't `Dragon`, then asks the `dragon` index for the remaining ids with `type = Dragon`. That is why
+  a horse is never returned as a dragon. (Elinor Lang, for example, owns dragon 36 and horse 38: her edge search
+  returns both, and the `dragon` search asks only for `36`.)
 
 ### How the data is stored
 - **An entity** is one document in its type's index, with `_id` = the entity id: `{"id":"7","type":"Person","name":…}`.
@@ -259,8 +275,10 @@ Some details worth noticing:
   a walk in either direction is always a search on `entityA.id` (step 2 above). In results the relationship id gets
   its type as a prefix (`Own:dragon_30_7`), so ids stay unique across relationship types.
 - **Redundant fields**: the index provider can declare entity fields to copy onto the edge. `Own`, for example,
-  declares `entityB.name`. When the loaded data fills them (`entityB.name` columns in the CSV; the tutorial data
-  doesn't), the planner can filter on the far entity while searching the edges, without fetching that entity first.
+  declares `name` on both ends (`entityA.name`, `entityB.name`) and `firstName` on `entityA`. The CSV loader fills
+  them from columns of that name (`entityB.name`, …), and the JSON graph loader copies them from the end nodes. The
+  tutorial CSVs have no such columns, so the edges above don't carry them. When they are filled, the planner can
+  filter on the far entity while searching the edges, without fetching that entity first.
 - **Time-partitioned relationships** (`Fire`, `Freeze`) are spread over several indices (`idx_fire_500` …
   `idx_fire_2000`) by date. The loader routes each one to the bucket that covers its date.
 
@@ -277,8 +295,8 @@ traversal. For each path it:
 - turns each edge into a `Relationship`: id, type, both ends and their tags
 
 Each path becomes one **`Assignment`**, a set of entities and relationships that satisfies the pattern. All of them
-are collected into an **`AssignmentsQueryResult`**. The page stores it, and the response nests it inside the
-query → cursor → page resource description:
+are collected into an **`AssignmentsQueryResult`**, with duplicate assignments removed. The page stores it, and the
+response nests it inside the query → cursor → page resource description:
 
 ```jsonc
 {"data": {
@@ -312,7 +330,7 @@ differently. For example, `cursorType=graph` returns the subgraph, `count` retur
 | **Cypher** | stage 1 | `cypher` → `AsgCypherTransformer` → ASG directly |
 | **SPARQL** | stage 1 | `sparkQL` (sic; see KNOWN_ISSUES A5) → `AsgSparQLTransformer` → `SparqlTranslator` (rdf4j parser) → ASG directly |
 | **GraphQL** (extension) | stage 1 | `graphQL` → `AsgGraphQLTransformer`: graphql-java runs the query against a schema generated from the ontology, which produces a V1 query, and `QueryToAsgTransformer` turns that into an ASG |
-| **V1 JSON** | stage 2 | `POST /fuse/query` or `/fuse/query/v1[/run]` → `QueryToCompositeAsgTransformer` → ASG. The V1 query is also kept as the result's `pattern` |
+| **V1 JSON** | stage 2 | `POST /fuse/query` or `/fuse/query/v1` (a create request wrapping the query; see [stage 1](#stage-1-cypher-text--asg-fuse-asg)) → `QueryToCompositeAsgTransformer` → ASG. The V1 query is also kept as the result's `pattern`. (`POST /fuse/query/v1/run` currently answers 404, "No query language 'v1'") |
 
 From stage 2 on, every language takes the same path: rewrite, validate, plan, traverse, execute, assemble.
 
@@ -332,19 +350,25 @@ ID=$(curl -s -G $F/query/cypher/run --data-urlencode ontology=Dragons \
   --data-urlencode "cypher=MATCH (p:Person)-[o:Own]->(d:Dragon) WHERE p.name = 'Ezequiel Johnston' RETURN *" \
   | python3 -c 'import json,sys; print(json.load(sys.stdin)["data"]["resourceId"])')
 
-curl -s $F/query/$ID/asg/print     # stage 2: the rewritten ASG
-curl -s $F/query/$ID/asg/json      # the same, as JSON
-curl -s $F/query/$ID/plan/print    # stage 3: the chosen plan and its cost
-curl -s $F/query/$ID/plan/json     # the plan as JSON
+# the prints come back as one JSON string with \n escapes; this shows them as text
+show() { python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["data"] if isinstance(d, dict) else d)'; }
 
-# stage 4: the traversal for a V1 query (save the V1 JSON above as v1.json)
-curl -s -X POST $F/query/v1/traversal -H 'Content-Type: application/json' --data @v1.json
+curl -s $F/query/$ID/asg/print | show   # stage 2: the rewritten ASG
+curl -s $F/query/$ID/asg/json           # the same, as JSON
+curl -s $F/query/$ID/plan/print | show  # stage 3: the chosen plan and its cost
+curl -s $F/query/$ID/plan/json          # the plan as JSON
 
-# stage 5: log the OpenSearch requests (switch it off afterwards by setting the values to null)
+# stage 4: the traversal for a V1 query (save the bare V1 JSON above as v1.json)
+curl -s -X POST $F/query/v1/traversal -H 'Content-Type: application/json' --data @v1.json | show
+
+# stage 5: log the OpenSearch requests
 for i in person own dragon; do curl -s -X PUT localhost:9200/$i/_settings -H 'Content-Type: application/json' \
   -d '{"index.search.slowlog.threshold.query.trace":"0ms","index.search.slowlog.level":"trace"}'; done
 # …run the query again (with a new name, or the planner's count may come from its cache), then:
 docker logs opensearch 2>&1 | grep 'i.s.s.query'
+# switch the slow log off again
+for i in person own dragon; do curl -s -X PUT localhost:9200/$i/_settings -H 'Content-Type: application/json' \
+  -d '{"index.search.slowlog.threshold.query.trace":null,"index.search.slowlog.level":null}'; done
 ```
 
 The `elastic/view` links that the query and page resources advertise currently answer 404 (KNOWN_ISSUES A8), so use

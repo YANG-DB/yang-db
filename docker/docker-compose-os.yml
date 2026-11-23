@@ -74,7 +74,8 @@ services:
 #      args:
 #        - VERSION=${VERSION}
     # Connection settings come from the config bundled in the image (opensearch.hosts = ["opensearch"],
-    # opensearch.port = 9300, opensearch.cluster_name = Dragons), which match the opensearch service above.
+    # opensearch.port = 9300 (read as HTTP port 9200), opensearch.cluster_name = Dragons), which match the opensearch
+    # service above.
     # start-fuse-service.sh does not read environment variables, so they are not set here.
     depends_on:
       opensearch:

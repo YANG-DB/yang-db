@@ -1,3 +1,6 @@
+> Status: dataset description only. This folder holds the tables' SQL DDL (`ontology/*.ddl`); there is no data,
+> YANG-DB ontology, index provider or loading steps yet.
+
 ### Movies Dataset
 Taken from https://www.kaggle.com/rounakbanik/the-movies-dataset
 

@@ -1,4 +1,4 @@
-## My First Tutorial - Installation
+## My First Tutorial - Installation (legacy, Elasticsearch 6.5)
 
 > **Legacy guide - out of date.** This manual install installs Elasticsearch/Kibana 6.5.4 and the old `v0.5` release,
 > which do not work with the current build (OpenSearch 2.19.7). Start from the [tutorial's main page](README.md) instead.

@@ -85,6 +85,16 @@ itself when its class is listed under `modules.<profile>` in the application con
 ```java
 package com.example.hello;
 
+import com.google.inject.Module;
+import com.yangdb.fuse.dispatcher.query.QueryTransformer;
+import com.yangdb.fuse.extension.QueryLanguages;
+import com.yangdb.fuse.extension.YangDbExtension;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.services.appRegistrars.AppRegistrar;
+
+import java.util.List;
+
 public class HelloExtension implements YangDbExtension {
     @Override
     public List<Module> modules() {
@@ -196,3 +206,5 @@ Every pull request to `main` runs two checks ([.github/workflows/ci.yml](.github
   ([docker/e2e](docker/e2e/README.md)).
 
 Both must be green before merging. To reproduce the e2e check locally, see [docker/e2e/README.md](docker/e2e/README.md).
+CodeQL security scanning ([.github/workflows/codeql.yml](.github/workflows/codeql.yml)) runs after every merge to
+`main` and weekly, not on pull requests.

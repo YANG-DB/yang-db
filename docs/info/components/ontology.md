@@ -17,7 +17,7 @@ The ontology schema is constructed from the next elements:
          "name": "Person",
          "idField": [
              "id"
-         ]
+         ],
          "mandatory": [
             "id"
          ],
@@ -39,6 +39,7 @@ The ontology schema is constructed from the next elements:
    - idField: representing the id fields names of entity (resembels Primary Key constraint)
    - mandatory: representing the mandatory fields names of entity
    - properties: representing the properties names of entity
+   - metadata: (optional) representing the metadata fields names of entity (such as `id`, `type`)
    
 -------------
     
@@ -79,7 +80,7 @@ The ontology schema is constructed from the next elements:
   
    - rType: representing the schematic (logical) type of relation
    - name: representing the schematic (logical) name of relation
-   - direction: representing if the relation has direction
+   - directional: representing if the relation has direction
    - idField: representing the id fields names of relation (resembels Primary Key constraint)
    - mandatory: representing the mandatory fields names of relation
 
@@ -111,10 +112,10 @@ The ontology schema is constructed from the next elements:
    - string
    - text
    - float
-   - geo
-   - long
-   - float
-   - long
+   - date
+   - datetime
+   - geo_point
+   - array
    - enum reference -> referencing the enum list
    - sub type -> referencing the entities list 
    

@@ -9,11 +9,13 @@ provider** defines where each type lives in OpenSearch. In between, a query is t
 translation is done by a different module, and you can inspect its result over the REST API.
 
 ```
-Cypher text ─▶ ASG ─▶ rewritten ASG ─▶ plan ─▶ Gremlin traversal ─▶ OpenSearch searches ─▶ assignments (JSON)
-  fuse-asg     fuse-asg   fuse-dv-asg   fuse-dv-epb  fuse-dv-gta      fuse-dv-unipop          fuse-dv-core
-                                                                     unipop-core
-                                                                     fuse-opensearch-client
+Cypher text ─1▶ ASG ─2▶ rewritten ASG ─3▶ plan ─4▶ Gremlin traversal ─5▶ OpenSearch searches ─6▶ assignments (JSON)
+
+1 fuse-asg    2 fuse-asg + fuse-dv-asg    3 fuse-dv-epb    4 fuse-dv-gta
+5 fuse-dv-unipop, unipop-core, fuse-opensearch-client    6 fuse-dv-core
 ```
+
+Each numbered arrow is one translation, and the numbers are the stages of [the life of a query](query-lifecycle.md).
 
 ## The pages
 

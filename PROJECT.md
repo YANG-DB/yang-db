@@ -15,7 +15,9 @@ graph database.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
 
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
-> OpenSearch **2.19.7** (upgraded from 1.3.0 in Phase 5; 3.x is planned). The full build is green (1,250 tests with the integration suites
+> OpenSearch **2.19.7** (upgraded from 1.3.0 in Phase 5; 3.x is planned). The latest release is
+> [0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0) (OpenSearch 2.19.7); [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)
+> is the last on OpenSearch 1.3. Each has a ready-built distribution attached. The full build is green (1,249 tests with the integration suites
 > running), and every documented tutorial query passes end to end on Docker
 > ([e2e suite](docker/e2e/README.md)). A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
 > partitions and JSON responses. Progress and open issues are in [docs/revival/](docs/revival/ROADMAP.md).

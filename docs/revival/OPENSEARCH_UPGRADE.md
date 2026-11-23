@@ -1,5 +1,9 @@
 # Story: support a current OpenSearch (1.3.0 → 2.19.x, then 3.x)
 
+> **Status (2026-11-23):** the 2.19 part (Phase 5) is done and released as
+> [v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0). This page is kept as the execution record. The
+> 3.x part (Phase 6) hasn't started.
+
 Background, conclusions and the breaking-change catalog: [OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md).
 
 **Goal:** YANG-DB builds, passes its tests and runs the Docker quickstart on a current OpenSearch, with an upgrade path

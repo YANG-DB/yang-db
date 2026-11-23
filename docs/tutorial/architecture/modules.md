@@ -104,8 +104,9 @@ internals.
 ### fuse-core: contracts and the query lifecycle
 The "dispatcher" layer. It holds mostly interfaces and base classes that `fuse-dv-*` implements:
 
-- **The query lifecycle**: `dispatcher/driver/QueryDriverBase.java` runs create → transform → rewrite → validate → plan
-  → cursor → page. It also implements `run`, `explain`, `profile`, `findPath`, `getNeighbors` and related calls.
+- **The query lifecycle**: `dispatcher/driver/QueryDriverBase.java`. Its `create` runs transform → rewrite → validate
+  → plan, then opens a cursor and fetches the first page when the request asks for them. It also implements `run`,
+  `explain`, `profile`, `findPath`, `getNeighbors` and related calls.
   `CursorDriverBase` and `PageDriverBase` are the matching cursor and page halves.
 - **Planner and translator SPIs**: `dispatcher/epb/PlanSearcher`, `PlanExtensionStrategy`, `PlanPruneStrategy`,
   `PlanSelector`, `CostEstimator`, and `dispatcher/gta/PlanTraversalTranslator`.
@@ -150,20 +151,25 @@ EPB, the Execution Plan Builder, turns an ASG into the cheapest **plan**: an ord
 which entity to start from and which way to walk each relationship.
 
 - `epb/plan/BottomUpPlanSearcher`: grows partial plans step by step. On each step it extends them, validates them,
-  costs them, prunes them and selects among them. `UnionPlanSearcher` and `OptionalSplitPlanSearcher` handle `UNION`
-  and `OPTIONAL`.
+  costs them, prunes them and selects among them. `UnionPlanSearcher` wraps it: it splits a query with an OR
+  (`some` quantifier) into branches, plans each one, and joins the plans with a `UnionOp`.
+  (`OptionalSplitPlanSearcher` exists but isn't wired in; `OPTIONAL` is planned by the extension strategy below.)
 - `epb/plan/extenders/**`: how a partial plan can grow. The shipped configuration uses
-  `M1/M1DfsRedundantPlanExtensionStrategy`.
+  `M1/M1DfsRedundantPlanExtensionStrategy`, a chain of smaller extenders: the initial one-entity plans, one adjacent
+  step (`StepAdjacentDfsStrategy`), `OPTIONAL` branches, and the redundant-field filters.
 - **Cost**: the shipped Dragons configuration (`EpbDfsCountBasedRedundantModule`) uses `estimation/count/CountCostEstimator`.
-  It costs a short partial plan by **running a count query against OpenSearch**, cached for 10 minutes. The
-  statistics-based estimators (`estimation/pattern/**` with a `StatisticsProvider`) are the alternative modules.
+  It costs a plan of at most two operations (the start entity and its filter) by **running a count query against
+  OpenSearch**. The counts are cached (an entry expires 10 minutes after its last use). A longer plan just takes the
+  cost of its prefix. The statistics-based estimators (`estimation/pattern/**` with a `StatisticsProvider`) are the
+  alternative modules.
 - `epb/plan/validation/M1PlanValidator`, `pruners/*`, `selectors/*`.
 
 ### fuse-dv-gta: plan → Gremlin traversal
 GTA turns a plan into a TinkerPop `GraphTraversal`, with one translation strategy per plan-operation type.
 
 - `gta/translation/discrete/M1PlanTraversalTranslator` (configured) extends `ChainedPlanOpTraversalTranslator`. It
-  folds each `PlanOp` into the traversal.
+  folds each `PlanOp` into the traversal, using the ordered strategy list in
+  `gta/strategy/discrete/M1PlanOpTranslationStrategy`.
 - `gta/strategy/discrete/*`: `EntityOpTranslationStrategy`, `EntityFilterOpTranslationStrategy`,
   `RelationOpTranslationStrategy`, `RelationFilterOpTranslationStrategy`, `CountOpTranslationStrategy`,
   `OptionalOpTranslationStrategy`, and `common/GoToEntityOpTranslationStrategy`.
@@ -184,8 +190,8 @@ instead, so it doesn't need this.
 
   | Cursor type | Class | Returns |
   |---|---|---|
-  | `forwardPaths` (default) | `ForwardOnlyPathsTraversalCursor` | assignments, one per matched path |
-  | `paths` | `PathsTraversalCursor` | the same, without the forward-only optimisation |
+  | `forwardPaths` (default) | `ForwardOnlyPathsTraversalCursor` | assignments, one per matched path; drops paths that revisit an element, and duplicates |
+  | `paths` | `PathsTraversalCursor` | the same, but keeps every path |
   | `graph` | `GraphTraversalCursor` | the matched subgraph |
   | `count` | `CountTraversalCursor` | counts only |
   | `csv` | `CsvTraversalCursor` | CSV rows |
@@ -298,8 +304,9 @@ The server is assembled from configuration, not hard-wired. The shipped config i
 | Module | From | Provides |
 |---|---|---|
 | `ServiceModule`, `LoggingJacksonModule` | fuse-service | controllers, JSON rendering |
-| `CoreDispatcherModule`, `DescriptorsModule` | fuse-core | URL supplier, ontology providers |
-| `SparqlModule`, `SqlModule` | fuse-core | schema importers |
+| `CoreDispatcherModule` | fuse-core | URL supplier, ontology providers |
+| `SparqlModule`, `SqlModule` | fuse-core | schema importers (OWL, SQL DDL) |
+| `DescriptorsModule` | fuse-core | text descriptors of queries, ASGs, plans and resources |
 | `AsgCypherModule`, `AsgSparqlModule` | fuse-asg | the `cypher` and SPARQL languages |
 | `M2AsgModule` | fuse-dv-asg | the ASG pipeline and the language registry |
 | `EpbDfsCountBasedRedundantModule` | fuse-dv-epb | the planner, with count-based costs |
@@ -326,4 +333,5 @@ GraphQL and the Dragons playground aren't in this list; they arrive through `Ser
 `ontology/Dragons.json`) and `fuse.index_provider_dir = indexProvider` (`indexProvider/DragonsIndexProvider.conf`).
 
 **OpenSearch connection**: `opensearch.hosts`, `opensearch.http.port` (default 9200) and `opensearch.cluster_name`.
-An old `opensearch.port = 9300` still works: it's read as HTTP port 9200.
+The shipped config still sets the old transport port, `opensearch.port = 9300`. Without `opensearch.http.port`, the
+client uses that port minus 100, so it connects over HTTP on 9200.

@@ -5,13 +5,15 @@
 [![](https://img.shields.io/docker/pulls/yangdb/yang.db?style=flat-square)](https://hub.docker.com/u/yangdb)
 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
-* Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull yangdb/yang.db
 * How it works inside: the [architecture tutorial](docs/tutorial/architecture/README.md) (every module, and one query followed from text to results)
 
 ### Run
-* Download V0.5 zip file (https://github.com/YANG-DB/yang-db/releases/tag/v0.5)
-* Download [yang.db] (https://github.com/YANG-DB/yang-db) latest docker release docker pull yangdb/yang.db
-* Run: docker run -p 8888:88 --net=host -it yangdb/yang.db:latest (https://hub.docker.com/r/yangdb/yang.db/tags)
+* Download the latest release, [0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0) (OpenSearch 2.19.7):
+  unpack the attached `yangdb-0.9.0-distribution.tar.gz`, set `opensearch.hosts` (and `opensearch.http.port`, default
+  9200) in `dragon/config/application.conf` to your OpenSearch, then run `dragon/start-fuse-service.sh`. The previous release, [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0), runs on OpenSearch 1.3.
+* Or run it with Docker next to OpenSearch: build the image and start the stack as described in
+  [docker/README.md](docker/README.md), then open http://localhost:8888/dragons/swagger.
+* The `yangdb/yang.db` images on Docker Hub are from 2020 (Elasticsearch era) and are not updated.
 
 #### Latest News
  * opensearch community lecture given on yangDb
@@ -22,7 +24,7 @@
 #### Project YANG-DB
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
 * [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
-* [Release.notes](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes)
+* [Release notes](docs/releases) ([0.9.0](docs/releases/v0.9.0.md), [0.8.0](docs/releases/v0.8.0.md); older: [V0.51](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes))
 
 ##### Members:
 
@@ -170,7 +172,7 @@ With Opensearch we can utilize its powerful search abilities to efficiently fetc
 ##### Opensearch Index
 
 In Opensearch each index can be described as a table for a specific
-schema, the index itself is partitioned into shared which allow scale
+schema, the index itself is partitioned into shards which allow scale
 and redundancy (with replicas) across the cluster.
 
 A document is routed to a particular shard in an index using the
@@ -178,9 +180,10 @@ following formula:
 
 *shard_num = hash(_routing) % num_primary_shards*
 
-Each index has a schema (called type in Opensearch) which defines the
-documents structure (called mapping in Opensearch). Each index can hold
-only a single type of mapping (since Opensearch 6)
+Each index has a schema (called mapping in Opensearch) which defines the
+documents structure. OpenSearch has no mapping types (Elasticsearch 6
+allowed only one per index, and they were later removed), so the graph
+element's type is stored as a field of the document.
 
 The vertices index will contain the vertices documents with the
 properties, the edges index will contain the edges documents with their
@@ -268,9 +271,9 @@ Start Using
 
 Please review the following tutorial pages:
 ---------------
-Installaiton tutorial:
+Start here (setup to queries, with Docker):
 
- - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/installation.md
+ - https://github.com/YANG-DB/yang-db/blob/main/docs/tutorial/sample/dragons/README.md
 
 Schema creation tutorial:
 
