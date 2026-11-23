@@ -167,6 +167,18 @@ change.
      `Terms` / `Histogram` interfaces.
 - **Lesson:** anything reading OpenSearch responses must use the public interfaces. The Docker e2e is the gate, not
   the embedded-node suite.
+- **In-place upgrade rehearsal (2026-11-23), §6 item 4: passed.** It followed the §5 recommended path with the
+  released builds:
+  1. OpenSearch 1.3.0 with the `v0.8.0` image: tutorial loaded (`doc_queries.py --load --reset`); all checks pass.
+  2. Both containers stopped; OpenSearch recreated as 2.19.7 on the **same data volume**; YANG-DB replaced by the
+     `v0.9.0` image (configuration unchanged: `opensearch.port = 9300` resolves to HTTP 9200).
+  3. All 22 indices opened with identical document counts (44,680 documents, including the time-partitioned
+     `idx_fire_*` / `idx_freeze_*`).
+  4. `GET /fuse/load/ontology/Dragons/init` re-applied the templates (HTTP 200) and changed no data.
+  5. `doc_queries.py` without `--load`: all checks pass. All 28 queries returned the same entities and relationships
+     as on 1.3, and the cursor checks pass.
+  For Phase 6, repeat the rehearsal from 2.19 to 3.x the same way: build both images from the release tags, run
+  compose with one project name (`-p`) so the volume is shared, and override `OS_VERSION` / `YANGDB_TAG`.
 
 ## 10. References
 - [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md): the execution plan
