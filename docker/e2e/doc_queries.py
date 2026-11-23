@@ -147,6 +147,11 @@ def expectations(os_url):
     owners = {p for p, ds in own_pd.items() if ds}
     exp["GQ3"] = {"ents": {"Person": len(owners), "Dragon": len(set().union(*own_pd.values()))},
                   "rels": sum(len(ds) for ds in own_pd.values())}
+    # Own leads to dragons and horses: without a fragment, both
+    owners_any = owners | {p for p, hs in own_ph.items() if hs}
+    exp["GQ4"] = {"ents": {"Person": len(owners_any), "Dragon": len(set().union(*own_pd.values())),
+                           "Horse": len(set().union(*own_ph.values()))},
+                  "rels": sum(len(ds) for ds in own_pd.values()) + sum(len(hs) for hs in own_ph.values())}
     return exp
 
 
