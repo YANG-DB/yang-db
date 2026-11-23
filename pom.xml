@@ -175,7 +175,7 @@
 
         <!-- logging -->
         <slf4j.version>1.7.25</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <logback.version>1.5.34</logback.version>
         <!-- the version OpenSearch 2.19.7 declares; every log4j artifact through log4j-bom -->
         <log4j.version>2.25.5</log4j.version>
         <!-- the version the OpenSearch 2.19.7 rest client declares -->
