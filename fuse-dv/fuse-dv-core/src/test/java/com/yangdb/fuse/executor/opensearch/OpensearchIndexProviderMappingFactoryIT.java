@@ -17,7 +17,6 @@ import javaslang.Tuple2;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -158,7 +157,6 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
      * (person, dragon, horse, own, fire, ...): otherwise any index with one of those names created on the same cluster
      * gets the whole ontology mapping merged in.
      */
-    @Ignore("Product bug: UNIFIED template patterns match unrelated per-type indices - see javadoc")
     @Test
     public void testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex() {
         new ElasticIndexProviderMappingFactory(client, singleIndexSchema, ontology, singleIndexProvider).generateMappings();
@@ -367,7 +365,8 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                 case UNIFIED:
                     for (String value : entity.getProps().getValues()) {
                         Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
-                        exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
+                        //only the unified index itself, never a type's bare name
+                        exp.patterns.add(value + "*");
                         exp.mapping.props.putAll(entityProps(acc, entity));
                     }
                     break;
@@ -401,7 +400,7 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                 case UNIFIED:
                     for (String value : relation.getProps().getValues()) {
                         Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
-                        exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
+                        exp.patterns.add(value + "*");
                         //the relation documents share the sides: their redundant fields accumulate
                         merge(exp.mapping.props, relationProps(acc, relation));
                     }

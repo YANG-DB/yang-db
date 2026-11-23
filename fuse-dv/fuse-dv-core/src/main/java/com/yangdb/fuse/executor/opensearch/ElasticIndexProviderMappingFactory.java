@@ -173,7 +173,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                         String unifiedName = relation.getProps().getValues().isEmpty() ? label : relation.getProps().getValues().get(0);
                         ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                        List<String> patterns = new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")));
+                        //only the unified index itself: a type's bare name would match unrelated indices
+                        List<String> patterns = Collections.singletonList(String.format("%s%s", v, "*"));
                         if (Objects.isNull(request.request().patterns())) {
                             request.setPatterns(new ArrayList<>(patterns));
                         } else {
@@ -343,7 +344,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                                     String unifiedName = entity.getProps().getValues().isEmpty() ? label : entity.getProps().getValues().get(0);
                                     ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                                    List<String> patterns = new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")));
+                                    //only the unified index itself: a type's bare name would match unrelated indices
+                                    List<String> patterns = Collections.singletonList(String.format("%s%s", v, "*"));
                                     if (Objects.isNull(request.request().patterns())) {
                                         request.setPatterns(new ArrayList<>(patterns));
                                     } else {
