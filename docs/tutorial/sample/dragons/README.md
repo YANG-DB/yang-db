@@ -29,7 +29,7 @@ each step links to a detailed page.
 git clone https://github.com/YANG-DB/yang-db.git
 cd yang-db/docker
 ./buildDocker.sh Dragons                         # Maven build (skips tests) + Docker image yangdb/yang.db:Dragons
-docker compose -f docker-compose-os.yml up -d    # OpenSearch 1.3.0, OpenSearch Dashboards, YANG-DB
+docker compose -f docker-compose-os.yml up -d    # OpenSearch 2.19.7, OpenSearch Dashboards, YANG-DB
 curl http://localhost:8888/fuse/health           # "Alive And Well..." once YANG-DB is up (about a minute)
 ```
 

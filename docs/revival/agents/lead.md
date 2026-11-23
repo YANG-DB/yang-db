@@ -27,7 +27,13 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (updated 2026-11-22 evening)
+## ▶ RESUME HERE (updated 2026-11-22 night)
+**Phase 5 code is complete.** Branch `phase5-opensearch-2.19`: full build **1,249 tests / 0 failures** on 2.19.7 and
+Docker e2e **34/34 on OpenSearch 2.19.7**. Two bugs only a live cluster showed are fixed: the bridge exception without
+its index, and REST-parsed aggregations. A PR to main is open; CI checks it. Remaining: re-run the 1.3 → 2.19 in-place
+upgrade rehearsal (needs a 1.3-built image to write the data), update the wiki, merge.
+
+### Earlier note (2026-11-22 evening)
 **Phase 5 branch `phase5-opensearch-2.19` @ `47bd58411`** = baseline bump + 5.1 bridge (P) + 5.4 dependencies (S) +
 5.2 relocations (Q) + 4 commits of 5.3 mapping types (R). P, S and Q are DONE.
 - **R stopped on the usage limit (resets 17:30 Pacific).** Its worktree `.claude/worktrees/agent-a8801cce507a1a01b` still
