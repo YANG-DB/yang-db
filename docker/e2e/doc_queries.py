@@ -110,6 +110,8 @@ def expectations(os_url):
     braden = {i for i, d in ent["Person"].items() if d.get("name") == "Braden Heaney"}
     exp["R7"] = {"ents": {"Person": sum(1 for i in braden if ent["Person"][i].get("gender") == "FEMALE")}}
     exp["R8"] = {"rels": sum(1 for _, a, _, b, _ in know if a in braden)}  # no fire has date == 1 ms; before the fix the second property was ignored (32)
+    exp["R9"] = count_cmp(lambda n: 15 < n < 17)  # before the C3 fix only the second condition applied (99 persons)
+    exp["R10"] = count_cmp(lambda n: n < 5 or n > 20)
     # the count is taken over all Know edges (they don't store p2's gender); the row filter then restricts the p2s
     know_out = defaultdict(set)
     for _, a, _, b, _ in know: know_out[a].add(b)

@@ -27,7 +27,16 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (updated 2026-11-23)
+## ▶ RESUME HERE (updated 2026-11-23, after bug-fix round 2)
+**Bug-fix round 2 done** (branch `bugfix-round-2`, PR to main): every open KNOWN_ISSUES entry fixed (A2, A4–A10, C3,
+G4, M1, M2, P2, Q11, Q13) plus T3; full test suite **1,316 tests / 0 failures**; Docker e2e ALL PASS (with GQ4 and
+the new C3 regressions R9/R10). Agent handoff files: `agents/bugfix2-{service,data,query,graphql}.md`. Open: **B1**
+(tests fail against the shaded `fuse-core` jar under `mvn install`; verify with `mvn test`). Lessons: the Mac sleeps
+during long runs and hangs embedded-OpenSearch tests, so run long builds under `caffeinate -i`; parallel agents
+must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
+`mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
+
+### Earlier note (2026-11-23)
 **Phase 5 merged (#169) and released as v0.9.0** (tag on `release/0.9.x`, poms `0.9.0`, notes
 `docs/releases/v0.9.0.md`, label `opensearch-2.19`, distribution attached by the Release workflow). Main is now
 `0.10.0-SNAPSHOT`. The 1.3 → 2.19 upgrade rehearsal **passed** (2026-11-23,

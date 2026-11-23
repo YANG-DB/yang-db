@@ -191,6 +191,15 @@ drop and recreate indices, so running it next to the Docker quickstart deleted t
 round). It now refuses with a clear message unless `-Dfuse.test.reuse_cluster=true`; run ITs on free ports with
 `-Dfuse.test.http.port` / `-Dfuse.test.transport.port`.
 
+### B1 — Tests fail when run against the packaged `fuse-core` jar · open
+`fuse-core` is built as a shaded jar that bundles Lucene, OpenSearch, TinkerPop and log4j, among others. With that jar
+on the classpath, as `mvn install` does when it runs a downstream module's tests, OpenSearch's
+`SearchRequestContext` can't create its logger (`LogManager.getLogger()`: "No class provided, and an appropriate one
+cannot be found"), and the fuse-dv-unipop tests error. `mvn test` (what CI runs) and `-pl X -am test` compile against
+the class folders and pass. Main has the same problem; found during bug-fix round 2. Likely fix: stop shading
+`fuse-core`, or exclude the log4j and OpenSearch classes from the shade. Until then, verify with `mvn test` and
+build the distribution with `-DskipTests`.
+
 ### G4 — GraphQL exposes only the first target type of a multi-target relationship · **fixed** (bug-fix round 2)
 Fixed: a relationship to several types becomes an abstract GraphQL type `<sideA>_<rel>` (an interface with the shared fields, or a union); `... on Dragon` narrows it, and a query over several types translates to an untyped end with those types. Behaviour change: `{ person { Own { name } } }` now returns dragons and horses; a field only one type has needs a fragment. New GQ4 example.
 `Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
@@ -215,7 +224,7 @@ equality, so no count filter was built at all (fixed: `CountExpression` now owns
 throws. Pinned by e2e R1/R2.
 
 ### C3 — Two count conditions on the same relationship give wrong results · **fixed** (bug-fix round 2)
-Fixed: each count condition nested a new, never-built count filter inside the first; conditions on the same field are now combined in one filter script (`a>15&&a<17`).
+Fixed: each count condition nested a new, never-built count filter inside the first; conditions on the same field are now combined in one filter script (`a>15&&a<17`). `OR` works too: the translator splits it into branches, each with its own condition. Checked live: AND 4 persons, OR 48, matching the data. e2e R9/R10.
 `WHERE count(k) > 15 AND count(k) < 17` returns 99 persons and 358 relationships; the data has 4 start persons with
 exactly 16 (found live during the bug-fix round). A single count condition works. Not investigated yet.
 
