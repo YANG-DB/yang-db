@@ -462,6 +462,9 @@ public class RestBridgeClientTest {
             fail();
         } catch (ResourceAlreadyExistsException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("already exists"));
+            // callers (e.g. ElasticIndexProviderMappingFactory.createIndices) read the index from the exception
+            assertNotNull("translated exception must carry its index", e.getIndex());
+            assertEquals("idx", e.getIndex().getName());
         }
     }
 

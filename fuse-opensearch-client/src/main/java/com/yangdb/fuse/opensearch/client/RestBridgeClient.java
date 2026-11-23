@@ -99,6 +99,7 @@ import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.common.xcontent.XContentHelper;
 import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.core.index.Index;
 import org.opensearch.index.IndexNotFoundException;
 import org.opensearch.index.engine.VersionConflictEngineException;
 import org.opensearch.core.index.shard.ShardId;
@@ -455,6 +456,8 @@ public class RestBridgeClient extends AbstractClient {
     //region Exception translation
     private static final Pattern ERROR_TYPE = Pattern.compile("type=([a-z_]+), reason=(.*)\\]$", Pattern.DOTALL);
     private static final Pattern NO_SUCH_INDEX = Pattern.compile("no such index \\[([^\\]]*)\\]");
+    /** "index [name/uuid] already exists" and similar: the name before the uuid */
+    private static final Pattern INDEX_IN_REASON = Pattern.compile("index \\[([^\\]/]+)");
 
     private static ActionListener<Object> translating(ActionListener<Object> listener) {
         return new ActionListener<Object>() {
@@ -491,7 +494,9 @@ public class RestBridgeClient extends AbstractClient {
                 return translated;
             }
             case "resource_already_exists_exception": {
-                ResourceAlreadyExistsException translated = new ResourceAlreadyExistsException(reason);
+                // carry the index, as the transport client did: callers read e.getIndex().getName()
+                ResourceAlreadyExistsException translated =
+                        new ResourceAlreadyExistsException(new Index(indexName(ose, reason), "_na_"));
                 translated.initCause(e);
                 return translated;
             }
@@ -512,7 +517,11 @@ public class RestBridgeClient extends AbstractClient {
             return resource.get(0);
         }
         Matcher m = NO_SUCH_INDEX.matcher(reason);
-        return m.find() ? m.group(1) : reason;
+        if (m.find()) {
+            return m.group(1);
+        }
+        Matcher named = INDEX_IN_REASON.matcher(reason);
+        return named.find() ? named.group(1) : reason;
     }
     //endregion
 

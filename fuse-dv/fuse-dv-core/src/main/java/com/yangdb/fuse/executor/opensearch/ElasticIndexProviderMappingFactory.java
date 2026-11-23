@@ -93,7 +93,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                 CreateIndexRequest request = new CreateIndexRequest(name);
                 responses.add(new Tuple2<>(true, client.admin().indices().create(request).actionGet().index()));
             } catch (ResourceAlreadyExistsException e) {
-                responses.add(new Tuple2<>(false, e.getIndex().getName()));
+                responses.add(new Tuple2<>(false, name)); // the index we tried to create (the exception's may be unset)
             } catch (Throwable t) {
                 throw new FuseError.FuseErrorException("Error Generating Indices for E/S ", t);
             }
