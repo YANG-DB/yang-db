@@ -46,7 +46,8 @@ public class SnowflakeRequestIdSupplier implements RequestIdSupplier {
 
         Range workerIdRange = idGeneratorDriver.getNext("workerId", 1);
         if(workerIdRange != null){
-            workerId = workerIdRange.getLower() % (2 ^ 6);
+            //2^6 worker ids (the 6 worker bits); in Java ^ is XOR, so not (2 ^ 6)
+            workerId = workerIdRange.getLower() % (1L << 6);
             idSequenceFactory.setWorkerId(workerId);
         }else {
             idSequenceFactory.setWorkerId(1L);

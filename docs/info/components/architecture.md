@@ -110,7 +110,7 @@ Plugins (such as extensions/graphql) are not listed here: their Guice modules ar
   -   AsgCypherModule - enabling cypher ASG query translation & rewrite
 
   -   SparqlModule - enabling OWL schema to ontology translation (`/fuse/sparql/ontology/{id}`)
-  -   AsgSparqlModule - enabling sparql ASG query translation & rewrite (language key `sparkQL`)
+  -   AsgSparqlModule - enabling sparql ASG query translation & rewrite (language key `sparql`, alias `sparkQL`)
 
   -   SqlModule - enabling SQL DDL schema to ontology translation (`/fuse/sql/ontology/{id}`)
   -   DragonsModule - the Dragons sample's own service extension (examples/dragons/ext)

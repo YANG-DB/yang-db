@@ -27,6 +27,7 @@ import com.yangdb.fuse.model.execution.plan.composite.Plan;
 import com.yangdb.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.yangdb.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
+import com.yangdb.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -50,7 +51,6 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -259,7 +259,6 @@ public class SmartEpbRedundancyTests {
     }
 
     @Test
-    @Ignore
     public void redundantPropertyPathSelectionTest(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
@@ -274,7 +273,24 @@ public class SmartEpbRedundancyTests {
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Assert.assertNotNull(plan);
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
+        // P2: the range op on the enumerated gender (11) used to crash statistics with a ClassCastException;
+        // the name filter of 6 is pushed down to the freeze relation as a redundant property
+        Plan expected = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(
+                        new RelPropGroup(5,
+                                new RedundantRelProp(0, NAME.type, GlobalConstants.EdgeSchema.SOURCE_NAME, GlobalConstants.EdgeSchema.SOURCE_NAME, Constraint.of(ConstraintOp.ge, "abc"))))
+                        .build()),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(new EPropGroup(7)).build()),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 1)),
+                new RelationOp(AsgQueryUtil.element$(query, 8)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 9)),
+                new EntityOp(AsgQueryUtil.element$(query, 10)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 11))
+        );
         PlanAssert.assertEquals(expected, plan.getPlan());
     }
 

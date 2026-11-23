@@ -55,7 +55,6 @@ After the server completes the execution it returns the following results:
     "explainPlanUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/plan",
     "v1QueryUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/v1",
     "asgUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/asg",
-    "elasticQueryUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/elastic",
     "type": "concrete",
     "error": null,
     "innerUrlResourceInfos": [],
@@ -95,7 +94,6 @@ After the server completes the execution it returns the following results:
               "assignments": [...],
               "resultType": "assignments"
             },
-            "elasticQueryUrl": "http://20.10.10.104:8888/fuse/query/4db03973-e509-4263-8a22-c5ad43ae5a96/cursor/1/page/1/elastic",
             "available": true
           }
         ]
@@ -261,9 +259,18 @@ GET /fuse/query/graphQL/run?ontology=Dragons&graphQL={ dragon { name color } }
 
 #### GraphQL:3 - people and the dragons they own
 ```
-{ person { name Own { name } } }
+{ person { name Own { ... on Dragon { name } } } }
 ```
-When a relationship leads to several types (`Own` leads to dragons and horses), its field has the first one's type.
+When a relationship leads to several types (`Own` leads to dragons and horses), its field has an interface type,
+`Person_Own`, that they all implement, with the fields they share (`name`, `OriginatedIn`, ...). An inline fragment
+(`... on Dragon`) narrows the field to one type and gives access to that type's own fields. If the types share no
+field, the field has a union type instead, and is queried with fragments only.
+
+#### GraphQL:4 - people and everything they own (dragons and horses)
+```
+{ person { name Own { name ... on Dragon { color } ... on Horse { weight } } } }
+```
+Without a fragment, or with one per type, `Own` returns dragons and horses.
 
 > Every query on this page is checked against the tutorial data by the end-to-end suite
 > ([docker/e2e](../../../../docker/e2e/README.md)), and the counts above come from it.

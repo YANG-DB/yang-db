@@ -44,7 +44,9 @@ import com.yangdb.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.yangdb.fuse.executor.ontology.schema.load.GraphDataLoader;
 import com.yangdb.fuse.model.logical.LogicalGraphModel;
 import com.yangdb.fuse.services.controllers.DataLoaderController;
+import com.yangdb.fuse.model.transport.ContentResponse;
 import org.jooby.Jooby;
+import org.jooby.Result;
 import org.jooby.Results;
 import org.jooby.Upload;
 
@@ -78,14 +80,14 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
 
         // Upload string data in json graph format
         app.post("/fuse/load/ontology/:id/graph/load",
-                req -> Results.json(this.getController(app)
+                req -> withStatus(this.getController(app)
                         .loadGraph(req.param("id").value(), req.body(LogicalGraphModel.class),
                                 req.param("directive").isSet() ?
                                         GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT )));
 
         // Upload string data in csv format
        app.post("/fuse/load/ontology/:id/csv/load",
-                req -> Results.json(this.getController(app)
+                req -> withStatus(this.getController(app)
                         .loadCsv(req.param("id").value(),
                                 req.param("type").value(),
                                 req.param("label").value(),
@@ -99,7 +101,7 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     try {
                         //todo check file type -> process zipped file
                         File file = upload.file();
-                        return Results.json(this.getController(app)
+                        return withStatus(this.getController(app)
                                 .loadGraph(req.param("id").value(), file,
                                         req.param("directive").isSet() ?
                                                 GraphDataLoader.Directive.valueOf(req.param("directive").value().toUpperCase()) : GraphDataLoader.Directive.INSERT ));
@@ -115,7 +117,7 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                     try {
                         //todo check file type -> process zipped file
                         File file = upload.file();
-                        return Results.json(this.getController(app)
+                        return withStatus(this.getController(app)
                                 .loadCsv(req.param("id").value(),
                                         req.param("type").value(),
                                         req.param("label").value(),
@@ -127,4 +129,9 @@ public class DataLoaderControllerRegistrar extends AppControllerRegistrarBase<Da
                 });
     }
     //endregion
+
+    /** JSON body with the response's own HTTP status: a failed load answers 400 instead of 200 (A2). */
+    static Result withStatus(ContentResponse<?> response) {
+        return Results.json(response).status(response.status().getStatus());
+    }
 }

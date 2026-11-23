@@ -35,8 +35,12 @@ import java.util.stream.Collectors;
  *     letter ({@code dragon} for {@code Dragon}, as {@code human} for {@code Human} in SDL schemas), with an optional
  *     {@code where: WhereClause} argument;</li>
  *     <li>one object type per entity type: a field per property (a GraphQL scalar, or an enum for enumerated types) and
- *     a list field per relationship type the entity is side A of (typed by the pair's side B; when a relationship
- *     leads to several side-B types, the first pair's);</li>
+ *     a list field per relationship type the entity is side A of, typed by the pair's side B;</li>
+ *     <li>when a relationship leads from an entity type to several side-B types (Dragons: {@code Person -Own-> Dragon,
+ *     Horse}), its field is typed by an abstract type named {@code <sideA>_<relationship>} ({@code Person_Own}) that
+ *     the side-B types belong to: an interface with the fields they all have (same name and type), so they can be
+ *     queried without naming a type ({@code Own { name }}), or a union when they have none in common. Inline fragments
+ *     ({@code Own { ... on Dragon { color } }}) narrow the field to some of the types;</li>
  *     <li>the enumerated types, and the {@code WhereClause}, {@code Constraint} and {@code WhereOperator} input types.</li>
  * </ul>
  * Names that aren't valid GraphQL names are left out, as are entity types with no fields.
@@ -105,6 +109,8 @@ public final class OntologyToGraphQLSdl {
         }
         // relationship fields, once the entity type names are known
         Map<String, List<String>> out = new LinkedHashMap<>();
+        // abstract types of the relationships leading to several types: name -> side-B types
+        Map<String, List<String>> abstracts = new LinkedHashMap<>();
         for (EntityType entity : accessor.entities()) {
             String name = entity.getName();
             if (!types.containsKey(name)) {
@@ -116,22 +122,48 @@ public final class OntologyToGraphQLSdl {
                 if (!valid(rel.getName()) || fieldNames.contains(rel.getName()) || rel.getePairs() == null) {
                     continue;
                 }
-                rel.getePairs().stream()
+                List<String> sidesB = rel.getePairs().stream()
                         .filter(pair -> entity.geteType().equals(pair.geteTypeA()))
                         .map(pair -> accessor.$entity(pair.geteTypeB()).map(EntityType::getName)
                                 .orElse(accessor.entity(pair.geteTypeB()).map(EntityType::getName).orElse(null)))
                         .filter(Objects::nonNull)
                         .filter(types::containsKey)
-                        .findFirst()
-                        .ifPresent(sideB -> {
-                            fields.add(rel.getName() + ": [" + sideB + "]");
-                            fieldNames.add(rel.getName());
-                        });
+                        .distinct()
+                        .collect(Collectors.toList());
+                if (sidesB.isEmpty()) {
+                    continue;
+                }
+                String fieldType = sidesB.get(0);
+                if (sidesB.size() > 1) {
+                    fieldType = name + "_" + rel.getName();
+                    while (types.containsKey(fieldType) || enums.containsKey(fieldType)
+                            || abstracts.containsKey(fieldType) || RESERVED.contains(fieldType)) {
+                        fieldType = fieldType + "_";
+                    }
+                    abstracts.put(fieldType, sidesB);
+                }
+                fields.add(rel.getName() + ": [" + fieldType + "]");
+                fieldNames.add(rel.getName());
             }
             if (!fields.isEmpty()) {
                 out.put(name, fields);
             }
         }
+
+        // an interface with the fields the side-B types have in common, or a union when they have none
+        Map<String, List<String>> interfaces = new LinkedHashMap<>();
+        Map<String, List<String>> unions = new LinkedHashMap<>();
+        Map<String, List<String>> implemented = new LinkedHashMap<>();
+        abstracts.forEach((name, sidesB) -> {
+            List<String> common = new ArrayList<>(out.getOrDefault(sidesB.get(0), Collections.emptyList()));
+            sidesB.forEach(sideB -> common.retainAll(out.getOrDefault(sideB, Collections.emptyList())));
+            if (common.isEmpty()) {
+                unions.put(name, sidesB);
+            } else {
+                interfaces.put(name, common);
+                sidesB.forEach(sideB -> implemented.computeIfAbsent(sideB, k -> new ArrayList<>()).add(name));
+            }
+        });
 
         StringBuilder sdl = new StringBuilder("schema {\n    query: Query\n}\n\n");
         sdl.append("type Query {\n");
@@ -139,7 +171,13 @@ public final class OntologyToGraphQLSdl {
         sdl.append("}\n\n");
         enums.forEach((name, values) -> sdl.append("enum ").append(name).append(" {\n")
                 .append(values.stream().map(v -> "    " + v + "\n").collect(Collectors.joining())).append("}\n\n"));
-        out.forEach((name, fields) -> sdl.append("type ").append(name).append(" {\n")
+        interfaces.forEach((name, fields) -> sdl.append("interface ").append(name).append(" {\n")
+                .append(fields.stream().map(f -> "    " + f + "\n").collect(Collectors.joining())).append("}\n\n"));
+        unions.forEach((name, members) -> sdl.append("union ").append(name).append(" = ")
+                .append(String.join(" | ", members)).append("\n\n"));
+        out.forEach((name, fields) -> sdl.append("type ").append(name)
+                .append(implemented.containsKey(name) ? " implements " + String.join(" & ", implemented.get(name)) : "")
+                .append(" {\n")
                 .append(fields.stream().map(f -> "    " + f + "\n").collect(Collectors.joining())).append("}\n\n"));
         sdl.append(WHERE_SCHEMA);
         return sdl.toString();

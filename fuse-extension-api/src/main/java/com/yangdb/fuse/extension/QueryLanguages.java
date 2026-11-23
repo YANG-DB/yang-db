@@ -33,7 +33,7 @@ import com.yangdb.fuse.model.query.QueryInfo;
  * query text into an {@link AsgQuery}.
  * <p>
  * The name is the query's {@code type} ({@code CreateQueryRequestMetadata.TYPE_*} for the built-in languages:
- * {@code cypher}, {@code sparkQL}, {@code graphQL}) and the {@code <language>} path segment of the generic query
+ * {@code cypher}, {@code sparql} (also {@code sparkQL}), {@code graphQL}) and the {@code <language>} path segment of the generic query
  * routes. Register from any Guice module:
  * <pre>{@code
  * QueryLanguages.register(binder, "echo").to(EchoTransformer.class);

@@ -57,7 +57,6 @@ public class DragonsModule extends ModuleBase {
                 new LogicalGraphHierarchyTraversalCursor.Factory()));
 
 //        binder.bind(GraphLayoutProviderFactory.class).toInstance(new DragonsOntologyGraphLayoutProviderFactory(conf.getString("fuse.ontology_provider_dir")));
-//        binder.bind(DragonsExtensionQueryController.class).in(RequestScoped.class);
 
     }
 

@@ -328,7 +328,7 @@ differently. For example, `cursorType=graph` returns the subgraph, `count` retur
 | Language | Enters at | How |
 |---|---|---|
 | **Cypher** | stage 1 | `cypher` → `AsgCypherTransformer` → ASG directly |
-| **SPARQL** | stage 1 | `sparkQL` (sic; see KNOWN_ISSUES A5) → `AsgSparQLTransformer` → `SparqlTranslator` (rdf4j parser) → ASG directly |
+| **SPARQL** | stage 1 | `sparql` (alias `sparkQL`) → `AsgSparQLTransformer` → `SparqlTranslator` (rdf4j parser) → ASG directly |
 | **GraphQL** (extension) | stage 1 | `graphQL` → `AsgGraphQLTransformer`: graphql-java runs the query against a schema generated from the ontology, which produces a V1 query, and `QueryToAsgTransformer` turns that into an ASG |
 | **V1 JSON** | stage 2 | `POST /fuse/query` or `/fuse/query/v1` (a create request wrapping the query; see [stage 1](#stage-1-cypher-text--asg-fuse-asg)) → `QueryToCompositeAsgTransformer` → ASG. The V1 query is also kept as the result's `pattern`. (`POST /fuse/query/v1/run` currently answers 404, "No query language 'v1'") |
 
@@ -371,8 +371,8 @@ for i in person own dragon; do curl -s -X PUT localhost:9200/$i/_settings -H 'Co
   -d '{"index.search.slowlog.threshold.query.trace":null,"index.search.slowlog.level":null}'; done
 ```
 
-The `elastic/view` links that the query and page resources advertise currently answer 404 (KNOWN_ISSUES A8), so use
-the slow log as shown.
+The service doesn't keep the OpenSearch requests of a query (they are built step by step while the pages are fetched),
+so the slow log is the way to see them.
 
 For the code side, the module page lists the classes for each stage. Good starting points for a debugger are
 `QueryDriverBase.run`, `BottomUpPlanSearcher.search`, `ChainedPlanOpTraversalTranslator.translate` and

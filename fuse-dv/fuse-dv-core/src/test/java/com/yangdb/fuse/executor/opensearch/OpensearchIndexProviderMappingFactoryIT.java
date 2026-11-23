@@ -17,7 +17,6 @@ import javaslang.Tuple2;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -52,9 +51,9 @@ import static com.yangdb.fuse.executor.TestSuiteIndexProviderSuite.*;
  *     under a YANG-DB type or label name (up to 1.3 it was {@code {"Person":{"properties":...}}});</li>
  *     <li>concrete indices created from those templates have no type wrapper ({@code {"mappings":{"properties":...}}}).</li>
  * </ul>
- * The templates this class creates (notably the single-index "ontology" template, whose patterns match
- * {@code dragon}, {@code horse}, {@code own}, ...) would merge into indices created later in the suite, so every test
- * starts from, and leaves behind, a cluster without them or the indices they create.
+ * The per-type templates this class creates match bare type names ({@code dragon}, {@code horse}, {@code own}, ...)
+ * and would merge into indices created later in the suite, so every test starts from, and leaves behind, a cluster
+ * without them or the indices they create.
  */
 public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjectionTest implements BaseITMarker {
 
@@ -140,13 +139,10 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     }
 
     /**
-     * PRODUCT BUG (UNIFIED relation mapping): in a unified (single-index) provider the entities create the shared
-     * mapping first, so every relation goes through {@code populateProperty} (ElasticIndexProviderMappingFactory,
-     * mapRelations UNIFIED branch) instead of {@code generateRelationMapping}. The relation-only fields
-     * {@code direction}, {@code entityA}, {@code entityB} and the redundant side properties are never mapped;
-     * edge documents get them through dynamic mapping (ids become text + keyword instead of keyword).
+     * KNOWN_ISSUES M1: in a unified (single-index) provider the entities create the shared mapping first, so the
+     * relations are merged into it; their relation-only fields ({@code direction}, {@code entityA}, {@code entityB}
+     * with the redundant side properties of every relation) must be mapped too, not left to dynamic mapping.
      */
-    @Ignore("Product bug: UNIFIED relations never map direction/entityA/entityB - see javadoc")
     @Test
     public void testGenerateSingleMappingMapsRelationSides() throws Exception {
         new ElasticIndexProviderMappingFactory(client, singleIndexSchema, ontology, singleIndexProvider).generateMappings();
@@ -157,12 +153,10 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
     }
 
     /**
-     * PRODUCT BUG (UNIFIED template patterns): the single-index "ontology" template also lists every type's bare name
-     * as a pattern (person, dragon, horse, own, fire, ...; mapEntities/mapRelations UNIFIED branches). Any index with
-     * one of those names created on the same cluster gets the whole ontology mapping merged in - this is what broke
-     * later index creation in the IT suite before this class started cleaning up its templates.
+     * KNOWN_ISSUES M2: the single-index "ontology" template only matches the unified index, not every type's bare name
+     * (person, dragon, horse, own, fire, ...): otherwise any index with one of those names created on the same cluster
+     * gets the whole ontology mapping merged in.
      */
-    @Ignore("Product bug: UNIFIED template patterns match unrelated per-type indices - see javadoc")
     @Test
     public void testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex() {
         new ElasticIndexProviderMappingFactory(client, singleIndexSchema, ontology, singleIndexProvider).generateMappings();
@@ -371,7 +365,8 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                 case UNIFIED:
                     for (String value : entity.getProps().getValues()) {
                         Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
-                        exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
+                        //only the unified index itself, never a type's bare name
+                        exp.patterns.add(value + "*");
                         exp.mapping.props.putAll(entityProps(acc, entity));
                     }
                     break;
@@ -405,9 +400,9 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
                 case UNIFIED:
                     for (String value : relation.getProps().getValues()) {
                         Expected exp = result.computeIfAbsent(value, v -> new Expected(null));
-                        exp.patterns.addAll(Arrays.asList(type.getName().toLowerCase(), type.getName(), value + "*"));
-                        //only the ontology fields reach the unified mapping - see testGenerateSingleMappingMapsRelationSides
-                        exp.mapping.props.putAll(fields(acc, type));
+                        exp.patterns.add(value + "*");
+                        //the relation documents share the sides: their redundant fields accumulate
+                        merge(exp.mapping.props, relationProps(acc, relation));
                     }
                     break;
                 case NESTED:
@@ -485,6 +480,20 @@ public class OpensearchIndexProviderMappingFactoryIT extends BaseModuleInjection
             props.put(side, obj);
         }
         return props;
+    }
+
+    /**
+     * merge an element's properties into a shared (unified) mapping: objects are merged field by field
+     */
+    private static void merge(Map<String, Object> into, Map<String, Object> props) {
+        props.forEach((name, value) -> {
+            Object existing = into.get(name);
+            if (existing instanceof Obj && value instanceof Obj) {
+                merge(((Obj) existing).props, ((Obj) value).props);
+            } else {
+                into.put(name, value);
+            }
+        });
     }
 
     /**

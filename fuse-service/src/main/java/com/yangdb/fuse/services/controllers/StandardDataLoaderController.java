@@ -65,29 +65,11 @@ public class StandardDataLoaderController implements DataLoaderController {
                     .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
                     .compose();
         } catch (IOException e) {
-            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                    .data(Optional.of(new LoadResponse<String, FuseError>() {
-                        @Override
-                        public List<CommitResponse<String, FuseError>> getResponses() {
-                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                @Override
-                                public List<String> getSuccesses() {
-                                    return Collections.emptyList();
-                                }
-
-                                @Override
-                                public List<FuseError> getFailures() {
-                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public LoadResponse response(CommitResponse<String, FuseError> response) {
-                            return this;
-                        }
-                    }))
-                    .compose();
+            return failedLoad(new FuseError(e.getMessage(), e), Optional.empty());
+        } catch (RuntimeException e) {
+            //the whole load failed (e.g. an unparsable file): report it as a failure, not as "0 of 0" loaded
+            return failedLoad(e instanceof FuseError.FuseErrorException ? ((FuseError.FuseErrorException) e).getError() : new FuseError(e.getMessage(), e),
+                    Optional.of(e));
         }
     }
 
@@ -98,29 +80,11 @@ public class StandardDataLoaderController implements DataLoaderController {
                     .data(Optional.of(this.csvDataLoader.load(type,label , data, directive)))
                     .compose();
         } catch (IOException e) {
-            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                    .data(Optional.of(new LoadResponse<String, FuseError>() {
-                        @Override
-                        public List<CommitResponse<String, FuseError>> getResponses() {
-                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                @Override
-                                public List<String> getSuccesses() {
-                                    return Collections.emptyList();
-                                }
-
-                                @Override
-                                public List<FuseError> getFailures() {
-                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public LoadResponse response(CommitResponse<String, FuseError> response) {
-                            return this;
-                        }
-                    }))
-                    .compose();
+            return failedLoad(new FuseError(e.getMessage(), e), Optional.empty());
+        } catch (RuntimeException e) {
+            //the whole load failed (e.g. an unparsable file): report it as a failure, not as "0 of 0" loaded
+            return failedLoad(e instanceof FuseError.FuseErrorException ? ((FuseError.FuseErrorException) e).getError() : new FuseError(e.getMessage(), e),
+                    Optional.of(e));
         }
     }
 
@@ -131,29 +95,11 @@ public class StandardDataLoaderController implements DataLoaderController {
                     .data(Optional.of(this.csvDataLoader.load(type, label, data, directive)))
                     .compose();
         } catch (IOException e) {
-            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                    .data(Optional.of(new LoadResponse<String, FuseError>() {
-                        @Override
-                        public List<CommitResponse<String, FuseError>> getResponses() {
-                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                @Override
-                                public List<String> getSuccesses() {
-                                    return Collections.emptyList();
-                                }
-
-                                @Override
-                                public List<FuseError> getFailures() {
-                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public LoadResponse response(CommitResponse<String, FuseError> response) {
-                            return this;
-                        }
-                    }))
-                    .compose();
+            return failedLoad(new FuseError(e.getMessage(), e), Optional.empty());
+        } catch (RuntimeException e) {
+            //the whole load failed (e.g. an unparsable file): report it as a failure, not as "0 of 0" loaded
+            return failedLoad(e instanceof FuseError.FuseErrorException ? ((FuseError.FuseErrorException) e).getError() : new FuseError(e.getMessage(), e),
+                    Optional.of(e));
         }
     }
 
@@ -172,29 +118,11 @@ public class StandardDataLoaderController implements DataLoaderController {
                     .data(Optional.of(this.graphDataLoader.load(ontology, data, directive)))
                     .compose();
         } catch (IOException e) {
-            return Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, NOT_FOUND)
-                    .data(Optional.of(new LoadResponse<String, FuseError>() {
-                        @Override
-                        public List<CommitResponse<String, FuseError>> getResponses() {
-                            return Collections.singletonList(new CommitResponse<String, FuseError>() {
-                                @Override
-                                public List<String> getSuccesses() {
-                                    return Collections.emptyList();
-                                }
-
-                                @Override
-                                public List<FuseError> getFailures() {
-                                    return Collections.singletonList(new FuseError(e.getMessage(), e));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public LoadResponse response(CommitResponse<String, FuseError> response) {
-                            return this;
-                        }
-                    }))
-                    .compose();
+            return failedLoad(new FuseError(e.getMessage(), e), Optional.empty());
+        } catch (RuntimeException e) {
+            //the whole load failed (e.g. an unparsable file): report it as a failure, not as "0 of 0" loaded
+            return failedLoad(e instanceof FuseError.FuseErrorException ? ((FuseError.FuseErrorException) e).getError() : new FuseError(e.getMessage(), e),
+                    Optional.of(e));
         }
     }
 
@@ -229,6 +157,28 @@ public class StandardDataLoaderController implements DataLoaderController {
 
     //region Private Methods
     //endregion
+
+    /**
+     * the response of a load that failed as a whole: a single commit with no successes and the one failure, so the
+     * per-commit lists read "0 of 1" with the reason; the top-level error (when there is one) is kept as well
+     */
+    private static ContentResponse<LoadResponse<String, FuseError>> failedLoad(FuseError failure, Optional<Exception> error) {
+        LoadResponse.CommitResponse<String, FuseError> commit = new LoadResponse.CommitResponse<String, FuseError>() {
+            @Override
+            public List<String> getSuccesses() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public List<FuseError> getFailures() {
+                return Collections.singletonList(failure);
+            }
+        };
+        Builder<LoadResponse<String, FuseError>> builder = Builder.<LoadResponse<String, FuseError>>builder(BAD_REQUEST, BAD_REQUEST)
+                .data(Optional.of(new LoadResponse.LoadResponseImpl().response(commit)));
+        error.ifPresent(builder::error);
+        return builder.compose();
+    }
 
     //region Fields
     private OntologyProvider ontologyProvider;

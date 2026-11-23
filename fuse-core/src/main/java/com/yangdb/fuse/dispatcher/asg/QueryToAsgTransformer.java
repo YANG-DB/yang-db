@@ -31,6 +31,7 @@ import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.query.*;
 import javaslang.collection.Stream;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -63,8 +64,10 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
         AsgEBase asgEBaseStart = AsgEBase.Builder.get()
                 .withEBase(start).build();
 
+        //per call: the transformer is bound as a singleton, so it must not keep the elements of a query
+        Map<Integer, AsgEBase<? extends EBase>> queryAsgElements = new HashMap<>();
         queryAsgElements.put(asgEBaseStart.geteNum(),asgEBaseStart);
-        buildSubGraphRec(asgEBaseStart, queryElements);
+        buildSubGraphRec(asgEBaseStart, queryElements, queryAsgElements);
 
         AsgQuery.AsgQueryBuilder builder = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
@@ -72,7 +75,7 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                 .withOrigin(query)
                 .withStart(asgEBaseStart)
                 .withProjectedFields(query.getProjectedFields())
-                .withElements(queryAsgElements.values());
+                .withElements(new ArrayList<>(queryAsgElements.values()));
 
         if(query instanceof ParameterizedQuery) {
             builder.withParams(((ParameterizedQuery) query).getParams());
@@ -82,7 +85,8 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
     //endregion
 
     //region Private Methods
-    private void buildSubGraphRec(AsgEBase asgEBaseCurrent, Map<Integer, EBase> queryElements) {
+    private void buildSubGraphRec(AsgEBase asgEBaseCurrent, Map<Integer, EBase> queryElements,
+                                  Map<Integer, AsgEBase<? extends EBase>> queryAsgElements) {
         EBase eBaseCurrent = asgEBaseCurrent.geteBase();
 
         Stream.ofAll(nextFactory.supplyNext(eBaseCurrent))
@@ -95,7 +99,7 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
                     queryAsgElements.put(eNum,asgEBaseNext);
                     asgEBaseCurrent.addNextChild(asgEBaseNext);
 
-                    buildSubGraphRec(asgEBaseNext, queryElements);
+                    buildSubGraphRec(asgEBaseNext, queryElements, queryAsgElements);
                 });
 
 
@@ -110,16 +114,15 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
 
                     queryAsgElements.put(eNum,asgEBaseB);
                     asgEBaseCurrent.addBChild(asgEBaseB);
-                    buildSubGraphRec(asgEBaseB, queryElements);
+                    buildSubGraphRec(asgEBaseB, queryElements, queryAsgElements);
                 }
         );
     }
     //endregion
 
     //region Fields
-    private NextFactory nextFactory;
-    private BellowFactory bellowFactory;
-    private Map<Integer, AsgEBase<? extends EBase>> queryAsgElements = new HashMap<>();
+    private final NextFactory nextFactory;
+    private final BellowFactory bellowFactory;
 
     //endregion
 
