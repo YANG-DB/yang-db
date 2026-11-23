@@ -340,7 +340,13 @@
               },
               "GQ3": {
                 "summary": "GQ3 - People and the dragons they own",
-                "value": "{ person { name Own { name } } }",
+                "value": "{ person { name Own { ... on Dragon { name } } } }",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "GQ4": {
+                "summary": "GQ4 - People and everything they own (dragons and horses)",
+                "value": "{ person { name Own { name ... on Dragon { color } ... on Horse { weight } } } }",
                 "x-doc": "query-the-data.md",
                 "x-known": []
               }
