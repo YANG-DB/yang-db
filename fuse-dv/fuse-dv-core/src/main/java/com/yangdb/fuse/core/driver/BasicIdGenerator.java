@@ -25,16 +25,15 @@ import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.yangdb.fuse.model.Range;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
-import com.yangdb.fuse.model.transport.Status;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
-import org.opensearch.OpenSearchParseException;
+import org.opensearch.ResourceAlreadyExistsException;
+import org.opensearch.action.DocWriteRequest;
 import org.opensearch.action.admin.indices.create.CreateIndexRequest;
 import org.opensearch.action.get.GetRequest;
 import org.opensearch.action.get.GetResponse;
 import org.opensearch.action.index.IndexRequest;
-import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.WriteRequest;
 import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
@@ -55,6 +54,7 @@ import static com.yangdb.fuse.executor.ExecutorModule.globalClient;
 public class BasicIdGenerator implements IdGeneratorDriver<Range> {
     public static final String indexNameParameter = "BasicIdGenerator.@indexName";
     public static final String IDSEQUENCE = "idsequence";
+    private static final int MAX_CONFLICT_ATTEMPTS = 100;
 
     //retry mechanism
     private RetryConfig config = RetryConfig.custom()
@@ -89,36 +89,35 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
         return rangeSupplierService.get();
     }
 
+    /**
+     * read the counter, then write counter + numIds only if no one else wrote it since the read (optimistic concurrency
+     * on the document's seq_no / primary_term). A conflict means another generator (e.g. another service node) took
+     * that range: read again. The counter document's id is the generator name.
+     */
     private Range getNextInternal(String genName, int numIds) {
         synchronized (this.sync) {
-            //todo replace this with Retry framework
             try {
-                GetResponse getResponse = this.client.get(new GetRequest(this.indexName, genName)).actionGet();
-                long currentId = 1l;
-                if (getResponse.isExists()) {
-                    currentId = ((Number) getResponse.getSource().get("value")).longValue();
-                } else {
-                    addFirstSequenceId(genName);
-                }
-                Map<String, Object> newValue = new HashMap<>(1);
-                newValue.put("value", currentId + numIds);
-
-                try {
-                    IndexResponse indexResponse = this.client.index(new IndexRequest(
-                            getResponse.getId())
-//                                    .setIfPrimaryTerm(getResponse.getVersion())
-//                                    .setIfSeqNo(getResponse.getVersion())
-//                                .version(getResponse.getVersion())
-//                                .versionType(VersionType.EXTERNAL)
-                            .index(this.indexName)
-                            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
-                            .source(newValue)).actionGet();
-
-                    if (indexResponse.status().getStatus() == Status.OK.getStatus() || indexResponse.status().getStatus() == Status.CREATED.getStatus() ) {
-                        return new Range(currentId, currentId + numIds);
+                for (int attempt = 0; attempt < MAX_CONFLICT_ATTEMPTS; attempt++) {
+                    GetResponse getResponse = this.client.get(new GetRequest(this.indexName, genName)).actionGet();
+                    if (!getResponse.isExists()) {
+                        addFirstSequenceId(genName);
+                        continue;
                     }
-                } catch (VersionConflictEngineException ex) {
-                    //retry
+                    long currentId = ((Number) getResponse.getSource().get("value")).longValue();
+                    Map<String, Object> newValue = new HashMap<>(1);
+                    newValue.put("value", currentId + numIds);
+
+                    try {
+                        this.client.index(new IndexRequest(this.indexName)
+                                .id(genName)
+                                .setIfSeqNo(getResponse.getSeqNo())
+                                .setIfPrimaryTerm(getResponse.getPrimaryTerm())
+                                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                                .source(newValue)).actionGet();
+                        return new Range(currentId, currentId + numIds);
+                    } catch (VersionConflictEngineException ex) {
+                        //another generator took this range - read the counter again
+                    }
                 }
             } catch (IndexNotFoundException ex) {
                 //before retry generate requeired index elements
@@ -134,23 +133,33 @@ public class BasicIdGenerator implements IdGeneratorDriver<Range> {
 
     @Override
     public boolean init(List<String> names) {
-        try {
-            generateIndex();
-        } catch (OpenSearchParseException error) {
-            //index already exists
-        }
+        generateIndex();
         names.forEach(this::addFirstSequenceId);
         return true;
     }
 
+    /**
+     * create the counter at 1 unless it exists: re-running init (or two nodes starting) must not reset a counter
+     */
     private void addFirstSequenceId(String genName) {
-        this.client.index(new IndexRequest(this.indexName).id(genName).source(Collections.singletonMap("value", 1l))).actionGet();
+        try {
+            this.client.index(new IndexRequest(this.indexName).id(genName)
+                    .opType(DocWriteRequest.OpType.CREATE)
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                    .source(Collections.singletonMap("value", 1l))).actionGet();
+        } catch (VersionConflictEngineException ex) {
+            //counter already exists
+        }
     }
 
     private void generateIndex() {
-        this.client.admin().indices()
-                .create(new CreateIndexRequest()
-                        .index(this.indexName)).actionGet();
+        try {
+            this.client.admin().indices()
+                    .create(new CreateIndexRequest()
+                            .index(this.indexName)).actionGet();
+        } catch (ResourceAlreadyExistsException ex) {
+            //index already exists
+        }
     }
 
     //endregion
