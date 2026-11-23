@@ -6,6 +6,7 @@
 
 * Add [yang.db](https://github.com/YANG-DB/yang-db) as maven dependency https://jitpack.io/#YANG-DB/yang-db
 * Download [yang.db](https://github.com/YANG-DB/yang-db) get latest docker release  docker pull yangdb/yang.db
+* How it works inside: the [architecture tutorial](docs/tutorial/architecture/README.md) (every module, and one query followed from text to results)
 
 ### Run
 * Download V0.5 zip file (https://github.com/YANG-DB/yang-db/releases/tag/v0.5)

@@ -1,3 +1,5 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 
 ## Cost Estimator
 ![](https://static.priceandcost.com/wp-content/uploads/2018/03/Your_Guide_to_Project_Management_Cost_Estimation_blog.jpg)

@@ -146,6 +146,23 @@ redirects to a file that doesn't exist.
 The generic route `/fuse/query/sparql/run` returns 404 because the registered key is `sparkQL`; the old `/sparql` URL
 works. Register `sparql` as the key (or an alias).
 
+### A6 — The id generator hands out the same range every time · open
+`BasicIdGenerator.getNextInternal` writes the new counter with `new IndexRequest(getResponse.getId()).index(...)`.
+The document id ends up as the *index name* argument, and `.id(genName)` is never set, so the counter document never
+moves past 1. Confirmed live: two calls to `GET /fuse/idgen?id=demo&numIds=10` both returned `1–11`. The loaders
+don't call it (loaded ids come from the data), but `SnowflakeRequestIdSupplier` uses it for its worker id. Found while
+writing the architecture tutorial.
+
+### A7 — Snowflake worker id uses XOR instead of a power · open, minor
+`SnowflakeRequestIdSupplier` computes `workerIdRange.getLower() % (2 ^ 6)`. In Java `^` is XOR, so this is `% 4`, not
+`% 64`. Combined with A6, every node gets worker id 1.
+
+### A8 — The `elastic/view` links answer 404 · open, minor
+`/fuse/query/:id/elastic/view` and `…/page/:pageId/elastic/view` redirect to a viewer that loads `/fuse/query/:id/elastic`
+and `…/page/:pageId/elastic`, and neither route exists. The query resource also advertises an `elasticQueryUrl` that
+returns 404. To see the OpenSearch requests, use the search slow log (see the
+[architecture tutorial](../tutorial/architecture/query-lifecycle.md#watch-it-yourself)).
+
 ### G4 — GraphQL exposes only the first target type of a multi-target relationship · open
 `Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
 

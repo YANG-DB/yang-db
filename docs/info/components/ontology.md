@@ -1,3 +1,5 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 # Ontology Structure
 The purpose of this document is to explain and show example for the logical ontology (schema) structure that is used
 for the definition of the entities and relationship representing the logical data model.

@@ -55,21 +55,29 @@ mvn clean install -P core,dragons-assembly # also builds examples/ and the distr
 
 | Module | What it contains |
 |---|---|
-| `fuse-model` | Core model: ontology, query, results, and index-provider schema |
-| `fuse-asg` | Query abstract-syntax-graph and the Cypher / GraphQL / SPARQL translators |
-| `fuse-core` | Query dispatching, Java client, ontology transformers for OWL / GraphQL schema / SQL DDL (not exposed via the REST API) |
-| `fuse-dv` | OpenSearch data layer: execution planning (`epb`), statistics (`stat`), plan-to-traversal translation (`gta`), traversal execution (`unipop`, `core`) |
-| `unipop-core` | TinkerPop structure/predicate layer the traversals run on |
+| `fuse-model` | The shared data model: ontology, index provider, V1 query, ASG, plans, REST requests, results |
+| `fuse-extension-api` | The plugin contract (`YangDbExtension`, `QueryLanguages`) |
+| `fuse-core` | Contracts and the query lifecycle (`QueryDriverBase`), ontology providers, schema importers (OWL, SQL DDL), Java client |
+| `fuse-asg` | Cypher and SPARQL → ASG translators, ASG rewrite and validation |
+| `fuse-dv` | The OpenSearch data view: schema-aware rewrites (`asg`), the cost-based planner (`epb`), plan → traversal (`gta`), traversal execution (`unipop`), drivers, cursors and loaders (`core`), offline statistics (`stat`) |
+| `unipop-core` | The TinkerPop graph that runs traversal steps through controllers |
+| `fuse-opensearch-client` | The REST bridge: the `Client` interface over OpenSearch's REST API |
 | `fuse-service` | REST server and Swagger UI |
 | `fuse-geojson` | GeoJSON support |
 | `fuse-test` | Test framework with an embedded OpenSearch node |
+| `extensions/graphql` | The GraphQL language, as a plugin |
 | `distribution` | Assembles the runnable engine (with the Dragons sample configuration) into `distrib/dragon`; the Docker image is built from it. Built with `-P dragons-assembly` |
 | `examples/dragons` | The Dragons sample domain: the `DragonsModule` service extension (`ext`) and the tutorial data generator (`datagen`). Not part of the default build |
+
+Each module's purpose and key classes, and the path of a query through them, are explained in the
+[architecture tutorial](docs/tutorial/architecture/README.md).
 
 ## Documentation
 
 - [Project overview](yang-db-high-level.md)
-- [Architecture](docs/info/components/architecture.md) · [Ontology](docs/info/components/ontology.md) ·
+- **[Architecture tutorial](docs/tutorial/architecture/README.md)**: [the modules](docs/tutorial/architecture/modules.md) and
+  [the life of a query](docs/tutorial/architecture/query-lifecycle.md), from text to results
+- Older component notes: [Architecture](docs/info/components/architecture.md) · [Ontology](docs/info/components/ontology.md) ·
   [Query language](docs/info/components/query_language.md) · [Execution planner](docs/info/components/execution_planner.md)
 - [REST API](docs/info/api.md)
 - [Revival roadmap](docs/revival/ROADMAP.md) · [Known issues](docs/revival/KNOWN_ISSUES.md) ·

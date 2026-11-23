@@ -15,6 +15,10 @@ Please note we have a code of conduct, please follow it in all your interactions
    The root `README.MD` is the maintainer's GitHub profile page, not project documentation.
 4. A maintainer will review and merge.
 
+## Before you change engine code
+Read the [architecture tutorial](docs/tutorial/architecture/README.md). It describes every module and follows a query
+through the whole pipeline, with the classes to read for each stage.
+
 ## Writing an extension
 
 You can add query languages, REST routes and Guice bindings to YANG-DB from your own jar, without editing core and
