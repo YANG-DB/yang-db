@@ -166,7 +166,7 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
 - [x] 5.4 (done) Dependency alignment, including upgrading graphql-java for ANTLR 4.13: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
 - [x] 5.5 (done: the fuse-service embedded node uses the bridge; Painless runs on ANTLR 4.13.1) Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
 - [x] 5.6 Integration: full build green on 2.19.7, **1,249 tests, 0 failures** (lead)
-- [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; 2.19.7 opened every 1.3-written index with exact counts. A full query rehearsal on 1.3 data is still to repeat after the two live-only fixes) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
+- [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; **in-place upgrade rehearsed 2026-11-23**: data loaded with v0.8.0 on 1.3.0, cluster upgraded to 2.19.7 on the same volume, v0.9.0 returned identical results for all 28 queries plus the cursor checks, with no reload; see OPENSEARCH_MIGRATION.md §9) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
 - [x] 5.8 (docs, upgrade guide and [release notes](../releases/v0.9.0.md) done; **wiki still to update**) Docs, wiki, upgrade guide, release notes → PR (lead)
 - [x] 5.9 (done 2026-11-23) Release the OpenSearch 1.3 line before the switch: **[v0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)**
   from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
