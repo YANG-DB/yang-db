@@ -154,7 +154,21 @@ change.
 - Whether the RHLC in 2.19 still offers async variants for every action the bridge needs (expected yes).
 - The embedded `Node` construction and plugin loading on 2.19.
 
-## 9. References
+## 9. What the rollout found (Phase 5, 2026-11-22)
+- **Census:** 207 compile errors: 143 package moves, 72 mapping types, 20 changed APIs, 8 transport-client files, 1
+  dependency. The embedded `Node` API was unchanged.
+- **Dependencies:** netty 4.1.139 serves both OpenSearch and Jooby. Jackson 2.18.9, log4j 2.25.5. **ANTLR**: Painless
+  needs 4.13.1. graphql-java 24.3 ships its own relocated ANTLR, which resolved the clash with GraphQL.
+- **Bugs only a live cluster showed**, since embedded-node tests can't catch them. Both are fixed, with regression tests:
+  1. The bridge rebuilt `ResourceAlreadyExistsException` without its index, so `init` hit an NPE midway and indices
+     were created with dynamic mappings.
+  2. Aggregations come back REST-parsed (`ParsedStringTerms`, …), not as the internal classes (`StringTerms`, …).
+     Code that checked or cast the internal classes silently lost every count-filter bucket. It now uses the public
+     `Terms` / `Histogram` interfaces.
+- **Lesson:** anything reading OpenSearch responses must use the public interfaces. The Docker e2e is the gate, not
+  the embedded-node suite.
+
+## 10. References
 - [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md): the execution plan
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md): A1 (the netty pin), T1 (test harness), C1 (Painless count scripts), the mapping
   issues M1/M2

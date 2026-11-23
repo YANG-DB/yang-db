@@ -68,6 +68,10 @@
             <artifactId>fuse-geojson</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.yangdb</groupId>
+            <artifactId>fuse-opensearch-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
         </dependency>
@@ -131,8 +135,8 @@
             <artifactId>opensearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opensearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <groupId>org.opensearch.plugin</groupId>
+            <artifactId>transport-netty4-client</artifactId>
         </dependency>
 
         <dependency>

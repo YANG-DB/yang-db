@@ -95,7 +95,6 @@ public class LoadUtils {
             String index = resolveIndex(schema, node);
             IndexRequestBuilder request = client.prepareIndex()
                     .setIndex(index.toLowerCase())
-                    .setType(node.getType())
                     .setId(node.getId())
                     .setOpType(opType)
                     .setSource(mapper.writeValueAsString(node.getNode()), XContentType.JSON);

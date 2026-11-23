@@ -2,8 +2,8 @@
 This is the quickstart for YANG-DB: it runs the Dragons sample graph on top of OpenSearch using docker compose.
 
 [docker-compose-os.yml](docker-compose-os.yml) starts three services:
- - OpenSearch 1.3.0 (single node, security plugin disabled - for local testing only)
- - OpenSearch Dashboards 1.3.0
+ - OpenSearch 2.19.7 (single node, security plugin disabled - for local testing only)
+ - OpenSearch Dashboards 2.19.7
  - Fuse - the YANG-DB graph engine, preloaded with the Dragons ontology
 
 ## Prerequisites

@@ -22,8 +22,8 @@ package com.yangdb.fuse.unipop.controller.utils.opensearch;
 
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.NamedParameter;
-import org.opensearch.common.xcontent.XContentBuilder;
-import org.opensearch.common.xcontent.XContentBuilderExtension;
+import org.opensearch.core.xcontent.XContentBuilder;
+import org.opensearch.core.xcontent.XContentBuilderExtension;
 
 import java.util.Collections;
 import java.util.HashMap;

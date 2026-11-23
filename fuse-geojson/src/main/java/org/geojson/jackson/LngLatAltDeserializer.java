@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 
@@ -39,7 +40,8 @@ public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 		if (jp.isExpectedStartArrayToken()) {
 			return deserializeArray(jp, ctxt);
 		}
-		throw ctxt.mappingException(LngLatAlt.class);
+		// DeserializationContext.mappingException(..) was removed in Jackson 2.x (deprecated since 2.9)
+		return (LngLatAlt) ctxt.handleUnexpectedToken(LngLatAlt.class, jp);
 	}
 
 	protected LngLatAlt deserializeArray(JsonParser jp, DeserializationContext ctxt) throws IOException,
@@ -60,7 +62,7 @@ public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 			if (optional)
 				return Double.NaN;
 			else
-				throw ctxt.mappingException("Unexpected end-of-input when binding data into LngLatAlt");
+				throw JsonMappingException.from(jp, "Unexpected end-of-input when binding data into LngLatAlt");
 		}
 		else {
 			switch (token) {
@@ -68,13 +70,13 @@ public class LngLatAltDeserializer extends JsonDeserializer<LngLatAlt> {
 					if (optional)
 						return Double.NaN;
 					else
-						throw ctxt.mappingException("Unexpected end-of-input when binding data into LngLatAlt");
+						throw JsonMappingException.from(jp, "Unexpected end-of-input when binding data into LngLatAlt");
 				case VALUE_NUMBER_FLOAT:
 					return jp.getDoubleValue();
 				case VALUE_NUMBER_INT:
 					return jp.getLongValue();
 				default:
-					throw ctxt.mappingException("Unexpected token (" + token.name()
+					throw JsonMappingException.from(jp, "Unexpected token (" + token.name()
 							+ ") when binding data into LngLatAlt ");
 			}
 		}

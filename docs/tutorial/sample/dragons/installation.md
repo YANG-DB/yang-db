@@ -1,7 +1,7 @@
 ## My First Tutorial - Installation
 
 > **Legacy guide - out of date.** This manual install installs Elasticsearch/Kibana 6.5.4 and the old `v0.5` release,
-> which do not work with the current build (OpenSearch 1.3.0). Start from the [tutorial's main page](README.md) instead.
+> which do not work with the current build (OpenSearch 2.19.7). Start from the [tutorial's main page](README.md) instead.
 > The rest of the Dragons tutorial ([ontology](create-ontology.md), [data](load-data.md), [queries](query-the-data.md))
 > applies once the quickstart is running. This page is kept for reference only (e.g. the dashboard notes below).
 

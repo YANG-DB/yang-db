@@ -40,6 +40,7 @@ import com.yangdb.fuse.dispatcher.resource.store.LoggingResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStoreFactory;
 import com.yangdb.fuse.executor.opensearch.ClientProvider;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
 import com.yangdb.fuse.executor.opensearch.TimeoutClientAdvisor;
 import com.yangdb.fuse.executor.opensearch.logging.LoggingClient;
 import com.yangdb.fuse.executor.logging.LoggingCursorFactory;
@@ -339,6 +340,10 @@ public class ExecutorModule extends ModuleBase {
         OpensearchGraphConfiguration configuration = new OpensearchGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "opensearch.hosts", Arrays.asList("127.0.0.1"))).toJavaArray(String.class));
         configuration.setClusterPort(getInt(conf,"opensearch.port",9200));
+        // the remote client talks HTTP: opensearch.http.port, else (deprecated) opensearch.port - 100, else 9200
+        configuration.setClusterHttpPort(ClientFactory.resolveHttpPort(
+                conf.hasPath("opensearch.http.port") ? conf.getInt("opensearch.http.port") : null,
+                conf.hasPath("opensearch.port") ? conf.getInt("opensearch.port") : null));
         configuration.setClusterName(getString(conf,"opensearch.cluster_name",""));
         configuration.setElasticGraphDefaultSearchSize(getLong(conf,"opensearch.default_search_size",10000000L));
         configuration.setElasticGraphMaxSearchSize(getLong(conf,"opensearch.max_search_size",1000000000L));

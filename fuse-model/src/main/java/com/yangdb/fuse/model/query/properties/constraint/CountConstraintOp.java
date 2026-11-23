@@ -44,7 +44,9 @@ package com.yangdb.fuse.model.query.properties.constraint;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -73,11 +75,26 @@ public enum CountConstraintOp {
     @JsonProperty("le")
     le,
 
-    @JsonProperty("within")
+    // Wire format, unchanged from Jackson 2.13: `between` was annotated @JsonProperty("within"), the same name as
+    // `within`, so it is written as "within", "within" reads back as `within`, and "between" is not accepted.
+    // Jackson >= 2.15 rejects the duplicate name, so toJson()/fromJson() below keep that behaviour explicitly.
     between,
 
     @JsonProperty("within")
     within;
+
+    @JsonValue
+    public String toJson() {
+        return this == between ? within.name() : name();
+    }
+
+    @JsonCreator
+    public static CountConstraintOp fromJson(String value) {
+        if (value == null || between.name().equals(value)) {
+            throw new IllegalArgumentException("not one of the values accepted for CountConstraintOp: " + value);
+        }
+        return CountConstraintOp.valueOf(value);
+    }
 
  public static Set<Class<? extends Constraint>> ignorableConstraints;
     public static Set<CountConstraintOp> noValueOps;

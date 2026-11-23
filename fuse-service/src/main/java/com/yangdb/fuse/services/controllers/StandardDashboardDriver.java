@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.yangdb.fuse.dispatcher.driver.DashboardDriver;
 import com.yangdb.fuse.dispatcher.ontology.OntologyProvider;
+import com.yangdb.fuse.dispatcher.resource.store.SystemResourceKind;
 import com.yangdb.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.yangdb.fuse.executor.resource.PersistantNodeStatusResource;
 import com.yangdb.fuse.model.ontology.Ontology;
@@ -37,8 +38,8 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.Client;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
-import org.opensearch.search.aggregations.bucket.histogram.InternalDateHistogram;
-import org.opensearch.search.aggregations.bucket.terms.StringTerms;
+import org.opensearch.search.aggregations.bucket.histogram.Histogram;
+import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.opensearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.opensearch.search.aggregations.support.ValueType;
 import org.slf4j.Logger;
@@ -160,8 +161,8 @@ public class StandardDashboardDriver implements DashboardDriver {
             //calculate cardinality for every entity type
             try {
                 elementCount = Objects.isNull(response.getAggregations().get("graphElementCount")) ? Collections.EMPTY_MAP :
-                        ((StringTerms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
-                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+                        ((Terms) response.getAggregations().get("graphElementCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(Terms.Bucket::getKey, Terms.Bucket::getDocCount));
             } catch (Throwable graphElementCountErr) {
                 logger.warn(graphElementCountErr.getMessage());
             }
@@ -169,16 +170,16 @@ public class StandardDashboardDriver implements DashboardDriver {
             //calculate cardinality for every relationship type
             try {
                 edgeSourceCount = Objects.isNull(response.getAggregations().get("edgeSourceCount")) ? Collections.EMPTY_MAP :
-                        ((StringTerms) response.getAggregations().get("edgeSourceCount")).getBuckets().stream()
-                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+                        ((Terms) response.getAggregations().get("edgeSourceCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(Terms.Bucket::getKey, Terms.Bucket::getDocCount));
             }catch (Throwable edgeSourceCountErr) {
                 logger.warn(edgeSourceCountErr.getMessage());
             }
 
             try {
                 edgeDestCount = Objects.isNull(response.getAggregations().get("edgeDestCount")) ? Collections.EMPTY_MAP :
-                        ((StringTerms) response.getAggregations().get("edgeDestCount")).getBuckets().stream()
-                                .collect(Collectors.toMap(StringTerms.Bucket::getKey, StringTerms.Bucket::getDocCount));
+                        ((Terms) response.getAggregations().get("edgeDestCount")).getBuckets().stream()
+                                .collect(Collectors.toMap(Terms.Bucket::getKey, Terms.Bucket::getDocCount));
             }catch (Throwable edgeDestCountErr) {
                 logger.warn(edgeDestCountErr.getMessage());
             }
@@ -217,8 +218,8 @@ public class StandardDashboardDriver implements DashboardDriver {
         aggregation.interval(1000 * 60 * 60 * 24);
         aggregation.format(DEFAULT_DATE_FORMAT);
         final SearchResponse response = builder.addAggregation(aggregation).get();
-        final Map<Object, Long> elementCount = ((InternalDateHistogram) response.getAggregations().get("graphElementCreatedOverTime")).getBuckets().stream()
-                .collect(Collectors.toMap(InternalDateHistogram.Bucket::getKey, InternalDateHistogram.Bucket::getDocCount));
+        final Map<Object, Long> elementCount = ((Histogram) response.getAggregations().get("graphElementCreatedOverTime")).getBuckets().stream()
+                .collect(Collectors.toMap(Histogram.Bucket::getKey, Histogram.Bucket::getDocCount));
 
         ObjectNode root = objectMapper.createObjectNode();
         elementCount.forEach((key, value) -> root.put(key.toString(), value));
@@ -230,7 +231,7 @@ public class StandardDashboardDriver implements DashboardDriver {
         ObjectNode node = objectMapper.createObjectNode();
         final SearchRequestBuilder builder = client.prepareSearch();
         builder.setIndices(PersistantNodeStatusResource.SYSTEM);
-        builder.setQuery(matchAllQuery());
+        builder.setQuery(SystemResourceKind.filter(SystemResourceKind.NODE));
         builder.setSize(0);
         SearchResponse response = builder.get();
         return node.put("count", response.getHits().getTotalHits().value);

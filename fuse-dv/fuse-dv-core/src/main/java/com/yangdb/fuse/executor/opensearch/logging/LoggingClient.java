@@ -26,6 +26,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.logging.*;
 import org.opensearch.action.*;
+import org.opensearch.action.admin.indices.segments.IndicesSegmentResponse;
+import org.opensearch.action.admin.indices.segments.PitSegmentsRequest;
+import org.opensearch.common.action.ActionFuture;
+import org.opensearch.core.action.ActionListener;
+import org.opensearch.core.action.ActionResponse;
 import org.opensearch.action.bulk.BulkRequest;
 import org.opensearch.action.bulk.BulkRequestBuilder;
 import org.opensearch.action.bulk.BulkResponse;
@@ -119,18 +124,13 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public UpdateRequestBuilder prepareUpdate(String s, String s1, String s2) {
-        return client.prepareUpdate(s, s1, s2);
+    public UpdateRequestBuilder prepareUpdate(String s, String s2) {
+        return client.prepareUpdate(s, s2);
     }
 
     @Override
-    public IndexRequestBuilder prepareIndex(String s, String s1) {
-        return client.prepareIndex(s, s1);
-    }
-
-    @Override
-    public IndexRequestBuilder prepareIndex(String s, String s1, String s2) {
-        return client.prepareIndex(s, s1, s2);
+    public IndexRequestBuilder prepareIndex(String s) {
+        return client.prepareIndex(s);
     }
 
     @Override
@@ -149,8 +149,8 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public DeleteRequestBuilder prepareDelete(String s, String s1, String s2) {
-        return client.prepareDelete(s, s1, s2);
+    public DeleteRequestBuilder prepareDelete(String s, String s2) {
+        return client.prepareDelete(s, s2);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public BulkRequestBuilder prepareBulk(String globalIndex, String globalType) {
+    public BulkRequestBuilder prepareBulk(String globalIndex) {
         return null;
     }
 
@@ -189,8 +189,8 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public GetRequestBuilder prepareGet(String s, String s1, String s2) {
-        return client.prepareGet(s, s1, s2);
+    public GetRequestBuilder prepareGet(String s, String s2) {
+        return client.prepareGet(s, s2);
     }
 
     @Override
@@ -462,8 +462,8 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public TermVectorsRequestBuilder prepareTermVectors(String s, String s1, String s2) {
-        return client.prepareTermVectors(s, s1, s2);
+    public TermVectorsRequestBuilder prepareTermVectors(String s, String s2) {
+        return client.prepareTermVectors(s, s2);
     }
 
 
@@ -483,8 +483,8 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public ExplainRequestBuilder prepareExplain(String s, String s1, String s2) {
-        return client.prepareExplain(s, s1, s2);
+    public ExplainRequestBuilder prepareExplain(String s, String s2) {
+        return client.prepareExplain(s, s2);
     }
 
     @Override
@@ -535,6 +535,26 @@ public class LoggingClient implements Client {
     @Override
     public Client filterWithHeader(Map<String, String> map) {
         return client.filterWithHeader(map);
+    }
+
+    @Override
+    public void createPit(CreatePitRequest createPitRequest, ActionListener<CreatePitResponse> actionListener) {
+        client.createPit(createPitRequest, actionListener);
+    }
+
+    @Override
+    public void deletePits(DeletePitRequest deletePitRequest, ActionListener<DeletePitResponse> actionListener) {
+        client.deletePits(deletePitRequest, actionListener);
+    }
+
+    @Override
+    public void getAllPits(GetAllPitNodesRequest getAllPitNodesRequest, ActionListener<GetAllPitNodesResponse> actionListener) {
+        client.getAllPits(getAllPitNodesRequest, actionListener);
+    }
+
+    @Override
+    public void pitSegments(PitSegmentsRequest pitSegmentsRequest, ActionListener<IndicesSegmentResponse> actionListener) {
+        client.pitSegments(pitSegmentsRequest, actionListener);
     }
 
     @Override

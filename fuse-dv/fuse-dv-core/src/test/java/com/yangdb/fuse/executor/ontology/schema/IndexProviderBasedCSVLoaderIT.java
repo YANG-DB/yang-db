@@ -245,10 +245,10 @@ public class IndexProviderBasedCSVLoaderIT implements BaseITMarker {
         LoadResponse<String, FuseError> insertAgain = csvLoader.load("Entity", "Guild", header + "G-DUP-1,second,,,,30/6/1020\n", GraphDataLoader.Directive.INSERT);
         Assert.assertEquals(0, insertAgain.getResponses().get(1).getSuccesses().size());
         Assert.assertEquals(1, insertAgain.getResponses().get(1).getFailures().size());
-        Assert.assertEquals("first", client.prepareGet("guild", null, "G-DUP-1").get().getSource().get("name"));
+        Assert.assertEquals("first", client.prepareGet("guild", "G-DUP-1").get().getSource().get("name"));
 
         LoadResponse<String, FuseError> upsert = csvLoader.load("Entity", "Guild", header + "G-DUP-1,third,,,,30/6/1020\n", GraphDataLoader.Directive.UPSERT);
         Assert.assertEquals(1, upsert.getResponses().get(1).getSuccesses().size());
-        Assert.assertEquals("third", client.prepareGet("guild", null, "G-DUP-1").get().getSource().get("name"));
+        Assert.assertEquals("third", client.prepareGet("guild", "G-DUP-1").get().getSource().get("name"));
     }
 }

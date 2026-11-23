@@ -37,6 +37,7 @@ import java.util.Map;
 public class ElasticDataPopulator implements DataPopulator {
     private Client client;
     private String indexName;
+    //the former mapping type; unused since OpenSearch 2.x removed types (kept for the constructor signature)
     private String docType;
     private String idField;
     private GenericDataProvider provider;
@@ -53,7 +54,6 @@ public class ElasticDataPopulator implements DataPopulator {
     private IndexRequestBuilder documentIndexRequest(Map<String, Object> doc){
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
-                .setType(this.docType)
                 .setOpType(IndexRequest.OpType.INDEX);
         if(doc.containsKey(idField))
             indexRequestBuilder = indexRequestBuilder.setId((String)doc.remove(idField));

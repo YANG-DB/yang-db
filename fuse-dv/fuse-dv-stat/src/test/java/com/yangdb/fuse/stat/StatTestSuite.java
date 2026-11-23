@@ -19,7 +19,8 @@ import java.nio.file.Paths;
         EsUtilTest.class,
         StatCalculatorDynamicFieldTest.class,
         StatCalculatorTest.class,
-        StatConfigurationTest.class
+        StatConfigurationTest.class,
+        com.yangdb.fuse.stat.es.client.ClientProviderTest.class
 })
 public class StatTestSuite implements BaseSuiteMarker {
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";

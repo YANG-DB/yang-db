@@ -21,7 +21,7 @@ import org.opensearch.action.search.SearchScrollRequestBuilder;
 import org.opensearch.action.search.SearchType;
 import org.opensearch.client.Client;
 import org.opensearch.common.document.DocumentField;
-import org.opensearch.common.text.Text;
+import org.opensearch.core.common.text.Text;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
@@ -88,7 +88,7 @@ public class ElementControllerCompositTest {
         Map<String, DocumentField> fields = new HashMap<>();
         fields.put("name", new DocumentField("name", Collections.singletonList("myName")));
         fields.put("type", new DocumentField("type", Collections.singletonList("myType")));
-        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", new Text("test"), fields,null)};
+        SearchHit[] tests = new SearchHit[]{new SearchHit(1, "1", null, fields, null)};
 
         SearchHits searchHits = new SearchHits(tests, new TotalHits(10, TotalHits.Relation.GREATER_THAN_OR_EQUAL_TO), 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);

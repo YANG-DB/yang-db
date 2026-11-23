@@ -65,6 +65,15 @@ public class OpensearchGraphConfiguration extends BaseConfiguration {
         super.addProperty(CLUSTER_PORT, value);
     }
 
+    /** The HTTP (REST) port the remote client uses; null when not configured (see fuse-opensearch-client README). */
+    public Integer getClusterHttpPort() {
+        return super.getInteger(CLUSTER_HTTP_PORT, null);
+    }
+
+    public void setClusterHttpPort(int value) {
+        super.setProperty(CLUSTER_HTTP_PORT, value);
+    }
+
     public ClientType getClientType() {
         return ClientType.valueOf(super.getString(CLIENT_TYPE, "transport"));
     }
@@ -236,6 +245,7 @@ public class OpensearchGraphConfiguration extends BaseConfiguration {
     public static final String CLUSTER_NAME = "opensearch.cluster.name";
     public static final String CLUSTER_HOSTS = "opensearch.cluster.hosts";
     public static final String CLUSTER_PORT = "opensearch.cluster.port";
+    public static final String CLUSTER_HTTP_PORT = "opensearch.cluster.http.port";
     public static final String CLUSTER_ADDRESS = "opensearch.cluster.address";
 
     public static final String CLIENT_TYPE = "opensearch.client";

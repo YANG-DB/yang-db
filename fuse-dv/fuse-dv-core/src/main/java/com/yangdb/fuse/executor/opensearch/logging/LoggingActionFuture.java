@@ -22,8 +22,8 @@ package com.yangdb.fuse.executor.opensearch.logging;
 
 import com.codahale.metrics.Meter;
 import com.yangdb.fuse.dispatcher.logging.LogMessage;
-import org.opensearch.action.ActionFuture;
-import org.opensearch.action.ActionListener;
+import org.opensearch.common.action.ActionFuture;
+import org.opensearch.core.action.ActionListener;
 import org.opensearch.action.ListenableActionFuture;
 import org.opensearch.common.unit.TimeValue;
 

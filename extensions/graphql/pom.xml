@@ -45,14 +45,11 @@
             <groupId>com.yangdb</groupId>
             <artifactId>fuse-service</artifactId>
         </dependency>
+        <!-- graphql-java ships its own relocated ANTLR runtime (graphql.org.antlr), so it needs no antlr4-runtime and
+             does not clash with lang-painless's -->
         <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
-        </dependency>
-        <!-- the runtime graphql-java's parser needs (version pinned in the root pom: lang-painless brings an older one) -->
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>

@@ -30,6 +30,7 @@ import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.dispatcher.resource.store.ResourceStore;
+import com.yangdb.fuse.dispatcher.resource.store.SystemResourceKind;
 import com.yangdb.fuse.model.asgQuery.AsgQuery;
 import com.yangdb.fuse.model.execution.plan.PlanWithCost;
 import com.yangdb.fuse.model.query.Query;
@@ -46,7 +47,7 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.support.ActiveShardCount;
 import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
-import org.opensearch.rest.RestStatus;
+import org.opensearch.core.rest.RestStatus;
 
 import java.io.IOException;
 import java.util.*;
@@ -69,6 +70,10 @@ public class PersistentResourceStore implements ResourceStore {
     public static final String ASG = "asg";
     public static final String REQUEST = "request";
     public static final String TYPE = "type";
+    /**
+     * the former mapping type of the stored queries; OpenSearch 2.x has no types, the documents carry
+     * {@link SystemResourceKind#FIELD} = {@link SystemResourceKind#QUERY} instead
+     */
     public static final String RESOURCE = "resource";
     private Client client;
     private ObjectMapper mapper;
@@ -94,7 +99,7 @@ public class PersistentResourceStore implements ResourceStore {
         while (true) {
             try {
                 final SearchRequestBuilder search = client.prepareSearch(SYSTEM);
-                final SearchResponse response = search.setQuery(matchAllQuery()).get();
+                final SearchResponse response = search.setQuery(SystemResourceKind.filter(SystemResourceKind.QUERY)).get();
                 return Arrays.asList(response.getHits().getHits()).stream()
                         .map(hit -> {
                             try {
@@ -105,10 +110,7 @@ public class PersistentResourceStore implements ResourceStore {
                             return null;
                         }).filter(Objects::nonNull).collect(Collectors.toList());
             } catch (IndexNotFoundException e) {
-                this.client.admin().indices()
-                        .create(new CreateIndexRequest()
-                                .waitForActiveShards(ActiveShardCount.ALL)
-                                .index(SYSTEM)).actionGet();
+                createSystemIndex();
 
             }
         }
@@ -128,18 +130,16 @@ public class PersistentResourceStore implements ResourceStore {
     @Override
     public Optional<QueryResource> getQueryResource(String queryId) {
         try {
-            final GetResponse response = client.prepareGet(SYSTEM, RESOURCE, queryId).get();
-            if (response.isExists())
+            final GetResponse response = client.prepareGet(SYSTEM, queryId).get();
+            if (isQueryResource(response))
                 return Optional.of(buildQueryResource(queryId, response.getSource()));
         } catch (IndexNotFoundException e) {
-            final CreateIndexResponse response = this.client.admin().indices()
-                    .create(new CreateIndexRequest()
-                            .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
+            final CreateIndexResponse response = createSystemIndex();
             if(response.isAcknowledged()) {
-                if (client.prepareGet(SYSTEM, RESOURCE, queryId).get().isExists()) {
+                final GetResponse created = client.prepareGet(SYSTEM, queryId).get();
+                if (isQueryResource(created)) {
                     try {
-                        return Optional.of(buildQueryResource(queryId, client.prepareGet(SYSTEM, RESOURCE, queryId).get().getSource()));
+                        return Optional.of(buildQueryResource(queryId, created.getSource()));
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
                     }
@@ -154,9 +154,10 @@ public class PersistentResourceStore implements ResourceStore {
     @Override
     public boolean addQueryResource(QueryResource queryResource) {
         try {
-            IndexResponse response = client.prepareIndex(SYSTEM, RESOURCE, queryResource.getQueryMetadata().getId())
+            IndexResponse response = client.prepareIndex(SYSTEM).setId(queryResource.getQueryMetadata().getId())
                     .setSource(jsonBuilder()
                             .startObject()
+                            .field(SystemResourceKind.FIELD, SystemResourceKind.QUERY)
                             .field(NAME, queryResource.getQueryMetadata().getName())
                             .field(TTL, queryResource.getQueryMetadata().getTtl())
                             .field(CREATION_TIME, queryResource.getQueryMetadata().getCreationTime())
@@ -167,10 +168,7 @@ public class PersistentResourceStore implements ResourceStore {
                     ).execute().actionGet();
             return response.status() == RestStatus.CREATED || response.status() == RestStatus.OK;
         } catch (IndexNotFoundException e) {
-            this.client.admin().indices()
-                    .create(new CreateIndexRequest()
-                            .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
+            createSystemIndex();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -180,8 +178,30 @@ public class PersistentResourceStore implements ResourceStore {
 
     @Override
     public boolean deleteQueryResource(String queryId) {
-        final DeleteResponse response = client.prepareDelete(SYSTEM, RESOURCE, queryId).get();
+        //only delete a stored query (ids are shared by every kind of document in the untyped system index)
+        if (!isQueryResource(client.prepareGet(SYSTEM, queryId).get()))
+            return false;
+        final DeleteResponse response = client.prepareDelete(SYSTEM, queryId).get();
         return response.status() == RestStatus.OK;
+    }
+
+    /**
+     * a stored query document: exists and is of kind {@link SystemResourceKind#QUERY} (or a legacy 1.3-era document
+     * without a kind, which was written under the former "resource" mapping type)
+     */
+    private static boolean isQueryResource(GetResponse response) {
+        return response.isExists() && SystemResourceKind.matches(response.getSource(), SystemResourceKind.QUERY);
+    }
+
+    /**
+     * create the system index with an untyped mapping that maps the resource kind as a keyword
+     */
+    private CreateIndexResponse createSystemIndex() {
+        return this.client.admin().indices()
+                .create(new CreateIndexRequest()
+                        .waitForActiveShards(ActiveShardCount.ALL)
+                        .index(SYSTEM)
+                        .mapping(SystemResourceKind.mapping())).actionGet();
     }
 
     /**

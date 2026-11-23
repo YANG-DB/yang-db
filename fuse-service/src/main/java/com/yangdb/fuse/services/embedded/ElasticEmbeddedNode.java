@@ -22,19 +22,16 @@ package com.yangdb.fuse.services.embedded;
 
 import com.yangdb.fuse.unipop.controller.OpensearchGraphConfiguration;
 
-import org.opensearch.client.transport.TransportClient;
+import com.yangdb.fuse.opensearch.client.ClientFactory;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.common.transport.TransportAddress;
 import org.opensearch.node.InternalSettingsPreparer;
 import org.opensearch.node.Node;
 import org.opensearch.painless.PainlessPlugin;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.transport.Netty4Plugin;
-import org.opensearch.transport.client.PreBuiltTransportClient;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -67,7 +64,9 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
     static int httpTransportPort;
     static String nodeName;
-    static TransportClient client = null;
+    static Client client = null;
+    /** the node's HTTP port, for the REST-bridge client (OpenSearch 2.x has no transport client) */
+    static int clientHttpPort = -1;
     //endregion
 
     //region Constructors
@@ -103,6 +102,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
         this.deleteOnLoad = deleteOnLoad;
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
+        ElasticEmbeddedNode.clientHttpPort = httpPort;
         this.numberOfShards = numberOfShards;
         try {
             prepare(values);
@@ -117,21 +117,18 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Methods
-    public static TransportClient getClient() {
+    public static Client getClient() {
         return getClient(nodeName, httpTransportPort);
     }
 
-    public static TransportClient getClient(String nodeName, int httpTransportPort) {
+    /**
+     * A client for the embedded node over its HTTP port, through the REST bridge (OpenSearch 2.x has no transport
+     * client). Falls back to the transport port - 100 if the HTTP port isn't known.
+     */
+    public static Client getClient(String nodeName, int httpTransportPort) {
         if (client == null) {
-            try {
-                Settings settings = Settings.builder()
-                        .put("cluster.name", nodeName)
-                        .build();
-                client = new PreBuiltTransportClient(settings)
-                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
-            } catch (UnknownHostException e) {
-                throw new UnknownError(e.getMessage());
-            }
+            int port = clientHttpPort > 0 ? clientHttpPort : ClientFactory.httpPortFromTransportPort(httpTransportPort);
+            client = ClientFactory.remote(new String[]{"localhost"}, port, Settings.EMPTY);
         }
 
         return client;

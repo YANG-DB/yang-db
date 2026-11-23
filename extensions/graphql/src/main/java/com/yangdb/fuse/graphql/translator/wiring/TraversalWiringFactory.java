@@ -34,7 +34,7 @@ import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import graphql.Internal;
 import graphql.Scalars;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.execution.ExecutionStepInfo;
 import graphql.schema.*;
 import graphql.schema.idl.*;
@@ -130,7 +130,7 @@ public class TraversalWiringFactory implements WiringFactory {
         // in parent is of type vertex and current query element not quant -> add quant
         ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
         if (parent.getFieldDefinition() != null) {
-            ExecutionPath parentPath = env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd();
+            ResultPath parentPath = env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd();
             if (isParentObjectType(parent.getFieldDefinition()) &&
                     //assume a path was already entered
                     pathContext.containsKey(parentPath.getPathWithoutListEnd().toString()) &&
@@ -368,13 +368,15 @@ public class TraversalWiringFactory implements WiringFactory {
             return 1.0;
         } else if (scalarType.equals(Scalars.GraphQLID)) {
             return "id_" + fieldName;
-        } else if (scalarType.equals(Scalars.GraphQLBigDecimal)) {
+        } else if (scalarType.getName().equals("Long")) {
+            return 1L;
+        } else if (scalarType.getName().equals("BigDecimal")) {
             return new BigDecimal(1.0);
-        } else if (scalarType.equals(Scalars.GraphQLBigInteger)) {
+        } else if (scalarType.getName().equals("BigInteger")) {
             return new BigInteger("1");
-        } else if (scalarType.equals(Scalars.GraphQLByte)) {
+        } else if (scalarType.getName().equals("Byte")) {
             return Byte.valueOf("1");
-        } else if (scalarType.equals(Scalars.GraphQLShort)) {
+        } else if (scalarType.getName().equals("Short")) {
             return Short.valueOf("1");
         } else {
             return null;
@@ -386,7 +388,7 @@ public class TraversalWiringFactory implements WiringFactory {
     }
 
     public  GraphQLScalarType fakeScalar(String name) {
-        return new GraphQLScalarType(name, name, new Coercing() {
+        return GraphQLScalarType.newScalar().name(name).description(name).coercing(new Coercing() {
             @Override
             public Object serialize(Object dataFetcherResult) {
                 return dataFetcherResult;
@@ -401,7 +403,7 @@ public class TraversalWiringFactory implements WiringFactory {
             public Object parseLiteral(Object input) {
                 return input;
             }
-        });
+        }).build();
     }
 }
 

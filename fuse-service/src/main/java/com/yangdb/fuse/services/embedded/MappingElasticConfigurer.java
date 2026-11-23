@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.opensearch.ResourceAlreadyExistsException;
 import org.opensearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.opensearch.client.transport.TransportClient;
+import org.opensearch.client.Client;
 import org.opensearch.common.settings.Settings;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
 
     //region ElasticIndexConfigurer
     @Override
-    public void configure(TransportClient client) {
+    public void configure(Client client) {
         try {
             addMappings(client);
         } catch (IOException e) {
@@ -69,13 +69,11 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
     //endregion
 
     //region Private Methods
-    protected void addMappings(TransportClient client) throws IOException {
+    protected void addMappings(Client client) throws IOException {
         for(String indexName : this.indices) {
             CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
             Map<String, Object> allMappings = (Map<String, Object>) mappings.get("mappings");
-            for (Map.Entry<String, Object> mapping : allMappings.entrySet()) {
-                createIndexRequestBuilder.addMapping(mapping.getKey(), (Map<String, Object>) mapping.getValue());
-            }
+            createIndexRequestBuilder.setMapping(untyped(allMappings));
 
             createIndexRequestBuilder.setSettings(Settings.builder().put("index.store.type", "fs").build());
 
@@ -86,6 +84,30 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
                 createIndexRequestBuilder.execute().actionGet();
             }
         }
+    }
+
+    /**
+     * OpenSearch 2.x indices have a single, untyped mapping. The configured mappings may still be keyed by a
+     * (legacy) type name - {type: {properties: ...}} - possibly several; their bodies are merged into one
+     * {properties: ...} mapping. An already untyped mapping is returned as-is.
+     */
+    static Map<String, Object> untyped(Map<String, Object> allMappings) {
+        if (allMappings.containsKey("properties")) {
+            return allMappings;
+        }
+        Map<String, Object> merged = new java.util.HashMap<>();
+        Map<String, Object> properties = new java.util.HashMap<>();
+        for (Object typeMapping : allMappings.values()) {
+            ((Map<String, Object>) typeMapping).forEach((key, value) -> {
+                if (key.equals("properties")) {
+                    properties.putAll((Map<String, Object>) value);
+                } else {
+                    merged.putIfAbsent(key, value);
+                }
+            });
+        }
+        merged.put("properties", properties);
+        return merged;
     }
     //endregion
 

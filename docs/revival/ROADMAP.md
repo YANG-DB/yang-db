@@ -139,7 +139,7 @@ Parallel streams, one agent and worktree each:
 - [x] **I** triage report: [IGNORED_TESTS.md](IGNORED_TESTS.md). Of 86: 21 obsolete, 8 fixable, 52 keep-disabled, 5 unknown; 4 product bugs filed (Q9–Q11, P2). Actions await the maintainer
 - Later (maintainer call): migrate the older lowercase Dragons test ontology (fuse-asg; deferred from Phase 2)
 
-## Phase 4 — A real extension point (in review: branch `phase4-extension-api`)
+## Phase 4 — A real extension point ✅ done 2026-11-22 (PR #167, merged)
 Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** folder (default build, bundled in the distribution).
 - [x] **A** (done: `fuse-extension-api`, ServiceLoader discovery, MapBinder languages, generic routes, A3 fixed) `fuse-extension-api`: a `YangDbExtension` SPI discovered by `ServiceLoader` (Guice modules and route
       registrars); languages in a `MapBinder<String, QueryTransformer>` instead of the hard-coded switch; generic
@@ -155,19 +155,23 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       core entirely.)*
 - [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
 
-## Phase 5 — Support a current OpenSearch: 2.19.x
+## Phase 5 — Support a current OpenSearch: 2.19.x (in review: branch `phase5-opensearch-2.19`)
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
 Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
 Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
-- [ ] 5.0 Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
-- [ ] 5.1 Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
-- [ ] 5.2 Package relocations, two module groups (agents Q1, Q2)
-- [ ] 5.3 Mapping-type removal: templates, loaders, search and term vectors (agent R)
-- [ ] 5.4 Dependency alignment: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
-- [ ] 5.5 Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
-- [ ] 5.6 Integration: full build green, test count ≥ 1,157 (lead)
-- [ ] 5.7 Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
+- [x] 5.0 (done: `os2-census.md`, 207 errors; new blocker: ANTLR 4.13.1 for Painless vs 4.7.2 for graphql-java) Spike: bump to 2.19.7 on a throwaway branch and census every compile error by module and cause (lead)
+- [x] 5.1 (done) Remote-client bridge `AbstractClient` → `RestHighLevelClient`, swapped into the 4 remote construction sites (agent P)
+- [x] 5.2 (done) Package relocations + the Client wrapper classes
+- [x] 5.3 (done) Mapping-type removal: templates, loaders, search and term vectors (agent R)
+- [x] 5.4 (done) Dependency alignment, including upgrading graphql-java for ANTLR 4.13: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
+- [x] 5.5 (done: the fuse-service embedded node uses the bridge; Painless runs on ANTLR 4.13.1) Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
+- [x] 5.6 Integration: full build green on 2.19.7, **1,249 tests, 0 failures** (lead)
+- [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; 2.19.7 opened every 1.3-written index with exact counts. A full query rehearsal on 1.3 data is still to repeat after the two live-only fixes) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
 - [ ] 5.8 Docs, wiki, upgrade guide, release notes → PR (lead)
+- [x] 5.9 (done 2026-11-23) Release the OpenSearch 1.3 line before the switch: **[v0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)**
+  from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
+  distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
+  fixes. This branch becomes 0.9.0 (OpenSearch 2.19.7) after it merges.
 
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,

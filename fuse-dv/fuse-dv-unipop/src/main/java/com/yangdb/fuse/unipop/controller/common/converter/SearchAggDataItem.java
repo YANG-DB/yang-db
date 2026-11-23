@@ -22,7 +22,7 @@ package com.yangdb.fuse.unipop.controller.common.converter;
 
 import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.opensearch.search.aggregations.bucket.terms.StringTerms;
+import org.opensearch.search.aggregations.bucket.terms.Terms;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,8 +82,9 @@ public class SearchAggDataItem implements DataItem {
     public static List<SearchAggDataItem> build(Map<String, Aggregation> map) {
         if (map.entrySet().size() == 1) {
             Map.Entry<String, Aggregation> aggregationEntry = map.entrySet().iterator().next();
-            if (aggregationEntry.getValue() instanceof StringTerms) {
-                return ((StringTerms) aggregationEntry.getValue())
+            // Terms, not StringTerms: over the REST bridge the aggregation is a ParsedStringTerms
+            if (aggregationEntry.getValue() instanceof Terms) {
+                return ((Terms) aggregationEntry.getValue())
                         .getBuckets().stream().map(b -> new SearchAggDataItem(aggregationEntry.getKey(), b)).collect(Collectors.toList());
             }
         }

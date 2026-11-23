@@ -21,11 +21,12 @@ package com.yangdb.fuse.unipop.controller.utils.opensearch;
  */
 
 import org.opensearch.OpenSearchParseException;
-import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.common.collect.Tuple;
-import org.opensearch.common.compress.CompressorFactory;
-import org.opensearch.common.compress.DeflateCompressor;
+import org.opensearch.core.compress.Compressor;
+import org.opensearch.core.compress.CompressorRegistry;
 import org.opensearch.common.xcontent.*;
+import org.opensearch.core.xcontent.*;
 import org.opensearch.search.SearchHit;
 
 import java.io.BufferedInputStream;
@@ -47,8 +48,8 @@ public class SearchHitUtils {
         try {
             final XContentType contentType;
             InputStream input;
-            if (CompressorFactory.isCompressed(bytes)) {
-                DeflateCompressor compressor = (DeflateCompressor) CompressorFactory.compressor(bytes);
+            if (CompressorRegistry.isCompressed(bytes)) {
+                Compressor compressor = CompressorRegistry.compressor(bytes);
                 InputStream compressedStreamInput = compressor.threadLocalInputStream(bytes.streamInput());
                 if (!compressedStreamInput.markSupported()) {
                     compressedStreamInput = new BufferedInputStream(compressedStreamInput);
@@ -57,7 +58,7 @@ public class SearchHitUtils {
             } else {
                 input = bytes.streamInput();
             }
-            contentType = xContentType != null ? xContentType : XContentFactory.xContentType(input);
+            contentType = xContentType != null ? xContentType : (XContentType) MediaTypeRegistry.xContentType(input);
             return new Tuple<>(Objects.requireNonNull(contentType), convertToMap(FuseJsonXContent.fuseJsonXContent, input, ordered));
         } catch (IOException e) {
             throw new OpenSearchParseException("Failed to parse content to map", e);

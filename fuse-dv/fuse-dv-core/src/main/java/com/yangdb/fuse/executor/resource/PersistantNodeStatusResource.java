@@ -26,6 +26,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.yangdb.fuse.dispatcher.resource.store.NodeStatusResource;
+import com.yangdb.fuse.dispatcher.resource.store.SystemResourceKind;
 import org.opensearch.action.admin.indices.create.CreateIndexRequest;
 import org.opensearch.action.admin.indices.create.CreateIndexResponse;
 import org.opensearch.action.get.GetResponse;
@@ -33,7 +34,7 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.support.ActiveShardCount;
 import org.opensearch.client.Client;
 import org.opensearch.index.IndexNotFoundException;
-import org.opensearch.rest.RestStatus;
+import org.opensearch.core.rest.RestStatus;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,6 +51,10 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
     public static final String ID = "id";
     public static final String DATA = "data";
     public static final String UPDATE_TIME = "updateTime";
+    /**
+     * the former mapping type of the node status documents; OpenSearch 2.x has no types, the documents carry
+     * {@link SystemResourceKind#FIELD} = {@link SystemResourceKind#NODE} instead
+     */
     public static final String RESOURCE = "resource";
 
     public static final String nodeName = "PersistantNodeStatusResource.@nodeName";
@@ -76,14 +81,15 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
     @Override
     public Map<String, Object> getMetrics(String node) {
         try {
-            final GetResponse response = client.prepareGet(SYSTEM, RESOURCE, node).get();
-            if (response.isExists())
+            final GetResponse response = client.prepareGet(SYSTEM, node).get();
+            if (response.isExists() && SystemResourceKind.matches(response.getSource(), SystemResourceKind.NODE))
                 return Collections.emptyMap();
         } catch (IndexNotFoundException e) {
             final CreateIndexResponse response = this.client.admin().indices()
                     .create(new CreateIndexRequest()
                             .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
+                            .index(SYSTEM)
+                            .mapping(SystemResourceKind.mapping())).actionGet();
         }
         return Collections.emptyMap();
     }
@@ -91,9 +97,10 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
     @Override
     public boolean report() {
         try {
-            IndexResponse response = client.prepareIndex(SYSTEM, RESOURCE, name)
+            IndexResponse response = client.prepareIndex(SYSTEM).setId(name)
                     .setSource(jsonBuilder()
                             .startObject()
+                            .field(SystemResourceKind.FIELD, SystemResourceKind.NODE)
                             .field(NODE, name)
                             .field(UPDATE_TIME, System.currentTimeMillis())
                             .field(DATA, logStatus())
@@ -104,7 +111,8 @@ public class PersistantNodeStatusResource implements NodeStatusResource {
             this.client.admin().indices()
                     .create(new CreateIndexRequest()
                             .waitForActiveShards(ActiveShardCount.ALL)
-                            .index(SYSTEM)).actionGet();
+                            .index(SYSTEM)
+                            .mapping(SystemResourceKind.mapping())).actionGet();
 
         } catch (Exception e) {
             throw new RuntimeException(e);

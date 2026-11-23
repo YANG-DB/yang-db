@@ -40,12 +40,14 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        com.yangdb.fuse.executor.opensearch.ClientProviderBridgeIT.class,
         GraphInitiatorIT.class,
         IndexProviderBasedGraphLoaderIT.class,
         IndexProviderBasedCSVLoaderIT.class,
         // before the mapping-factory IT: its single-index templates match every index created afterwards
         com.yangdb.fuse.executor.ontology.discrete.TraversalIdentityIT.class,
-        OpensearchIndexProviderMappingFactoryIT.class
+        OpensearchIndexProviderMappingFactoryIT.class,
+        com.yangdb.fuse.executor.resource.PersistentResourceStoreIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     private static ElasticEmbeddedNode elasticEmbeddedNode;

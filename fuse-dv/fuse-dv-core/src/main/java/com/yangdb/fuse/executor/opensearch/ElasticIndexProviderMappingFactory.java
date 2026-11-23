@@ -93,7 +93,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                 CreateIndexRequest request = new CreateIndexRequest(name);
                 responses.add(new Tuple2<>(true, client.admin().indices().create(request).actionGet().index()));
             } catch (ResourceAlreadyExistsException e) {
-                responses.add(new Tuple2<>(false, e.getIndex().getName()));
+                responses.add(new Tuple2<>(false, name)); // the index we tried to create (the exception's may be unset)
             } catch (Throwable t) {
                 throw new FuseError.FuseErrorException("Error Generating Indices for E/S ", t);
             }
@@ -187,10 +187,10 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                             request.setSettings(getSettings());
                         }
                         //create new mapping only when no prior entity set this mapping before
-                        if (request.request().mappings().isEmpty()) {
-                            request.addMapping(unifiedName, generateRelationMapping(ontology, r, relation, unifiedName));
+                        if (request.getMappings() == null) {
+                            request.setMapping(generateRelationMapping(ontology, r, relation, unifiedName));
                         } else {
-                            populateProperty(ontology, relation, request.getMappingsProperties(unifiedName), r);
+                            populateProperty(ontology, relation, request.getMappingsProperties(), r);
                         }
                     });
                     break;
@@ -200,8 +200,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                         String label = r.getrType();
                         ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, label.toLowerCase());
                         request.setPatterns(new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*"))))
-                                .setSettings(generateSettings(ontology, r, relation, label))
-                                .addMapping(label, generateRelationMapping(ontology, r, relation, label));
+                                .setSettings(generateSettings(ontology, r, relation, label));
+                        request.setMapping(generateRelationMapping(ontology, r, relation, label));
                         //dedup patterns -
                         request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
                         //add response to list of responses
@@ -213,8 +213,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                     ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, relation.getType().toLowerCase());
                     //todo - Only the time based partition will have a template suffix with astrix added to allow numbering and dates as part of the naming convention
                     request.setPatterns(new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format(relation.getProps().getIndexFormat(), "*"))))
-                            .setSettings(generateSettings(ontology, r, relation, label))
-                            .addMapping(label, generateRelationMapping(ontology, r, relation, label));
+                            .setSettings(generateSettings(ontology, r, relation, label));
+                    request.setMapping(generateRelationMapping(ontology, r, relation, label));
                     //add response to list of responses
 
                     //dedup patterns -
@@ -279,7 +279,6 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         request.setSettings(getSettings())
                 .setPatterns(Collections.singletonList(String.format("%s*",PROJECTION)));
 
-        Map<String, Object> jsonMap = new HashMap<>();
         Map<String, Object> rootMapping = new HashMap<>();
         Map<String, Object> rootProperties = new HashMap<>();
         rootMapping.put(PROPERTIES, rootProperties);
@@ -288,8 +287,6 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         rootProperties.put(QUERY_ID, parseType(ontology, "string"));
         rootProperties.put(CURSOR_ID, parseType(ontology, "string"));
         rootProperties.put(EXECUTION_TIME, parseType(ontology, "date"));
-        //populate index fields
-        jsonMap.put(PROJECTION, rootMapping);
 
         IndexProvider projection = new IndexProvider(this.indexProvider);
         //remove nested entities since we upgraded them to the root level
@@ -311,7 +308,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                         //log error
                     }
                 });
-        request.addMapping(PROJECTION, jsonMap);
+        request.setMapping(rootMapping);
         //add response to list of responses
         requests.put(PROJECTION, request);
 
@@ -357,10 +354,10 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                                         request.setSettings(getSettings());
                                     }
                                     //create new mapping only when no prior entity set this mapping before
-                                    if (request.request().mappings().isEmpty()) {
-                                        request.addMapping(unifiedName, generateEntityMapping(ontology, e, entity, unifiedName));
+                                    if (request.getMappings() == null) {
+                                        request.setMapping(generateEntityMapping(ontology, e, entity, unifiedName));
                                     } else {
-                                        populateProperty(ontology, entity, request.getMappingsProperties(unifiedName), e);
+                                        populateProperty(ontology, entity, request.getMappingsProperties(), e);
                                     }
                                 });
                                 break;
@@ -370,8 +367,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                                     String label = e.geteType();
                                     ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, v.toLowerCase());
                                     request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*"))))
-                                            .setSettings(generateSettings(ontology, e, entity, label))
-                                            .addMapping(label, generateEntityMapping(ontology, e, entity, label));
+                                            .setSettings(generateSettings(ontology, e, entity, label));
+                                    request.setMapping(generateEntityMapping(ontology, e, entity, label));
 
                                     //dedup patterns -
                                     request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
@@ -385,8 +382,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                                 ESPutIndexTemplateRequestBuilder request = new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, e.getName().toLowerCase());
                                 String label = entity.getType();
                                 request.setPatterns(new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format(entity.getProps().getIndexFormat(), "*"))))
-                                        .setSettings(generateSettings(ontology, e, entity, label))
-                                        .addMapping(label, generateEntityMapping(ontology, e, entity, label.toLowerCase()));
+                                        .setSettings(generateSettings(ontology, e, entity, label));
+                                request.setMapping(generateEntityMapping(ontology, e, entity, label.toLowerCase()));
                                 //dedup patterns -
                                 request.setPatterns(request.request().patterns().stream().distinct().collect(Collectors.toList()));
 
@@ -438,11 +435,11 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
     }
 
     /**
-     * generate specific entity type mapping
+     * generate specific entity type mapping - untyped ({"properties": {...}}), OpenSearch 2.x has no mapping types
      *
      * @param entityType
      * @param ent
-     * @param label
+     * @param label used for error reporting only
      * @return
      */
     public Map<String, Object> generateEntityMapping(Ontology.Accessor ontology, EntityType entityType, Entity ent, String label) {
@@ -450,26 +447,21 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         if (!entity.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No entity with name " + label + " found in ontology"));
 
-        Map<String, Object> jsonMap = new HashMap<>();
         //populate index fields
-        jsonMap.put(label, populateMappingIndexFields(ontology, ent, entity));
-
-        return jsonMap;
+        return populateMappingIndexFields(ontology, ent, entity);
     }
 
     /**
-     * generate specific relation type mapping
+     * generate specific relation type mapping - untyped ({"properties": {...}}), OpenSearch 2.x has no mapping types
      *
      * @param relationshipType
-     * @param label
+     * @param label used for error reporting only
      * @return
      */
     public Map<String, Object> generateRelationMapping(Ontology.Accessor ontology, RelationshipType relationshipType, Relation rel, String label) {
         Optional<RelationshipType> relation = ontology.relation(relationshipType.getName());
         if (!relation.isPresent())
             throw new FuseError.FuseErrorException(new FuseError("Mapping generation exception", "No relation    with name " + label + " found in ontology"));
-
-        Map<String, Object> jsonMap = new HashMap<>();
 
         Map<String, Object> properties = new HashMap<>();
         Map<String, Object> mapping = new HashMap<>();
@@ -493,11 +485,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         //populate nested documents
         rel.getNested().forEach(nest -> generateNestedRelationMapping(ontology, properties, nest));
 
-        //add mapping only if properties size > 0
-        if (properties.size() > 0) {
-            jsonMap.put(label, mapping);
-        }
-        return jsonMap;
+        return mapping;
     }
 
     private void generateNestedRelationMapping(Ontology.Accessor ontology, Map<String, Object> parent, BaseTypeElement<? extends BaseTypeElement> nest) {

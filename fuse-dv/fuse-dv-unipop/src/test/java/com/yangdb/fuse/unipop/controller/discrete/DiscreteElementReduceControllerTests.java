@@ -117,7 +117,7 @@ public class DiscreteElementReduceControllerTests {
                 .setSettings(Settings.builder()
                         .put("number_of_shards", 1)
                         .put("number_of_replicas", 0).build())
-                .addMapping("pge", new ObjectMapper().writeValueAsString(new Mappings.Mapping()
+                .setMapping(new ObjectMapper().writeValueAsString(new Mappings.Mapping()
                         .addProperty("type", new Mappings.Mapping.Property(keyword))), XContentType.JSON)
                 .execute().actionGet();
 

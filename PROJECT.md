@@ -15,7 +15,7 @@ graph database.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
 
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
-> OpenSearch **1.3.0** (moving to 2.x is planned). The full build is green (1,123 tests with the integration suites
+> OpenSearch **2.19.7** (upgraded from 1.3.0 in Phase 5; 3.x is planned). The full build is green (1,250 tests with the integration suites
 > running), and every documented tutorial query passes end to end on Docker
 > ([e2e suite](docker/e2e/README.md)). A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
 > partitions and JSON responses. Progress and open issues are in [docs/revival/](docs/revival/ROADMAP.md).
@@ -23,7 +23,7 @@ graph database.
 ## Quickstart
 
 Requires Docker (with `docker compose`), JDK 11 and Maven 3.6+. This builds the engine with the Dragons sample
-ontology and runs it next to OpenSearch 1.3.0 and OpenSearch Dashboards:
+ontology and runs it next to OpenSearch 2.19.7 and OpenSearch Dashboards:
 
 ```bash
 cd docker
