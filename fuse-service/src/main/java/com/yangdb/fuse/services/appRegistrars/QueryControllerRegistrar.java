@@ -374,11 +374,12 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
-            return postJsonQuery("postCypher", req, null, controller);
+            // the URL names the language, as on the generic /:lang route
+            return postJsonQuery("postCypher", req, CreateQueryRequestMetadata.TYPE_CYPHERQL, controller);
         }
 
         public static Result postSparql(Jooby app, final Request req, QueryController controller) throws Exception {
-            return postJsonQuery("postSparql", req, null, controller);
+            return postJsonQuery("postSparql", req, CreateQueryRequestMetadata.TYPE_SPARQL, controller);
         }
 
         /**

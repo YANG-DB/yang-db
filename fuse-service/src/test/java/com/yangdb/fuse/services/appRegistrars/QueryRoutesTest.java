@@ -128,6 +128,18 @@ public class QueryRoutesTest {
         Assert.assertEquals(Collections.singletonList("runV1Query Dragons"), CALLS);
     }
 
+    /** A10: the fixed create routes take the language from the URL when the body names no type */
+    @Test
+    public void createsACypherAndASparqlQueryWithoutATypeInTheBody() throws Exception {
+        String body = "{\"id\":\"q1\",\"name\":\"q1\",\"query\":\"MATCH (n) RETURN n\",\"ontology\":\"Dragons\"}";
+        Reply reply = call("POST", "/fuse/query/cypher", body);
+        Assert.assertEquals(reply.body, 200, reply.status);
+        reply = call("POST", "/fuse/query/sparql", body);
+        Assert.assertEquals(reply.body, 200, reply.status);
+        Assert.assertEquals(Arrays.asList("create " + CreateQueryRequestMetadata.TYPE_CYPHERQL,
+                "create " + CreateQueryRequestMetadata.TYPE_SPARQL), CALLS);
+    }
+
     private static void awaitServer() throws Exception {
         long deadline = System.currentTimeMillis() + 30_000;
         while (true) {
