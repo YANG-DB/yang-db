@@ -27,7 +27,23 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (updated 2026-11-22, after the census)
+## ▶ RESUME HERE (updated 2026-11-22 evening)
+**Phase 5 branch `phase5-opensearch-2.19` @ `47bd58411`** = baseline bump + 5.1 bridge (P) + 5.4 dependencies (S) +
+5.2 relocations (Q) + 4 commits of 5.3 mapping types (R). P, S and Q are DONE.
+- **R stopped on the usage limit (resets 17:30 Pacific).** Its worktree `.claude/worktrees/agent-a8801cce507a1a01b` still
+  holds uncommitted fixes for 2 tests: `ClientProviderBridgeIT` (dv-core) and `ClientProviderTest` (dv-stat). The
+  untracked `fuse-service/src/main/java/org/` is the census TransportClient STUB: never commit it. Its handoff file is
+  stale. **Next:** `SendMessage phase5-R-mapping-types` "resume: commit the 2 test fixes, then verify the full reactor
+  `test-compile -Pcore,dragons-assembly` with no placeholders, run the dv-core ITs, report".
+- **Then spawn T (5.5 test harness):** the fuse-service `ElasticEmbeddedNode`, `ElasticIndexConfigurer` and
+  `MappingElasticConfigurer` still use the transport client (replace with `node.client()` or the bridge); check that
+  Painless loads on ANTLR 4.13.1; all ITs green on 2.19 (ports 9410/9510).
+- **Then lead verification:** full reactor `mvn clean test`, then image + Docker e2e on OpenSearch 2.19.7
+  (`docker/.env` is already 2.19.7), then the PR to main (CI checks it). Re-run the A1 Jooby test and the GraphQL tests
+  on 2.19 (S verified them only on 1.3).
+- Gotcha (from Q): `-pl` builds pick up stale 1.3 SNAPSHOTs from ~/.m2; always build the full reactor.
+
+### Previous resume note (after the census)
 **Latest:** census done (`docs/revival/os2-census.md`). Baseline bump pushed: `76a4bd12e` on `phase5-opensearch-2.19`
 (2.19.7, Lucene 9.12.3, transport artifact swapped, docker OS_VERSION 2.19.7; does NOT compile until the streams land).
 Running agents, all from `76a4bd12e` except P (pre-#168 base):
