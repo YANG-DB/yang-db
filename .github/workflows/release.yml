@@ -1,0 +1,58 @@
+# Attach a downloadable distribution to every published GitHub release.
+# Builds the Dragons distribution (engine + Dragons sample configuration) from the release's tag and uploads it as
+# yangdb-<version>-distribution.tar.gz. Unzip it and run start-fuse-service.sh, or build the Docker image
+# (docker/README.md).
+name: Release
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to (re)build and attach, e.g. v0.8.0"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  MVN: >-
+    mvn -B -ntp
+    -Daether.connector.http.retryHandler.count=8
+    -Daether.connector.http.retryHandler.interval=15000
+    -Daether.connector.http.retryHandler.serviceUnavailable=429,503
+
+jobs:
+  distribution:
+    name: Build and attach the distribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
+      - name: Build the distribution
+        run: $MVN package -DskipTests -P core,dragons-assembly
+
+      - name: Package it
+        run: |
+          test -d distrib/dragon
+          VERSION="${TAG#v}"
+          tar -C distrib -czf "yangdb-${VERSION}-distribution.tar.gz" dragon
+          sha256sum "yangdb-${VERSION}-distribution.tar.gz" > "yangdb-${VERSION}-distribution.tar.gz.sha256"
+          ls -la yangdb-*
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" yangdb-*-distribution.tar.gz* --clobber
