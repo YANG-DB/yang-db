@@ -90,8 +90,8 @@ curl -X POST -H 'Content-Type: text/csv' --data-binary @docs/tutorial/sample/dra
 - **`directive`**: `INSERT` only creates documents. A row whose id already exists is reported as a failure, never
   overwritten. `UPSERT` creates or overwrites. Reloading the same files therefore needs `UPSERT`, or dropped indices
   (`GET /fuse/load/ontology/Dragons/drop`, then `.../init` again).
-- **Response**: per-row `successes` and `failures`. If the whole file is rejected (e.g. a malformed CSV), the
-  reason is in the top-level `error` and both lists are empty. Check it rather than reading "0 of 0" as success.
+- **Response**: per-row `successes` and `failures`. If the whole file is rejected (e.g. a malformed CSV), there
+  are no successes and a single failure carrying the reason; the exception is also in the top-level `error`.
 - **Dates**: date columns accept formatted dates or epoch milliseconds, including negative values (before 1970).
 - **Time-partitioned relations** (`Fire`, `Freeze`): each row goes to the index of the bucket covering its `date`
   (see [create-ontology](create-ontology.md#physical-schema-considerations)). A row dated after the last bucket fails.
