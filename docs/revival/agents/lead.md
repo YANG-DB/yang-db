@@ -33,6 +33,13 @@ Docker e2e **34/34 on OpenSearch 2.19.7**. Two bugs only a live cluster showed a
 its index, and REST-parsed aggregations. A PR to main is open; CI checks it. Remaining: re-run the 1.3 → 2.19 in-place
 upgrade rehearsal (needs a 1.3-built image to write the data), update the wiki, merge.
 
+**v0.8.0 released (2026-11-23)**: the OpenSearch 1.3 line, tag `v0.8.0` on branch `release/0.8.x` (from main
+`a24dd19fd`, poms `0.8.0`). Notes: `docs/releases/v0.8.0.md`. `.github/workflows/release.yml` builds the Dragons
+distribution from the tag on every published release and attaches `yangdb-<ver>-distribution.tar.gz` + `.sha256`;
+it was green for 0.8.0. The label `opensearch-1.3` is for 1.3-line fixes (which go to `release/0.8.x`). For the
+rehearsal, build the 1.3 image from `v0.8.0`. After #169 merges: release it as 0.9.0 the same way (poms
+`0.80-SNAPSHOT` → `0.9.0` on a `release/0.9.x` branch, notes `docs/releases/v0.9.0.md`).
+
 ### Earlier note (2026-11-22 evening)
 **Phase 5 branch `phase5-opensearch-2.19` @ `47bd58411`** = baseline bump + 5.1 bridge (P) + 5.4 dependencies (S) +
 5.2 relocations (Q) + 4 commits of 5.3 mapping types (R). P, S and Q are DONE.
