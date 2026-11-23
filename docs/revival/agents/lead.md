@@ -27,7 +27,17 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (updated 2026-11-22 night)
+## ▶ RESUME HERE (updated 2026-11-23)
+**Phase 5 merged (#169) and released as v0.9.0** (tag on `release/0.9.x`, poms `0.9.0`, notes
+`docs/releases/v0.9.0.md`, label `opensearch-2.19`, distribution attached by the Release workflow). Main is now
+`0.10.0-SNAPSHOT`. **Next:** (1) the 1.3 → 2.19 upgrade rehearsal with the full query suite: load the tutorial with
+an image built from `v0.8.0` on OpenSearch 1.3, upgrade the cluster to 2.19.7, run `doc_queries.py` (no `--load`) with
+the `v0.9.0` image; (2) update the wiki for 2.19.7 and the REST port (`opensearch.http.port`, 9200); (3) Phase 6
+(OpenSearch 3.x, JDK 21). Releasing: cut `release/X.Y.x` from main, set the poms to `X.Y.0`, add
+`docs/releases/vX.Y.0.md`, push, `gh release create vX.Y.0 --target release/X.Y.x --latest`; the workflow attaches
+the download.
+
+### Earlier note (2026-11-22 night)
 **Phase 5 code is complete.** Branch `phase5-opensearch-2.19`: full build **1,249 tests / 0 failures** on 2.19.7 and
 Docker e2e **34/34 on OpenSearch 2.19.7**. Two bugs only a live cluster showed are fixed: the bridge exception without
 its index, and REST-parsed aggregations. A PR to main is open; CI checks it. Remaining: re-run the 1.3 → 2.19 in-place

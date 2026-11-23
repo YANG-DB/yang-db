@@ -19,7 +19,7 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
 | C — Service & loader | A1, L4 | **A1 merged to local main**; L4 → stream E | `worktree-agent-acdc794fa7038a886` | `54896dc37` A1 | — |
 | D — Data, docs & e2e | D1, D2, S13 | **merged to local main** | `worktree-agent-a28d8e52a88b602de` | `5e32376ca` D1, `4588df726` S13, `a37981c53` D2 | needs rebuilt image to go green |
 | E — Time partitions | L4 range buckets | **done, all merged** (r2 `e498ad46a`); e2e confirmation pending | `worktree-agent-a7164b98179501307` | `6b0a1c346` L4 | — |
-| Lead | — | Phases 0–4 + CI merged (main `a24dd19fd`); **v0.8.0 released** (OpenSearch 1.3 line, branch `release/0.8.x`); **Phase 5 (OpenSearch 2.19.7) in review as PR #169**, CI green. Resume: agents/lead.md | `phase5-opensearch-2.19` | — | — |
+| Lead | — | Phases 0–4 + CI merged (main `a24dd19fd`); **v0.8.0** (OpenSearch 1.3, `release/0.8.x`) and **v0.9.0** (OpenSearch 2.19.7, `release/0.9.x`) released; Phase 5 merged (#169). Next: wiki, upgrade rehearsal, Phase 6. Resume: agents/lead.md | `phase5-opensearch-2.19` | — | — |
 
 ## Timeline
 - 2026-11-20 — Stage 0 done and pushed (`3ace71186`): 1,064 tests, 0 failures, ITs running.
