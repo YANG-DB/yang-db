@@ -315,7 +315,6 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
     }
 
     @Test
-    @Ignore ( "Fix when both relPattern->relProp && endPattern->filter exist togather")
     public void testUntypedToTypedWithQuantPropsAfterRelStrategyWithoutQuantsInPath() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(ontology);
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
@@ -339,13 +338,14 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
         Assert.assertFalse(AsgQueryUtil.element(query, RelPattern.class).isPresent());
         Assert.assertTrue(quant.isPresent());
         Assert.assertEquals(3, quant.get().getNext().size());
-        Assert.assertEquals(4, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
-        Assert.assertEquals(6, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
+        //every intermediate end entity gets its own quant for the end-pattern filter: (end)-Q[all]->{-[next hop]->, filter}
+        Assert.assertEquals(1, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==3).count());
+        Assert.assertEquals(12, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==2).count());
         Assert.assertEquals(0, AsgQueryUtil.elements(query, QuantBase.class).stream().filter(e->e.getNext().size()==1).count());
 
         Assert.assertEquals(8, AsgQueryUtil.count(quant.get().getNext().get(0), EBase.class));
-        Assert.assertEquals(14, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
-        Assert.assertEquals(20, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
+        Assert.assertEquals(15, AsgQueryUtil.count(quant.get().getNext().get(1), EBase.class));
+        Assert.assertEquals(22, AsgQueryUtil.count(quant.get().getNext().get(2), EBase.class));
 
         Assert.assertEquals(6, AsgQueryUtil.elements(query, Rel.class).stream().filter(r -> r.getB().size() == 1).count());
         Assert.assertEquals(6, AsgQueryUtil.elements(query, RelPropGroup.class).stream().filter(ep -> ep.geteBase().getProps().get(0).getpType().equals(START_DATE.type)).count());
@@ -398,6 +398,4 @@ public class RelationRangeAsgStrategyWithFiltersInRangTest {
         Assert.assertNotNull(AsgQueryDescriptor.print(query));
 
     }
-
-
 }

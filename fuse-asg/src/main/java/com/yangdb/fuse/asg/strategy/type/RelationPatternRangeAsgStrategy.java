@@ -131,7 +131,9 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                 addEndPatternFilters(counter, p);
             } else {
                 //if end pattern is not last in query - search for a quant right after
-                Optional<AsgEBase<QuantBase>> quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class, 1);
+                //(only directly after: a quant one hop further belongs to the next element, e.g. the quant after the
+                // next hop's rel in an expanded range path, and the filter would lose its entity)
+                Optional<AsgEBase<QuantBase>> quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class);
                 // if quant not present - add one and chain all childs to that quant
                 if (!quantOp.isPresent()) {
                     AsgEBase<QuantBase> quantAsg = new AsgEBase<>(new Quant1(counter.incrementAndGet(), QuantType.all));
@@ -139,7 +141,7 @@ public class RelationPatternRangeAsgStrategy implements AsgStrategy {
                     p.addNext(quantAsg);
                 }
                 // quant present - add end-pattern filter to quant
-                quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class, 1);
+                quantOp = AsgQueryUtil.nextAdjacentDescendant(p, QuantBase.class);
                 EPropGroup ePropGroup = new EPropGroup(((EndPattern) p.geteBase()).getFilter()).clone(counter.incrementAndGet());
                 quantOp.get().addNext(new AsgEBase<>(ePropGroup));
             }
