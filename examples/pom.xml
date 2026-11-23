@@ -9,7 +9,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>com.yangdb</groupId>
-        <version>0.80-SNAPSHOT</version>
+        <version>0.9.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
