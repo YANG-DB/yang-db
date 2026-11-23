@@ -5,6 +5,19 @@
 > [0.9.0 release notes](../releases/v0.9.0.md); §5 here has the other paths. Sections 2–4 and 8 are the original
 > planning analysis, written before the work.
 
+## At a glance: what changed in how YANG-DB uses OpenSearch (1.3 → 2.19)
+
+| Area | On OpenSearch 1.3 (YANG-DB 0.8.x) | On OpenSearch 2.19 (YANG-DB 0.9.x) |
+|---|---|---|
+| **Connection** | `TransportClient`: binary protocol on port 9300 | REST over HTTP on port 9200 (`opensearch.http.port`; an old `opensearch.port = 9300` is read as 9200). `RestBridgeClient` (`fuse-opensearch-client`) keeps the same `Client` interface and sends each call through the REST high-level client |
+| **Mapping types** | Typed mappings and templates | **Untyped** (2.x removed types). The system indices `fuse_system` and `fuse_node_info` tell document kinds apart with a `kind` field instead of a type |
+| **Reading results** | The engine received OpenSearch's internal classes (`StringTerms`, `InternalDateHistogram`) | Results arrive parsed from REST (`ParsedStringTerms`, …). Code must use the public `Terms` / `Histogram` interfaces: casting to the internal classes silently lost every count-filter bucket (§9) |
+| **Errors** | Exceptions arrived as Java objects | They are rebuilt from REST error bodies. `ResourceAlreadyExistsException` must carry its index, or `init` stops midway (§9) |
+| **Index templates** | Legacy `_template` | Still legacy `_template`, which 2.x deprecates but supports. Composable `_index_template` is not used yet |
+| **Dependencies** | Lucene 8.10 | Lucene 9.12. Painless needs ANTLR 4.13, which forced graphql-java 24. Packages moved to `org.opensearch.core.*`. The transport plugin artifact is `org.opensearch.plugin:transport-netty4-client` |
+| **Paging through hits** | Scroll | Scroll, unchanged. There is no snapshot across a query's searches; Point in Time is planned (§10) |
+| **Data** | — | 2.19 opens 1.3-written indices in place, rehearsed with identical query results (§9). 3.x will read only indices created on 2.x |
+
 Conclusions, decisions and the technical migration guide. The step-by-step execution plan (sub-steps, dependency
 graph, agent lanes) is in [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md). Facts below were verified against this
 repository and Maven Central on 2026-11-21. Items marked *(confirm in census)* are expectations that step 5.0 must
@@ -185,7 +198,55 @@ change.
   For Phase 6, repeat the rehearsal from 2.19 to 3.x the same way: build both images from the release tags, run
   compose with one project name (`-p`) so the volume is shared, and override `OS_VERSION` / `YANGDB_TAG`.
 
-## 10. References
+## 10. Next: consistent query snapshots with Point in Time (planned)
+
+**Today: no snapshot across a query.** A query is a chain of searches issued while the traversal runs. The planner's
+count queries run when the query is created. The start-vertex, edge and far-end searches run when each page is
+requested. Each search is a **scroll** (`SearchHitScrollIterable`, keep-alive `opensearch.scroll_time`, default
+600000 ms). A scroll pins the index segments for *that one search* only. So:
+- data written between two steps of the same page is seen by the later step only;
+- page 2 continues the lazy traversal with new searches, which see the index as it is *then*;
+- scroll contexts stay open between pages. A client that pauses longer than the keep-alive between pages will
+  probably find them expired (not tested).
+
+YANG-DB never calls the Point in Time API. The client wrappers pass `createPit` through, but `RestBridgeClient`
+doesn't translate it.
+
+**Planned:** one Point in Time per cursor, with `search_after` paging.
+1. **Create a PIT** (`POST /<indices>/_search/point_in_time?keep_alive=…`) over the ontology's indices when the
+   cursor is created. Keep its id in the cursor context (`TraversalCursorContext`).
+2. **Run every search for that cursor against the PIT:** the start, edge, far-end and count searches, on every page.
+   `SearchBuilder` sets `pit.id` instead of index names. The index choice made by the search appenders becomes a
+   filter on `_index`, because a PIT search can't name indices.
+3. **Page with `search_after`** on a stable sort (`_shard_doc`), instead of scroll, in `SearchHitScrollIterable`.
+   There are then no per-search scroll contexts to expire.
+4. **Extend the keep-alive** on every page request. **Delete the PIT** when the cursor or query is deleted, or when
+   its resource expires.
+5. Run the planner's count queries against the same PIT, so plan costs and results describe the same data.
+6. **Bridge:** translate `CreatePitAction`, `DeletePitAction` and PIT searches in `RestBridgeClient`. The 2.19.7 REST
+   high-level client already has `createPit` / `deletePit`.
+7. Make it configurable (`opensearch.pit.enabled`, `opensearch.pit.keep_alive`), and keep scroll as the fallback.
+8. **Verify with an IT:** write between pages of one cursor, and check that page 2 doesn't see the write.
+
+**Limits to respect:**
+- `search.max_open_pit_context`: 300 open PITs per node by default, so one per open cursor needs cursor cleanup to
+  be reliable.
+- `point_in_time.max_keep_alive`: 24 h by default.
+- A PIT keeps merged segments alive for its keep-alive.
+- PIT contexts are lost if a node fails, so the cursor must report an expired PIT clearly.
+
+**OpenSearch 3.x compatibility:**
+- PIT and `search_after` are unchanged in 3.x, and PIT is the pagination method the docs recommend. Scroll is still
+  documented, with its limitations, and not removed.
+- Building on PIT now carries over to Phase 6 without change, and is better than scroll on 3.x.
+- The one Phase 6 risk is the client underneath: the REST high-level client is **deprecated since 3.0**, with
+  removal announced for a later release. It is still published (latest 3.10.0, checked on Maven Central 2026-11-23).
+  If Phase 6 moves the bridge onto `opensearch-java` (step 6.2 in [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)),
+  the PIT calls move with it: `opensearch-java` has create/delete PIT and PIT search too.
+- PIT exists since OpenSearch 2.4, so it can land on 2.19 before Phase 6. The 0.8.x line (OpenSearch 1.3) can't
+  have it.
+
+## 11. References
 - [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md): the execution plan
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md): A1 (the netty pin), T1 (test harness), C1 (Painless count scripts), the mapping
   issues M1/M2
