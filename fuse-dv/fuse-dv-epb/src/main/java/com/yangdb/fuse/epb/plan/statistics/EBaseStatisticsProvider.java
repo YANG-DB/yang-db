@@ -268,12 +268,25 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 //todo: Hack for present time, remove!!!
-                //Value value = (Value) constraint.getExpr();
                 GraphElementPropertySchema tmp  = new GraphElementPropertySchema.Impl( graphElementPropertySchema.getName(), "enum");
-                return getValueConditionCardinality(graphElementSchema, tmp, constraint, constraint.getExpr(), relevantIndices, String.class);
+                //enum statistics are term (String) histograms: compare an enumerated Value by its name
+                return getValueConditionCardinality(graphElementSchema, tmp, constraint, enumTerms(constraint.getExpr()), relevantIndices, String.class);
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * the histogram term of an enumerated value - its name; lists (inSet, inRange) are converted element by element
+     */
+    private static Object enumTerms(Object expression) {
+        if (expression instanceof Value) {
+            return ((Value) expression).getName();
+        }
+        if (expression instanceof List) {
+            return ((List<?>) expression).stream().map(EBaseStatisticsProvider::enumTerms).collect(Collectors.toList());
+        }
+        return expression;
     }
 
     private <T extends Comparable<T>> Optional<Statistics.SummaryStatistics> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
