@@ -49,7 +49,7 @@ public class ClientProviderBridgeIT {
     private void roundTrip(Client bridge) {
         try {
             assertTrue(bridge instanceof RestBridgeClient);
-            DocWriteResponse indexed = bridge.prepareIndex(INDEX, "pge", "1")
+            DocWriteResponse indexed = bridge.prepareIndex(INDEX).setId("1")
                     .setSource("{\"name\":\"Balerion\"}", XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
             assertTrue(indexed.getResult() == DocWriteResponse.Result.CREATED || indexed.getResult() == DocWriteResponse.Result.UPDATED);
@@ -59,7 +59,7 @@ public class ClientProviderBridgeIT {
 
             // the suite's own client sees the document the bridge wrote: same cluster
             Client suiteClient = TestSuiteIndexProviderSuite.client;
-            assertEquals("Balerion", suiteClient.prepareGet(INDEX, "pge", "1").get().getSourceAsMap().get("name"));
+            assertEquals("Balerion", suiteClient.prepareGet(INDEX, "1").get().getSourceAsMap().get("name"));
 
             assertTrue(bridge.admin().indices().prepareDelete(INDEX).get().isAcknowledged());
         } finally {

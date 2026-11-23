@@ -61,7 +61,7 @@ public class ClientProviderTest {
 
             String index = "stat_client_provider_test";
             assertFalse(EsUtil.isIndexExists(stat, index));
-            data.prepareIndex(index, "pge", "1").setSource("{\"name\":\"Meraxes\"}", XContentType.JSON)
+            data.prepareIndex(index).setId("1").setSource("{\"name\":\"Meraxes\"}", XContentType.JSON)
                     .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
             assertTrue("cluster state over the bridge", EsUtil.isIndexExists(stat, index));
             assertEquals(1, stat.prepareSearch(index).get().getHits().getTotalHits().value);
