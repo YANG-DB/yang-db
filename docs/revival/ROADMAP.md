@@ -186,7 +186,45 @@ M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Fo
       and carries over to 3.x unchanged. Design, limits and 3.x compatibility:
       [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)
 
-## Phase 7 — Ongoing hygiene
+## Phase 7 — Speed and efficiency
+Goal: fewer round trips to OpenSearch, less data per round trip and less planning overhead per query, each change
+shown by numbers rather than assumed. Every item must leave the e2e doc-query results unchanged
+(`docker/e2e/doc_queries.py`): these change *how* the engine calls OpenSearch, never *what* a query returns.
+
+What the code does today (checked 2026-11-23):
+- Every search is a scroll ([SearchHitScrollIterable](../../fuse-dv/fuse-dv-unipop/src/main/java/com/yangdb/fuse/unipop/converter/SearchHitScrollIterable.java)),
+  even one returning a handful of hits, so each opens and later clears a server-side context.
+- No multi-search: `msearch` appears only in the client wrappers, never in query execution, so each search of a
+  traversal step is its own HTTP round trip.
+- Nothing runs concurrently: an `OR` query splits into branches (see C3) that run one after another.
+- No `_source` filtering on searches (only the aggregation builder sets it): every hit returns the whole document.
+- The planner's cost estimates are live count queries, cached locally for 10 minutes and never using OpenSearch's
+  request cache; the statistics module (`fuse-dv-stat`) exists but isn't the default cost source.
+
+Items, in the recommended order:
+- [ ] 7.1 **Benchmark harness**: a large generated Dragons dataset (the Dragons data generator in `examples/dragons/datagen`),
+      a fixed set of queries, and p50/p95 latency plus OpenSearch requests per query, recorded in CI so a change can be
+      compared with its base. Everything below is measured against it. *(small)*
+- [ ] 7.2 **Fetch only the projected fields**: turn the query's projection into `_source` includes. *(small)*
+- [ ] 7.3 **Plain search for small results**: a plain sized search when the step's expected result fits in one
+      page, a scroll (or the cursor's PIT) only when it doesn't. *(small–medium)*
+- [ ] 7.4 **Batch each step's searches with `msearch`**: one round trip per hop instead of one per search; probably the
+      largest single gain on multi-hop queries. *(medium)*
+- [ ] 7.5 **Run independent work concurrently**: `OR` branches and independent searches in parallel (virtual threads
+      once Phase 6 moves to JDK 21), so latency is the slowest branch, not the sum. *(medium)*
+- [ ] 7.6 **Statistics-based cost estimates** by default, with live counts as the fallback using
+      `request_cache=true`; cuts planning time, which is pure overhead on small queries. *(medium)*
+- [ ] 7.7 **Stream results and evict idle cursors**: lower memory and a faster first page on large results. Builds on
+      Phase 6's Point in Time per cursor, which also replaces the per-search scroll contexts. *(medium)*
+- [ ] 7.8 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
+      touches one shard instead of all. Needs a reindex, so it comes last, and only if 7.1 shows hops dominate. *(large)*
+- [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
+      searches at no code cost.
+
+Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
+7.7 follows the PIT work; 7.8 only on evidence.
+
+## Phase 8 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
 - [ ] Prune stale remote branches
