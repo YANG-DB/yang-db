@@ -181,6 +181,10 @@ M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Fo
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
       per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
+- [ ] **Point in Time per cursor**: every search of a query, on every page, reads the same snapshot of the index
+      (PIT + `search_after` instead of per-search scrolls). Can land on 2.19 before the 3.x move (PIT exists since 2.4),
+      and carries over to 3.x unchanged. Design, limits and 3.x compatibility:
+      [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)
 
 ## Phase 7 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)

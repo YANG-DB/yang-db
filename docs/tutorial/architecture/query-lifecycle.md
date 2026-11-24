@@ -229,6 +229,9 @@ Each controller builds its search with a chain of **search appenders** (`control
 The search goes out through the `Client` interface: `TimeoutClientAdvisor` → `LoggingClient` (both fuse-dv-core) →
 **`RestBridgeClient`** (fuse-opensearch-client) → the REST high-level client → HTTP on port 9200. Every search is
 read with a scroll (`SearchHitScrollIterable`), so large results come in batches.
+A scroll freezes the index for that one search only. The other searches of the same query, and the searches for
+later pages, see the index as it is when they run: there is no snapshot across a query yet. One Point in Time per
+cursor is planned ([OPENSEARCH_MIGRATION.md §10](../../revival/OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)).
 The converters `DiscreteVertexConverter` and `DiscreteEdgeConverter` turn hits back into graph vertices and edges.
 
 These are the requests OpenSearch received for the query, from its search slow log. `boost` and similar defaults
