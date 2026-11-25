@@ -109,6 +109,16 @@ jobs:
           python3 docker/e2e/doc_queries.py --load --reset | tee e2e.log
           echo "### Docker e2e: $(grep -E 'ALL PASS|not passing' e2e.log | tail -1)" >> "$GITHUB_STEP_SUMMARY"
 
+      # A logging dependency change can silence the engine without failing a query (SLF4J falls back to a no-op
+      # logger when it finds no provider), so check that the engine logged its work and SLF4J didn't complain.
+      - name: Engine logging works
+        run: |
+          docker logs dragons-graph > yangdb.log 2>&1
+          if grep -E '^SLF4J' yangdb.log; then echo "::error::SLF4J warnings in the engine log (see above)"; exit 1; fi
+          lines=$(wc -l < yangdb.log)
+          echo "engine log: $lines lines"; tail -3 yangdb.log
+          [ "$lines" -gt 50 ] || { echo "::error::the engine logged only $lines lines"; exit 1; }
+
       - name: Collect logs on failure
         if: failure()
         run: |
