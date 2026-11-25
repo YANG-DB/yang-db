@@ -43,6 +43,7 @@ package com.yangdb.fuse.model.resourceInfo;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yangdb.fuse.model.query.QueryMetadata;
 import com.yangdb.fuse.model.transport.CreateQueryRequestMetadata;
@@ -59,10 +60,13 @@ import java.util.List;
  * http://domain/fuse/query/:id/inner
  * http://domain/fuse/query/:id/v1
  * http://domain/fuse/query/:id/plan
- * http://domain/fuse/query/:id/elastic
  * http://domain/fuse/query/:id/cursor/:sequence
  * http://domain/fuse/query/:id/cursor/:sequence/result/:sequence
+ * <p>
+ * {@code elasticQueryUrl} is no longer advertised (no route ever served it: the OpenSearch requests of a query are
+ * built step by step while its pages are fetched, and nothing keeps them); it is still accepted when reading.
  */
+@JsonIgnoreProperties({"elasticQueryUrl"})
 public class QueryResourceInfo extends ResourceInfoBase {
 
     //region Constructors
@@ -84,7 +88,6 @@ public class QueryResourceInfo extends ResourceInfoBase {
         this.v1QueryUrl = resourceUrl + "/v1";
         this.asgUrl = resourceUrl + "/asg";
         this.explainPlanUrl = resourceUrl + "/plan";
-        this.elasticQueryUrl = resourceUrl + "/elastic";
         this.cursorResourceInfos = cursorResourceInfos == null ? Collections.emptyList() : Stream.ofAll(cursorResourceInfos).toJavaList();
         this.innerUrlResourceInfos = resourceInfos == null ? Collections.emptyList() : Stream.ofAll(resourceInfos).toJavaList();
     }
@@ -106,10 +109,6 @@ public class QueryResourceInfo extends ResourceInfoBase {
 
     public String getAsgUrl() {
         return asgUrl;
-    }
-
-    public String getElasticQueryUrl() {
-        return elasticQueryUrl;
     }
 
     public FuseError getError() {
@@ -154,7 +153,6 @@ public class QueryResourceInfo extends ResourceInfoBase {
     private String explainPlanUrl;
     private String v1QueryUrl;
     private String asgUrl;
-    private String elasticQueryUrl;
     private QueryType type;
 
     private FuseError error;

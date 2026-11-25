@@ -34,6 +34,7 @@ import com.yangdb.fuse.model.query.quant.QuantBase;
 import com.yangdb.fuse.model.query.quant.QuantType;
 import graphql.Internal;
 import graphql.Scalars;
+import graphql.TypeResolutionEnvironment;
 import graphql.execution.ResultPath;
 import graphql.execution.ExecutionStepInfo;
 import graphql.schema.*;
@@ -64,6 +65,17 @@ public class TraversalWiringFactory implements WiringFactory {
     private Query.Builder builder;
     private Ontology.Accessor accessor;
     private Map<String, Integer> pathContext;
+    /** the value of each field visited (by path without list indexes) */
+    private final Map<String, Object> fetched = new HashMap<>();
+
+    /** a value of an abstract field: an object of the given type */
+    private static final class Typed {
+        private final String type;
+
+        private Typed(String type) {
+            this.type = type;
+        }
+    }
 
     public static RuntimeWiring newEchoingWiring(Ontology ontology, Query.Builder queryBuilder) {
         return newEchoingWiring(x -> {
@@ -99,8 +111,7 @@ public class TraversalWiringFactory implements WiringFactory {
 
     @Override
     public TypeResolver getTypeResolver(InterfaceWiringEnvironment environment) {
-        // the schema being executed: it is generated per query, so it is not known when the wiring is built
-        return env -> env.getSchema().getImplementations((GraphQLInterfaceType) env.getFieldType()).get(0);
+        return TraversalWiringFactory::resolveType;
     }
 
     @Override
@@ -110,19 +121,37 @@ public class TraversalWiringFactory implements WiringFactory {
 
     @Override
     public TypeResolver getTypeResolver(UnionWiringEnvironment environment) {
-        return env -> env.getSchema().getQueryType();
+        return TraversalWiringFactory::resolveType;
+    }
+
+    /**
+     * an abstract (interface / union) field returns one {@link Typed} value per type it was queried for, so the
+     * fields of each type's fragment are visited
+     */
+    private static GraphQLObjectType resolveType(TypeResolutionEnvironment env) {
+        // the schema being executed: it is generated per query, so it is not known when the wiring is built
+        return env.getSchema().getObjectType(((Typed) env.getObject()).type);
     }
 
     @Override
     public DataFetcher getDefaultDataFetcher(FieldWiringEnvironment environment) {
         return env -> {
-            GraphQLType fieldType = env.getFieldType();
-            if (fieldType instanceof GraphQLList) {
-                return Arrays.asList(getObject(env, ((GraphQLList) fieldType).getWrappedType()));
-            } else {
-                return getObject(env, fieldType);
+            // an abstract field returns one value per type, the fields they share are visited once
+            String key = key(env.getExecutionStepInfo().getPath());
+            if (!fetched.containsKey(key)) {
+                fetched.put(key, getObject(env, env.getFieldType()));
             }
+            Object value = fetched.get(key);
+            if (env.getFieldType() instanceof GraphQLList) {
+                return value instanceof List ? value : Arrays.asList(value);
+            }
+            return value;
         };
+    }
+
+    /** a path without its list indexes: the elements of a list field are all the same query element */
+    private static String key(ResultPath path) {
+        return path.toString().replaceAll("\\[\\d+]", "");
     }
 
     private Object getObject(DataFetchingEnvironment env, GraphQLType fieldType) throws IOException {
@@ -130,17 +159,17 @@ public class TraversalWiringFactory implements WiringFactory {
         // in parent is of type vertex and current query element not quant -> add quant
         ExecutionStepInfo parent = env.getExecutionStepInfo().getParent();
         if (parent.getFieldDefinition() != null) {
-            ResultPath parentPath = env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd();
+            String parentPath = key(parent.getPath());
             if (isParentObjectType(parent.getFieldDefinition()) &&
                     //assume a path was already entered
-                    pathContext.containsKey(parentPath.getPathWithoutListEnd().toString()) &&
+                    pathContext.containsKey(parentPath) &&
                     //validate no quant related to the
-                    !(builder.current(pathContext.get(parentPath.getPathWithoutListEnd().toString())) instanceof QuantBase)) {
+                    !(builder.current(pathContext.get(parentPath)) instanceof QuantBase)) {
                 //todo add quant
                 if(!(builder.current() instanceof QuantBase)) {
                     builder.quant(QuantType.all);
                 }
-                pathContext.put(parent.getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
+                pathContext.put(parentPath, builder.currentIndex());
             }
         }
 
@@ -152,19 +181,19 @@ public class TraversalWiringFactory implements WiringFactory {
                 builder.start();
             }
             //populate vertex or relation
-            Optional<EntityType> realType = populateGraphObject(env, type.getName());
+            List<EntityType> realType = populateGraphObject(env, Collections.singletonList(type.getName()), type.getName());
             addWhereClause(env,realType);
 //            return fakeObjectValue(accessor, builder, (GraphQLObjectType) fieldType);
             return new Object();
-            //todo create concrete union types from abstract interface
-        } else if (fieldType instanceof GraphQLInterfaceType) {
-            //select the first implementing of interface (no matter which one since all share same common fields)
-            List<GraphQLObjectType> implementations = env.getGraphQLSchema().getImplementations((GraphQLInterfaceType) fieldType);
-            //populate vertex or relation
-            Optional<EntityType> realType = populateGraphObject(env, ((GraphQLInterfaceType) fieldType).getName());
+        } else if (fieldType instanceof GraphQLInterfaceType || fieldType instanceof GraphQLUnionType) {
+            String name = ((GraphQLNamedOutputType) fieldType).getName();
+            List<String> types = queriedTypes(env, (GraphQLNamedOutputType) fieldType);
+            // an interface that is an entity type itself (imported SDL: Character) is the side B as is; otherwise the
+            // relationship leads to several types: the side B is an entity of any of the types queried
+            List<EntityType> realType = populateGraphObject(env,
+                    accessor.entity(name).isPresent() ? Collections.singletonList(name) : types, name);
             addWhereClause(env, realType);
-//            return fakeObjectValue(accessor, builder, implementations.get(0));
-            return new Object();
+            return types.stream().map(Typed::new).collect(Collectors.toList());
         }
         //populate values
         if (fieldType instanceof GraphQLScalarType) {
@@ -184,18 +213,19 @@ public class TraversalWiringFactory implements WiringFactory {
      * @param realType
      * @throws IOException
      */
-    private void addWhereClause(DataFetchingEnvironment env, Optional<EntityType> realType) throws IOException {
+    private void addWhereClause(DataFetchingEnvironment env, List<EntityType> realType) throws IOException {
         //arguments
-        if(realType.isPresent() && env.getArguments().containsKey(WHERE)) {
+        if(!realType.isEmpty() && env.getArguments().containsKey(WHERE)) {
             Object argument = env.getArguments().get(WHERE);
             InputTypeWhereClause whereClause = mapper.readValue(mapper.writeValueAsString(argument), InputTypeWhereClause.class);
-            //verify fields exist within entity type
+            //verify fields exist within (one of) the entity types
             List<InputTypeConstraint> nonFoundFields = whereClause.getConstraints().stream()
-                    .filter(c -> !realType.get().containsProperty(c.getOperand()))
+                    .filter(c -> realType.stream().noneMatch(type -> type.containsProperty(c.getOperand())))
                     .collect(Collectors.toList());
 
             if(!nonFoundFields.isEmpty())
-                throw new IllegalArgumentException("Fields "+nonFoundFields +" are not a part of the queried entity "+realType.get().getName());
+                throw new IllegalArgumentException("Fields "+nonFoundFields +" are not a part of the queried entity "
+                        +realType.stream().map(EntityType::getName).collect(Collectors.joining(" | ")));
 
             //build the where clause query
             List<Tuple2<String, Optional<Constraint>>> constraints = whereClause.getConstraints().stream()
@@ -225,6 +255,7 @@ public class TraversalWiringFactory implements WiringFactory {
 
     private boolean isParentObjectType(GraphQLFieldDefinition parentField) {
         return (extractConcreteFieldType(parentField.getType()) instanceof GraphQLInterfaceType) ||
+                (extractConcreteFieldType(parentField.getType()) instanceof GraphQLUnionType) ||
                 (extractConcreteFieldType(parentField.getType()) instanceof GraphQLObjectType);
     }
 
@@ -234,8 +265,8 @@ public class TraversalWiringFactory implements WiringFactory {
      */
     private String populateGraphValue(DataFetchingEnvironment env) {
         //pop to the correct index according to path
-        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
-            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
+        if (pathContext.containsKey(key(env.getExecutionStepInfo().getParent().getPath()))) {
+            builder.currentIndex(pathContext.get(key(env.getExecutionStepInfo().getParent().getPath())));
         }
         String name = env.getField().getName();
         Property property = accessor.property$(name);
@@ -249,8 +280,8 @@ public class TraversalWiringFactory implements WiringFactory {
      */
     private String populateGraphEnum(DataFetchingEnvironment env) {
         //pop to the correct index according to path
-        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
-            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
+        if (pathContext.containsKey(key(env.getExecutionStepInfo().getParent().getPath()))) {
+            builder.currentIndex(pathContext.get(key(env.getExecutionStepInfo().getParent().getPath())));
         }
         Property enumProp = accessor.property$(env.getField().getName());
         builder.eProp(env.getField().getName());
@@ -283,10 +314,31 @@ public class TraversalWiringFactory implements WiringFactory {
         return fieldType;
     }
 
-    private Optional<EntityType> populateGraphObject(DataFetchingEnvironment env, String typeName) {
+    /**
+     * the types an abstract (interface / union) field is queried for: those its selected fields belong to (an inline
+     * fragment narrows them to its type), or all of its types
+     */
+    private static List<String> queriedTypes(DataFetchingEnvironment env, GraphQLNamedOutputType abstractType) {
+        List<String> all = (abstractType instanceof GraphQLUnionType
+                ? ((GraphQLUnionType) abstractType).getTypes().stream().map(GraphQLNamedType::getName)
+                : env.getGraphQLSchema().getImplementations((GraphQLInterfaceType) abstractType).stream().map(GraphQLNamedType::getName))
+                .collect(Collectors.toList());
+        Set<String> selected = env.getSelectionSet().getImmediateFields().stream()
+                .filter(field -> !field.getName().startsWith("__"))
+                .flatMap(field -> field.getObjectTypeNames().stream())
+                .collect(Collectors.toSet());
+        List<String> queried = all.stream().filter(selected::contains).collect(Collectors.toList());
+        return queried.isEmpty() ? all : queried;
+    }
+
+    /**
+     * @param types    the entity types of the element: one, or several for the side B of a relationship
+     * @param tag      the element's tag
+     */
+    private List<EntityType> populateGraphObject(DataFetchingEnvironment env, List<String> types, String tag) {
         //pop to the correct index according to path
-        if (pathContext.containsKey(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString())) {
-            builder.currentIndex(pathContext.get(env.getExecutionStepInfo().getParent().getPath().getPathWithoutListEnd().toString()));
+        if (pathContext.containsKey(key(env.getExecutionStepInfo().getParent().getPath()))) {
+            builder.currentIndex(pathContext.get(key(env.getExecutionStepInfo().getParent().getPath())));
         }
 
         if (accessor.relation(env.getField().getName()).isPresent()) {
@@ -294,17 +346,22 @@ public class TraversalWiringFactory implements WiringFactory {
             RelationshipType relationshipType = accessor.relation$(env.getField().getName());
             builder.rel(relationshipType.getrType(), Rel.Direction.R, env.getField().getName());
             //right after will be the vertex
-            EntityType entityType = accessor.entity$(typeName);
-            builder.eType(entityType.geteType(), typeName);
-            pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
-            return Optional.of(entityType);
-        } else if (accessor.entity(typeName).isPresent()) {
-            EntityType entityType = accessor.entity$(typeName);
-            builder.eType(entityType.geteType(), typeName);
-            pathContext.put(env.getExecutionStepInfo().getPath().getPathWithoutListEnd().toString(), builder.currentIndex());
-            return Optional.of(entityType);
+            List<EntityType> entityTypes = types.stream().map(accessor::entity$).collect(Collectors.toList());
+            if (entityTypes.size() == 1) {
+                builder.eType(entityTypes.get(0).geteType(), tag);
+            } else {
+                builder.unTyped(entityTypes.stream().map(EntityType::geteType)
+                        .collect(Collectors.toCollection(LinkedHashSet::new)), tag);
+            }
+            pathContext.put(key(env.getExecutionStepInfo().getPath()), builder.currentIndex());
+            return entityTypes;
+        } else if (types.size() == 1 && accessor.entity(types.get(0)).isPresent()) {
+            EntityType entityType = accessor.entity$(types.get(0));
+            builder.eType(entityType.geteType(), tag);
+            pathContext.put(key(env.getExecutionStepInfo().getPath()), builder.currentIndex());
+            return Collections.singletonList(entityType);
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
 
 

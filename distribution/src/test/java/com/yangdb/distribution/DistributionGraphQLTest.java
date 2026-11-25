@@ -80,7 +80,7 @@ public class DistributionGraphQLTest {
         Assert.assertTrue(AsgQueryDescriptor.print(asg), AsgQueryDescriptor.print(asg).contains("Dragon"));
     }
 
-    /** the playground's GraphQL examples (GQ1-GQ3) pass the service's ASG rewrite (M2) and validation */
+    /** the playground's GraphQL examples (GQ1-GQ4) pass the service's ASG rewrite (M2) and validation */
     @Test
     public void thePlaygroundGraphQLExamplesRewriteAndValidate() throws Exception {
         Ontology dragons = dragons();
@@ -96,7 +96,10 @@ public class DistributionGraphQLTest {
         AsgGraphQLTransformer transformer = transformer(provider);
         for (String q : Arrays.asList("{ dragon { name color } }",
                 "{ dragon(where: {operator: AND, constraints: [{operand: \"color\", operator: \"eq\", expression: \"BLACK\"}]}) { name color } }",
-                "{ person { name Own { name } } }")) {
+                "{ person { name Own { name } } }",
+                // G4: Own leads to dragons and horses - narrowed to one type, and both with their own fields
+                "{ person { name Own { ... on Dragon { name } } } }",
+                "{ person { name Own { name ... on Dragon { color } ... on Horse { weight } } } }")) {
             AsgQuery asg = transformer.transform(new QueryInfo<>(q, "q", TYPE_GRAPHQL, "Dragons"));
             Assert.assertTrue(q + ": " + validator.validate(asg), validator.validate(asg).valid());
             AsgStrategyContext context = new AsgStrategyContext(new Ontology.Accessor(dragons));

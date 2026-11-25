@@ -53,7 +53,7 @@ Tutorial data & docs
 - [x] `Q6` cycle-closing pattern → explicit "Cyclic patterns are not supported" error, documented
 - [x] `Q7` count filter returned nothing (planner reversed the counted relation)
 - [x] `Q8` `WHERE p:A OR p:B` on an untyped node crashed
-- [ ] `A2` whole-file load failure easy to misread (minor, open)
+- [x] `A2` whole-file load failure easy to misread (fixed in bug-fix round 2)
 
 Verification
 - [x] `S13` end-to-end doc-query suite committed (`docker/e2e/`) and **passing**: run 4 (2026-11-20), all 21 checks
@@ -153,9 +153,9 @@ Maintainer's choices: extract **GraphQL**, into a top-level **`extensions/`** fo
       still pass
       *(agent N: implemented, unit/REST tests green; e2e GQ1–GQ3 pending the lead's Docker run. graphql-java left
       core entirely.)*
-- [ ] A4: the Dragons clause routes are broken once registered (no `clause` language; `/ext` redirect target missing)
+- [x] A4: the Dragons clause routes are broken once registered (fixed in bug-fix round 2: the dead routes are removed)
 
-## Phase 5 — Support a current OpenSearch: 2.19.x (in review: branch `phase5-opensearch-2.19`)
+## Phase 5 — Support a current OpenSearch: 2.19.x ✅ (merged 2026-11-23, PR #169; released as **[v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0)**)
 Conclusions, breaking-change catalog, data migration and rollback: **[OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md)**.
 Execution plan with sub-steps, dependency graph, agent lanes and ports: **[OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md)**.
 Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
@@ -166,18 +166,65 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
 - [x] 5.4 (done) Dependency alignment, including upgrading graphql-java for ANTLR 4.13: Lucene, netty/Jooby, Jackson, log4j, Docker images (agent S)
 - [x] 5.5 (done: the fuse-service embedded node uses the bridge; Painless runs on ANTLR 4.13.1) Test harness on 2.x: embedded node, Painless, the reuse-cluster path through the bridge (agent T)
 - [x] 5.6 Integration: full build green on 2.19.7, **1,249 tests, 0 failures** (lead)
-- [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; 2.19.7 opened every 1.3-written index with exact counts. A full query rehearsal on 1.3 data is still to repeat after the two live-only fixes) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
-- [ ] 5.8 Docs, wiki, upgrade guide, release notes → PR (lead)
+- [x] 5.7 (Docker e2e **34/34 on OpenSearch 2.19.7**; **in-place upgrade rehearsed 2026-11-23**: data loaded with v0.8.0 on 1.3.0, cluster upgraded to 2.19.7 on the same volume, v0.9.0 returned identical results for all 28 queries plus the cursor checks, with no reload; see OPENSEARCH_MIGRATION.md §9) Verification: e2e on a 2.19 image, bridge IT against a remote cluster, 1.3 → 2.19 data upgrade (lead + agent U)
+- [x] 5.8 (docs, upgrade guide and [release notes](../releases/v0.9.0.md) done; wiki updated 2026-11-23: Home + Revival 2026) Docs, wiki, upgrade guide, release notes → PR (lead)
 - [x] 5.9 (done 2026-11-23) Release the OpenSearch 1.3 line before the switch: **[v0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)**
   from branch `release/0.8.x` (cut from main `a24dd19fd`), notes in [docs/releases/v0.8.0.md](../releases/v0.8.0.md),
   distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
-  fixes. This branch becomes 0.9.0 (OpenSearch 2.19.7) after it merges.
+  fixes. Phase 5 shipped as v0.9.0 from `release/0.9.x` (label `opensearch-2.19`); main moves on to `0.10.0-SNAPSHOT`.
+
+## Bug-fix round 2 ✅ (2026-11-23)
+Every open issue in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) fixed, each with a test that failed first: A2, A4–A10, C3, G4,
+M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Four agents in parallel; handoff files
+`agents/bugfix2-*.md`.
 
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
       per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
+- [ ] **Point in Time per cursor**: every search of a query, on every page, reads the same snapshot of the index
+      (PIT + `search_after` instead of per-search scrolls). Can land on 2.19 before the 3.x move (PIT exists since 2.4),
+      and carries over to 3.x unchanged. Design, limits and 3.x compatibility:
+      [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)
 
-## Phase 7 — Ongoing hygiene
+## Phase 7 — Speed and efficiency
+Goal: fewer round trips to OpenSearch, less data per round trip and less planning overhead per query, each change
+shown by numbers rather than assumed. Every item must leave the e2e doc-query results unchanged
+(`docker/e2e/doc_queries.py`): these change *how* the engine calls OpenSearch, never *what* a query returns.
+
+What the code does today (checked 2026-11-23):
+- Every search is a scroll ([SearchHitScrollIterable](../../fuse-dv/fuse-dv-unipop/src/main/java/com/yangdb/fuse/unipop/converter/SearchHitScrollIterable.java)),
+  even one returning a handful of hits, so each opens and later clears a server-side context.
+- No multi-search: `msearch` appears only in the client wrappers, never in query execution, so each search of a
+  traversal step is its own HTTP round trip.
+- Nothing runs concurrently: an `OR` query splits into branches (see C3) that run one after another.
+- No `_source` filtering on searches (only the aggregation builder sets it): every hit returns the whole document.
+- The planner's cost estimates are live count queries, cached locally for 10 minutes and never using OpenSearch's
+  request cache; the statistics module (`fuse-dv-stat`) exists but isn't the default cost source.
+
+Items, in the recommended order:
+- [ ] 7.1 **Benchmark harness**: a large generated Dragons dataset (the Dragons data generator in `examples/dragons/datagen`),
+      a fixed set of queries, and p50/p95 latency plus OpenSearch requests per query, recorded in CI so a change can be
+      compared with its base. Everything below is measured against it. *(small)*
+- [ ] 7.2 **Fetch only the projected fields**: turn the query's projection into `_source` includes. *(small)*
+- [ ] 7.3 **Plain search for small results**: a plain sized search when the step's expected result fits in one
+      page, a scroll (or the cursor's PIT) only when it doesn't. *(small–medium)*
+- [ ] 7.4 **Batch each step's searches with `msearch`**: one round trip per hop instead of one per search; probably the
+      largest single gain on multi-hop queries. *(medium)*
+- [ ] 7.5 **Run independent work concurrently**: `OR` branches and independent searches in parallel (virtual threads
+      once Phase 6 moves to JDK 21), so latency is the slowest branch, not the sum. *(medium)*
+- [ ] 7.6 **Statistics-based cost estimates** by default, with live counts as the fallback using
+      `request_cache=true`; cuts planning time, which is pure overhead on small queries. *(medium)*
+- [ ] 7.7 **Stream results and evict idle cursors**: lower memory and a faster first page on large results. Builds on
+      Phase 6's Point in Time per cursor, which also replaces the per-search scroll contexts. *(medium)*
+- [ ] 7.8 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
+      touches one shard instead of all. Needs a reindex, so it comes last, and only if 7.1 shows hops dominate. *(large)*
+- [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
+      searches at no code cost.
+
+Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
+7.7 follows the PIT work; 7.8 only on evidence.
+
+## Phase 8 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
 - [ ] Prune stale remote branches

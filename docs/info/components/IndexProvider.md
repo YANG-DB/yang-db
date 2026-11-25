@@ -1,15 +1,17 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 ## Index Provider Explained
 Index Provider purpose is to define a low level schematic structure for the underlying physical store
 
 The store will implement the index provider instructions according to its store architecture and capabilities
 
-## Elasticseach Store
-The default index store we provide with YangDB is the Elasticsearch database. Elasticsearch is a Index store with the capability
+## OpenSearch Store
+The default index store we provide with YangDB is the OpenSearch database (2.19; earlier versions used Elasticsearch). OpenSearch is a Index store with the capability
 to elastic expand its cluster according to dynamic needs. 
 
 ### Indexing Policy
-Elasticsearch offers the index data structure as its main indexing facility that represents a document class (in general
-this is a virtual concept which has diverse meaning over the years - see elastic documentation
+OpenSearch offers the index data structure as its main indexing facility that represents a document class (in general
+this is a virtual concept which has diverse meaning over the years; OpenSearch 2.x has no mapping types, so each index holds one kind of document - see the (Elasticsearch-era) documentation
  - https://www.elastic.co/blog/index-vs-type
  - https://www.elastic.co/guide/en/elasticsearch/reference/6.0/removal-of-types.html 
  - https://medium.com/@mena.meseha/understand-the-parent-child-relationship-in-elasticsearch-3c9a5a57f202)
@@ -25,7 +27,7 @@ the different tools available on YangDb such as:
  - Partition   - Type that is partitioned according to some field (mostly time based) and is storde acros multiple partitions indices
  
  These Abilities allow the diversity and ability to reflect different capabilities and logical complexities inside the relativly simple
- schematic structure of elasticsearch so that all the functional and non-functional requeirments will be fulfilled. 
+ schematic structure of OpenSearch so that all the functional and non-functional requeirments will be fulfilled. 
  
  -------------
 
@@ -80,7 +82,7 @@ Attributes with the same name will be overidden by the lower hirarchy.
 -------------
 
 ### Schema Store
-The 'Elasticsearch' index provider offers the next possibilities to store Person / Student entities : 
+The OpenSearch index provider offers the next possibilities to store Person / Student entities : 
   
 #### Entities  
 ##### Static  
@@ -92,7 +94,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
            "partition": "static",  => shcematic mapping type
            "mapping": "Index",      
            "props": {
-             "values": ["person"]  => this is the name of the physical E/S index
+             "values": ["person"]  => this is the name of the physical OpenSearch index
            },
            "nested": [
              {
@@ -100,7 +102,7 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
                "mapping": "child",    => inner type store as an embedded entity (other option in nested) 
                "partition": "nested",
                "props": {
-                 "values": ["profession"]   => this is the name of the physical E/S index
+                 "values": ["profession"]   => this is the name of the physical OpenSearch index
                }
              }
            ]
@@ -110,11 +112,9 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
   Mapping of the entity type to a multiple indices where each index is called after some partitioned based field
   
          {
-           "type": "Person",    => this is the name of the physical E/S index
+           "type": "Person",    => this is the logical entity type
            "partition": "time", => this is the partitioning type of the index
            "mapping":"Index",
-           "symmetric":true
-           ],
            "props": {
              "partition.field": "birth", => the partitioned field
              "prefix": "idx_person",     => the inedx common name
@@ -236,23 +236,28 @@ The 'Elasticsearch' index provider offers the next possibilities to store Person
  ### API
  The index provider json structure is usaged to create a coresponding schema structure (template)
  
+ The index provider is read at startup from the configured directory (`fuse.index_provider_dir`, e.g.
+ `distribution/resources/assembly/Dragons/indexProvider/DragonsIndexProvider.conf`); the loaded schema can be viewed with
+ `[GET] http://localhost:8888/fuse/catalog/schema/:id`.
+ 
  On YangDb we will call the next API that will generate the coresponding Index templates
-  
-  - https://blog.ruanbekker.com/blog/2019/04/06/elasticsearch-templates-tutorial/
   
   Call the next API: 
   
-    Create the schematic mapping (index template) for the schema: 
+    Create the schematic mapping (index templates) for the schema: 
     
-      [POST] http://localhost:8888/fuse/load/ontology/:id/mapping
+      [GET] http://localhost:8888/fuse/load/ontology/:id/mapping
             id => ontology Name
-            Body => IndexProvider json document
              
 
-    Create the schematic indices (including index template) for the schema: 
+    Create the schematic indices for the schema: 
 
-      [POST] http://localhost:8888/fuse/load/ontology/:id/indices
+      [GET] http://localhost:8888/fuse/load/ontology/:id/indices
             id => ontology Name
-            Body => IndexProvider json document
+
+    Or both at once (templates and indices; this is the usual first step):
+
+      [GET] http://localhost:8888/fuse/load/ontology/:id/init
+            id => ontology Name
              
  **For additional API - see swagger reference**

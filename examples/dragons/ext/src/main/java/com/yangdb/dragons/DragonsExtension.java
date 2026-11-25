@@ -21,18 +21,16 @@ package com.yangdb.dragons;
  */
 
 import com.yangdb.dragons.playground.DragonsPlaygroundRegistrar;
-import com.yangdb.dragons.services.DragonsExtensionRegistrar;
 import com.yangdb.fuse.extension.YangDbExtension;
 import com.yangdb.fuse.services.appRegistrars.AppRegistrar;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * The Dragons example as a YANG-DB extension, discovered through
  * {@code META-INF/services/com.yangdb.fuse.extension.YangDbExtension}: the playground ({@code /dragons/swagger},
- * {@code POST /fuse/dragons/tutorial/load}) and the extension query routes ({@code /ext}, {@code /fuse/query/clause},
- * {@code /fuse/query/clause/run}, {@code /fuse/query/cypher/logical/run}, {@code /fuse/query/query/v1/logical/run}).
+ * {@code POST /fuse/dragons/tutorial/load}). Queries use the core routes ({@code /fuse/query/cypher/run} etc.).
  * <p>
  * {@link DragonsModule} stays in the assembly's config ({@code modules.<profile>}): it is a config-gated
  * {@code ModuleBase} that reads assembly settings, so it is not contributed here (that would bind it twice).
@@ -45,6 +43,6 @@ public class DragonsExtension implements YangDbExtension {
 
     @Override
     public List<AppRegistrar> registrars() {
-        return Arrays.asList(new DragonsPlaygroundRegistrar(), new DragonsExtensionRegistrar());
+        return Collections.singletonList(new DragonsPlaygroundRegistrar());
     }
 }

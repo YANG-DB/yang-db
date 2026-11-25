@@ -1,5 +1,9 @@
 # Story: support a current OpenSearch (1.3.0 → 2.19.x, then 3.x)
 
+> **Status (2026-11-23):** the 2.19 part (Phase 5) is done and released as
+> [v0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0). This page is kept as the execution record. The
+> 3.x part (Phase 6) hasn't started.
+
 Background, conclusions and the breaking-change catalog: [OPENSEARCH_MIGRATION.md](OPENSEARCH_MIGRATION.md).
 
 **Goal:** YANG-DB builds, passes its tests and runs the Docker quickstart on a current OpenSearch, with an upgrade path
@@ -89,9 +93,10 @@ path in 5.5 and the remote IT in 5.7.
 |---|---|---|
 | 6.0 JDK 21 | Phase 5 | Build and run on JDK 21: Guice, Jooby 1.x, javaslang, Mockito and reflection access (`--add-opens`); CI and Docker base image to 21 |
 | 6.1 Lucene 10 / 3.x API census | 6.0 | Same census method as 5.0, against 3.10.x |
-| 6.2 Bridge on 3.x | 6.1 | The RHLC still ships for 3.x. Keep the bridge, or move it onto `opensearch-java` if the RHLC is deprecated further |
+| 6.2 Bridge on 3.x | 6.1 | The RHLC is **deprecated since 3.0** but still published (latest 3.10.0, checked 2026-11-23). Keep the bridge on it for 3.10, or move it onto `opensearch-java`; either way the PIT calls (6.5) move with it |
 | 6.3 Data path | 6.1 | 3.x reads only 2.x-created indices: document "upgrade to 2.19 first, or reindex" |
-| 6.4 Verify and release | 6.2, 6.3 | Same gate as 5.7 and 5.8 |
+| 6.4 Verify and release | 6.2, 6.3, 6.5 | Same gate as 5.7 and 5.8 |
+| 6.5 Point in Time per cursor | none (can land on 2.19 first) | One PIT per cursor with `search_after` paging instead of per-search scrolls, so a whole query reads one snapshot. PIT is unchanged in 3.x. Design and limits: [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned) |
 
 ## Definition of done (both phases)
 1. `mvn clean test` green with ITs running, test count not lower than before the phase.

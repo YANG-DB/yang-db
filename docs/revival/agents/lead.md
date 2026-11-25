@@ -27,7 +27,26 @@ Then push the batch (`S14`), but only after the maintainer confirms.
 **When stream B reports, migrate Docker (colima) to the external drive FIRST, before merging B or anything else.**
 Then: merge B → full `mvn clean test` (Docker stopped) → rebuild image → e2e `--load --reset`.
 
-## ▶ RESUME HERE (updated 2026-11-22 night)
+## ▶ RESUME HERE (updated 2026-11-23, after bug-fix round 2)
+**Bug-fix round 2 done** (branch `bugfix-round-2`, PR to main): every open KNOWN_ISSUES entry fixed (A2, A4–A10, C3,
+G4, M1, M2, P2, Q11, Q13) plus T3; full test suite **1,316 tests / 0 failures**; Docker e2e ALL PASS (with GQ4 and
+the new C3 regressions R9/R10). Agent handoff files: `agents/bugfix2-{service,data,query,graphql}.md`. Open: **B1**
+(tests fail against the shaded `fuse-core` jar under `mvn install`; verify with `mvn test`). Lessons: the Mac sleeps
+during long runs and hangs embedded-OpenSearch tests, so run long builds under `caffeinate -i`; parallel agents
+must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
+`mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
+
+### Earlier note (2026-11-23)
+**Phase 5 merged (#169) and released as v0.9.0** (tag on `release/0.9.x`, poms `0.9.0`, notes
+`docs/releases/v0.9.0.md`, label `opensearch-2.19`, distribution attached by the Release workflow). Main is now
+`0.10.0-SNAPSHOT`. The 1.3 → 2.19 upgrade rehearsal **passed** (2026-11-23,
+OPENSEARCH_MIGRATION.md §9). The v0.9.0 GitHub release text says so too. The wiki (Home + Revival 2026; clone
+`https://github.com/YANG-DB/yang-db.wiki.git`) is updated for 2.19.7, the releases and the REST port. **Phase 5 is
+fully done. Next:** Phase 6 (OpenSearch 3.x, JDK 21). Releasing: cut `release/X.Y.x` from main, set the poms to `X.Y.0`, add
+`docs/releases/vX.Y.0.md`, push, `gh release create vX.Y.0 --target release/X.Y.x --latest`; the workflow attaches
+the download.
+
+### Earlier note (2026-11-22 night)
 **Phase 5 code is complete.** Branch `phase5-opensearch-2.19`: full build **1,249 tests / 0 failures** on 2.19.7 and
 Docker e2e **34/34 on OpenSearch 2.19.7**. Two bugs only a live cluster showed are fixed: the bridge exception without
 its index, and REST-parsed aggregations. A PR to main is open; CI checks it. Remaining: re-run the 1.3 → 2.19 in-place

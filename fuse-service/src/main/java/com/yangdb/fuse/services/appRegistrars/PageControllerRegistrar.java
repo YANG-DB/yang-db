@@ -94,12 +94,6 @@ public class PageControllerRegistrar extends AppControllerRegistrarBase<PageCont
                     return Results.with(entity, entity.status().getStatus());
                 });
 
-        /** view the elastic query with d3 html*/
-        app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/elastic/view",
-                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.pageStoreUrl(req.param("queryId").value(), req.param("cursorId").value()) + "/" + req.param("pageId").value() + "/elastic"));
-
-
         /** get page info by id */
         app.get(appUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"),
                 req -> {

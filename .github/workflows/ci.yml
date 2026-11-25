@@ -1,4 +1,4 @@
-# Every pull request to main (and every push to main) is checked twice, in parallel:
+# Every pull request to main or a release branch (and every push to main) is checked twice, in parallel:
 #   1. "Build & test": the full Maven build with unit and integration tests (embedded OpenSearch node)
 #   2. "Docker e2e": the distribution is built into the Docker image, started next to OpenSearch, loaded with the
 #      Dragons tutorial data, and every documented query, regression query and GraphQL example is checked against
@@ -8,7 +8,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, 'release/**' ]
   push:
     branches: [ main ]
   workflow_dispatch:

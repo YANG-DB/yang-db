@@ -19,7 +19,8 @@ Using the IntelliJ IDE one can run the prepared run-configuration :
 This data generator uses graph scale configuration for the data creation:
 
     test.generator.properties
-The configuration file give the user the ability to config volume and data distribution:
+(in `examples/dragons/datagen/src/main/resources`; it is used when no configuration file is passed as an argument).
+The configuration file give the user the ability to config volume and data distribution (example values):
     
     
     #Persons
@@ -63,7 +64,7 @@ Running the data generator looks as follows:
 > **Shortcut:** in the Dragons playground (http://localhost:8888/dragons/swagger), `POST /dragons/tutorial/load`
 > runs this whole tutorial (id generator, ontology, indices and every CSV below) in one call.
 
-We will use the swagger REST API to load the csv files http://localhost:8888/swagger#/operations/load/post_load_ontology__id__csv_load 
+We will use the swagger REST API to load the csv files http://localhost:8888/swagger#/load/post_load_ontology__id__csv_load 
 
 ![yangdb-swagger-csv](img/yangdb-swagger-csv-upload.png)
 
@@ -75,7 +76,9 @@ success status of the amount of entities uploaded to the store.
 We will repeat this process with all the relevant entities / relationships of the Dragons ontology so that the graph would be populated and
 we would be able to ask interesting graph queries upon the data.
 
-**Note**: A zipped file can also be used in this API for much larger volumes of data.
+**Note**: For much larger volumes of data, `POST /fuse/load/ontology/{id}/csv/upload` takes the CSV as an uploaded file
+(multipart field `file`, same `type`, `label` and `directive` parameters), which may also be zipped or gzipped (one CSV
+per archive).
 
 The same call with curl. `type` is `vertex` for entity files and `edge` for relationship files; `label` is the
 ontology type:
@@ -87,8 +90,8 @@ curl -X POST -H 'Content-Type: text/csv' --data-binary @docs/tutorial/sample/dra
 - **`directive`**: `INSERT` only creates documents. A row whose id already exists is reported as a failure, never
   overwritten. `UPSERT` creates or overwrites. Reloading the same files therefore needs `UPSERT`, or dropped indices
   (`GET /fuse/load/ontology/Dragons/drop`, then `.../init` again).
-- **Response**: per-row `successes` and `failures`. If the whole file is rejected (e.g. a malformed CSV), the
-  reason is in the top-level `error` and both lists are empty. Check it rather than reading "0 of 0" as success.
+- **Response**: per-row `successes` and `failures`. If the whole file is rejected (e.g. a malformed CSV), there
+  are no successes and a single failure carrying the reason; the exception is also in the top-level `error`.
 - **Dates**: date columns accept formatted dates or epoch milliseconds, including negative values (before 1970).
 - **Time-partitioned relations** (`Fire`, `Freeze`): each row goes to the index of the bucket covering its `date`
   (see [create-ontology](create-ontology.md#physical-schema-considerations)). A row dated after the last bucket fails.

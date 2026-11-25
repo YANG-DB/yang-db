@@ -102,7 +102,8 @@ public class DragonsPlaygroundRegistrar extends AppControllerRegistrarBase<DataL
             ContentResponse<LoadResponse<String, FuseError>> response =
                     loader.loadCsv(ONTOLOGY, file[1], file[2], csv, GraphDataLoader.Directive.INSERT);
             Map<String, Object> summary = loadSummary(file[0], file[2], csv, response);
-            failed += ((Number) summary.get("failures")).intValue() + (summary.containsKey("error") ? 1 : 0);
+            //a whole-file failure carries both the top-level error and its one failure: count it once
+            failed += Math.max(((Number) summary.get("failures")).intValue(), summary.containsKey("error") ? 1 : 0);
             steps.add(summary);
         }
 

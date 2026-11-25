@@ -39,7 +39,7 @@ explicit HTTP-port key. If it's absent, the old transport-port key is mapped to 
 |---|---|
 | Reads | search → `searchAsync`, scroll → `scrollAsync`, clear-scroll → `clearScrollAsync`, multi-search → `msearchAsync`, get → `getAsync`, multi-get → `mgetAsync`, explain → `explainAsync`, field caps → `fieldCapsAsync` |
 | Writes | index → `indexAsync`, bulk → `bulkAsync`, delete → `deleteAsync`, update → `updateAsync` |
-| Indices admin | create → `indices().createAsync`, delete → `indices().deleteAsync`, exists → `indices().existsAsync` (client `GetIndexRequest`), refresh → `indices().refreshAsync`, get settings → `indices().getSettingsAsync`, put mapping → `putMappingAsync`, get mappings → `getMappingAsync`, put template → `putTemplateAsync`, get templates → `getTemplateAsync` (404 → empty list, as the transport action), delete template → `deleteTemplateAsync` |
+| Indices admin | create → `indices().createAsync`, delete → `indices().deleteAsync`, exists → `indices().existsAsync` (client `GetIndexRequest`), refresh → `indices().refreshAsync`, get settings → `indices().getSettingsAsync`, put mapping → `putMappingAsync`, get mappings → `getMappingAsync`, put template → `putTemplateAsync`, get templates → `getIndexTemplateAsync` (404 → empty list, as the transport action), delete template → `deleteTemplateAsync` |
 | Cluster admin | state → low-level `GET /_cluster/state/metadata[/indices]`, rebuilt into a `ClusterState` holding the cluster name and the indices' metadata (settings, mappings, aliases). Routing, nodes, blocks and templates are not populated |
 
 `RestBridgeClient.supportedActions()` returns this set.
@@ -56,9 +56,10 @@ are re-created: `index_not_found_exception` → `IndexNotFoundException`, `resou
 `ResourceAlreadyExistsException`, `version_conflict_engine_exception` → `VersionConflictEngineException`. Others
 pass through unchanged.
 
-**Mapping types (1.3).** Create index, put/get mapping, put/get template use the RHLC's *typed* variants, which send
-`include_type_name=true`. Custom mapping type names (e.g. `pge`) therefore survive exactly as with the
-`TransportClient`; typed index/get/search requests also keep their type in the REST path.
+**Mapping types.** OpenSearch 2.x has no mapping types. Create index, put/get mapping and put/get template are
+translated to the RHLC's untyped `org.opensearch.client.indices.*` requests; a mapping wrapped in the single mapping
+name (`{"_doc": {...}}`) is unwrapped first, and the responses are converted back to the server types the `Client` API
+returns.
 
 ## Sniffing
 No REST node sniffer is wired in. `SnifferFuseClient`'s "sniffing" reads YANG-DB node status from the
@@ -73,7 +74,7 @@ OpenSearch-node sniffing to carry over. If wanted later, add `org.opensearch.cli
   of unsupported actions.
 - `ClientFactoryTest`: port mapping and host parsing.
 - `RestBridgeClientRemoteIT`: starts an OpenSearch node on `-Dfuse.test.http.port`/`-Dfuse.test.transport.port`
-  and talks to it **only** through `ClientFactory.remote(...)` over HTTP: typed create index, index/get/update/delete,
+  and talks to it **only** through `ClientFactory.remote(...)` over HTTP: create index, index/get/update/delete,
   bulk, refresh, get settings, search, scroll, clear-scroll, multi-get, multi-search, explain, field caps, put/get mappings,
   put/get/delete templates, exists, delete index, cluster state, error types. With
   `-Dfuse.bridge.it.remote=host:port` it runs against an external cluster (e.g. Docker) instead.
@@ -84,20 +85,8 @@ OpenSearch-node sniffing to carry over. If wanted later, add `org.opensearch.cli
   skips its embedded node and every IT goes through the bridge (verified: 34 tests, 0 failures, against a node in a
   separate JVM).
 
-## After the 2.x bump
-1. **Typed admin variants are removed from the 2.x RHLC.** Replace the five handlers marked in `RestBridgeClient`
-   (`createIndex`, `putMapping`, `getMappings`, `putTemplate`, `getTemplates`) with conversions to the untyped
-   `org.opensearch.client.indices.*` requests (`CreateIndexRequest`, `PutMappingRequest`, `GetMappingsRequest`,
-   `PutIndexTemplateRequest`, `GetIndexTemplatesRequest`), and convert their responses back to the server types
-   (`CreateIndexResponse`, `GetMappingsResponse` is untyped in 2.x, `GetIndexTemplatesResponse`). On 2.x the server
-   `CreateIndexRequest.mappings()` is a single `String`, not a type-keyed map.
-2. **Package relocations** (2.10+): `ActionListener`, `ActionResponse` → `org.opensearch.core.action`;
-   `XContentParser`, `XContentBuilder`, `NamedXContentRegistry`, `DeprecationHandler` → `org.opensearch.core.xcontent`;
-   `BytesReference` → `org.opensearch.core.common.bytes`; `RestStatus` → `org.opensearch.core.rest`;
-   `ShardId` → `org.opensearch.core.index.shard`. Mechanical, like the rest of step 5.2.
-3. **Typed request builders** in the tests (`prepareIndex(index, type, id)`, `setTypes`, `addMapping(type, ...)`) go
-   away with step 5.3; the IT and unit tests then drop their `pge` type.
-4. **Check** that `IndicesExistsAction` still exists on 2.19 (otherwise map `admin().indices().exists(...)` callers to
-   the get-index API), that `AbstractClient`'s constructor is still `(Settings, ThreadPool)`, and that the cluster-state
-   parser still accepts the 2.19 `GET /_cluster/state/metadata` output (the IT covers it).
-5. The IT's embedded node needs `transport-netty4-client` at the 2.19 version (already in `~/.m2`).
+## History
+The bridge was written on OpenSearch 1.3 (with the RHLC's typed admin variants) and moved to 2.19.7 in Phase 5: the
+five admin handlers (`createIndex`, `putMapping`, `getMappings`, `putTemplate`, `getTemplates`) now use the untyped
+requests, the 2.x package relocations (`org.opensearch.core.*`) are applied, and the tests no longer use a mapping
+type. See [OPENSEARCH_MIGRATION.md](../docs/revival/OPENSEARCH_MIGRATION.md).

@@ -158,6 +158,10 @@ public class AggregationBuilder implements Cloneable {
      */
     public AggregationBuilder countFilter(String name) {
         //count filter is a terms filter aggregation with a bucket selection sub aggregation
+        if (this.current.op == Op.countFilter && name.equals(this.current.getName())) {
+            //already positioned on this count filter (seek found it): a further condition on the same field
+            return this;
+        }
         if (this.seekLocalName(this.current, name) != null) {
             this.current = this.seekLocalName(this.current, name);
         } else {
@@ -314,6 +318,21 @@ public class AggregationBuilder implements Cloneable {
 
     public AggregationBuilder operands(List<Object> value) {
         return this.param("operands", value);
+    }
+
+    /**
+     * adds a count condition to the current count filter; unlike {@link #operator}/{@link #operands} conditions
+     * accumulate, and the bucket selector keeps a bucket only when all of them hold
+     * ({@code count(r) > 15 AND count(r) < 17})
+     */
+    public AggregationBuilder countCondition(BiPredicate operator, Object operand) {
+        if (this.current.op != Op.countFilter) {
+            throw new UnsupportedOperationException("'countCondition' may only appear in the 'countFilter' context");
+        }
+        Composite param = new ParamComposite<>(CountFilterComposite.CONDITION,
+                new AbstractMap.SimpleImmutableEntry<>(operator, operand), this.current);
+        this.current.getChildren().add(param);
+        return this;
     }
 
     public AggregationBuilder script(String value) {
@@ -777,6 +796,7 @@ public class AggregationBuilder implements Cloneable {
 
     public class CountFilterComposite extends Composite {
         public static final String COUNT_FIELD = "_Count";
+        public static final String CONDITION = "condition";
         private BiPredicate operator;
         private List<String> operands;
 
@@ -790,6 +810,7 @@ public class AggregationBuilder implements Cloneable {
         @Override
         public Object build() {
             String countFilterField = null;
+            List<Map.Entry<BiPredicate, Object>> conditions = new ArrayList<>();
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
                     .map(child -> (ParamComposite) child).collect(Collectors.toList())) {
@@ -803,8 +824,14 @@ public class AggregationBuilder implements Cloneable {
                     case "operands":
                         operands = (List<String>)param.getValue();
                         break;
+                    case CONDITION:
+                        conditions.add((Map.Entry<BiPredicate, Object>) param.getValue());
+                        break;
 
                 }
+            }
+            if (operator != null && operands != null && !operands.isEmpty()) {
+                conditions.add(0, new AbstractMap.SimpleImmutableEntry<>(operator, operands.get(0)));
             }
 
             if (countFilterField != null) {
@@ -812,7 +839,7 @@ public class AggregationBuilder implements Cloneable {
                 TermsAggregationBuilder aggregation = AggregationBuilders.terms(this.getName()).field(this.getName())
                         .subAggregation(PipelineAggregatorBuilders.bucketSelector(countFilterField,
                                 Collections.singletonMap(fieldName,"_count"),
-                                BuildFilterScript.script(fieldName, operator,operands)));
+                                BuildFilterScript.script(fieldName, conditions)));
                 return aggregation;
             }
 
@@ -1179,9 +1206,28 @@ public class AggregationBuilder implements Cloneable {
          * @return
          */
         public static Script script(String field,BiPredicate operator, List operands) {
+            return script(field, operands.isEmpty() ?
+                    Collections.emptyList() :
+                    Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(operator, operands.get(0))));
+        }
+
+        /**
+         * generate script filter for a conjunction of compare conditions, such as "def a=params.edgeCount;a>15&&a<17"
+         * @param field
+         * @param conditions (operator, operand) pairs, all must hold
+         * @return
+         */
+        public static Script script(String field, List<? extends Map.Entry<BiPredicate, ?>> conditions) {
             String variable = "a";
             StringBuilder script = new StringBuilder("def " + variable + "=").append("params.").append(field).append(";");
+            script.append(conditions.stream()
+                    .map(condition -> condition(variable, condition.getKey(), condition.getValue()))
+                    .collect(Collectors.joining("&&")));
+            return new Script(script.toString());
+        }
 
+        private static String condition(String variable, BiPredicate operator, Object operand) {
+            StringBuilder script = new StringBuilder();
             //construct filtering expression
             if(!Objects.isNull(operator)  && operator instanceof CountFilterP.CountFilterCompare) {
                 script.append(variable);
@@ -1208,11 +1254,8 @@ public class AggregationBuilder implements Cloneable {
                         throw new UnsupportedOperationException("count filter operator not supported: " + operator);
                 }
             }
-            if(!operands.isEmpty()) {
-                script.append(operands.get(0));
-            }
-
-            return new Script(script.toString());
+            script.append(operand);
+            return script.toString();
         }
     }
 }

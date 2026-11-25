@@ -108,12 +108,15 @@ public class BasicJsonQueryTransformerFactoryTest {
         Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>> languages = injector.getInstance(
                 com.google.inject.Key.get(new TypeLiteral<Map<String, QueryTransformer<QueryInfo<String>, AsgQuery>>>() {}));
         // graphQL is registered by the GraphQL extension (extensions/graphql), not by core
-        Assert.assertEquals(new HashSet<>(Arrays.asList(CreateQueryRequestMetadata.TYPE_CYPHERQL,
-                CreateQueryRequestMetadata.TYPE_SPARQL)), languages.keySet());
+        // sparql also answers to its old name, sparkQL (A5)
+        Assert.assertEquals(new HashSet<>(Arrays.asList("cypher", "sparql", "sparkQL")), languages.keySet());
 
         JsonQueryTransformerFactory factory = injector.getInstance(JsonQueryTransformerFactory.class);
         Assert.assertSame(cypher, factory.transform(CreateQueryRequestMetadata.TYPE_CYPHERQL));
         Assert.assertSame(sparql, factory.transform(CreateQueryRequestMetadata.TYPE_SPARQL));
+        Assert.assertSame(sparql, factory.transform("sparql"));
+        Assert.assertSame(sparql, factory.transform("SPARQL"));
+        Assert.assertSame(sparql, factory.transform("sparkQL"));
     }
 
     private static Module jooby(Jooby.Module module, Config config) {

@@ -47,7 +47,8 @@ import static org.mockito.Mockito.when;
         // before the mapping-factory IT: its single-index templates match every index created afterwards
         com.yangdb.fuse.executor.ontology.discrete.TraversalIdentityIT.class,
         OpensearchIndexProviderMappingFactoryIT.class,
-        com.yangdb.fuse.executor.resource.PersistentResourceStoreIT.class
+        com.yangdb.fuse.executor.resource.PersistentResourceStoreIT.class,
+        com.yangdb.fuse.core.driver.BasicIdGeneratorIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     private static ElasticEmbeddedNode elasticEmbeddedNode;
@@ -206,9 +207,20 @@ public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
         setUpInternal();
     }
 
+    /** Set to true to run the suite against an OpenSearch already listening on the test port. Its tests drop and
+     * recreate indices, so this is opt-in: never reuse someone's running cluster by accident. */
+    static final String REUSE_CLUSTER = "fuse.test.reuse_cluster";
+
     private static void init(boolean embedded) throws Exception {
         //first verify no instance is running already
         Optional<org.opensearch.client.core.MainResponse> info = GlobalElasticEmbeddedNode.isRunningLocally();
+        if (info.isPresent() && !Boolean.getBoolean(REUSE_CLUSTER)) {
+            throw new IllegalStateException(String.format(
+                    "An OpenSearch is already running on localhost:%d. This suite drops and recreates indices, so it "
+                            + "won't use it: run the tests on free ports (-Dfuse.test.http.port=... "
+                            + "-Dfuse.test.transport.port=...), or pass -D%s=true to use that cluster on purpose.",
+                    ElasticEmbeddedNode.HTTP_PORT, REUSE_CLUSTER));
+        }
         // Start embedded ES
         if (embedded && !info.isPresent()) {
             info = Optional.of(getDefaultInfo());

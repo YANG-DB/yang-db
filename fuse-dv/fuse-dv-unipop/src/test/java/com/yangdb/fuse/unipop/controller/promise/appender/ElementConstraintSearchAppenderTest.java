@@ -135,6 +135,35 @@ public class ElementConstraintSearchAppenderTest {
                 searchBuilder.getAggregationBuilder().getAggregations().toString());
     }
 
+    /**
+     * C3: {@code WHERE count(k) > 15 AND count(k) < 17} gives two count constraints on the same field; both must
+     * end up in the one bucket selector script, not only one of them.
+     */
+    @Test
+    public void testTwoCountConstraintsOnTheSameField() {
+        Traversal traversal = __.and(
+                __.has(GlobalConstants.EdgeSchema.SOURCE_ID, CountFilterP.gt(15)),
+                __.has(GlobalConstants.EdgeSchema.SOURCE_ID, CountFilterP.lt(17)));
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
+        boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
+                null,
+                new StepDescriptor(mock(Step.class)),
+                Collections.emptyList(),
+                Optional.of(Constraint.by(traversal)),
+                Collections.emptyList(),
+                EmptyGraphElementSchemaProvider.instance,
+                ElementType.vertex,
+                0));
+
+        Assert.assertTrue(appendResult);
+        Assert.assertEquals(
+                "[{\"entityA.id\":{\"terms\":{\"field\":\"entityA.id\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]},\"aggregations\":{\"entityA.id\":{\"bucket_selector\":{\"buckets_path\":{\"entityA_id_Count\":\"_count\"},\"script\":{\"source\":\"def a=params.entityA_id_Count;a>15&&a<17\",\"lang\":\"painless\"},\"gap_policy\":\"skip\"}}}}}]",
+                searchBuilder.getAggregationBuilder().getAggregations().toString());
+    }
+
     @Test
     public void testComplexConstraint() throws JSONException {
         SearchBuilder searchBuilder = new SearchBuilder();
