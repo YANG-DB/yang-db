@@ -279,6 +279,16 @@ Fixed: a whole-file failure is returned as a load response with one failure carr
 When a whole CSV fails (e.g. Fire/Freeze before L2), the response carries a top-level `error` with empty
 success/failure lists, which reads like "0 of 0 loaded".
 
+## JDK
+
+### J1 — On JDK 17 the build stops at fuse-core: reflective class definition is blocked · open
+With the `MaxPermSize` flag gone, the JDK 17 CI job (informational) builds and tests the first modules, then
+`OWLOntologyTranslatorTest` fails in `setUp` with `InaccessibleObjectException: Unable to make protected final
+java.lang.Class java.lang.ClassLoader.defineClass(...)`: a library on the OWL translation path defines classes through
+reflection (the cglib technique), which JDK 17's strong encapsulation forbids by default. The modules after fuse-core
+aren't reached. Fix in Phase 6 (JDK 21): newer libraries, or `--add-opens java.base/java.lang=ALL-UNNAMED` for the tests
+and the start script.
+
 ## Test infrastructure
 
 ### T1 — Integration suite crashes when OpenSearch already runs, and reports success · **fixed**
