@@ -191,14 +191,16 @@ drop and recreate indices, so running it next to the Docker quickstart deleted t
 round). It now refuses with a clear message unless `-Dfuse.test.reuse_cluster=true`; run ITs on free ports with
 `-Dfuse.test.http.port` / `-Dfuse.test.transport.port`.
 
-### B1 — Tests fail when run against the packaged `fuse-core` jar · open
-`fuse-core` is built as a shaded jar that bundles Lucene, OpenSearch, TinkerPop and log4j, among others. With that jar
-on the classpath, as `mvn install` does when it runs a downstream module's tests, OpenSearch's
-`SearchRequestContext` can't create its logger (`LogManager.getLogger()`: "No class provided, and an appropriate one
-cannot be found"), and the fuse-dv-unipop tests error. `mvn test` (what CI runs) and `-pl X -am test` compile against
-the class folders and pass. Main has the same problem; found during bug-fix round 2. Likely fix: stop shading
-`fuse-core`, or exclude the log4j and OpenSearch classes from the shade. Until then, verify with `mvn test` and
-build the distribution with `-DskipTests`.
+### B1 — Tests fail when run against the packaged `fuse-core` jar · **fixed**
+Fixed: `fuse-core`'s main jar is the plain module jar again; the self-contained jar (for `FuseClient` in external apps)
+is an extra artifact, `fuse-core-<version>-all.jar`. Cause: the shaded jar replaced the main artifact and bundled
+log4j-api, a multi-release jar, without `Multi-Release: true` in its manifest. Java 11 then ignored log4j's
+`META-INF/versions/9` classes and used the Java 8 `StackLocator`, so `LogManager.getLogger()` failed ("No class provided,
+and an appropriate one cannot be found") in OpenSearch's `SearchRequestContext`, and the fuse-dv-unipop tests errored
+(84 errors in `mvn install -pl fuse-dv/fuse-dv-unipop -am` on main; 0 after). The `-all` jar now sets
+`Multi-Release: true` too. Full `mvn clean install -P core,dragons-assembly` with tests: 1,316 tests, 0 failures. Side
+effect: the distribution no longer carries the 86 MB fat jar next to the jars it duplicated (the tar.gz goes from 238 MB
+to 166 MB).
 
 ### G4 — GraphQL exposes only the first target type of a multi-target relationship · **fixed** (bug-fix round 2)
 Fixed: a relationship to several types becomes an abstract GraphQL type `<sideA>_<rel>` (an interface with the shared fields, or a union); `... on Dragon` narrows it, and a query over several types translates to an untyped end with those types. Behaviour change: `{ person { Own { name } } }` now returns dragons and horses; a field only one type has needs a fragment. New GQ4 example.
