@@ -202,9 +202,11 @@ What the code does today (checked 2026-11-23):
   request cache; the statistics module (`fuse-dv-stat`) exists but isn't the default cost source.
 
 Items, in the recommended order:
-- [ ] 7.1 **Benchmark harness**: a large generated Dragons dataset (the Dragons data generator in `examples/dragons/datagen`),
-      a fixed set of queries, and p50/p95 latency plus OpenSearch requests per query, recorded in CI so a change can be
-      compared with its base. Everything below is measured against it. *(small)*
+- [x] 7.1 **Benchmark harness** ✅ (2026-11-24): `docker/bench/bench.py` measures p50/p95 latency and OpenSearch ops
+      per query for the 31 playground queries, at scale 1 (tutorial data) or N (`scale_data.py`: N disjoint copies;
+      generated-data CSVs from `examples/dragons/datagen` don't match the loader's format). CI runs it after e2e and
+      fails on more than 10% more OpenSearch work than `docker/bench/baseline.json`. Results and the comparison
+      v0.8.0 (OpenSearch 1.3) / v0.9.0 / v0.9.1 / main: [docs/benchmark.md](../benchmark.md). Found L5, Q14, A11.
 - [ ] 7.2 **Fetch only the projected fields**: turn the query's projection into `_source` includes. *(small)*
 - [ ] 7.3 **Plain search for small results**: a plain sized search when the step's expected result fits in one
       page, a scroll (or the cursor's PIT) only when it doesn't. *(small–medium)*

@@ -116,6 +116,7 @@ Each module's purpose and key classes, and the path of a query through them, are
 - Older component notes: [Architecture](docs/info/components/architecture.md) · [Ontology](docs/info/components/ontology.md) ·
   [Query language](docs/info/components/query_language.md) · [Execution planner](docs/info/components/execution_planner.md)
 - [REST API](docs/info/api.md)
+- **[Benchmark](docs/benchmark.md)**: latency and OpenSearch work per query, compared across releases and OpenSearch versions
 - [Revival roadmap](docs/revival/ROADMAP.md) · [Known issues](docs/revival/KNOWN_ISSUES.md) ·
   [Live status](docs/revival/STATUS.md)
 
