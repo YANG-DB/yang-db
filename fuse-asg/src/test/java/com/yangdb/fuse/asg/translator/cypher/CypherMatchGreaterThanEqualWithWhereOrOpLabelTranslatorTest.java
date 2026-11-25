@@ -258,7 +258,7 @@ public class CypherMatchGreaterThanEqualWithWhereOrOpLabelTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("No rule yet for one variable with several operators across OR branches: the translator splits them differently")
     //todo add Rule for same variable with multiple operators
     public void testMatch_A_OR_where_A_OfType_And_OR_B_OfType_AND_Return_() {
         AsgTranslator<QueryInfo<String>, AsgQuery> translator = new CypherTranslator(() -> Collections.singleton(match));

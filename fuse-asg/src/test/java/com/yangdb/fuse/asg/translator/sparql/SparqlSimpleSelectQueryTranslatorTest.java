@@ -93,7 +93,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_anon_46f01c96_c07f_4c42_a154_1e9873dac6db, anonymous)
      *       Var (name=y)
      */
-    @Ignore
+    @Ignore("The translator's output differs from the expected tree (ComparisonFailure); expectation or translator not reviewed yet")
     public void testSelectPatternWithDistanceTriplet() {
         String s1 = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
                 "SELECT ?x ?y\n" +
@@ -216,7 +216,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      * Var (name=_const_51762b45_uri, value=http://xmlns.com/foaf/0.1/Movie, anonymous)
      */
     @Test
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectAndProjectTriplet() {
         String s =
                 "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
@@ -404,7 +404,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_e530421f_uri, value=http://xmlns.com/foaf/0.1/based_near, anonymous)
      *          Var (name=loc)
      */
-    @Ignore
+    @Ignore("The translator's output differs from the expected tree (ComparisonFailure); expectation or translator not reviewed yet")
     public void testSimpleSelectVarsAndMulriPatternWithOptionalFilterTriplet() {
         String s = "PREFIX mo: <http://purl.org/ontology/mo/>\n" +
                 "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n" +
@@ -493,7 +493,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                         Var (name=_const_74b6d379_uri, value=http://xmlns.com/foaf/0.1/isPrimaryTopicOf, anonymous)
      *                         Var (name=wikipedia)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectMuseumFilterTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
@@ -559,7 +559,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_a437b411_uri, value=http://purl.org/dc/elements/1.1/description, anonymous)
      *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectVarsPatternWithUnionInPropertiesTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
@@ -634,7 +634,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_531c5f7d_uri, value=http://xmlns.com/foaf/0.1/knows, anonymous)
      *             Var (name=_const_75920dab_lit_9902a4bf_ca9, value="Author"@en, anonymous)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectVarsPatternWithUnionInStepsTriplet() {
         String s = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
@@ -710,7 +710,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                Var (name=_const_e1df31e0_uri, value=http://xmlns.com/foaf/0.1/Person, anonymous)
      *                Var (name=g3)
      */
-    @Ignore
+    @Ignore("The translator's output differs from the expected tree (ComparisonFailure); expectation or translator not reviewed yet")
     public void testQueryNamedGraphs() {
         String s =
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
@@ -771,7 +771,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                Var (name=_const_40dab42e_uri, value=http://dbpedia.org/property/establishedDate, anonymous)
      *                Var (name=est)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testQueryFreeTextSearch() {
         String s = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        \n" +
@@ -806,7 +806,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("The test's SPARQL text is invalid: the parser rejects it (MalformedQueryException)")
     public void testQueryWithAggregation() {
         String s = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
                 "SELECT ?interest COUNT(*) AS ?count " +
@@ -902,7 +902,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     /**
      * Slice (limit=5000)
      *    Distinct
@@ -1027,7 +1027,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_4d818093_uri, value=http://yangdb.org/name, anonymous)
      *             Var (name=name)
      */
-    @Ignore
+    @Ignore("The translator's output differs from the expected tree (ComparisonFailure); expectation or translator not reviewed yet")
     public void testSimpleSelectPersonWithSingleTriplet() {
         String s = "SELECT ?ee WHERE " +
                 "{" +
@@ -1138,7 +1138,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *                               ValueConstant (value="-1"^^<http://www.w3.org/2001/XMLSchema#integer>)
      */
     @Test
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectAggregations() {
         String s = "PREFIX ex: <ex:>\n"
                 + "SELECT ((MIN(?x+1) + MAX(?y-1))/2 AS ?r) " +
@@ -1188,7 +1188,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *          Var (name=_const_628a3e40_uri, value=http://yangdb.org/knows, anonymous)
      *          Var (name=friends)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectPersonWithFriendTriplet() {
         String s = "SELECT ?ee ?friends\n" +
                 "    WHERE {?ee a <Person>;\n" +
@@ -1215,7 +1215,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("The test's SPARQL text is invalid: the parser rejects it (MalformedQueryException)")
     public void testSimpleSelectDistinctPersonWithRelatedOtherSideTriplet() {
         String s = "SELECT DISTINCT ?surfer\n" +
                 "    WHERE { ?js a <Person>;\n" +
@@ -1243,7 +1243,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("The test's SPARQL text is invalid: the parser rejects it (MalformedQueryException)")
     public void testSimpleSelectMovieWithFilterTriplet() {
         String s = "SELECT ?title\n" +
                 "    WHERE {?ninties a <Movie>; <released>\n" +
@@ -1270,7 +1270,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("The test's SPARQL text is invalid: the parser rejects it (MalformedQueryException)")
     public void testSimpleSelectMovieWithActorActedInFilterTriplet() {
         String s = "SELECT ?tom ?movies\n" +
                 "    WHERE {?tom a <Person>?;\n" +
@@ -1325,7 +1325,7 @@ public class SparqlSimpleSelectQueryTranslatorTest {
      *             Var (name=_const_4d818093_uri, value=http://yangdb.org/name, anonymous)
      *             Var (name=name)
      */
-    @Ignore
+    @Ignore("The query uses a predicate the test ontology doesn't define (FuseError: No predicate found ... in ontology)")
     public void testSimpleSelectMovieWithCoAutorFilterTriplet() {
         String s = "SELECT ?name\n" +
                 "    WHERE {?tom a <Person>;<ACTED_IN> ?m.\n" +

@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Ignore
+@Ignore("OWLToOntologyTransformer.transform throws FuseError on ucs.owl (translator gap)")
 public class OWLUCSOntologyTranslatorTest {
     public static Ontology ontology;
 

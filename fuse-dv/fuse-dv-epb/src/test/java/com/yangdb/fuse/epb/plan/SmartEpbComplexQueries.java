@@ -278,7 +278,7 @@ public class SmartEpbComplexQueries {
     }
 
     @Test
-    @Ignore // Stats Double Bug
+    @Ignore("Stats Double Bug: the planner picks a different plan than the test expects; not investigated")
     public void testPathSelectionEConcreteComplexQuery(){
         AsgQuery query = simpleQuery2("q1", "Dragons");
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

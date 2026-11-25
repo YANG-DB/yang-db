@@ -10,7 +10,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 
-@Ignore
+@Ignore("Needs soc-LiveJournal1.txt.zip, a large SNAP dataset that isn't in the repository")
 public class FileUtilsTest {
 
     @Test

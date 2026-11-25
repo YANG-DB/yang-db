@@ -8,7 +8,15 @@ This is the quickstart for YANG-DB: it runs the Dragons sample graph on top of O
 
 ## Prerequisites
 - Docker with the `docker compose` plugin
-- JDK 11 and Maven 3.6+ (the image is built locally - there is no current prebuilt image on Docker Hub)
+- To build the image yourself: JDK 11 and Maven 3.6+ (see Requirements in [PROJECT.md](../PROJECT.md#requirements))
+
+## Prebuilt image
+Each release from 0.9.1 on publishes `ghcr.io/yang-db/yang.db:<version>` (linux/amd64 and linux/arm64; `latest` is
+the latest release). Run it without building anything:
+```bash
+YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.9.1 docker compose -f docker-compose-os.yml up -d
+```
+The `yangdb/yang.db` images on Docker Hub are from 2020 (Elasticsearch era) and are not updated.
 
 The OpenSearch version is set by `OS_VERSION` in [.env](.env) and must match `<opensearch.version>` in the root `pom.xml`.
 
@@ -23,6 +31,9 @@ This will:
 - Run the maven build (`mvn clean install -DskipTests=true -P core,dragons-assembly`)
 - Generate the `distrib/dragon` folder, which holds the jars and the start script for the graph engine (Fuse)
 - Build the docker image `yangdb/yang.db:Dragons` from that folder
+
+It takes a couple of minutes once Maven has downloaded the dependencies (the first build downloads about 0.8 GB). The
+images take about 5 GB of disk: OpenSearch 2 GB, OpenSearch Dashboards 2.4 GB, YANG-DB 0.8 GB.
 
 ## Running the Docker-compose services
 ```bash

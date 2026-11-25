@@ -279,6 +279,16 @@ Fixed: a whole-file failure is returned as a load response with one failure carr
 When a whole CSV fails (e.g. Fire/Freeze before L2), the response carries a top-level `error` with empty
 success/failure lists, which reads like "0 of 0 loaded".
 
+## JDK
+
+### J1 — On JDK 17 the tests stopped at fuse-core: reflective access is blocked · **fixed** (tests)
+JDK 17 refused the reflection that older libraries use: first `ClassLoader.defineClass` (cglib, on the OWL
+translation path, in fuse-core), then `java.util.regex.Pattern.namedGroups` (47 planner tests in fuse-dv-epb). Fixed
+for the tests: the root pom's `test.jvm.opens` opens `java.lang`, `java.lang.reflect`, `java.util`, `java.util.regex`,
+`java.io`, `java.nio` and `sun.nio.ch` to the test JVMs (JDK 11 accepts the same flags). The JDK 17 CI job now passes:
+1,271 tests, 0 failures. Still open: running the engine on JDK 17 is not tested (the start script and the Docker image
+use JDK 11); it would need the same `--add-opens` (Phase 6).
+
 ## Test infrastructure
 
 ### T1 — Integration suite crashes when OpenSearch already runs, and reports success · **fixed**

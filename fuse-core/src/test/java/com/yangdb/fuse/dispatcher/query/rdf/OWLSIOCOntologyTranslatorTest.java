@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Ignore
+@Ignore("Placeholder assertions copied from the Social ontology test; sioc.owl itself translates. Rewrite the assertions")
 public class OWLSIOCOntologyTranslatorTest {
     public static Ontology ontology;
 

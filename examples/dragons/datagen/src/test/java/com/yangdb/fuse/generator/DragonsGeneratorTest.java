@@ -53,7 +53,7 @@ public class DragonsGeneratorTest {
 //        assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
     }
 
-    @Ignore
+    @Ignore("Manual data generator (100k dragons, 10k persons): too heavy for the build; the small-graph test runs")
     @Test
     public void testDragonsDataGenerationMediumGraph() throws Exception {
         loadConfigurations(CONFIGURATION_MEDIUM_FILE_PATH);
