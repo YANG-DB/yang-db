@@ -191,7 +191,7 @@
         <!-- metrics -->
         <metrics-core.version>3.1.2</metrics-core.version>
 
-        <json.io>4.10.1</json.io>
+        <json.io>4.14.1</json.io>
         <!-- test -->
         <junit.version>4.13.1</junit.version>
         <easymock.version>3.2</easymock.version>
