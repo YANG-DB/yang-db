@@ -36,6 +36,14 @@ during long runs and hangs embedded-OpenSearch tests, so run long builds under `
 must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
 `mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
 
+### Note (2026-11-24): Dependabot cleared, B1 fixed
+Dependabot: 20 alerts fixed by #187 (logback 1.5 + slf4j 2, guava 33, commons-io/lang3, json-io, org.json, assertj,
+json-path); #1 (Jooby, false positive) and #68 (commons-configuration 1.x, no fix; needs a TinkerPop upgrade) dismissed
+with reasons. 0 open. B1 fixed: fuse-core's main jar is plain again, the fat jar is `fuse-core-<v>-all.jar`;
+`mvn clean install` with tests now passes (1,316 tests), so it is a valid local verification again (still not while
+parallel agents share `~/.m2`). **Next:** Phase 7.1–7.3 (benchmark, `_source` filtering, plain search for small
+results), then Phase 6.
+
 ### Note (2026-11-24): v0.9.1 released
 Bug-fix round 2 shipped as **v0.9.1**: main merged into `release/0.9.x` (PR #182, merge commit, poms `0.9.1`), notes
 `docs/releases/v0.9.1.md`, tag `v0.9.1`, marked latest; the Release workflow attaches the download. CI now also runs on
