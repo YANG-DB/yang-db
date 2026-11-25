@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class CsvToRdfConverterTest {
     @Test
-    @Ignore
+    @Ignore("CsvToRdfConverter is a stub that throws NotImplementedException")
     public void csvToRdf() throws IOException {
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/input.csv");
         assert stream != null;

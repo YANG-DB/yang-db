@@ -29,7 +29,7 @@ import static com.yangdb.fuse.model.query.properties.constraint.ConstraintOp.eq;
 /**
  * Created by lior.perry on 6/6/2017.
  */
-@Ignore
+@Ignore("AsgRelPatternValidatorStrategy.apply is an empty stub, so the 'not valid' rel tests fail")
 /**
  * AsgRelPatternValidatorStrategy - test AsgRelPatternValidatorStrategy
  */

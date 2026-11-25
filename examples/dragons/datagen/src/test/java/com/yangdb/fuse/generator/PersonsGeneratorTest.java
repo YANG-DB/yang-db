@@ -47,7 +47,7 @@ public class PersonsGeneratorTest {
     static Logger logger;
 
 
-    @Ignore
+    @Ignore("Manual data generator (1M dragons, 100k persons): too heavy for the build")
     @Test
     public void personsDataGenerationMassiveGraphTest() throws Exception {
         loadConfigurations(CONFIGURATION_MASSIVE_FILE_PATH);

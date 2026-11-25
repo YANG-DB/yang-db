@@ -12,7 +12,7 @@
   9200) in `dragon/config/application.conf` to your OpenSearch, then run `dragon/start-fuse-service.sh`. The previous release, [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0), runs on OpenSearch 1.3.
 * Or run it with Docker next to OpenSearch: build the image and start the stack as described in
   [docker/README.md](docker/README.md), then open http://localhost:8888/dragons/swagger.
-* The `yangdb/yang.db` images on Docker Hub are from 2020 (Elasticsearch era) and are not updated.
+* Prebuilt images: `ghcr.io/yang-db/yang.db:<version>` from 0.9.1 on ([docker/README.md](docker/README.md#prebuilt-image)). The `yangdb/yang.db` images on Docker Hub are from 2020 (Elasticsearch era) and are not updated.
 
 #### Latest News
  * opensearch community lecture given on yangDb

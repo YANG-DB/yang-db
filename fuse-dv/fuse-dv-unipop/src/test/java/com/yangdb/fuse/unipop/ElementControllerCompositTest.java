@@ -95,7 +95,7 @@ public class ElementControllerCompositTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Stale mock: its hits carry fields but no _source (NPE in the converter), and it expects 10 vertices from one hit")
     public void testSingleIdPromiseVertexWithLimit() {
         UniGraph graph = mock(UniGraph.class);
         SearchOrderProviderFactory orderProvider = context -> {

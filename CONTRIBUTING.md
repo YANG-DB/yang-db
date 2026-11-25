@@ -9,7 +9,9 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 1. Branch from `main` and open your pull request against `main` (the only actively developed branch;
    `master` is a frozen 2019 snapshot).
-2. Build and test with JDK 11 and Maven 3.6+: `mvn clean install` must pass.
+2. Build and test with JDK 11 and Maven 3.6+: `mvn clean install` must pass. It runs the unit and the integration
+   tests (an embedded OpenSearch on ports 9200/9300; pass `-Dfuse.test.http.port=19200 -Dfuse.test.transport.port=19300`
+   if those are taken). An ignored test must say why: `@Ignore("reason")`, which CI checks.
 3. If your change affects how YANG-DB is run (config keys, ports, docker setup), update the project
    README ([PROJECT.md](PROJECT.md)) and [docker/README.md](docker/README.md) accordingly.
    The root `README.MD` is the maintainer's GitHub profile page, not project documentation.

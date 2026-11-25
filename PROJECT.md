@@ -1,5 +1,9 @@
 # YANG-DB
 
+[![CI](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/YANG-DB/yang-db)](https://github.com/YANG-DB/yang-db/releases/latest)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+
 **YetAnotherNonNativeGraph-DB** — a graph query engine that adds an ontology-driven property-graph layer on top of
 [OpenSearch](https://opensearch.org/) indices. Model your domain as entities and relationships, map them onto
 existing (or generated) OpenSearch indices, and query them as a graph, without moving the data into a separate
@@ -8,8 +12,9 @@ graph database.
 - **Logical ontology over physical indices** — entities, relationships and enumerations are mapped onto OpenSearch
   indices through an index provider (static, time-partitioned, unified, nested, or redundant layouts).
   See [IndexProvider](docs/info/components/IndexProvider.md).
-- **Several query front-ends** — the native V1 query language, plus Cypher, GraphQL and SPARQL translators.
-  Ontologies are defined as JSON and registered through the catalog API.
+- **Several query front-ends** — the native V1 query language, plus Cypher, GraphQL and SPARQL translators
+  (read queries; coverage differs, see [Limitations](#limitations)). Ontologies are defined as JSON and registered
+  through the catalog API.
 - **Cost-based planning** — queries are compiled into an execution plan using index statistics, then translated
   into TinkerPop graph traversals executed against OpenSearch.
 - **REST API with Swagger UI**, paged cursors, and query-result projections.
@@ -17,21 +22,41 @@ graph database.
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
 > OpenSearch **2.19.7** (upgraded from 1.3.0 in Phase 5; 3.x is planned). The latest release is
 > [0.9.1](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.1) (OpenSearch 2.19.7, bug fixes on top of [0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0)); [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)
-> is the last on OpenSearch 1.3. Each has a ready-built distribution attached. The full build is green (1,249 tests with the integration suites
-> running), and every documented tutorial query passes end to end on Docker
+> is the last on OpenSearch 1.3. Each has a ready-built distribution attached. The full build is green (about 1,300 tests, integration suites
+> included; each [CI run](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml) shows the exact count), and
+> every documented tutorial query passes end to end on Docker
 > ([e2e suite](docker/e2e/README.md)). A stabilization pass fixed the tutorial data loader, relationship identity and direction, time
 > partitions and JSON responses. Progress and open issues are in [docs/revival/](docs/revival/ROADMAP.md).
 
+## Requirements
+
+| | |
+|---|---|
+| Java | **JDK 11** for building, testing and running (the code compiles to Java 11; CI and the Docker image use Temurin/OpenJDK 11). Newer JDKs are Phase 6 of the [roadmap](docs/revival/ROADMAP.md) |
+| Maven | 3.6 or later (CI uses 3.9) |
+| OpenSearch | **2.19.x** for 0.9 and `main`; 1.3 for the 0.8 line. See [Limitations](#limitations) |
+| Docker | with `docker compose`, for the quickstart |
+| Python 3 | standard library only, for the data loader, the e2e suite and the benchmark |
+
 ## Quickstart
 
-Requires Docker (with `docker compose`), JDK 11 and Maven 3.6+. This builds the engine with the Dragons sample
-ontology and runs it next to OpenSearch 2.19.7 and OpenSearch Dashboards:
+Run the prebuilt image (published to the GitHub container registry for each release from 0.9.1 on) next to
+OpenSearch 2.19.7 and OpenSearch Dashboards:
+
+```bash
+cd docker
+YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.9.1 docker compose -f docker-compose-os.yml up -d
+curl http://localhost:8888/fuse/health
+```
+
+Or build the image yourself from this checkout (JDK 11 and Maven). The build takes a couple of minutes once Maven has
+downloaded the dependencies. Measured disk use: about 0.8 GB for the Maven repository, 0.9 GB for the build, and
+about 5 GB of images (OpenSearch 2 GB, Dashboards 2.4 GB, YANG-DB 0.8 GB):
 
 ```bash
 cd docker
 ./buildDocker.sh Dragons
 docker compose -f docker-compose-os.yml up -d
-curl http://localhost:8888/fuse/health
 ```
 
 Load the Dragons tutorial data and check every documented example query against it (Python 3, standard library only):
@@ -53,7 +78,16 @@ and the [Dragons tutorial](docs/tutorial/sample/dragons/README.md) walks through
 ```bash
 mvn clean install                          # core modules, with tests (JDK 11)
 mvn clean install -P core,dragons-assembly # also builds examples/ and the distribution into distrib/dragon
+mvn clean install -DskipTests -P core,dragons-assembly   # the distribution only, about 2 minutes
 ```
+
+**Tests.** `mvn test` runs the unit tests *and* the integration tests: classes named `*IT` and the suites start an
+embedded OpenSearch node in the same Maven run (surefire runs every test class; there is no separate failsafe
+`verify` step). The embedded node uses ports 9200/9300 by default, and the suites refuse to run if an OpenSearch is
+already listening there, to protect its data: stop it, or pick free ports with
+`-Dfuse.test.http.port=19200 -Dfuse.test.transport.port=19300`. CI runs `mvn clean test` and the Docker end-to-end
+suite on every pull request and shows the test counts in each run's summary. Every ignored test states its reason,
+which CI checks: see [IGNORED_TESTS.md](docs/revival/IGNORED_TESTS.md).
 
 | Module | What it contains |
 |---|---|
@@ -90,6 +124,36 @@ Each module's purpose and key classes, and the path of a query through them, are
 - Cyclic patterns, which close a loop back to an already-matched node, are rejected with an explicit error.
 - A count filter (`WHERE count(r) > n`) counts all of the start node's relationships; row filters on the far end
   only restrict which neighbours are returned.
+
+## Limitations
+
+- **OpenSearch versions.** `main` and 0.9.x run on OpenSearch **2.19.x** (built and tested against 2.19.7), over its
+  REST API. 0.8.x runs on 1.3 (transport client). OpenSearch 3.x is planned (Phase 6). Elasticsearch is no longer
+  supported; the last Elasticsearch-based code is the frozen `master` branch.
+- **Query languages.** All front-ends are **read-only**: data is loaded through the load API (CSV files or a JSON graph), not
+  through queries.
+  - **Cypher** is the main language: `MATCH … WHERE … RETURN` over node and relationship patterns, with property
+    filters, `AND`/`OR` and count filters. Only `MATCH` queries are translated: no write clauses
+    (`CREATE`, `MERGE`, `SET`, `DELETE`), no label unions `(n:A|B)`, no cyclic patterns (see the notes above).
+  - **GraphQL** (an extension): queries against a schema generated from the ontology; no mutations.
+  - **SPARQL**: `SELECT` over triple patterns, translated against the ontology. It is the least tested front-end:
+    it isn't part of the e2e suite, and 17 of its translator tests are ignored (9 use predicates the test ontology
+    lacks, 4 have invalid SPARQL text, 4 expect a different translation; the reasons are on each test).
+  - **V1**, the native JSON query format, covers what the planner supports. "SQL support" is a DDL importer that turns
+    table definitions into an ontology; it doesn't run SQL queries.
+- **Security.** YANG-DB's REST API has **no authentication or authorization** and no multi-tenancy: run it on a
+  trusted network, or behind a gateway that adds them. It connects to OpenSearch over HTTP or HTTPS
+  (`https://host:port` in `opensearch.hosts`) but can't send credentials, so the cluster must accept unauthenticated
+  requests from it. The quickstart disables the OpenSearch security plugin: for local use only.
+- **Scale.** Each query keeps its results in the engine's memory until it's deleted or its TTL (5 minutes) passes,
+  and a single CSV load is one bulk request. Measured numbers are in the [benchmark](docs/benchmark.md); open issues
+  in [KNOWN_ISSUES.md](docs/revival/KNOWN_ISSUES.md).
+
+## Related repositories
+
+- [YANG-DB/knowledge-graph](https://github.com/YANG-DB/knowledge-graph) (formerly `open-graph`): an earlier
+  experiment with a knowledge-graph engine on OpenSearch, last updated in March 2023 and not maintained. This
+  repository, `yang-db`, is the active project.
 
 ## Contributing
 

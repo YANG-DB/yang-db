@@ -1,0 +1,17 @@
+# Community review of v0.9.1: what changed
+
+A community review of v0.9.1 (November 2026) built the project, ran `mvn test -P core` (1,271 tests, all passing on
+JDK 11) and listed what got in the way. This page maps each point to what changed.
+
+| # | Review point | What changed |
+|---|---|---|
+| 1 | Test runs fail on JDK 17: surefire passes `-XX:MaxPermSize=256m`, which JDK 17 rejects | Flag removed from the three surefire configurations (root, fuse-dv-core, fuse-dv-stat). CI runs an informational JDK 17 build and test job |
+| 2 | JDK guidance contradicts itself (`java-versions.properties` says Java 8, the POM targets 1.8, the docs say 11) | **JDK 11** for build, tests and runtime, stated once in [PROJECT.md › Requirements](../../PROJECT.md#requirements) and linked from the Docker README. The compiler now targets 11 (it already had to: the OpenSearch 2.19 client needs Java 11). `java-versions.properties`, which nothing read, is deleted |
+| 3 | Metadata out of date: About text says "Powered by Elasticsearch"; README is a personal profile; stale test count | The About text and topics now say OpenSearch and Java 11. PROJECT.md gives an approximate test count and points to each CI run's exact count. `README.MD` stays as it is: in this repository it is also the maintainer's GitHub profile page, so the project overview lives in [PROJECT.md](../../PROJECT.md). Third-party listings that cite Elasticsearch 6.5.4 are outside this repository |
+| 4 | No prebuilt Docker image | The Release workflow publishes `ghcr.io/yang-db/yang.db:<version>` (amd64 and arm64) for each release, `latest` for the latest; `YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.9.1 docker compose ... up -d` runs it. Build time and disk needs are stated in PROJECT.md and the Docker README |
+| 5 | Integration tests (`*IT`) may not be part of `mvn test` | They are: surefire runs every test class, and the `*IT` classes and suites start an embedded OpenSearch in the same run; there is no failsafe step. Now documented in PROJECT.md and CONTRIBUTING.md. CI shows the test counts in every run's summary, next to the Docker end-to-end suite and the benchmark |
+| 6 | Many tests are ignored, reasons unknown | Every one of the 61 ignored tests now says why in its annotation (`@Ignore("...")`), and CI fails on one that doesn't (`.github/scripts/ignored_tests.py`). The current list is generated into [IGNORED_TESTS.md](IGNORED_TESTS.md). The 17 SPARQL ones were run to record how they fail |
+| 7 | The companion repository `open-graph` is unclear | It was renamed `YANG-DB/knowledge-graph`, last updated March 2023. PROJECT.md › Related repositories says it is an earlier, unmaintained experiment and that `yang-db` is the active project. Archiving it is the maintainer's call |
+| – | Performance and scale unverified, no benchmarks | [docs/benchmark.md](../benchmark.md): latency and OpenSearch work for the 31 documented queries at 1× and 10× the tutorial data, comparing v0.8.0 on OpenSearch 1.3 with v0.9.0, v0.9.1 and `main` on 2.19.7. CI runs it on every pull request |
+| – | Limitations: OpenSearch versions, query language coverage, security | New [PROJECT.md › Limitations](../../PROJECT.md#limitations) section: supported OpenSearch versions; which query languages and clauses are covered (all read-only); no authentication in YANG-DB's API and no credentials towards OpenSearch; memory and load limits |
+| – | CI status couldn't be confirmed | CI badge at the top of PROJECT.md; the build, e2e and benchmark results are in each run's summary |

@@ -1,7 +1,8 @@
 # Attach a downloadable distribution to every published GitHub release.
 # Builds the Dragons distribution (engine + Dragons sample configuration) from the release's tag and uploads it as
-# yangdb-<version>-distribution.tar.gz. Unzip it and run start-fuse-service.sh, or build the Docker image
-# (docker/README.md).
+# yangdb-<version>-distribution.tar.gz. Unzip it and run start-fuse-service.sh.
+# Also publishes the Docker image ghcr.io/yang-db/yang.db:<version> (linux/amd64 and linux/arm64), and moves the
+# `latest` tag when the release is the repository's latest release (docker/README.md).
 name: Release
 
 on:
@@ -15,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 env:
   MVN: >-
@@ -56,3 +58,44 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$TAG" yangdb-*-distribution.tar.gz* --clobber
+
+      - name: Set up QEMU (arm64 image)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Image tags
+        id: tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${TAG#v}"
+          TAGS="ghcr.io/yang-db/yang.db:${VERSION}"
+          # move `latest` only for the repository's latest release, not for a rebuilt or older-line release
+          if [ "$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" -q .tag_name)" = "$TAG" ]; then
+            TAGS="${TAGS},ghcr.io/yang-db/yang.db:latest"
+          fi
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          cp docker/Dockerfile distrib/
+
+      - name: Build and push the Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: distrib
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.tags.outputs.version }}
+            org.opencontainers.image.description=YANG-DB graph query engine over OpenSearch, with the Dragons sample ontology
+            org.opencontainers.image.licenses=Apache-2.0

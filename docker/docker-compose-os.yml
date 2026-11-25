@@ -67,7 +67,7 @@ services:
       - opensearch
 
   fuse:
-    image: yangdb/yang.db:${YANGDB_TAG}
+    image: ${YANGDB_IMAGE:-yangdb/yang.db}:${YANGDB_TAG}
     container_name: dragons-graph
 #    build:
 #      dockerfile: Dockerfile

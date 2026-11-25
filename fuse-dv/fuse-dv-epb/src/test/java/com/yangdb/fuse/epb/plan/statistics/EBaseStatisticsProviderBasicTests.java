@@ -333,7 +333,7 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore
+    @Ignore("IllegalArgumentException 'No Such ontology value present 3': probably a stale ontology fixture")
     public void eTypedEnumeratedFieldTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType("Person");
@@ -347,7 +347,7 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore
+    @Ignore("Same stale ontology fixture as eTypedEnumeratedFieldTest")
     public void eTypedEnumeratedSingleValueBucketFieldTest(){
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "female", "female"));
