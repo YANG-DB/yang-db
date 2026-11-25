@@ -9,7 +9,7 @@
 Afterwards the stored document counts are compared with the CSV row counts (edges are stored twice: `.in` / `.out`).
 Exits non-zero if any step, row or count fails. Python 3 standard library only.
 """
-import argparse, csv, json, os, sys, urllib.error, urllib.parse, urllib.request
+import argparse, csv, io, json, os, sys, urllib.error, urllib.parse, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
@@ -84,8 +84,31 @@ def doc_count(os_url, index):
         return f"HTTP {e.code}"
 
 
-def load(fuse, os_url, csv_dir=CSV_DIR, ontology=ONTOLOGY, reset=False):
-    """Run the init sequence and load every CSV. Returns the number of problems found."""
+def chunks(path, chunk_rows):
+    """The CSV file as request bodies: the whole file, or, with chunk_rows, pieces of at most that many rows, each
+    with the header. The loader sends a whole request as one OpenSearch bulk, which OpenSearch rejects once it is
+    too large (L5 in docs/revival/KNOWN_ISSUES.md), so big files are loaded in pieces."""
+    if not chunk_rows:
+        with open(path, "rb") as f:
+            yield f.read()
+        return
+    with open(path, newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        while True:
+            part = [row for _, row in zip(range(chunk_rows), reader)]
+            if not part:
+                return
+            out = io.StringIO()
+            w = csv.writer(out, quoting=csv.QUOTE_ALL, lineterminator="\n")
+            w.writerow(header)
+            w.writerows(part)
+            yield out.getvalue().encode()
+
+
+def load(fuse, os_url, csv_dir=CSV_DIR, ontology=ONTOLOGY, reset=False, chunk_rows=None):
+    """Run the init sequence and load every CSV (in pieces of chunk_rows rows, if given). Returns the number of
+    problems found."""
     problems = 0
     def step(name, fn, tolerate=None):
         nonlocal problems
@@ -126,11 +149,13 @@ def load(fuse, os_url, csv_dir=CSV_DIR, ontology=ONTOLOGY, reset=False):
         expected[index] = expected.get(index, 0) + n * (2 if kind == "edge" else 1)
         qs = urllib.parse.urlencode({"directive": "INSERT", "type": kind, "label": label})
         try:
-            with open(path, "rb") as f:
-                resp = http("POST", f"{fuse}/load/ontology/Dragons/csv/load?{qs}", f.read())
-            ok, bad, first = count_outcomes(resp)
-            if isinstance(resp, dict) and resp.get("error"):  # whole-file failure, e.g. an unparsable partition date
-                bad, first = max(bad, 1), first or error_text(resp["error"])
+            ok, bad, first = 0, 0, None
+            for body in chunks(path, chunk_rows):
+                resp = http("POST", f"{fuse}/load/ontology/Dragons/csv/load?{qs}", body)
+                c_ok, c_bad, c_first = count_outcomes(resp)
+                if isinstance(resp, dict) and resp.get("error"):  # whole-file failure, e.g. an unparsable partition date
+                    c_bad, c_first = max(c_bad, 1), c_first or error_text(resp["error"])
+                ok, bad, first = ok + c_ok, bad + c_bad, first or c_first
             verdict = "ok  " if bad == 0 else "FAIL"
             print(f"  {verdict}  {name:22} -> {label:12} rows={n:6}  successes={ok}  failures={bad}"
                   + (f"  first: {json.dumps(first, default=str)[:200]}" if first else ""))

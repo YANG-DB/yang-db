@@ -109,6 +109,22 @@ jobs:
           python3 docker/e2e/doc_queries.py --load --reset | tee e2e.log
           echo "### Docker e2e: $(grep -E 'ALL PASS|not passing' e2e.log | tail -1)" >> "$GITHUB_STEP_SUMMARY"
 
+      # Latency and OpenSearch work per query on the tutorial data the e2e suite just loaded (docs/benchmark.md).
+      # OpenSearch work is exact: the step fails if any query does more than docker/bench/baseline.json says.
+      - name: Benchmark
+        run: |
+          python3 docker/bench/bench.py --runs 5 --label "CI (${GITHUB_SHA::7})" --out bench.json \
+            --baseline docker/bench/baseline.json --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench
+          path: bench.json
+          if-no-files-found: ignore
+          retention-days: 30
+
       # A logging dependency change can silence the engine without failing a query (SLF4J falls back to a no-op
       # logger when it finds no provider), so check that the engine logged its work and SLF4J didn't complain.
       - name: Engine logging works

@@ -28,6 +28,14 @@ a date is routed to the index named exactly after its formatted value (1950 → 
 then falls back to the first index in text order (`_1000`). Queries use the same exact-name rule. The Dragons config
 and IndexProvider.md describe range buckets that nothing implements. The pattern `YYYY` is week-year (should be `yyyy`).
 
+### L5 — A large CSV load fails as a whole: the loader sends the entire file as one bulk request · open
+`LoadUtils.load` puts every row of the posted file into one `BulkRequestBuilder`. OpenSearch rejects a bulk that big
+(`rejected_execution_exception ... coordinating operation`, indexing pressure: by default 10% of the heap), and the
+whole file fails. Found while loading 10 copies of the tutorial data for the benchmark (`docs/benchmark.md`): Fire,
+115,030 rows (230,060 documents), fails against the quickstart's 512 MB OpenSearch heap. Workaround: post the file in
+pieces (`docker/e2e/load_tutorial.py` `chunk_rows`, which `docker/bench/bench.py` uses: 20,000 rows). Fix: submit the
+bulk in batches (by count or bytes) inside the loader.
+
 ## Query engine
 
 ### Q1 — Undirected pattern executes as directed · **fixed**
@@ -85,6 +93,13 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 - `match (p)` returns at most 1,000 results regardless of `pageSize`.
 - The projection cursor projects nothing for a count-filtered query (`WHERE count(k) > n`); plain queries project
   normally (found 2026-11-20 while reviewing the tutorial).
+
+### Q14 — Every query stays in the engine's memory until its TTL; many large queries fill the heap · open
+Each query (with its cursor and fetched results) is kept in `InMemoryResourceStore` until its TTL (default 5 minutes)
+passes; expired queries are removed at most every 5 minutes. A client that doesn't `DELETE /fuse/query/:id` after a
+run leaves them all in memory: at 10 times the tutorial data, ~190 benchmark runs in a few minutes ran the 1 GB engine
+heap out (`java.lang.OutOfMemoryError`, then every query failing) (`docs/benchmark.md`). The benchmark deletes each
+query after its run. Fix: Phase 7.7 (stream results, evict idle cursors), e.g. a cap on stored results by size.
 
 ## Found by the legacy-test triage (Phase 3, stream I; see [IGNORED_TESTS.md](IGNORED_TESTS.md))
 
@@ -269,6 +284,14 @@ Found when A3 made them reachable (static reading, not run against the stack):
   behave like `/cypher/run` and `/v1/run` (which is itself broken, A9).
 A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
 chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
+
+### A11 — After the clock steps back, every request fails for as long as the step · open
+Every request gets an id from a Snowflake generator (`SnowflakeRequestIdSupplier`, library
+`com.github.cnsvili:snowflake` 1.0.1). When the system clock moves backwards, the generator refuses to issue ids
+until the clock catches up, so every request fails with HTTP 500 `Clock moved backwards. Refusing for N seconds`.
+Seen during the benchmark (`docs/benchmark.md`): the Docker VM's clock stepped back about 50 seconds and every query
+failed for 47 seconds. NTP corrections and VM or laptop sleep cause such steps. Fix: wait or reuse the last timestamp
+for small steps, or take the request id from a source that doesn't depend on the wall clock.
 
 ### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends

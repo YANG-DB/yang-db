@@ -1,0 +1,496 @@
+{
+ "meta": {
+  "label": "v0.8.0 (OpenSearch 1.3.0)",
+  "scale": 10,
+  "runs": 5,
+  "warmup": 1,
+  "stored_docs": 426793,
+  "git": "cca8edbc4",
+  "date": "2026-11-25T04:33:20+00:00"
+ },
+ "queries": {
+  "Q1": {
+   "p50_ms": 274.5,
+   "p95_ms": 362.4,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "Q2a": {
+   "p50_ms": 724.3,
+   "p95_ms": 748.5,
+   "ops": {
+    "query": 24,
+    "fetch": 12,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 48,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4750
+   }
+  },
+  "Q2": {
+   "p50_ms": 356.4,
+   "p95_ms": 416.5,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 990,
+    "relationships": 3490
+   }
+  },
+  "Q3": {
+   "p50_ms": 52.6,
+   "p95_ms": 119.1,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q4": {
+   "p50_ms": 39.6,
+   "p95_ms": 41.0,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q5": {
+   "p50_ms": 1662.3,
+   "p95_ms": 1720.9,
+   "ops": {
+    "query": 108,
+    "fetch": 30,
+    "scroll": 42,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 180,
+   "rows": {
+    "entities": 5150,
+    "relationships": 24370
+   }
+  },
+  "Q6": {
+   "p50_ms": 484.1,
+   "p95_ms": 520.7,
+   "ops": {
+    "query": 201,
+    "fetch": 93,
+    "scroll": 99,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 393,
+   "rows": {
+    "entities": 280,
+    "relationships": 730
+   }
+  },
+  "Q7": {
+   "p50_ms": 135.1,
+   "p95_ms": 167.0,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 910,
+    "relationships": 1810
+   }
+  },
+  "Q8": {
+   "p50_ms": 118.3,
+   "p95_ms": 123.6,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 560,
+    "relationships": 1450
+   }
+  },
+  "Q9": {
+   "p50_ms": 2492.2,
+   "p95_ms": 2673.1,
+   "ops": {
+    "query": 408,
+    "fetch": 84,
+    "scroll": 144,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 636,
+   "rows": {
+    "entities": 10000,
+    "relationships": 29640
+   }
+  },
+  "QA": {
+   "p50_ms": 372.1,
+   "p95_ms": 379.4,
+   "ops": {
+    "query": 45,
+    "fetch": 21,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 81,
+   "rows": {
+    "entities": 16230,
+    "relationships": 0
+   }
+  },
+  "QB": {
+   "p50_ms": 250.7,
+   "p95_ms": 276.1,
+   "ops": {
+    "query": 60,
+    "fetch": 6,
+    "scroll": 30,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 96,
+   "rows": {
+    "entities": 11000,
+    "relationships": 0
+   }
+  },
+  "QC": {
+   "p50_ms": 34.1,
+   "p95_ms": 39.6,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1000,
+    "relationships": 0
+   }
+  },
+  "QD": {
+   "p50_ms": 11.9,
+   "p95_ms": 13.5,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10,
+    "relationships": 0
+   }
+  },
+  "QE": {
+   "p50_ms": 165.1,
+   "p95_ms": 167.8,
+   "ops": {
+    "query": 21,
+    "fetch": 12,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 42,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "QF": {
+   "p50_ms": 38.9,
+   "p95_ms": 40.0,
+   "ops": {
+    "query": 30,
+    "fetch": 15,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 60,
+   "rows": {
+    "entities": 150,
+    "relationships": 140
+   }
+  },
+  "QG": {
+   "p50_ms": 628.6,
+   "p95_ms": 686.3,
+   "ops": {
+    "query": 159,
+    "fetch": 72,
+    "scroll": 78,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 309,
+   "rows": {
+    "entities": 1330,
+    "relationships": 1550
+   }
+  },
+  "R1": {
+   "p50_ms": 62.0,
+   "p95_ms": 63.2,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 500,
+    "relationships": 640
+   }
+  },
+  "R2": {
+   "p50_ms": 146.1,
+   "p95_ms": 148.4,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 930,
+    "relationships": 2110
+   }
+  },
+  "R3": {
+   "p50_ms": 254.4,
+   "p95_ms": 259.9,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4030
+   }
+  },
+  "R4": {
+   "p50_ms": 103.4,
+   "p95_ms": 110.3,
+   "ops": {
+    "query": 252,
+    "fetch": 36,
+    "scroll": 126,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 414,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R5": {
+   "p50_ms": 108.5,
+   "p95_ms": 133.1,
+   "ops": {
+    "query": 252,
+    "fetch": 36,
+    "scroll": 126,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 414,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R6": {
+   "p50_ms": 70.4,
+   "p95_ms": 80.5,
+   "ops": {
+    "query": 126,
+    "fetch": 3,
+    "scroll": 123,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 252,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R7": {
+   "p50_ms": 11.2,
+   "p95_ms": 12.3,
+   "ops": {
+    "query": 3,
+    "fetch": 0,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R8": {
+   "p50_ms": 21.2,
+   "p95_ms": 24.6,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 90,
+    "relationships": 80
+   }
+  },
+  "R9": {
+   "p50_ms": 232.6,
+   "p95_ms": 239.5,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 990,
+    "relationships": 3580
+   }
+  },
+  "R10": {
+   "p50_ms": 127.0,
+   "p95_ms": 129.4,
+   "ops": {
+    "query": 42,
+    "fetch": 18,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 78,
+   "rows": {
+    "entities": 880,
+    "relationships": 1520
+   }
+  },
+  "gql:GQ1": {
+   "p50_ms": 161.5,
+   "p95_ms": 162.2,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "gql:GQ2": {
+   "p50_ms": 32.4,
+   "p95_ms": 36.1,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1210,
+    "relationships": 0
+   }
+  },
+  "gql:GQ3": {
+   "p50_ms": 69.3,
+   "p95_ms": 74.8,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "gql:GQ4": {
+   "error": "HTTP 500: [ValidationError{validationErrorType=InvalidFragmentType, queryPath=[person, Own], message=Validation error of type InvalidFragmentType: Fragment cannot be spread here as objects of type Dragon can never be of type Horse @ 'person/Own', locations=[SourceLocation{line=1, column=52}], description='Fra"
+  }
+ }
+}
