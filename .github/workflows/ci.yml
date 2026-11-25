@@ -89,8 +89,10 @@ jobs:
           java-version: '17'
           cache: maven
 
+      # run every module's tests even when some fail, so one run shows everything JDK 17 still trips on;
+      # the summary step below fails the job if any test failed
       - name: mvn clean test on JDK 17
-        run: $MVN clean test
+        run: $MVN clean test -Dmaven.test.failure.ignore=true
 
       - name: Test summary
         if: always()
@@ -103,7 +105,16 @@ jobs:
               t += int(r.get('tests', 0)); f += int(r.get('failures', 0))
               e += int(r.get('errors', 0)); s += int(r.get('skipped', 0))
           print(f"### JDK 17 tests: {t} run, {f} failures, {e} errors, {s} skipped")
+          bad = []
+          for p in glob.glob('**/target/surefire-reports/TEST-*.xml', recursive=True):
+              r = ET.parse(p).getroot()
+              if int(r.get('failures', 0)) + int(r.get('errors', 0)):
+                  bad.append(r.get('name'))
+          if bad:
+              print("\nFailing classes:\n" + "\n".join(f"- `{n}`" for n in sorted(bad)))
+          open('jdk17-failed', 'w').write(str(len(bad)))
           EOF
+          cat jdk17-failed; test "$(cat jdk17-failed)" = 0
 
   docker-e2e:
     name: Docker e2e
