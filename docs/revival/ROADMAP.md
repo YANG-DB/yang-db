@@ -173,7 +173,7 @@ Starts after Phase 4 merges; the remote-client bridge (5.1) can start any time.
   distribution attached by the Release workflow (`.github/workflows/release.yml`), label `opensearch-1.3` for 1.3-line
   fixes. Phase 5 shipped as v0.9.0 from `release/0.9.x` (label `opensearch-2.19`); main moves on to `0.10.0-SNAPSHOT`.
 
-## Bug-fix round 2 ✅ (2026-11-23)
+## Bug-fix round 2 ✅ (2026-11-23; released as **[v0.9.1](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.1)** on 2026-11-24)
 Every open issue in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) fixed, each with a test that failed first: A2, A4–A10, C3, G4,
 M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Four agents in parallel; handoff files
 `agents/bugfix2-*.md`.

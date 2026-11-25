@@ -36,6 +36,14 @@ during long runs and hangs embedded-OpenSearch tests, so run long builds under `
 must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
 `mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
 
+### Note (2026-11-24): v0.9.1 released
+Bug-fix round 2 shipped as **v0.9.1**: main merged into `release/0.9.x` (PR #182, merge commit, poms `0.9.1`), notes
+`docs/releases/v0.9.1.md`, tag `v0.9.1`, marked latest; the Release workflow attaches the download. CI now also runs on
+PRs to `release/**` (#183). Phase 7 (speed and efficiency) is in the ROADMAP (#181). **Next, in order:** Dependabot
+backlog (22 alerts on main), B1, Phase 7.1–7.3 (benchmark, `_source` filtering, plain search for small results), then
+Phase 6. Patch releases: branch from `release/X.Y.x`, merge main (resolve the pom versions to `X.Y.Z`), add
+`docs/releases/vX.Y.Z.md`, PR to `release/X.Y.x` (merge commit), then `gh release create vX.Y.Z --target <merge sha> --latest`.
+
 ### Earlier note (2026-11-23)
 **Phase 5 merged (#169) and released as v0.9.0** (tag on `release/0.9.x`, poms `0.9.0`, notes
 `docs/releases/v0.9.0.md`, label `opensearch-2.19`, distribution attached by the Release workflow). Main is now
