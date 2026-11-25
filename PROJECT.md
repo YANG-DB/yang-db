@@ -32,7 +32,7 @@ graph database.
 
 | | |
 |---|---|
-| Java | **JDK 11** for building, testing and running (the code compiles to Java 11; CI and the Docker image use Temurin/OpenJDK 11). Newer JDKs are Phase 6 of the [roadmap](docs/revival/ROADMAP.md) |
+| Java | **JDK 11** for building, testing and running (the code compiles to Java 11; CI and the Docker image use Temurin/OpenJDK 11). The build and tests also pass on **JDK 17**, which CI checks on every pull request; running the engine on 17 is not tested yet. JDK 21 is Phase 6 of the [roadmap](docs/revival/ROADMAP.md) |
 | Maven | 3.6 or later (CI uses 3.9) |
 | OpenSearch | **2.19.x** for 0.9 and `main`; 1.3 for the 0.8 line. See [Limitations](#limitations) |
 | Docker | with `docker compose`, for the quickstart |

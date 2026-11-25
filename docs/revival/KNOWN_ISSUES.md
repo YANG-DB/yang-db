@@ -281,13 +281,13 @@ success/failure lists, which reads like "0 of 0 loaded".
 
 ## JDK
 
-### J1 — On JDK 17 the build stops at fuse-core: reflective class definition is blocked · open
-With the `MaxPermSize` flag gone, the JDK 17 CI job (informational) builds and tests the first modules, then
-`OWLOntologyTranslatorTest` fails in `setUp` with `InaccessibleObjectException: Unable to make protected final
-java.lang.Class java.lang.ClassLoader.defineClass(...)`: a library on the OWL translation path defines classes through
-reflection (the cglib technique), which JDK 17's strong encapsulation forbids by default. The modules after fuse-core
-aren't reached. Fix in Phase 6 (JDK 21): newer libraries, or `--add-opens java.base/java.lang=ALL-UNNAMED` for the tests
-and the start script.
+### J1 — On JDK 17 the tests stopped at fuse-core: reflective access is blocked · **fixed** (tests)
+JDK 17 refused the reflection that older libraries use: first `ClassLoader.defineClass` (cglib, on the OWL
+translation path, in fuse-core), then `java.util.regex.Pattern.namedGroups` (47 planner tests in fuse-dv-epb). Fixed
+for the tests: the root pom's `test.jvm.opens` opens `java.lang`, `java.lang.reflect`, `java.util`, `java.util.regex`,
+`java.io`, `java.nio` and `sun.nio.ch` to the test JVMs (JDK 11 accepts the same flags). The JDK 17 CI job now passes:
+1,271 tests, 0 failures. Still open: running the engine on JDK 17 is not tested (the start script and the Docker image
+use JDK 11); it would need the same `--add-opens` (Phase 6).
 
 ## Test infrastructure
 
