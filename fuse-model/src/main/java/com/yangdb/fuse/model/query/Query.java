@@ -54,6 +54,7 @@ import com.yangdb.fuse.model.asgQuery.IQuery;
 import com.yangdb.fuse.model.query.entity.EConcrete;
 import com.yangdb.fuse.model.query.entity.EEntityBase;
 import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.entity.EUntyped;
 import com.yangdb.fuse.model.query.properties.EProp;
 import com.yangdb.fuse.model.query.properties.EPropGroup;
 import com.yangdb.fuse.model.query.properties.RelProp;
@@ -190,6 +191,14 @@ public class Query implements IQuery<EBase> {
         public Builder eType(String type, String tag) {
             populateNext();
             getElements().add(new Wrapper<>(new ETyped(sequence.get(), tag, type, 0), current()));
+            currentIndex = sequence.get();
+            return this;
+        }
+
+        /** an entity of any of the given types */
+        public Builder unTyped(Set<String> types, String tag) {
+            populateNext();
+            getElements().add(new Wrapper<>(new EUntyped(sequence.get(), tag, types, 0, 0), current()));
             currentIndex = sequence.get();
             return this;
         }

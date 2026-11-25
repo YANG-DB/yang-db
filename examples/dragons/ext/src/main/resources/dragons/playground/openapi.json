@@ -265,6 +265,22 @@
                 "x-known": [
                   "Q12"
                 ]
+              },
+              "R9": {
+                "summary": "R9 - Two count conditions on one relationship (AND)",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) > 15 AND count(k) < 17 return *",
+                "x-doc": "regression (C3)",
+                "x-known": [
+                  "C3"
+                ]
+              },
+              "R10": {
+                "summary": "R10 - Count conditions joined with OR",
+                "value": "Match (p1:Person)-[k:Know]->(p2:Person) WHERE count(k) < 5 OR count(k) > 20 return *",
+                "x-doc": "regression (C3)",
+                "x-known": [
+                  "C3"
+                ]
               }
             }
           },
@@ -340,7 +356,13 @@
               },
               "GQ3": {
                 "summary": "GQ3 - People and the dragons they own",
-                "value": "{ person { name Own { name } } }",
+                "value": "{ person { name Own { ... on Dragon { name } } } }",
+                "x-doc": "query-the-data.md",
+                "x-known": []
+              },
+              "GQ4": {
+                "summary": "GQ4 - People and everything they own (dragons and horses)",
+                "value": "{ person { name Own { name ... on Dragon { color } ... on Horse { weight } } } }",
                 "x-doc": "query-the-data.md",
                 "x-known": []
               }

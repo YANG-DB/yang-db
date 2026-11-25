@@ -15,6 +15,10 @@ Please note we have a code of conduct, please follow it in all your interactions
    The root `README.MD` is the maintainer's GitHub profile page, not project documentation.
 4. A maintainer will review and merge.
 
+## Before you change engine code
+Read the [architecture tutorial](docs/tutorial/architecture/README.md). It describes every module and follows a query
+through the whole pipeline, with the classes to read for each stage.
+
 ## Writing an extension
 
 You can add query languages, REST routes and Guice bindings to YANG-DB from your own jar, without editing core and
@@ -60,7 +64,8 @@ language is then available through the generic routes:
   the request body)
 
 The name is matched exactly first, then ignoring case. An unknown name gets a 404 that lists the available languages.
-The built-in languages are registered the same way under `cypher` and `sparkQL` (`CreateQueryRequestMetadata.TYPE_*`);
+The built-in languages are registered the same way under `cypher` and `sparql` (`CreateQueryRequestMetadata.TYPE_*`;
+`sparql` also answers to its old name, `sparkQL`);
 their original URLs (`/fuse/query/cypher/run` etc.) still work. `graphQL` is an extension (`extensions/graphql`) and
 registers the same way. Registering a name twice fails at startup.
 
@@ -80,6 +85,16 @@ itself when its class is listed under `modules.<profile>` in the application con
 
 ```java
 package com.example.hello;
+
+import com.google.inject.Module;
+import com.yangdb.fuse.dispatcher.query.QueryTransformer;
+import com.yangdb.fuse.extension.QueryLanguages;
+import com.yangdb.fuse.extension.YangDbExtension;
+import com.yangdb.fuse.model.asgQuery.AsgQuery;
+import com.yangdb.fuse.model.query.QueryInfo;
+import com.yangdb.fuse.services.appRegistrars.AppRegistrar;
+
+import java.util.List;
 
 public class HelloExtension implements YangDbExtension {
     @Override
@@ -192,3 +207,5 @@ Every pull request to `main` runs two checks ([.github/workflows/ci.yml](.github
   ([docker/e2e](docker/e2e/README.md)).
 
 Both must be green before merging. To reproduce the e2e check locally, see [docker/e2e/README.md](docker/e2e/README.md).
+CodeQL security scanning ([.github/workflows/codeql.yml](.github/workflows/codeql.yml)) runs after every merge to
+`main` and weekly, not on pull requests.

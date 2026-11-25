@@ -1,6 +1,6 @@
 ## Create an Ontology
 
-Since we completed the installation phase (see installation documentation) we can create our
+Once YANG-DB and OpenSearch are running (see Step 1 of the [tutorial's main page](README.md)) we can create our
 First graph ontology for the Dragons scenario.
 
 Lets review the main entities for HBO's Game of Thrones:
@@ -80,18 +80,20 @@ entire picture simple and clear to unfamiliar people ...
 
       
 ### Ontology File
-This ontology is represented in YANG-DB using a json file which is present under the ontology folder (Dragons.json)
+This ontology is represented in YANG-DB using a json file which is present under the ontology folder
+([Dragons.json](../../../../distribution/resources/assembly/Dragons/ontology/Dragons.json))
 
-New ontologies can be added freely using the REST API: http://localhost:8888/swagger#/operations/catalog/post_catalog_ontology 
+New ontologies can be added freely using the REST API: http://localhost:8888/swagger#/catalog/post_catalog_ontology 
 
-We will focus on the creation of new ontologies in another tutorial. With curl, registering the Dragons ontology is:
+We will focus on the creation of new ontologies in another tutorial. With curl, from the repository root, registering the Dragons ontology is:
 ```bash
-curl -X POST -H 'Content-Type: application/json' --data-binary @Dragons.json http://localhost:8888/fuse/catalog/ontology
+curl -X POST -H 'Content-Type: application/json' \
+  --data-binary @distribution/resources/assembly/Dragons/ontology/Dragons.json http://localhost:8888/fuse/catalog/ontology
 ```
 
 ##### Visualize
 If you would like to visualize the logical ontology - a special REST API exits just for that...
-http://localhost:8888/swagger#/operations/catalog/get_catalog_ontology__id__visualize 
+http://localhost:8888/swagger#/catalog/get_catalog_ontology__id__visualize 
 
 The next svg file (result of the visualization API call) visualize our Dragons ontology structure:
 ![ontology](img/illustrateGraphDragonsOntology.svg)
@@ -101,13 +103,14 @@ The next svg file (result of the visualization API call) visualize our Dragons o
 Since we have a logical file representing the ontology - we would like to make use of it to generate the appropriate
 OpenSearch index templates and actual indexes so that we can upload the graph data.
 
-This part is done using the next REST API : http://localhost:8888/swagger#/operations/init/get_load_ontology__id__init
+This part is done using the next REST API : http://localhost:8888/swagger#/init/get_load_ontology__id__init
 
 The full sequence on a fresh stack, which [docker/e2e/load_tutorial.py](../../../../docker/e2e/load_tutorial.py) runs
-for you:
+for you (from the repository root):
 ```bash
 curl 'http://localhost:8888/fuse/idgen/init?names=Entity,Relation,Evalue,Rvalue,workerId'   # id generator, once
-curl -X POST -H 'Content-Type: application/json' --data-binary @Dragons.json http://localhost:8888/fuse/catalog/ontology
+curl -X POST -H 'Content-Type: application/json' \
+  --data-binary @distribution/resources/assembly/Dragons/ontology/Dragons.json http://localhost:8888/fuse/catalog/ontology
 curl http://localhost:8888/fuse/load/ontology/Dragons/init                                  # templates + indexes
 ```
 

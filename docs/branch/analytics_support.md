@@ -1,3 +1,6 @@
+> Status: design note for a feature branch (Elasticsearch era); not implemented. YANG-DB has no transform /
+> materialized-analytics support.
+
 Abstract: 
 
 The purpose of this branch is to integrate the E/S transformer API into yandDb offering advance analytics 

@@ -43,11 +43,15 @@ package com.yangdb.fuse.model.resourceInfo;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Created by lior.perry on 08/03/2017.
+ * <p>
+ * {@code elasticQueryUrl} is no longer advertised (see {@link QueryResourceInfo}); it is still accepted when reading.
  */
+@JsonIgnoreProperties({"elasticQueryUrl"})
 public class PageResourceInfo extends ResourceInfoBase{
     //region Constructor
     public PageResourceInfo() {}
@@ -73,7 +77,6 @@ public class PageResourceInfo extends ResourceInfoBase{
         super(resourceUrl,resourceId);
         this.executionTime = executionTime;
         this.dataUrl = this.getResourceUrl() + "/data";
-        this.elasticQueryUrl = resourceUrl +"/elastic";
         this.requestedPageSize = requestedPageSize;
         this.actualPageSize = actualPageSize;
         this.isAvailable = isAvailable;
@@ -116,8 +119,6 @@ public class PageResourceInfo extends ResourceInfoBase{
         isAvailable = available;
     }
 
-    public String getElasticQueryUrl() { return elasticQueryUrl; }
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Object getData() {
         return data;
@@ -136,6 +137,5 @@ public class PageResourceInfo extends ResourceInfoBase{
     private int actualPageSize;
     private boolean isAvailable;
     private Object data;
-    private String elasticQueryUrl;
     //endregion
 }

@@ -14,9 +14,10 @@ python3 docker/e2e/doc_queries.py --load --reset               # load the tutori
   counts with the CSV row counts. `--reset` drops the Dragons indices first (`INSERT` rejects ids that already exist,
   so a reload needs it). Run it on its own to just load the data.
 - `doc_queries.py` computes each query's expected result from the documents **stored in OpenSearch** (not from the
-  CSVs), runs the query through `/fuse/query/cypher/run`, and compares entity ids per type and distinct relationship
-  ids. It also checks the cursor types (`count`, `graph`, `csv`, `forwardPaths`, `projection`). Without `--load` it
-  runs against whatever data is loaded. `--only Q2 QE` runs a subset.
+  CSVs), runs the query through `/fuse/query/cypher/run` (the GraphQL examples through `/fuse/query/graphQL/run`), and
+  compares the number of distinct entity ids per type and of distinct relationship ids. It also checks the cursor types
+  (`count`, `graph`, `csv`, `forwardPaths`, `projection`; the `projection` check writes into the `projection` index).
+  Without `--load` it runs against whatever data is loaded. `--only Q2 QE` runs a subset.
 
 Output per query: `PASS`, `FAIL` or `ERROR`. A failure caused by an open issue in
 [KNOWN_ISSUES.md](../../docs/revival/KNOWN_ISSUES.md) prints the issue ids, e.g. `FAIL (known: Q1, Q4)`.
@@ -44,8 +45,9 @@ Only mark a commit when the running image was built from it.
 The list of queries is **not** in this folder: `doc_queries.py` reads it from the Dragons playground spec,
 [examples/dragons/ext/src/main/resources/dragons/playground/openapi.json](../../examples/dragons/ext/src/main/resources/dragons/playground/openapi.json)
 (the examples of the `cypher` parameter, each with `x-doc` and `x-known`). Every query offered at `/dragons/swagger` is
-therefore verified here. With `--load`, the suite also checks the playground: the page, the spec, and that
+therefore verified here. The suite also checks that the playground page and spec respond, and with `--load` that
 `POST /fuse/dragons/tutorial/load` reloads exactly the tutorial data.
 
 When a query is added or changed in the docs, update the spec's examples and `expectations()` in `doc_queries.py` to match.
-Only `--reset` deletes data: it drops the Dragons indices of the stack you point it at.
+Only `--load` deletes data: with `--reset` it drops the Dragons indices before loading, and its playground check
+(`POST /fuse/dragons/tutorial/load?reset=true`) drops and reloads them again at the end, on the stack you point it at.

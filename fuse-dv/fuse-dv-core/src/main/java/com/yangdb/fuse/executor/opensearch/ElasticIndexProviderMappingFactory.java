@@ -173,7 +173,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                         String unifiedName = relation.getProps().getValues().isEmpty() ? label : relation.getProps().getValues().get(0);
                         ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                        List<String> patterns = new ArrayList<>(Arrays.asList(r.getName().toLowerCase(), label, r.getName(), String.format("%s%s", v, "*")));
+                        //only the unified index itself: a type's bare name would match unrelated indices
+                        List<String> patterns = Collections.singletonList(String.format("%s%s", v, "*"));
                         if (Objects.isNull(request.request().patterns())) {
                             request.setPatterns(new ArrayList<>(patterns));
                         } else {
@@ -191,6 +192,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                             request.setMapping(generateRelationMapping(ontology, r, relation, unifiedName));
                         } else {
                             populateProperty(ontology, relation, request.getMappingsProperties(), r);
+                            //the relation-only fields (shared by every relation of the unified index)
+                            populateRelationSides(ontology, r, request.getMappingsProperties());
                         }
                     });
                     break;
@@ -341,7 +344,8 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
                                     String unifiedName = entity.getProps().getValues().isEmpty() ? label : entity.getProps().getValues().get(0);
                                     ESPutIndexTemplateRequestBuilder request = requests.computeIfAbsent(unifiedName, s -> new ESPutIndexTemplateRequestBuilder(client, PutIndexTemplateAction.INSTANCE, unifiedName));
 
-                                    List<String> patterns = new ArrayList<>(Arrays.asList(e.getName().toLowerCase(), label, e.getName(), String.format("%s%s", v, "*")));
+                                    //only the unified index itself: a type's bare name would match unrelated indices
+                                    List<String> patterns = Collections.singletonList(String.format("%s%s", v, "*"));
                                     if (Objects.isNull(request.request().patterns())) {
                                         request.setPatterns(new ArrayList<>(patterns));
                                     } else {
@@ -476,12 +480,7 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         //populate fields & metadata
         relation.get().getMetadata().forEach(v -> properties.put(v, parseType(ontology, ontology.property$(v).getType())));
         relation.get().getProperties().forEach(v -> properties.put(v, parseType(ontology, ontology.property$(v).getType())));
-        //set direction
-        properties.put(DIRECTION, parseType(ontology, "string"));
-        //populate  sideA (entityA)
-        populateRedundand(ontology, ENTITY_A, relationshipType.getName(), properties);
-        //populate  sideB (entityB)
-        populateRedundand(ontology, ENTITY_B, relationshipType.getName(), properties);
+        populateRelationSides(ontology, relationshipType, properties);
         //populate nested documents
         rel.getNested().forEach(nest -> generateNestedRelationMapping(ontology, properties, nest));
 
@@ -548,11 +547,26 @@ public class ElasticIndexProviderMappingFactory implements OntologyIndexGenerato
         return mapping;
     }
 
+    /**
+     * the fields every relation document has: its direction and both sides (id, type and the redundant fields)
+     */
+    private void populateRelationSides(Ontology.Accessor ontology, RelationshipType relationshipType, Map<String, Object> properties) {
+        //set direction
+        properties.put(DIRECTION, parseType(ontology, "string"));
+        //populate  sideA (entityA)
+        populateRedundand(ontology, ENTITY_A, relationshipType.getName(), properties);
+        //populate  sideB (entityB)
+        populateRedundand(ontology, ENTITY_B, relationshipType.getName(), properties);
+    }
+
+    /**
+     * add a side's fields to the side object - merged into an existing one, since in a unified index all relations
+     * share the side objects and each adds its own redundant fields
+     */
+    @SuppressWarnings("unchecked")
     private void populateRedundand(Ontology.Accessor ontology, String side, String label, Map<String, Object> properties) {
-        HashMap<String, Object> sideProperties = new HashMap<>();
-        properties.put(side, sideProperties);
-        HashMap<String, Object> values = new HashMap<>();
-        sideProperties.put(PROPERTIES, values);
+        Map<String, Object> sideProperties = (Map<String, Object>) properties.computeIfAbsent(side, k -> new HashMap<String, Object>());
+        Map<String, Object> values = (Map<String, Object>) sideProperties.computeIfAbsent(PROPERTIES, k -> new HashMap<String, Object>());
 
         //add side ID
         values.put(ID, parseType(ontology, ontology.property$(ID).getType()));

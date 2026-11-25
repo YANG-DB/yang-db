@@ -27,7 +27,9 @@ public interface CreateQueryRequestMetadata<T> {
     String TYPE_V1QL = "v1";
     String TYPE_CYPHERQL = "cypher";
     String TYPE_GRAPHQL = "graphQL";
-    String TYPE_SPARQL = "sparkQL";
+    String TYPE_SPARQL = "sparql";
+    /** the old name of the sparql language, still accepted (a language alias) */
+    String TYPE_SPARQL_LEGACY = "sparkQL";
 
     boolean isSearchPlan();
 

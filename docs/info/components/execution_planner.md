@@ -1,5 +1,6 @@
+> **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
+
 ## (L)EPB  - Logical Execution Plan Builder
-![](https://media.licdn.com/dms/image/C4E12AQE1OLxgsJvdew/article-inline_image-shrink_1500_2232/0?e=1547683200&v=beta&t=IvcsBixXfakKoY8r3BnvQcr5srbLrYVckW0Veqw1Wjc)
 
 The responsibility of this phase is to transform the logical query into a plan which is cost optimized according to set of predefined statistical parameters collected over the dataset.
 
@@ -17,6 +18,10 @@ The Plan Execution Builder comes with 3 strategies:
 * Cost Based – Cost based plan builder will use regular extenders with an additional cost estimation step.
   * Extenders are more exhaustive then in the former plans to cover as many plans as possible. 
   * Cost estimation will be used to prune costly plans.
+
+Each strategy is a Guice module in fuse-dv-epb (`com.yangdb.fuse.epb.plan.modules`). The shipped Dragons configuration
+uses the cost based `EpbDfsCountBasedRedundantModule`, which estimates plan cost with `CountCostEstimator` (count queries
+against OpenSearch); its extenders come from `plan_extension_strategy_class` (`M1DfsRedundantPlanExtensionStrategy`).
 
 
 The EPB process essentially is constantly growing a logical execution plan using the next components

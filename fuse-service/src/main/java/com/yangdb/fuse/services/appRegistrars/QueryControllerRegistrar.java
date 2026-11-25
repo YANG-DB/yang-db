@@ -187,11 +187,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
             return Results.with(response, response.status().getStatus());
         });
 
-        /** view the elastic query with d3 html*/
-        app.get(appUrlSupplier.resourceUrl(":queryId") + "/elastic/view",
-                req -> Results.redirect("/public/assets/ElasticQueryViewer.html?q=" +
-                        appUrlSupplier.queryStoreUrl() + "/" + req.param(QUERY_ID_KEY).value() + "/elastic"));
-
         /** get the asg query */
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/asg/json", req -> {
             ContentResponse<AsgQuery> response = this.getController(app).getAsg(req.param(QUERY_ID_KEY).value());
@@ -260,7 +255,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         /** create a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1", req -> API.postV1(app, req, this.getController(app)));
 
-        /** create a v1 query */
+        /** run a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1/run", (req, res) -> API.runV1(app, req, res, this.getController(app)));
     }
 
@@ -374,14 +369,19 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         }
 
         public static Result postCypher(Jooby app, final Request req, QueryController controller) throws Exception {
-            return postJsonQuery("postCypher", req, null, controller);
+            // the URL names the language, as on the generic /:lang route
+            return postJsonQuery("postCypher", req, CreateQueryRequestMetadata.TYPE_CYPHERQL, controller);
         }
 
         public static Result postSparql(Jooby app, final Request req, QueryController controller) throws Exception {
-            return postJsonQuery("postSparql", req, null, controller);
+            return postJsonQuery("postSparql", req, CreateQueryRequestMetadata.TYPE_SPARQL, controller);
         }
 
-        public static Result runV1(Jooby app, final Request req, final Response resp, QueryController controller) throws Exception {
+        /**
+         * Runs a stateless V1 query and sends its first page. It sends the response itself: a {@code (req, rsp)}
+         * handler's return value is discarded, and Jooby would go on to the generic {@code /:lang/run} route.
+         */
+        public static void runV1(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {
             Route.of("runQuery").write();
 
             Query query = req.body(Query.class);
@@ -393,7 +393,7 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
                     req.param(CURSOR_TYPE_KEY).isSet() ? req.param(CURSOR_TYPE_KEY).value() : getDefaultCursorRequestType()
             );
 
-            return Results.with(response, response.status().getStatus());
+            resp.send(Results.with(response, response.status().getStatus()));
         }
 
         public static void runCypher(Jooby app, final Request req, final Response resp, QueryController controller) throws Throwable {

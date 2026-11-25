@@ -97,6 +97,10 @@ This loads the data and runs every query of this tutorial, comparing each result
 OpenSearch. It also checks the cursor types and the playground. `ALL PASS` means your setup matches the docs.
 Maintainers run the same suite before a release (see [docker/e2e](../../../../docker/e2e/README.md)).
 
+## Next: how it works inside
+To see what happens to a query between the request and the answer, and which module does each part, read the
+[architecture tutorial](../../architecture/README.md). It follows a query from this tutorial through every stage.
+
 ## Troubleshooting
 | Symptom | Fix |
 |---|---|

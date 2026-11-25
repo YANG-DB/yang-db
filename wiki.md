@@ -1,12 +1,16 @@
+> **Note:** this is an old (2019) copy of the project wiki's home page, kept for reference. The live wiki is at
+> https://github.com/YANG-DB/yang-db/wiki and is kept up to date. For how the engine works today, read the
+> [architecture tutorial](docs/tutorial/architecture/README.md); for setup, see [PROJECT.md](PROJECT.md).
+
 ![](https://bytebucket.org/ravatar/%7Bfebcdb99-dbb1-4750-aeb9-f09a1be94b10%7D?ts=2032751)
 
 # YangDb
 YangDb is a graph query engine.
-It is based on elasticsearch as the physical graph storage layer and the tinkerpop graph traversing framework.
+It is based on OpenSearch as the physical graph storage layer and the tinkerpop graph traversing framework.
 
 ## YangDb features
  * Versatile Engine API including query cursor and paging
- * Pattern based graph query language [V1](https://github.com/LiorKogan/V1)
+ * Pattern based graph query language [V1](https://github.com/LiorKogan/V1), plus Cypher, GraphQL and SPARQL
  * Cost based optimizer to enable fast and efficient graph search
  * Customized graph schema definition and enforcement
 
@@ -431,13 +435,13 @@ The process of collecting statistical information about elements of the graph �
 In a non-native graph DB that its storage mechanism is based on a document store.
 The graph elements – both node & edges are stored in a document. we need to calculate the histogram (distribution) for every property in the graph.
 
-In a document store like elasticsearch there is an additional level of abstraction for the document location and partitioning:
+In a document store like OpenSearch (originally Elasticsearch) there is an additional level of abstraction for the document location and partitioning:
 
 * Indices – indicate the “table” (index) that holds all the “records” of a given type
 
 * Shard – The table’s (index) “partition” factor that partitions the data according to some column (mostly time based)
 
-* Mappings – mappings is Elasticsearch’s schema index structure, we use it to label the graph elements with a distinct type (each type can have named properties).
+* Mappings – the index's schema: the named properties of the graph elements stored in it. (OpenSearch 2.x has no mapping *types*, so the element type is a field in the document.)
 
 ### Types of statistical estimators:
 
@@ -927,16 +931,22 @@ The Gremlin graph traversal machine can execute on a single machine or across a 
 
 
 ## System Components
-The project if a maven multi modules project 
+The project is a Maven multi-module build. The main modules:
 
- * **fuse-asg**:  Abstract syntax graph component that transforms logical query to a lower lever logical query
- * **fuse-core**: Todo 
+ * **fuse-model**: the shared data model: ontology, index provider, V1 query, ASG, plans, results
+ * **fuse-core**: contracts and the query lifecycle, ontology providers, schema importers
+ * **fuse-asg**: Cypher and SPARQL → ASG, ASG rewrite and validation
+ * **fuse-dv**: the OpenSearch data view: planner (`epb`), plan → traversal (`gta`), execution (`unipop`, `core`), statistics (`stat`)
+ * **unipop-core**: the TinkerPop graph that runs traversal steps as searches
+ * **fuse-opensearch-client**: the REST bridge to OpenSearch 2.x
+ * **fuse-extension-api** and **extensions/graphql**: the plugin contract, and GraphQL as a plugin
+ * **fuse-service**: the REST server
+ * **fuse-geojson**: GeoJSON support
+ * **fuse-test**: test framework with an embedded OpenSearch node
  * **distribution**: the runnable engine assembly (Dragons sample configuration)
  * **examples/dragons**: the Dragons sample domain (service extension and data generator)
 
- * **fuse-dv**: Todo
- * **fuse-model**: Todo
- * **fuse-test**: Todo
+Each one is explained, with its key classes, in [the modules](docs/tutorial/architecture/modules.md).
 
 
 

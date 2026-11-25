@@ -1,7 +1,6 @@
 package com.yangdb.dragons;
 
 import com.yangdb.dragons.playground.DragonsPlaygroundRegistrar;
-import com.yangdb.dragons.services.DragonsExtensionRegistrar;
 import com.yangdb.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.yangdb.fuse.extension.YangDbExtension;
 import com.yangdb.fuse.services.FuseApp;
@@ -17,15 +16,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** A3: the Dragons routes are registered through the extension SPI, with no config entry and no core package. */
+/**
+ * A3: the Dragons routes are registered through the extension SPI, with no config entry and no core package.
+ * A4: the dead clause routes, {@code /ext} and the duplicates of the core run routes are gone.
+ */
 public class DragonsExtensionTest {
 
     @Test
-    public void theDragonsExtensionIsDiscoveredWithBothRegistrars() {
+    public void theDragonsExtensionIsDiscoveredWithThePlaygroundRegistrar() {
         List<YangDbExtension> dragons = YangDbExtensions.load(getClass().getClassLoader()).stream()
                 .filter(e -> e instanceof DragonsExtension).collect(Collectors.toList());
         Assert.assertEquals(1, dragons.size());
-        Assert.assertEquals(Arrays.asList(DragonsPlaygroundRegistrar.class, DragonsExtensionRegistrar.class),
+        Assert.assertEquals(Collections.singletonList(DragonsPlaygroundRegistrar.class),
                 dragons.get(0).registrars().stream().map(Object::getClass).collect(Collectors.toList()));
     }
 
@@ -36,14 +38,13 @@ public class DragonsExtensionTest {
             routes.add(route.method() + " " + route.pattern());
         }
         for (String route : Arrays.asList(
-                // the playground
-                "GET /dragons/swagger", "GET /dragons/swagger/openapi.json", "POST /fuse/dragons/tutorial/load",
-                // the extension query routes (A3: never registered before)
-                "GET /ext", "POST /fuse/query/clause", "POST /fuse/query/clause/run",
-                "GET /fuse/query/cypher/logical/run", "POST /fuse/query/query/v1/logical/run")) {
+                "GET /dragons/swagger", "GET /dragons/swagger/openapi.json", "POST /fuse/dragons/tutorial/load")) {
             Assert.assertEquals(route + " in " + routes, 1, Collections.frequency(routes, route));
         }
-        // the generic language routes come after them, so /fuse/query/clause(/run) is not taken for a language
-        Assert.assertTrue(routes.indexOf("POST /fuse/query/clause/run") < routes.indexOf("POST /fuse/query/:lang/run"));
+        // A4: the clause language was the removed Knowledge domain's; the logical/run routes duplicated core routes
+        for (String route : Arrays.asList("GET /ext", "POST /fuse/query/clause", "POST /fuse/query/clause/run",
+                "GET /fuse/query/cypher/logical/run", "POST /fuse/query/query/v1/logical/run")) {
+            Assert.assertFalse(route + " in " + routes, routes.contains(route));
+        }
     }
 }

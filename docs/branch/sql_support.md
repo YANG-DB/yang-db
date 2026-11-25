@@ -1,3 +1,6 @@
+> Status: the text below is a copy of [es7_4_2-support.md](es7_4_2-support.md), not a description of SQL support.
+> What exists today is SQL DDL to ontology translation (`POST /fuse/sql/ontology/{id}`); there is no SQL query language.
+
 Abstract: 
 
 The purpose of this branch is to integrate the E/S version 7.4.2 into yandDb 

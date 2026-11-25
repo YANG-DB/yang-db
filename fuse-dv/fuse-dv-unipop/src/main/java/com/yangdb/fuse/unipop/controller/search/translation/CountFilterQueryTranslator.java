@@ -25,7 +25,6 @@ import com.yangdb.fuse.unipop.controller.search.QueryBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.unipop.process.predicate.CountFilterP;
 
-import java.util.Collections;
 
 /**
  *
@@ -76,8 +75,8 @@ public class CountFilterQueryTranslator implements PredicateQueryTranslator {
             //populate count based filter sub aggregation (bucket-filter type in ES semantics)
             AggregationBuilder countFilter = aggregationBuilder.seek(field).countFilter(field);
             countFilter.field(field);
-            countFilter.operator(filterP.getBiPredicate());
-            countFilter.operands(Collections.singletonList(filterP.getValue()));
+            //a further count condition on the same field (count(r) > 15 AND count(r) < 17) adds to the same filter
+            countFilter.countCondition(filterP.getBiPredicate(), filterP.getValue());
         }
 
 

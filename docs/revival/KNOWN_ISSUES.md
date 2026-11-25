@@ -99,17 +99,21 @@ fails with HTTP 500 `None.get`, and with **several** properties only the first i
 `(p:Person {gender: FEMALE, name: 'X'})` applies only the first property; `(:Person {name: 'X'})-[…]` fails with HTTP
 500 `None.get`. The node-pattern sibling of Q10 (found by the bug-fix round's agent K). Pinned by e2e R7/R8.
 
-### Q11 — Relationship property plus an end-pattern filter fails validation · open
+### Q11 — Relationship property plus an end-pattern filter fails validation · **fixed** (bug-fix round 2)
+Fixed: `RelationPatternRangeAsgStrategy` attached the end filter to the quant after the *next* hop's `Rel`; it now uses only a quant directly after the end entity. The ignored range test runs again.
 "No Parent Element found" (`RelationRangeAsgStrategyWithFiltersInRangTest:318`).
 
-### P2 — Range operators on enumerated values crash planner statistics · open
+### P2 — Range operators on enumerated values crash planner statistics · **fixed** (bug-fix round 2)
+Fixed: enum statistics are term histograms keyed by name, but the provider compared the ontology `Value` object; enum values (and inSet/inRange lists) are now compared by name. `SmartEpbRedundancyTests#redundantPropertyPathSelectionTest` runs again.
 `ClassCastException: ontology.Value cannot be cast to Comparable` (`SmartEpbRedundancyTests:262`).
 
-### M1 — Single-index provider never maps relationship fields · open
+### M1 — Single-index provider never maps relationship fields · **fixed** (bug-fix round 2)
+Fixed: a unified index now maps each relation's `direction`, `entityA`/`entityB` and redundant side fields (`populateRelationSides`); redundant fields of several relations are merged, not replaced. The ignored IT runs again.
 `direction`, `entityA`/`entityB` and redundant fields fall to dynamic mapping. Pinned by the ignored test
 `OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingMapsRelationSides` (Phase 3, stream F).
 
-### M2 — Single-index provider's "ontology" template matches every bare type-named index · open
+### M2 — Single-index provider's "ontology" template matches every bare type-named index · **fixed** (bug-fix round 2)
+Fixed: unified templates match only `<index>*`, not every type's bare name. The ignored IT runs again.
 Its index patterns include every type name (`dragon`, `horse`, `own`…), so it merges into unrelated indices with
 those names. This is the "leftover templates break later index creation" trap. Pinned by
 `OpensearchIndexProviderMappingFactoryIT#testGenerateSingleMappingPatternsOnlyMatchUnifiedIndex`.
@@ -137,16 +141,67 @@ Through REST, GraphQL is therefore not usable end to end today. Only the in-proc
 Fixed: the where-clause types are added when a schema defines none of them, concatenated documents import as one,
 and an invalid schema answers 400 with the GraphQL errors. GraphQL now lives in the `extensions/graphql` extension.
 
-### A4 — Dragons clause routes are broken once registered · open
+### A4 — Dragons clause routes are broken once registered · **fixed** (bug-fix round 2)
+Fixed: the clause routes, the clause code in `ExtensionQueryDriver`, the dead `/ext` redirect and the duplicate `cypher/logical/run` / `query/v1/logical/run` routes are removed (maintainer's choice: the clause format belonged to the deleted Knowledge extension). The Dragons extension now contributes only the playground.
 Now that Phase 4 registers them, the clause routes fail (per code reading): no `clause` language is registered,
 `createClause` is never called and its transformer is null, and `/clause/run` sends JSON to `runCypher`. `/ext`
 redirects to a file that doesn't exist.
 
-### A5 — The SPARQL language key is `sparkQL` · open, minor
+### A5 — The SPARQL language key is `sparkQL` · **fixed** (bug-fix round 2)
+Fixed: the language is registered as `sparql` (`TYPE_SPARQL`), with `sparkQL` kept as an alias so existing clients keep working. (The `/fuse/query/sparql/run` URL already answered through the older fixed route; the missing piece was the language name.)
 The generic route `/fuse/query/sparql/run` returns 404 because the registered key is `sparkQL`; the old `/sparql` URL
 works. Register `sparql` as the key (or an alias).
 
-### G4 — GraphQL exposes only the first target type of a multi-target relationship · open
+### A6 — The id generator hands out the same range every time · **fixed** (bug-fix round 2)
+Fixed: the counter document's id is the generator name, written with `if_seq_no`/`if_primary_term` and retried on a version conflict, so ranges are consecutive and never overlap, even with concurrent callers; `init` no longer resets a counter. New `BasicIdGeneratorIT`.
+`BasicIdGenerator.getNextInternal` writes the new counter with `new IndexRequest(getResponse.getId()).index(...)`.
+The document id ends up as the *index name* argument, and `.id(genName)` is never set, so the counter document never
+moves past 1. Confirmed live: two calls to `GET /fuse/idgen?id=demo&numIds=10` both returned `1–11`. The loaders
+don't call it (loaded ids come from the data), but `SnowflakeRequestIdSupplier` uses it for its worker id. Found while
+writing the architecture tutorial.
+
+### A7 — Snowflake worker id uses XOR instead of a power · **fixed** (bug-fix round 2)
+Fixed: `% (1L << 6)`. New `SnowflakeRequestIdSupplierTest`.
+`SnowflakeRequestIdSupplier` computes `workerIdRange.getLower() % (2 ^ 6)`. In Java `^` is XOR, so this is `% 4`, not
+`% 64`. Combined with A6, every node gets worker id 1.
+
+### A8 — The `elastic/view` links answer 404 · **fixed** (bug-fix round 2)
+Fixed: the service never keeps a query's OpenSearch requests, so there is nothing to show: the `elastic/view` routes and `elasticQueryUrl` are removed. Use the search slow log (architecture tutorial).
+`/fuse/query/:id/elastic/view` and `…/page/:pageId/elastic/view` redirect to a viewer that loads `/fuse/query/:id/elastic`
+and `…/page/:pageId/elastic`, and neither route exists. The query resource also advertises an `elasticQueryUrl` that
+returns 404. To see the OpenSearch requests, use the search slow log (see the
+[architecture tutorial](../tutorial/architecture/query-lifecycle.md#watch-it-yourself)).
+
+### A9 — `POST /fuse/query/v1/run` answers 404 · **fixed** (bug-fix round 2)
+Fixed: the handler sends its own response, like `/cypher/run`. New `QueryRoutesTest`.
+`QueryControllerRegistrar.v1Context` registers `/v1/run` as `(req, res) -> API.runV1(...)` and discards the `Result`
+it returns. The query runs, but Jooby then falls through to the generic `/fuse/query/:lang/run` route, which answers
+`404 No query language 'v1'`. Confirmed live with a valid V1 query. `POST /fuse/query/v1` (create) and the
+`/v1/plan`, `/v1/traversal` and `/v1/validate` routes work. Found during the documentation review.
+
+### A10 — `POST /fuse/query/cypher` needs `"type": "cypher"` in the body · **fixed** (bug-fix round 2)
+Fixed: `/cypher` and `/sparql` take the language from the URL.
+The route passes no language to `postJsonQuery`, so a body without `"type"` fails with
+`No matching json query translator found for type null`. The language is already known from the URL. The
+`/fuse/query/cypher/run` route and the generic `/fuse/query/:lang` routes don't have this problem.
+
+### T3 — The index-provider test suite wipes a running OpenSearch · **fixed** (bug-fix round 2)
+Fixed: `TestSuiteIndexProviderSuite` reused any OpenSearch answering on the test port (9200 by default) and its tests
+drop and recreate indices, so running it next to the Docker quickstart deleted the Dragons data (it happened during the
+round). It now refuses with a clear message unless `-Dfuse.test.reuse_cluster=true`; run ITs on free ports with
+`-Dfuse.test.http.port` / `-Dfuse.test.transport.port`.
+
+### B1 — Tests fail when run against the packaged `fuse-core` jar · open
+`fuse-core` is built as a shaded jar that bundles Lucene, OpenSearch, TinkerPop and log4j, among others. With that jar
+on the classpath, as `mvn install` does when it runs a downstream module's tests, OpenSearch's
+`SearchRequestContext` can't create its logger (`LogManager.getLogger()`: "No class provided, and an appropriate one
+cannot be found"), and the fuse-dv-unipop tests error. `mvn test` (what CI runs) and `-pl X -am test` compile against
+the class folders and pass. Main has the same problem; found during bug-fix round 2. Likely fix: stop shading
+`fuse-core`, or exclude the log4j and OpenSearch classes from the shade. Until then, verify with `mvn test` and
+build the distribution with `-DskipTests`.
+
+### G4 — GraphQL exposes only the first target type of a multi-target relationship · **fixed** (bug-fix round 2)
+Fixed: a relationship to several types becomes an abstract GraphQL type `<sideA>_<rel>` (an interface with the shared fields, or a union); `... on Dragon` narrows it, and a query over several types translates to an untyped end with those types. Behaviour change: `{ person { Own { name } } }` now returns dragons and horses; a field only one type has needs a fragment. New GQ4 example.
 `Own` (Person → Dragon, Horse) shows only one target type in the generated GraphQL schema (Phase 4 stage B).
 
 ### G5 — Behaviour change: GraphQL queries always use the schema generated from the ontology · note
@@ -154,7 +209,8 @@ Since G1's fix, a query runs against the schema generated from its ontology. Cus
 (e.g. StarWars `hero`) are no longer available; the per-entity-type roots (`human`, `droid`) are. Revisit if anyone
 relies on custom roots.
 
-### Q13 — `QueryToAsgTransformer` keeps state across queries · open, check other users
+### Q13 — `QueryToAsgTransformer` keeps state across queries · **fixed** (bug-fix round 2)
+Fixed: the element map is created per call, and the ASG gets a copy. It was a leak for every language (the transformer is an eager singleton), not only GraphQL. New `QueryToAsgTransformerTest`.
 It kept every element it ever transformed, so one query's elements leaked into the next. The GraphQL translator now
 creates a fresh one per query (Phase 4); other users of the class were not checked.
 
@@ -167,7 +223,8 @@ the docs) are correct. A second cause, for `=` / `<>`: the Cypher translator rou
 equality, so no count filter was built at all (fixed: `CountExpression` now owns `=`/`<>` on `count(...)`). Fixed: `==`, `>=`, and `!=` (which produced an uncompilable `a120`). An unknown operator now
 throws. Pinned by e2e R1/R2.
 
-### C3 — Two count conditions on the same relationship give wrong results · open
+### C3 — Two count conditions on the same relationship give wrong results · **fixed** (bug-fix round 2)
+Fixed: each count condition nested a new, never-built count filter inside the first; conditions on the same field are now combined in one filter script (`a>15&&a<17`). `OR` works too: the translator splits it into branches, each with its own condition. Checked live: AND 4 persons, OR 48, matching the data. e2e R9/R10.
 `WHERE count(k) > 15 AND count(k) < 17` returns 99 persons and 358 relationships; the data has 4 start persons with
 exactly 16 (found live during the bug-fix round). A single count condition works. Not investigated yet.
 
@@ -198,7 +255,8 @@ declares `com.yangdb.dragons.DragonsExtension` in `META-INF/services/com.yangdb.
 registers it and the playground (moved to `com.yangdb.dragons.playground`). `DragonsExtensionTest` checks every route
 is in the service's route table exactly once. What those routes do once reachable is A4.
 
-### A4 — Dragons extension query routes: clause routes broken, `/ext` dead · open
+### A4 — Dragons extension query routes: clause routes broken, `/ext` dead · **fixed** (bug-fix round 2)
+Fixed: the clause routes, the clause code in `ExtensionQueryDriver`, the dead `/ext` redirect and the duplicate `cypher/logical/run` / `query/v1/logical/run` routes are removed (maintainer's choice: the clause format belonged to the deleted Knowledge extension). The Dragons extension now contributes only the playground.
 Found when A3 made them reachable (static reading, not run against the stack):
 - `POST /fuse/query/clause` passes the body's `queryType` (`clause`) to the standard create path; no `clause` language
   is registered, so it fails with "No Query translator found". `ExtensionQueryDriver.createClause` handles `clause` but
@@ -206,7 +264,7 @@ Found when A3 made them reachable (static reading, not run against the stack):
 - `POST /fuse/query/clause/run` sends `{"clause": ...}` JSON to `runCypher`, which parses it as cypher.
 - `GET /ext` redirects to `/public/assets/swagger/swagger-ext.json`, which doesn't exist.
 - `GET /fuse/query/cypher/logical/run` and `POST /fuse/query/query/v1/logical/run` reuse the core run handlers and
-  behave like `/cypher/run` and `/v1/run`.
+  behave like `/cypher/run` and `/v1/run` (which is itself broken, A9).
 A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
 chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
 
@@ -214,7 +272,8 @@ chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/ru
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends
 `Accept: application/json`.
 
-### A2 — Whole-file load failure easy to miss · open, minor
+### A2 — Whole-file load failure easy to miss · **fixed** (bug-fix round 2)
+Fixed: a whole-file failure is returned as a load response with one failure carrying the reason, and the load routes answer with that status (400) instead of 200.
 When a whole CSV fails (e.g. Fire/Freeze before L2), the response carries a top-level `error` with empty
 success/failure lists, which reads like "0 of 0 loaded".
 
