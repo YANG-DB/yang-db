@@ -87,7 +87,13 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.4.0</version>
+            <version>2.10.0</version>
+        </dependency>
+        <!-- JSONArray (the JsonPath results); json-path 2.10 only brings json-smart at runtime -->
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.6.1</version>
         </dependency>
 
         <!--Tests-->
