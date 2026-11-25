@@ -36,6 +36,20 @@ during long runs and hangs embedded-OpenSearch tests, so run long builds under `
 must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
 `mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
 
+### Note (2026-11-25): benchmark, community review, published image
+- Phase 7.1 done (#189): `docker/bench/` (bench.py, scale_data.py, compare_versions.sh), results in
+  `docs/benchmark.md` (v0.8.0 on OpenSearch 1.3 vs v0.9.0 / v0.9.1 / main on 2.19.7, scale 1 and 10). CI's e2e job
+  runs it and fails on >10% more OpenSearch ops than `docker/bench/baseline.json`; update the baseline when a change
+  makes queries cheaper. New issues found: L5 (one bulk per CSV), Q14 (queries in memory until TTL), A11 (clock step).
+- Community review of v0.9.1 addressed (#190; `docs/revival/COMMUNITY_REVIEW.md`): JDK 11 documented as the one JDK,
+  compiler targets 11, MaxPermSize gone, test JVMs get `test.jvm.opens` so **CI also builds and tests on JDK 17**
+  (1,271 tests, 0 failures; J1), every `@Ignore` must give a reason (`.github/scripts/ignored_tests.py`, in CI),
+  PROJECT.md has Requirements and Limitations. README.MD (the maintainer's profile) got one pointer line (#191).
+- The Release workflow now also publishes `ghcr.io/yang-db/yang.db:<version>` (amd64 + arm64; `latest` only for the
+  latest release). Dispatched for v0.9.1: public, and `docker/e2e/doc_queries.py --load --reset` passes against it.
+- Next: Phase 7.2 (`_source` filtering) and 7.3 (plain search for small results), measured with the benchmark; then
+  Phase 6. Open question for the maintainer: archive `YANG-DB/knowledge-graph`?
+
 ### Note (2026-11-24): Dependabot cleared, B1 fixed
 Dependabot: 20 alerts fixed by #187 (logback 1.5 + slf4j 2, guava 33, commons-io/lang3, json-io, org.json, assertj,
 json-path); #1 (Jooby, false positive) and #68 (commons-configuration 1.x, no fix; needs a TinkerPop upgrade) dismissed
