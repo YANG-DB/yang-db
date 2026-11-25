@@ -56,7 +56,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <!-- test JVMs: the packages older libraries reach into by reflection (cglib's ClassLoader.defineClass, netty,
              collections). JDK 11 only warns without them; JDK 17 refuses (J1 in docs/revival/KNOWN_ISSUES.md) -->
-        <test.jvm.opens>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED</test.jvm.opens>
+        <test.jvm.opens>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED</test.jvm.opens>
 
         <project.inceptionYear>2016</project.inceptionYear>
         <project.organization.name>yangdb</project.organization.name>
