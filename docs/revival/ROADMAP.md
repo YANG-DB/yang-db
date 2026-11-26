@@ -228,8 +228,15 @@ Items, in the recommended order:
       documents already returned. Measured: **−50% OpenSearch operations at scale 1, −43% at scale 10**, the same rows,
       latency within noise (Q9 at scale 10 +9%). Found and fixed on the way: A11 (clock steps) and S1 (start-up hang).
       Results: [docs/benchmark.md](../benchmark.md#phase-73-plain-search-for-small-results).
-- [ ] 7.4 **Batch each step's searches with `msearch`**: one round trip per hop instead of one per search; probably the
-      largest single gain on multi-hop queries. *(medium)*
+- [x] 7.4 **Fewer searches per step** (2026-11-26). The plan was one `msearch` per step; the slow log showed that
+      every step already sends one search per bulk (ids in one `terms` query, partitions in one index list) and that
+      steps depend on each other, so `msearch` has little to combine (about 6% of round trips: the planner's paired
+      counts and two far-end searches of a multi-target relationship). The searches multiply with the bulk size
+      (1,000 ids per search). Done instead: **growing bulks**, 1,000 doubling to 10,000 per step execution
+      (`unipop.bulk.start` / `.multiplier` / `.max`; `start` and `multiplier` were in the config but unused).
+      Measured at scale 10: **−33% OpenSearch operations for whole results, −28% and −6% latency for a 100-row first
+      page**, same rows; a fixed 10,000 would have made first pages up to 5× slower.
+      [docs/benchmark.md](../benchmark.md#phase-74-growing-bulks). The remaining `msearch` pairs could join 7.5.
 - [ ] 7.5 **Run independent work concurrently**: `OR` branches and independent searches in parallel (virtual threads
       once Phase 6 moves to JDK 21), so latency is the slowest branch, not the sum. *(medium)*
 - [ ] 7.6 **Statistics-based cost estimates** by default, with live counts as the fallback using

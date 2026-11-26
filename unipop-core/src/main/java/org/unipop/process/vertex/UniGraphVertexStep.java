@@ -71,6 +71,7 @@ import org.unipop.schema.reference.DeferredVertex;
 import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 
+import java.util.function.Supplier;
 import java.util.*;
 
 public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Vertex, E> implements ReceivesPredicatesHolder<Vertex, E>, Orderable, Profiling {
@@ -108,7 +109,8 @@ public class UniGraphVertexStep<E extends Element> extends UniPredicatesStep<Ver
 
     @Override
     protected Iterator<Traverser.Admin<E>> process() {
-        return javaslang.collection.Stream.ofAll(() -> new DistinctBulkIterator<>(starts, (e) -> e.get().id(), this.bulkSizeSupplierFactory))
+        Supplier<Supplier<Integer>> sizes = bulkSizes();
+        return javaslang.collection.Stream.ofAll(() -> new DistinctBulkIterator<>(starts, (e) -> e.get().id(), sizes))
                 .flatMap(bulk -> () -> process(bulk)).iterator();
     }
 

@@ -219,6 +219,10 @@ Each unipop step becomes one OpenSearch search:
 | `UniGraphVertexStep(OUT,edge)` | `DiscreteVertexController` | the `Own` edges of **all** those vertices in one request (`EdgeBulkSearchAppender` puts the batch of ids in one `terms` query) |
 | `UniGraphVertexStep(OUT,[promiseFilter])` | `DiscreteVertexFilterController` | the far-end vertices, filtered by type and fetched by id |
 
+A step reads its input traversers in **bulks** and sends one search per bulk, with all the bulk's ids in one `terms`
+query: 1,000 ids first, doubling up to 10,000 within one execution of the step (`unipop.bulk.start`, `.multiplier`,
+`.max` in `application.conf`), so a small first page stays cheap and large results need few searches.
+
 Each controller builds its search with a chain of **search appenders** (`controller/common/appender/`):
 - `ElementIndexSearchAppender`, `EdgeIndexSearchAppender` and `FilterIndexSearchAppender` choose the indices from the
   physical schema, so only `person`, `own` or `dragon` is searched, not every index.

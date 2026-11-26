@@ -4,6 +4,7 @@
 #
 #   docker/bench/compare_versions.sh <out-dir> <scale> "<label> <opensearch version> <yang.db image tag>" ...
 #   docker/bench/compare_versions.sh /tmp/bench 10 "v0.8.0 1.3.0 v0.8.0" "v0.9.1 2.19.7 v0.9.1" "main 2.19.7 Dragons"
+#   BENCH_ARGS="--page-size 100" docker/bench/compare_versions.sh ...   # extra bench.py options for every run
 #
 # The images must exist locally (docker/buildDocker.sh <tag>, from a checkout of that tag). Every run uses its own
 # compose project with its own volumes, removed afterwards (a 1.3 cluster can't read 2.19 indices). The container names
@@ -30,7 +31,8 @@ for run in "$@"; do
     [ "$i" = 90 ] && { echo "$label did not become healthy"; curl -s -m 5 http://localhost:8888/fuse/health 2>/dev/null | head -c 300 || true; echo; docker logs dragons-graph 2>&1 | grep -v "|-" | tail -20 || true; docker compose -p "$project" -f "$compose" down -v; exit 1; }
     sleep 5
   done
-  python3 "$here/bench.py" --load --scale "$scale" --label "$label (OpenSearch $os)" \
+  # shellcheck disable=SC2086 # BENCH_ARGS: extra bench.py options, e.g. "--page-size 100"
+  python3 "$here/bench.py" --load --scale "$scale" --label "$label (OpenSearch $os)" ${BENCH_ARGS:-} \
     --out "$out/$label-x$scale.json" | tee "$out/$label-x$scale.log" || echo "$label: bench reported problems"
   docker compose -p "$project" -f "$compose" down -v
 done

@@ -49,6 +49,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
 import org.apache.tinkerpop.gremlin.util.iterator.EmptyIterator;
 //import org.unipop.process.traversal.QueueExpandableStepIterator;
+import org.unipop.common.valueSuppliers.GrowingValueSupplierFactory;
 import org.unipop.common.valueSuppliers.CompiledSupplierFactory;
 import org.unipop.process.bulk.BulkIterator;
 import org.unipop.common.valueSuppliers.FixedValueSupplierFactory;
@@ -86,6 +87,10 @@ public abstract class UniBulkStep<S, E> extends AbstractStep<S, E> {
         }
 
         this.bulkSizeSupplierFactory = cachedBulkSizeSupplierFactory;
+        // growing bulks (bulk.start < bulk.max, bulk.multiplier > 1): a new factory per step execution, see process()
+        this.bulkStart = graph.configuration().getInt("bulk.start", maxBulkSize);
+        this.bulkMultiplier = graph.configuration().getInt("bulk.multiplier", 1);
+        this.bulkMax = maxBulkSize;
 
         this.results = EmptyIterator.instance();
 
@@ -118,13 +123,27 @@ public abstract class UniBulkStep<S, E> extends AbstractStep<S, E> {
 
     //region Private Methods
     protected Iterator<Traverser.Admin<E>> process() {
-        return Stream.ofAll(() -> new BulkIterator<>(this.starts, this.bulkSizeSupplierFactory))
+        Supplier<Supplier<Integer>> sizes = bulkSizes();
+        return Stream.ofAll(() -> new BulkIterator<>(this.starts, sizes))
                 .flatMap(bulk -> Stream.ofAll(() -> process(bulk))).iterator();
     }
+    /**
+     * The bulk sizes for one execution of this step: growing from bulk.start by bulk.multiplier up to bulk.max when
+     * configured (a new factory each call, so each execution starts small), otherwise the fixed or decaying sizes.
+     */
+    protected Supplier<Supplier<Integer>> bulkSizes() {
+        return this.bulkStart < this.bulkMax && this.bulkMultiplier > 1
+                ? new GrowingValueSupplierFactory(this.bulkStart, this.bulkMultiplier, this.bulkMax)
+                : this.bulkSizeSupplierFactory;
+    }
+
     //endregion
 
     //region Fields
     protected Supplier<Supplier<Integer>> bulkSizeSupplierFactory;
+    private int bulkStart;
+    private int bulkMultiplier;
+    private int bulkMax;
     protected Iterator<Traverser.Admin<E>> results = null;
 
     protected Profiler profiler;

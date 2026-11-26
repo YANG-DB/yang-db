@@ -30,6 +30,7 @@ from load_tutorial import http  # noqa: E402
 import scale_data  # noqa: E402
 
 OPS = ("query", "fetch", "scroll", "get")
+PAGE_SIZE = 100000  # rows in the first (only) page each run fetches; --page-size
 
 
 def os_ops(os_url):
@@ -59,7 +60,7 @@ def run_query(fuse, language, query, retries=3):
     """doc_queries.run, but waits out an engine that refuses requests after the clock stepped back (A11 in
     KNOWN_ISSUES: releases up to 0.9.1), so older versions can still be measured."""
     for _ in range(retries):
-        got = doc_queries.run(fuse, query, language=language)
+        got = doc_queries.run(fuse, query, language=language, page_size=PAGE_SIZE)
         m = CLOCK_REFUSAL.search(str(got.get("error") or ""))
         if not m:
             return got
@@ -90,7 +91,7 @@ def measure(fuse, os_url, language, query, runs, warmup):
     for _ in range(runs):
         before = os_ops(os_url)
         t0 = time.perf_counter()
-        got = doc_queries.run(fuse, query, language=language)
+        got = doc_queries.run(fuse, query, language=language, page_size=PAGE_SIZE)
         times.append((time.perf_counter() - t0) * 1000)
         after = os_ops(os_url)
         if CLOCK_REFUSAL.search(str(got.get("error") or "")):  # A11: wait it out, then measure this run again
@@ -218,6 +219,8 @@ def main(argv=None):
                    help="with --load: post CSVs in pieces of this many rows (default 20000; whole files fail: L5)")
     p.add_argument("--runs", type=int, default=5, help="measured runs per query (default 5)")
     p.add_argument("--warmup", type=int, default=1, help="unmeasured runs per query first (default 1)")
+    p.add_argument("--page-size", type=int, default=100000,
+                   help="rows per run: the first page only (default 100000: the whole result)")
     p.add_argument("--label", help="a name for this run, kept in the results (e.g. the version)")
     p.add_argument("--report", nargs="+", metavar="RESULTS", help="print a comparison table of these results files")
     p.add_argument("--only", nargs="*", help="run only these query ids")
@@ -226,6 +229,8 @@ def main(argv=None):
     p.add_argument("--write-baseline", help="write the results to this file as the new baseline")
     p.add_argument("--summary", help="append the results table (markdown) to this file, e.g. $GITHUB_STEP_SUMMARY")
     a = p.parse_args(argv)
+    global PAGE_SIZE
+    PAGE_SIZE = a.page_size
     if a.report:
         print(report(a.report))
         return 0
@@ -249,7 +254,7 @@ def main(argv=None):
                                 f"p50 {r['p50_ms']:8.1f} ms  p95 {r['p95_ms']:8.1f} ms  ops {total_ops(r):5}"
                                 + ("" if r["ops_stable"] else " (varied between runs)")))
 
-    out = {"meta": {"label": a.label, "scale": a.scale, "runs": a.runs, "warmup": a.warmup, "stored_docs": stored, "git": git_sha(),
+    out = {"meta": {"label": a.label, "scale": a.scale, "page_size": a.page_size, "runs": a.runs, "warmup": a.warmup, "stored_docs": stored, "git": git_sha(),
                     "date": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")},
            "queries": results}
     md = table(results)

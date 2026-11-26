@@ -157,9 +157,10 @@ def expectations(os_url):
     return exp
 
 
-def run(fuse, query, cursor=None, language="cypher"):
-    """runs a query through GET /query/<language>/run (the query is the <language> parameter)"""
-    params = {language: query, "ontology": "Dragons", "pageSize": "100000"}
+def run(fuse, query, cursor=None, language="cypher", page_size=100000):
+    """runs a query through GET /query/<language>/run (the query is the <language> parameter); the response holds
+    the first page, page_size rows (default: everything)"""
+    params = {language: query, "ontology": "Dragons", "pageSize": str(page_size)}
     if cursor: params["cursorType"] = cursor
     try:
         d = http("GET", f"{fuse}/query/{language}/run?" + urllib.parse.urlencode(params))

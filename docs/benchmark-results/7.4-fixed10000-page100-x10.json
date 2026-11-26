@@ -1,0 +1,510 @@
+{
+ "meta": {
+  "label": "fixed bulk 10000",
+  "scale": 10,
+  "page_size": 100,
+  "runs": 5,
+  "warmup": 1,
+  "stored_docs": 426796,
+  "git": "2501847f9",
+  "date": "2026-11-26T17:23:43+00:00"
+ },
+ "queries": {
+  "Q1": {
+   "p50_ms": 80.1,
+   "p95_ms": 122.3,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "Q2a": {
+   "p50_ms": 123.4,
+   "p95_ms": 218.4,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 42,
+    "relationships": 49
+   }
+  },
+  "Q2": {
+   "p50_ms": 86.6,
+   "p95_ms": 92.4,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 43,
+    "relationships": 67
+   }
+  },
+  "Q3": {
+   "p50_ms": 37.8,
+   "p95_ms": 45.8,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 79,
+    "relationships": 100
+   }
+  },
+  "Q4": {
+   "p50_ms": 30.8,
+   "p95_ms": 34.5,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 79,
+    "relationships": 100
+   }
+  },
+  "Q5": {
+   "p50_ms": 343.4,
+   "p95_ms": 374.0,
+   "ops": {
+    "query": 54,
+    "fetch": 15,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 81,
+   "rows": {
+    "entities": 32,
+    "relationships": 100
+   }
+  },
+  "Q6": {
+   "p50_ms": 503.0,
+   "p95_ms": 533.9,
+   "ops": {
+    "query": 54,
+    "fetch": 39,
+    "scroll": 6,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 99,
+   "rows": {
+    "entities": 49,
+    "relationships": 118
+   }
+  },
+  "Q7": {
+   "p50_ms": 54.6,
+   "p95_ms": 68.0,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 38,
+    "relationships": 100
+   }
+  },
+  "Q8": {
+   "p50_ms": 57.2,
+   "p95_ms": 75.2,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 36,
+    "relationships": 100
+   }
+  },
+  "Q9": {
+   "p50_ms": 1291.9,
+   "p95_ms": 1315.6,
+   "ops": {
+    "query": 162,
+    "fetch": 42,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 216,
+   "rows": {
+    "entities": 99,
+    "relationships": 100
+   }
+  },
+  "QA": {
+   "p50_ms": 38.2,
+   "p95_ms": 65.2,
+   "ops": {
+    "query": 15,
+    "fetch": 15,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 30,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "QB": {
+   "p50_ms": 41.5,
+   "p95_ms": 45.5,
+   "ops": {
+    "query": 15,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "QC": {
+   "p50_ms": 13.6,
+   "p95_ms": 18.9,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "QD": {
+   "p50_ms": 7.9,
+   "p95_ms": 8.5,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 10,
+    "relationships": 0
+   }
+  },
+  "QE": {
+   "p50_ms": 162.8,
+   "p95_ms": 191.8,
+   "ops": {
+    "query": 15,
+    "fetch": 12,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 30,
+   "rows": {
+    "entities": 169,
+    "relationships": 100
+   }
+  },
+  "QF": {
+   "p50_ms": 36.0,
+   "p95_ms": 44.1,
+   "ops": {
+    "query": 15,
+    "fetch": 15,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 30,
+   "rows": {
+    "entities": 150,
+    "relationships": 140
+   }
+  },
+  "QG": {
+   "p50_ms": 427.2,
+   "p95_ms": 430.4,
+   "ops": {
+    "query": 42,
+    "fetch": 27,
+    "scroll": 6,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 75,
+   "rows": {
+    "entities": 71,
+    "relationships": 71
+   }
+  },
+  "R1": {
+   "p50_ms": 29.7,
+   "p95_ms": 30.4,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 75,
+    "relationships": 100
+   }
+  },
+  "R2": {
+   "p50_ms": 43.2,
+   "p95_ms": 54.0,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 33,
+    "relationships": 100
+   }
+  },
+  "R3": {
+   "p50_ms": 56.3,
+   "p95_ms": 66.4,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 29,
+    "relationships": 100
+   }
+  },
+  "R4": {
+   "p50_ms": 72.8,
+   "p95_ms": 75.7,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 27,
+   "rows": {
+    "entities": 176,
+    "relationships": 100
+   }
+  },
+  "R5": {
+   "p50_ms": 82.4,
+   "p95_ms": 97.0,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 27,
+   "rows": {
+    "entities": 176,
+    "relationships": 100
+   }
+  },
+  "R6": {
+   "p50_ms": 63.9,
+   "p95_ms": 69.8,
+   "ops": {
+    "query": 15,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R7": {
+   "p50_ms": 6.4,
+   "p95_ms": 7.4,
+   "ops": {
+    "query": 3,
+    "fetch": 0,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 3,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R8": {
+   "p50_ms": 23.3,
+   "p95_ms": 28.5,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 90,
+    "relationships": 80
+   }
+  },
+  "R9": {
+   "p50_ms": 36.4,
+   "p95_ms": 40.2,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 75,
+    "relationships": 100
+   }
+  },
+  "R10": {
+   "p50_ms": 32.8,
+   "p95_ms": 45.3,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 88,
+    "relationships": 100
+   }
+  },
+  "gql:GQ1": {
+   "p50_ms": 34.7,
+   "p95_ms": 38.8,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "gql:GQ2": {
+   "p50_ms": 17.5,
+   "p95_ms": 20.6,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "gql:GQ3": {
+   "p50_ms": 46.6,
+   "p95_ms": 52.8,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 169,
+    "relationships": 100
+   }
+  },
+  "gql:GQ4": {
+   "p50_ms": 47.5,
+   "p95_ms": 53.8,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 169,
+    "relationships": 100
+   }
+  }
+ }
+}

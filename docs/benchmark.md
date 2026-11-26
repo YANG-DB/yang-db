@@ -246,6 +246,32 @@ scale-1 run.
 | gql:GQ4 | 91.9 | 48 | 85.1 | 24 |
 | **all 31** | **8954** | **3542** | **9024** | **2016** |
 
+## Phase 7.4: growing bulks
+
+Measured 2026-11-26 at scale 10, with the whole result in one page (as above) and with a 100-row first page
+(`bench.py --page-size 100`), which is what a paging client asks for first.
+
+**What the engine sends.** Captured from the search slow log, every step of a query already sends one search, not one
+per id or per index: the previous step's ids go into one `terms` query, and all index partitions into one index list.
+Steps depend on each other (each needs the previous step's ids), so one `msearch` per query has nothing to combine.
+What multiplies the searches on large data is that a step reads its input in **bulks of 1,000 ids** and sends one
+search per bulk: 10,000 dragons make R4 send 10 edge searches.
+
+**Bulk size is a trade-off.** A fixed bulk of 10,000 halves OpenSearch work for whole results, but a 100-row first
+page must then process 10,000 start entities: Q9's first page goes from 0.23 to 1.3 s. A growing bulk (1,000, then
+doubling to 10,000, per step; `unipop.bulk.start`, `.multiplier`, `.max`) keeps the small first bulk and reaches big
+bulks quickly:
+
+| scale 10 | fixed 1,000 (before) | growing 1,000 → 10,000 | fixed 10,000 |
+|---|---:|---:|---:|
+| whole result: OpenSearch operations | 2,040 | **1,374 (−33%)** | 1,053 |
+| whole result: sum of p50 latencies | 9,124 ms | 9,127 ms | 9,216 ms |
+| 100-row page: OpenSearch operations | 1,242 | **900 (−28%)** | 957 |
+| 100-row page: sum of p50 latencies | 2,526 ms | **2,387 ms (−6%)** | 3,930 ms |
+
+Every query returns the same rows with all three. At scale 1 every step's input is under 1,000 ids, so nothing
+changes there. Raw results: `benchmark-results/7.4-*.json`.
+
 ## Rerun it
 
 ```bash
