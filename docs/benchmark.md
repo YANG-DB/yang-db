@@ -16,6 +16,9 @@ between releases and OpenSearch versions. Measured 2026-11-24 with the benchmark
 | Machine | Apple M3 (8 cores, 16 GB), Docker in a colima VM with 4 CPUs and 6 GB. OpenSearch single node, 512 MB heap; YANG-DB 1 GB heap (the quickstart's docker-compose settings) |
 | Versions | each on a fresh cluster with freshly loaded data: **v0.8.0** on OpenSearch **1.3.0** (transport client), **v0.9.0** and **v0.9.1** on **2.19.7** (REST), and **main** at `cca8edbc4` (0.9.1 plus the dependency updates and the fuse-core packaging fix) on 2.19.7 |
 
+Keep the machine awake for the whole run (`caffeinate -dims` on macOS): when it sleeps, the Docker VM's clock stalls
+and then jumps, which stalls Docker's health checks.
+
 Latency depends on the machine and varies by about ±8% between runs of the same build (compare v0.9.1 and main, whose
 query code is the same). OpenSearch ops don't: within a run they are identical on every repetition, and between fresh
 loads only a few queries vary, because the planner can pick a different plan of equal cost.
@@ -56,8 +59,11 @@ The slowest queries at scale 10 are Q9 (2.5 s: every `Fire` relationship between
   rejects the 115,030-row Fire file at scale 10. The benchmark loads in pieces of 20,000 rows.
 - **Queries stay in memory for 5 minutes** (Q14): without deleting them, a few hundred large queries ran the 1 GB
   engine heap out at scale 10. The benchmark deletes each query after its run; clients should too.
-- **A clock step stops the engine** (A11): when the VM's clock stepped back about 50 seconds, every request failed
-  for 47 seconds ("Clock moved backwards"). That run was discarded and repeated.
+- **A clock step stopped the engine** (A11, fixed in 0.10): when the VM's clock stepped back about 50 seconds, every
+  request failed for 47 seconds ("Clock moved backwards"). That run was discarded and repeated. The benchmark now
+  waits such a refusal out when it measures releases up to 0.9.1.
+- **The engine sometimes hung at start-up** (S1, fixed in 0.10): about 1 start in 3, in logback's console setup.
+  Found while measuring Phase 7.3.
 
 Details and fixes in [KNOWN_ISSUES.md](revival/KNOWN_ISSUES.md).
 
@@ -140,6 +146,105 @@ are in [benchmark-results/](benchmark-results/).
 | gql:GQ3 | 69.3 | 36 | 67.1 | 36 | 66.9 | 36 | 63.1 | 36 |
 | gql:GQ4 | error | – | error | – | 103.3 | 48 | 96.7 | 48 |
 | **all 30 queries every version ran** | **9241** | **3483** | **9622** | **3387** | **9562** | **3447** | **9216** | **3495** |
+
+## Phase 7.3: plain search for small results
+
+Measured 2026-11-26, same machine and method as above, `main` before and after the change, each on a fresh cluster.
+
+| | before | 7.3 | change |
+|---|---:|---:|---:|
+| Scale 1: OpenSearch operations | 1,447 | 723 | **−50%** |
+| Scale 1: of which scroll operations | 381 | 12 | |
+| Scale 1: sum of p50 latencies | 1,455 ms | 1,343 ms | −8% |
+| Scale 10: OpenSearch operations | 3,542 | 2,016 | **−43%** |
+| Scale 10: of which scroll operations | 969 | 156 | |
+| Scale 10: sum of p50 latencies | 8,954 ms | 9,024 ms | +1% |
+
+Every query returns the same rows as before, at both scales, and none does more OpenSearch work. What changed: a
+search now starts as a plain search; when the first page isn't full, or OpenSearch's exact hit count fits in it,
+that page is the whole result: no scroll is opened, no empty follow-up request is sent, nothing is cleared (before,
+every search cost a search, an empty scroll request and a clear). Only a search with more hits than one page (10,000)
+continues as a scroll, which leaves out the documents already returned.
+
+Latency barely moves on this data, because these requests are small and fast either way; the saving is in
+OpenSearch's work, which is what a busier cluster pays for. One query got slower: Q9 at scale 10 (2.45 → 2.67 s,
++9%), the largest result (29,640 relationships) and the one that still needs the scroll; leaving out the first
+10,000 documents costs some query time. Raw results: `benchmark-results/7.3-*.json`; the CI baseline is now the 7.3
+scale-1 run.
+
+### Scale 1
+
+| Query | before ms | before ops | 7.3 ms | 7.3 ops |
+|---|---:|---:|---:|---:|
+| Q1 | 55.5 | 12 | 43.0 | 6 |
+| Q2a | 118.9 | 36 | 114.3 | 18 |
+| Q2 | 69.3 | 36 | 57.8 | 18 |
+| Q3 | 36.5 | 36 | 33.3 | 18 |
+| Q4 | 32.6 | 36 | 20.6 | 18 |
+| Q5 | 154.1 | 63 | 145.6 | 27 |
+| Q6 | 115.7 | 146 | 104.0 | 68 |
+| Q7 | 33.1 | 39 | 31.5 | 21 |
+| Q8 | 28.4 | 39 | 28.1 | 21 |
+| Q9 | 229.1 | 78 | 252.6 | 65 |
+| QA | 42.3 | 60 | 40.9 | 30 |
+| QB | 50.9 | 96 | 40.9 | 36 |
+| QC | 11.3 | 12 | 10.4 | 6 |
+| QD | 8.6 | 10 | 7.7 | 4 |
+| QE | 27.9 | 36 | 25.8 | 18 |
+| QF | 23.3 | 57 | 19.8 | 27 |
+| QG | 87.2 | 111 | 75.2 | 51 |
+| R1 | 20.2 | 39 | 23.0 | 21 |
+| R2 | 28.2 | 39 | 26.3 | 21 |
+| R3 | 37.1 | 39 | 37.4 | 21 |
+| R4 | 26.5 | 63 | 18.8 | 27 |
+| R5 | 27.1 | 63 | 17.5 | 27 |
+| R6 | 16.0 | 36 | 18.7 | 18 |
+| R7 | 6.7 | 6 | 6.6 | 3 |
+| R8 | 13.6 | 34 | 12.1 | 16 |
+| R9 | 22.9 | 39 | 17.7 | 21 |
+| R10 | 40.5 | 78 | 30.6 | 42 |
+| gql:GQ1 | 26.1 | 12 | 26.1 | 6 |
+| gql:GQ2 | 15.2 | 12 | 12.9 | 6 |
+| gql:GQ3 | 22.5 | 36 | 20.5 | 18 |
+| gql:GQ4 | 28.1 | 48 | 23.0 | 24 |
+| **all 31** | **1455** | **1447** | **1343** | **723** |
+
+### Scale 10
+
+| Query | before ms | before ops | 7.3 ms | 7.3 ops |
+|---|---:|---:|---:|---:|
+| Q1 | 287.0 | 12 | 249.3 | 6 |
+| Q2a | 646.7 | 48 | 608.2 | 24 |
+| Q2 | 305.2 | 36 | 296.5 | 18 |
+| Q3 | 44.7 | 36 | 44.2 | 18 |
+| Q4 | 38.8 | 36 | 34.6 | 18 |
+| Q5 | 1555.6 | 180 | 1559.3 | 120 |
+| Q6 | 569.1 | 405 | 556.2 | 183 |
+| Q7 | 134.2 | 39 | 127.0 | 21 |
+| Q8 | 119.4 | 39 | 117.8 | 21 |
+| Q9 | 2449.6 | 635 | 2673.9 | 588 |
+| QA | 363.5 | 81 | 399.3 | 81 |
+| QB | 244.7 | 96 | 245.2 | 36 |
+| QC | 30.2 | 12 | 29.4 | 6 |
+| QD | 8.1 | 12 | 6.8 | 6 |
+| QE | 179.7 | 42 | 192.7 | 30 |
+| QF | 36.4 | 60 | 31.5 | 30 |
+| QG | 662.0 | 309 | 638.1 | 159 |
+| R1 | 54.8 | 39 | 54.4 | 21 |
+| R2 | 140.3 | 39 | 136.8 | 21 |
+| R3 | 248.7 | 39 | 236.8 | 21 |
+| R4 | 107.9 | 414 | 111.0 | 162 |
+| R5 | 111.7 | 414 | 90.2 | 162 |
+| R6 | 81.1 | 252 | 68.9 | 126 |
+| R7 | 6.0 | 6 | 6.0 | 3 |
+| R8 | 16.4 | 36 | 14.8 | 18 |
+| R9 | 56.1 | 39 | 55.0 | 21 |
+| R10 | 123.6 | 78 | 119.6 | 42 |
+| gql:GQ1 | 153.1 | 12 | 151.3 | 6 |
+| gql:GQ2 | 29.6 | 12 | 29.6 | 6 |
+| gql:GQ3 | 58.3 | 36 | 54.1 | 18 |
+| gql:GQ4 | 91.9 | 48 | 85.1 | 24 |
+| **all 31** | **8954** | **3542** | **9024** | **2016** |
 
 ## Rerun it
 

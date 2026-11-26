@@ -123,6 +123,8 @@ Each module's purpose and key classes, and the path of a query through them, are
 ### Cypher support notes
 - Node label union `(n:A|B)` is not supported (openCypher 9 grammar). Use `MATCH (n) WHERE n:A OR n:B`.
 - Cyclic patterns, which close a loop back to an already-matched node, are rejected with an explicit error.
+- `RETURN` doesn't narrow the answer: every element of the matched pattern comes back with all its properties,
+  whatever `RETURN` lists (`RETURN d.name` returns all of `d` and the rest of the path too). Planned (Q15, ROADMAP 7.10).
 - A count filter (`WHERE count(r) > n`) counts all of the start node's relationships; row filters on the far end
   only restrict which neighbours are returned.
 

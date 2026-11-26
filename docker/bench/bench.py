@@ -20,7 +20,7 @@ With --baseline, exits non-zero if any query fails, or does more than 10% more O
 (a fresh load can change a few queries' plans slightly; see compare()). Less work is reported, not an error: update
 the baseline in the same pull request. Python 3 standard library only.
 """
-import argparse, datetime, json, math, os, subprocess, sys, tempfile, time
+import argparse, datetime, json, math, os, re, subprocess, sys, tempfile, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "e2e"))
@@ -52,10 +52,26 @@ def queries():
     return out
 
 
+CLOCK_REFUSAL = re.compile(r"Clock moved backwards\. Refusing for (\d+) seconds")
+
+
+def run_query(fuse, language, query, retries=3):
+    """doc_queries.run, but waits out an engine that refuses requests after the clock stepped back (A11 in
+    KNOWN_ISSUES: releases up to 0.9.1), so older versions can still be measured."""
+    for _ in range(retries):
+        got = doc_queries.run(fuse, query, language=language)
+        m = CLOCK_REFUSAL.search(str(got.get("error") or ""))
+        if not m:
+            return got
+        print(f"    (engine refuses requests for {m.group(1)} s after a clock step: waiting)")
+        time.sleep(int(m.group(1)) + 2)
+    return got
+
+
 def run_and_drop(fuse, language, query):
     """One run, then DELETE the query it created, as a client should: the engine keeps every query (cursor, results)
     in memory until its TTL (5 minutes) passes, so hundreds of benchmark runs on big data would fill its heap."""
-    got = doc_queries.run(fuse, query, language=language)
+    got = run_query(fuse, language, query)
     qid = got.get("raw", {}).get("data", {}).get("resourceId") if isinstance(got.get("raw"), dict) else None
     if qid:
         try:
@@ -77,6 +93,9 @@ def measure(fuse, os_url, language, query, runs, warmup):
         got = doc_queries.run(fuse, query, language=language)
         times.append((time.perf_counter() - t0) * 1000)
         after = os_ops(os_url)
+        if CLOCK_REFUSAL.search(str(got.get("error") or "")):  # A11: wait it out, then measure this run again
+            run_query(fuse, language, "MATCH (d:Dragon) RETURN d LIMIT 1")
+            return measure(fuse, os_url, language, query, runs, 0)
         qid = got.get("raw", {}).get("data", {}).get("resourceId") if isinstance(got.get("raw"), dict) else None
         if qid:  # outside the measured window; see run_and_drop
             try:

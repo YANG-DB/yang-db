@@ -191,13 +191,23 @@ Goal: fewer round trips to OpenSearch, less data per round trip and less plannin
 shown by numbers rather than assumed. Every item must leave the e2e doc-query results unchanged
 (`docker/e2e/doc_queries.py`): these change *how* the engine calls OpenSearch, never *what* a query returns.
 
-What the code does today (checked 2026-11-23):
-- Every search is a scroll ([SearchHitScrollIterable](../../fuse-dv/fuse-dv-unipop/src/main/java/com/yangdb/fuse/unipop/converter/SearchHitScrollIterable.java)),
-  even one returning a handful of hits, so each opens and later clears a server-side context.
+What the code does today (checked 2026-11-23; corrected 2026-11-26 from the requests OpenSearch actually received,
+captured with the search slow log for all 31 playground queries: check claims about requests that way, not by
+searching the code):
+- Every search was a scroll ([SearchHitScrollIterable](../../fuse-dv/fuse-dv-unipop/src/main/java/com/yangdb/fuse/unipop/converter/SearchHitScrollIterable.java)),
+  even one returning a handful of hits: 253 of 253 searches asked for `size: 10000` with a scroll, and each needed an
+  extra, empty scroll request to see the end before the clear. Changed in 7.3.
 - No multi-search: `msearch` appears only in the client wrappers, never in query execution, so each search of a
   traversal step is its own HTTP round trip.
 - Nothing runs concurrently: an `OR` query splits into branches (see C3) that run one after another.
-- No `_source` filtering on searches (only the aggregation builder sets it): every hit returns the whole document.
+- `_source` **is** filtered (an earlier version of this list said it wasn't; that came from a code search for
+  `fetchSource`, which missed `setFetchSource`). Every search sends an explicit `_source.includes` list: the element's
+  ontology properties (`DefaultSelectionAsgStrategy` adds them all to the projection) plus the edge fields joins need;
+  a property an edge already carries as a redundant field is left out of the far-end search, and GraphQL asks for
+  exactly the selected fields. With no includes, `SearchBuilder` sends `_source: false`.
+- Cypher `RETURN` selects nothing: the engine returns the whole matched pattern, every element with all its
+  properties, whatever the `RETURN` lists (`RETURN d.name` still fetches and returns every field of `d`, and every
+  other element of the path). 30 of the 31 documented queries use `RETURN *`. See Q15.
 - The planner's cost estimates are live count queries, cached locally for 10 minutes and never using OpenSearch's
   request cache; the statistics module (`fuse-dv-stat`) exists but isn't the default cost source.
 
@@ -207,9 +217,17 @@ Items, in the recommended order:
       generated-data CSVs from `examples/dragons/datagen` don't match the loader's format). CI runs it after e2e and
       fails on more than 10% more OpenSearch work than `docker/bench/baseline.json`. Results and the comparison
       v0.8.0 (OpenSearch 1.3) / v0.9.0 / v0.9.1 / main: [docs/benchmark.md](../benchmark.md). Found L5, Q14, A11.
-- [ ] 7.2 **Fetch only the projected fields**: turn the query's projection into `_source` includes. *(small)*
-- [ ] 7.3 **Plain search for small results**: a plain sized search when the step's expected result fits in one
-      page, a scroll (or the cursor's PIT) only when it doesn't. *(small–medium)*
+- [x] 7.2 **Fetch only the projected fields**: already in place (see above; found 2026-11-26). The remaining gap is
+      that Cypher `RETURN` doesn't project (Q15); making it project changes what the API returns, so it is a feature
+      of its own (7.10), not a speed item, and the benchmark (all `RETURN *`) can't show a gain from it.
+- [x] 7.3 **Plain search for small results** (2026-11-26): each search starts as a plain search; a page that isn't
+      full is the whole result, so no scroll is opened, no empty follow-up is sent and nothing is cleared. Only after a
+      full page does the same search continue as a scroll (hits already returned are skipped), and an opened scroll
+      is cleared when exhausted or when the limit stops it (it used to stay open until its 10-minute timeout).
+      OpenSearch's exact hit count also ends a full page that is the whole result, and the scroll leaves out the
+      documents already returned. Measured: **−50% OpenSearch operations at scale 1, −43% at scale 10**, the same rows,
+      latency within noise (Q9 at scale 10 +9%). Found and fixed on the way: A11 (clock steps) and S1 (start-up hang).
+      Results: [docs/benchmark.md](../benchmark.md#phase-73-plain-search-for-small-results).
 - [ ] 7.4 **Batch each step's searches with `msearch`**: one round trip per hop instead of one per search; probably the
       largest single gain on multi-hop queries. *(medium)*
 - [ ] 7.5 **Run independent work concurrently**: `OR` branches and independent searches in parallel (virtual threads
@@ -220,6 +238,9 @@ Items, in the recommended order:
       Phase 6's Point in Time per cursor, which also replaces the per-search scroll contexts. *(medium)*
 - [ ] 7.8 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
       touches one shard instead of all. Needs a reindex, so it comes last, and only if 7.1 shows hops dominate. *(large)*
+- [ ] 7.10 **Cypher `RETURN` selects elements and properties** (Q15): return only the listed elements, and for
+      `RETURN d.name` only those properties, fetching only them. A behaviour change of the API (fewer properties or
+      elements per row), with its own tests and release note. *(medium)*
 - [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
       searches at no code cost.
 

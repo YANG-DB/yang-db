@@ -7,7 +7,9 @@
 #
 # The images must exist locally (docker/buildDocker.sh <tag>, from a checkout of that tag). Every run uses its own
 # compose project with its own volumes, removed afterwards (a 1.3 cluster can't read 2.19 indices). The container names
-# are fixed in docker-compose-os.yml, so stop the regular quickstart stack first. Runs the queries of this checkout's
+# are fixed in docker-compose-os.yml, so stop the regular quickstart stack first. Keep the machine awake for the whole
+# run (`caffeinate -dims` on macOS): if it sleeps, the Docker VM's clock stalls and then jumps, which stalls Docker's
+# health checks and makes engines before 0.10 refuse requests for a while (A11). Runs the queries of this checkout's
 # playground against every version: queries an older release gets wrong or can't run show up as such in its results.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
@@ -22,7 +24,10 @@ for run in "$@"; do
   docker compose -p "$project" -f "$compose" up -d opensearch fuse
   for i in $(seq 1 90); do
     curl -sf -o /dev/null http://localhost:8888/fuse/health && break
-    [ "$i" = 90 ] && { echo "$label did not become healthy"; docker compose -p "$project" -f "$compose" down -v; exit 1; }
+    if curl -s -m 5 http://localhost:8888/fuse/health 2>/dev/null | grep -q "Clock moved backwards"; then
+      echo "  (engine refusing requests after a clock step, A11: waiting)"; sleep 30
+    fi
+    [ "$i" = 90 ] && { echo "$label did not become healthy"; curl -s -m 5 http://localhost:8888/fuse/health 2>/dev/null | head -c 300 || true; echo; docker logs dragons-graph 2>&1 | grep -v "|-" | tail -20 || true; docker compose -p "$project" -f "$compose" down -v; exit 1; }
     sleep 5
   done
   python3 "$here/bench.py" --load --scale "$scale" --label "$label (OpenSearch $os)" \
