@@ -1,0 +1,428 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/YANG-DB/yang-db/main/docs/spec/v1/query.schema.json",
+  "title": "YangDB V1 query",
+  "description": "Wire format of a V1 query, the body of POST /fuse/query/v1. A query is a flat list of elements; elements refer to each other by eNum through 'next' and 'b'. The core element types are specified in full and reject unknown fields (the engine silently ignores them). Element and constraint types outside the core are accepted as 'extension' types with an open shape. Rules a JSON Schema cannot express (references point at existing eNums, eNums are unique, no cycles, entities and relations alternate, names exist in the ontology) are in docs/spec/v1/README.md.",
+  "type": "object",
+  "properties": {
+    "ont": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Name of the ontology the query runs against."
+    },
+    "name": {
+      "type": "string",
+      "description": "Free-text query name."
+    },
+    "elements": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/element" },
+      "contains": { "type": "object", "properties": { "type": { "const": "Start" } }, "required": ["type"] },
+      "minContains": 1,
+      "maxContains": 1,
+      "description": "All elements of the query. Exactly one is a Start."
+    },
+    "nonidentical": {
+      "type": "array",
+      "items": { "type": "array", "items": { "type": "string" } },
+      "description": "Extension: groups of eTags whose entities must be pairwise distinct."
+    },
+    "projectedFields": {
+      "type": "array",
+      "items": { "type": "object", "required": ["type"] },
+      "description": "Extension: elements to project. When empty, every tagged element is projected."
+    }
+  },
+  "required": ["ont", "elements"],
+  "additionalProperties": false,
+
+  "$defs": {
+    "eNum": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Element number, unique within the query."
+    },
+    "ref": {
+      "type": "integer",
+      "minimum": -1,
+      "description": "eNum of another element. Absent, 0 or -1 means 'none' (0 is safe as a sentinel because nothing points at Start)."
+    },
+    "refList": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "description": "eNums of the branches that follow."
+    },
+    "tag": {
+      "type": "string",
+      "description": "Name that labels this element in results; unique within the query."
+    },
+    "typeName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "An entity, relation or property type name from the ontology."
+    },
+    "typeSet": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/typeName" },
+      "uniqueItems": true
+    },
+    "quantType": {
+      "enum": ["all", "some", "gt", "ge", "notAll", "none", "eq", "neq", "range"],
+      "description": "How the branches of a quantifier combine: all = AND, some = OR."
+    },
+    "direction": {
+      "enum": ["R", "L", "RL"],
+      "description": "R: from the previous entity to the next; L: from the next entity to the previous; RL: either."
+    },
+    "readOnlyTyped": {
+      "type": "string",
+      "readOnly": true,
+      "description": "Written by the engine (copy of eType / rType); ignored on input."
+    },
+    "readOnlyParentTypes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "readOnly": true,
+      "description": "Written by the engine from the ontology; ignored on input."
+    },
+    "readOnlyFlag": {
+      "type": "boolean",
+      "readOnly": true,
+      "description": "Written by the engine; ignored on input."
+    },
+
+    "coreElementTypes": {
+      "enum": ["Start", "ETyped", "EConcrete", "EUntyped", "Rel", "RelPattern", "Quant1",
+               "EProp", "EPropGroup", "RelProp", "RelPropGroup", "OptionalComp"]
+    },
+    "extensionElementTypes": {
+      "enum": ["RelUntyped", "HQuant", "CountComp", "EAgg", "EComb", "RComb", "Agg",
+               "TypedEndPattern", "UnTypedEndPattern",
+               "SchematicEProp", "SchematicRankedEProp", "ScoreEProp", "CalculatedEProp", "FunctionEProp",
+               "FunctionRelProp", "RedundantRelProp", "RedundantSelectionRelProp"]
+    },
+
+    "element": {
+      "type": "object",
+      "required": ["type", "eNum"],
+      "properties": {
+        "type": { "anyOf": [ { "$ref": "#/$defs/coreElementTypes" }, { "$ref": "#/$defs/extensionElementTypes" } ] }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "Start" } }, "required": ["type"] },        "then": { "$ref": "#/$defs/Start" } },
+        { "if": { "properties": { "type": { "const": "ETyped" } }, "required": ["type"] },       "then": { "$ref": "#/$defs/ETyped" } },
+        { "if": { "properties": { "type": { "const": "EConcrete" } }, "required": ["type"] },    "then": { "$ref": "#/$defs/EConcrete" } },
+        { "if": { "properties": { "type": { "const": "EUntyped" } }, "required": ["type"] },     "then": { "$ref": "#/$defs/EUntyped" } },
+        { "if": { "properties": { "type": { "const": "Rel" } }, "required": ["type"] },          "then": { "$ref": "#/$defs/Rel" } },
+        { "if": { "properties": { "type": { "const": "RelPattern" } }, "required": ["type"] },   "then": { "$ref": "#/$defs/RelPattern" } },
+        { "if": { "properties": { "type": { "const": "Quant1" } }, "required": ["type"] },       "then": { "$ref": "#/$defs/Quant1" } },
+        { "if": { "properties": { "type": { "const": "EProp" } }, "required": ["type"] },        "then": { "$ref": "#/$defs/EProp" } },
+        { "if": { "properties": { "type": { "const": "EPropGroup" } }, "required": ["type"] },   "then": { "$ref": "#/$defs/EPropGroup" } },
+        { "if": { "properties": { "type": { "const": "RelProp" } }, "required": ["type"] },      "then": { "$ref": "#/$defs/RelProp" } },
+        { "if": { "properties": { "type": { "const": "RelPropGroup" } }, "required": ["type"] }, "then": { "$ref": "#/$defs/RelPropGroup" } },
+        { "if": { "properties": { "type": { "const": "OptionalComp" } }, "required": ["type"] }, "then": { "$ref": "#/$defs/OptionalComp" } }
+      ]
+    },
+
+    "Start": {
+      "description": "The root of the query. 'next' is the first element matched.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "Start" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" }
+      },
+      "required": ["type", "eNum"],
+      "additionalProperties": false
+    },
+
+    "ETyped": {
+      "description": "Any entity of one ontology type.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "ETyped" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "eType": { "$ref": "#/$defs/typeName" },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" },
+        "typed": { "$ref": "#/$defs/readOnlyTyped" },
+        "parentTyped": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "parentType": { "$ref": "#/$defs/readOnlyParentTypes" }
+      },
+      "required": ["type", "eNum", "eType"],
+      "additionalProperties": false
+    },
+
+    "EConcrete": {
+      "description": "One specific entity, by id.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "EConcrete" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "eType": { "$ref": "#/$defs/typeName" },
+        "eID": { "type": "string", "minLength": 1, "description": "The entity's id." },
+        "eName": { "type": "string", "description": "Display name; not used for matching." },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" },
+        "typed": { "$ref": "#/$defs/readOnlyTyped" },
+        "parentTyped": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "parentType": { "$ref": "#/$defs/readOnlyParentTypes" }
+      },
+      "required": ["type", "eNum", "eType", "eID"],
+      "additionalProperties": false
+    },
+
+    "EUntyped": {
+      "description": "An entity of any type in vTypes (any type when vTypes is empty or absent) and of no type in nvTypes.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "EUntyped" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "vTypes": { "$ref": "#/$defs/typeSet" },
+        "nvTypes": { "$ref": "#/$defs/typeSet" },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" }
+      },
+      "required": ["type", "eNum"],
+      "additionalProperties": false
+    },
+
+    "Rel": {
+      "description": "One relation of type rType between the previous entity and 'next'. 'b' may point at a RelProp or RelPropGroup that filters the relation.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "Rel" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "rType": { "$ref": "#/$defs/typeName" },
+        "dir": { "$ref": "#/$defs/direction" },
+        "wrapper": { "type": "string", "description": "Optional tag for the relation in results." },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" },
+        "typed": { "$ref": "#/$defs/readOnlyTyped" },
+        "parentTyped": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "parentType": { "$ref": "#/$defs/readOnlyParentTypes" }
+      },
+      "required": ["type", "eNum", "rType", "dir"],
+      "additionalProperties": false
+    },
+
+    "RelPattern": {
+      "description": "A path of between length.lower and length.upper relations of type rType.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "RelPattern" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "rType": { "$ref": "#/$defs/typeName" },
+        "dir": { "$ref": "#/$defs/direction" },
+        "wrapper": { "type": "string", "description": "Optional tag for the relation in results." },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" },
+        "typed": { "$ref": "#/$defs/readOnlyTyped" },
+        "parentTyped": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "parentType": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "length": {
+          "type": "object",
+          "properties": {
+            "lower": { "type": "integer", "minimum": 0 },
+            "upper": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["lower", "upper"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["type", "eNum", "rType", "dir", "length"],
+      "additionalProperties": false
+    },
+
+    "Quant1": {
+      "description": "Branches the query: every eNum in 'next' starts a branch (a property, a property group, a relation, or a nested quantifier) hanging off the preceding entity. qType says how the branches combine.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "Quant1" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "qType": { "$ref": "#/$defs/quantType" },
+        "next": { "$ref": "#/$defs/refList" },
+        "b": { "$ref": "#/$defs/ref" }
+      },
+      "required": ["type", "eNum", "qType"],
+      "additionalProperties": false
+    },
+
+    "OptionalComp": {
+      "description": "Marks the branch starting at 'next' as optional (an outer join): entities match whether or not the branch does.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "OptionalComp" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "next": { "$ref": "#/$defs/ref" },
+        "qType": { "const": "some", "readOnly": true, "description": "Always 'some'; written by the engine, ignored on input." }
+      },
+      "required": ["type", "eNum", "next"],
+      "additionalProperties": false
+    },
+
+    "EProp": {
+      "description": "A property of the preceding entity: a filter when 'con' is set, a projection when 'proj' is set.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "EProp" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "pType": { "$ref": "#/$defs/typeName" },
+        "pTag": { "type": "string" },
+        "con": { "$ref": "#/$defs/constraint" },
+        "proj": { "$ref": "#/$defs/projection" },
+        "constraint": { "$ref": "#/$defs/readOnlyFlag" },
+        "projection": { "$ref": "#/$defs/readOnlyFlag" }
+      },
+      "required": ["type", "eNum", "pType"],
+      "oneOf": [ { "required": ["con"] }, { "required": ["proj"] } ],
+      "additionalProperties": false
+    },
+
+    "RelProp": {
+      "description": "A property of the relation that points at it with 'b': a filter when 'con' is set, a projection when 'proj' is set.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "RelProp" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "pType": { "$ref": "#/$defs/typeName" },
+        "pTag": { "type": "string" },
+        "con": { "$ref": "#/$defs/constraint" },
+        "proj": { "$ref": "#/$defs/projection" },
+        "b": { "$ref": "#/$defs/ref" },
+        "constraint": { "$ref": "#/$defs/readOnlyFlag" },
+        "projection": { "$ref": "#/$defs/readOnlyFlag" }
+      },
+      "required": ["type", "eNum", "pType"],
+      "oneOf": [ { "required": ["con"] }, { "required": ["proj"] } ],
+      "additionalProperties": false
+    },
+
+    "EPropGroup": {
+      "description": "Several entity properties combined by quantType (default 'all'), with nested groups. Props and groups live inside the group, not in the elements list.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "EPropGroup" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "quantType": { "$ref": "#/$defs/quantType" },
+        "props": { "type": "array", "items": { "$ref": "#/$defs/EProp" } },
+        "groups": { "type": "array", "items": { "$ref": "#/$defs/EPropGroup" } }
+      },
+      "required": ["type", "eNum"],
+      "additionalProperties": false
+    },
+
+    "RelPropGroup": {
+      "description": "Several relation properties combined by quantType (default 'all'), with nested groups.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "RelPropGroup" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "quantType": { "$ref": "#/$defs/quantType" },
+        "props": { "type": "array", "items": { "$ref": "#/$defs/RelProp" } },
+        "groups": { "type": "array", "items": { "$ref": "#/$defs/RelPropGroup" } },
+        "b": { "$ref": "#/$defs/ref" }
+      },
+      "required": ["type", "eNum"],
+      "additionalProperties": false
+    },
+
+    "noValueOps":   { "enum": ["empty", "not empty"] },
+    "singleValueOps": {
+      "enum": ["eq", "ne", "gt", "ge", "lt", "le", "contains", "not contains", "starts with", "not starts with",
+               "not ends with", "fuzzy eq", "fuzzy ne", "match", "match_phrase", "not match", "query_string"]
+    },
+    "twoValueOps":  { "enum": ["in range", "not in range"] },
+    "listValueOps": { "enum": ["in set", "not in set", "like any"] },
+    "uncheckedOps": {
+      "enum": ["ends with", "like", "within", "distinct"],
+      "description": "Operators whose value the engine does not check."
+    },
+
+    "coreConstraintTypes": { "enum": ["Constraint"] },
+    "extensionConstraintTypes": {
+      "enum": ["InnerQueryConstraint", "WhereByConstraint", "ParameterizedConstraint",
+               "OptionalUnaryParameterizedConstraint", "JoinParameterizedConstraint"]
+    },
+
+    "constraint": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "anyOf": [ { "$ref": "#/$defs/coreConstraintTypes" }, { "$ref": "#/$defs/extensionConstraintTypes" } ] }
+      },
+      "if": { "properties": { "type": { "const": "Constraint" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/Constraint" }
+    },
+
+    "Constraint": {
+      "description": "op applied to the property value and expr. The 'type' field is required: the engine rejects a constraint without it.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "Constraint" },
+        "op": {
+          "anyOf": [
+            { "$ref": "#/$defs/noValueOps" }, { "$ref": "#/$defs/singleValueOps" }, { "$ref": "#/$defs/twoValueOps" },
+            { "$ref": "#/$defs/listValueOps" }, { "$ref": "#/$defs/uncheckedOps" }
+          ]
+        },
+        "expr": {
+          "description": "The value to compare with. Its JSON type should match the property's ontology type: string, number, boolean, or a date as an ISO-8601 string."
+        },
+        "iType": {
+          "enum": ["[]", "[)", "(]", "()"],
+          "default": "[]",
+          "description": "For 'in range' / 'not in range': '[' or ']' includes that end of the range, '(' or ')' excludes it."
+        },
+        "countOp": {
+          "enum": ["eq", "ne", "gt", "ge", "lt", "le", "within"],
+          "description": "Extension: comparison for aggregation (count) constraints."
+        }
+      },
+      "required": ["type", "op"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "op": { "$ref": "#/$defs/noValueOps" } } },
+          "then": { "not": { "required": ["expr"] } }
+        },
+        {
+          "if": { "properties": { "op": { "$ref": "#/$defs/singleValueOps" } } },
+          "then": { "required": ["expr"], "properties": { "expr": { "not": { "type": ["array", "null"] } } } }
+        },
+        {
+          "if": { "properties": { "op": { "$ref": "#/$defs/twoValueOps" } } },
+          "then": { "required": ["expr"], "properties": { "expr": { "type": "array", "minItems": 2, "maxItems": 2 } } }
+        },
+        {
+          "if": { "properties": { "op": { "$ref": "#/$defs/listValueOps" } } },
+          "then": { "required": ["expr"], "properties": { "expr": { "type": "array" } } }
+        }
+      ]
+    },
+
+    "projection": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["Identity", "CalculatedField"] }
+      },
+      "if": { "properties": { "type": { "const": "Identity" } }, "required": ["type"] },
+      "then": {
+        "description": "Return the property value as is.",
+        "properties": { "type": { "const": "Identity" } },
+        "additionalProperties": false
+      },
+      "else": {
+        "description": "Extension: CalculatedField projection."
+      }
+    }
+  }
+}

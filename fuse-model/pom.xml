@@ -72,6 +72,13 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- validates V1 query JSON against docs/spec/v1/query.schema.json (V1QuerySchemaTest) -->
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>1.5.6</version>
+            <scope>test</scope>
+        </dependency>
         <!-- tests -->
     </dependencies>
 

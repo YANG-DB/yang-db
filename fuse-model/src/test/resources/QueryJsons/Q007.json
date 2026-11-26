@@ -49,7 +49,7 @@
       "eNum": 6,
       "type": "ETyped",
       "eTag": "C",
-      "eType": 2,
+      "eType": "2",
       "next": 7
     },
     {
@@ -63,7 +63,7 @@
       "eNum": 8,
       "type": "ETyped",
       "eTag": "D",
-      "eType": 2
+      "eType": "2"
     },
     {
       "eNum": 9,
@@ -76,7 +76,7 @@
       "eNum": 10,
       "type": "ETyped",
       "eTag": "D",
-      "eType": 2
+      "eType": "2"
     },
     {
       "eNum": 11,

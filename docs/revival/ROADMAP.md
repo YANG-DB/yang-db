@@ -254,6 +254,13 @@ Items, in the recommended order:
 Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
 7.7 follows the PIT work; 7.8 only on evidence.
 
+## Workstream — V1 language specification
+Publish V1 as a spec other tools can build on ([docs/spec/v1](../spec/v1/README.md)).
+- [x] JSON Schema of the wire format for the core types, tested against the repo's fixtures, the docs, the Swagger
+      examples and the engine's serializer output (`V1QuerySchemaTest`)
+- [ ] ANTLR grammar for a text notation of V1 that compiles to the JSON (agree the notation first)
+- [ ] Spell out the rules beyond the schema (references, cycles, alternation, ontology) with examples
+
 ## Phase 8 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
