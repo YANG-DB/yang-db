@@ -1,5 +1,7 @@
 > **Start here:** the [architecture tutorial](../../../docs/tutorial/architecture/README.md) explains every module and follows one query through all its translations, using the current code. This page is older background material.
 
+> **Spec:** the V1 wire format is published as a JSON Schema in [docs/spec/v1](../../spec/v1/README.md).
+
 Elements of the query language
 -------------
 
