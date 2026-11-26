@@ -101,6 +101,13 @@ run leaves them all in memory: at 10 times the tutorial data, ~190 benchmark run
 heap out (`java.lang.OutOfMemoryError`, then every query failing) (`docs/benchmark.md`). The benchmark deletes each
 query after its run. Fix: Phase 7.7 (stream results, evict idle cursors), e.g. a cap on stored results by size.
 
+### Q15 — Cypher `RETURN` doesn't select elements or properties · open (feature, ROADMAP 7.10)
+The engine always returns the whole matched pattern with every ontology property of each element, whatever the
+`RETURN` clause lists: `MATCH (p:Person)-[o:Own]->(d:Dragon) RETURN d.name` returns the persons and the `Own`
+relationships too, and every property of each dragon. The OpenSearch requests match: they fetch every property of
+every element (`DefaultSelectionAsgStrategy` projects them all into `_source.includes`). Found 2026-11-26 from the
+search slow log while checking Phase 7.2. GraphQL is not affected: it fetches and returns the selected fields.
+
 ## Found by the legacy-test triage (Phase 3, stream I; see [IGNORED_TESTS.md](IGNORED_TESTS.md))
 
 ### Q9 — Cypher keeps only the first type of a multi-type relationship · **now an explicit error**
@@ -285,13 +292,15 @@ Found when A3 made them reachable (static reading, not run against the stack):
 A likely fix: register `clause` as a language (`QueryLanguages`, from `DragonsExtension.modules()`) whose transformer
 chains clause → V1 `Query` → `AsgQuery`; the generic `/fuse/query/clause(/run)` routes then replace the special ones.
 
-### A11 — After the clock steps back, every request fails for as long as the step · open
-Every request gets an id from a Snowflake generator (`SnowflakeRequestIdSupplier`, library
-`com.github.cnsvili:snowflake` 1.0.1). When the system clock moves backwards, the generator refuses to issue ids
-until the clock catches up, so every request fails with HTTP 500 `Clock moved backwards. Refusing for N seconds`.
-Seen during the benchmark (`docs/benchmark.md`): the Docker VM's clock stepped back about 50 seconds and every query
-failed for 47 seconds. NTP corrections and VM or laptop sleep cause such steps. Fix: wait or reuse the last timestamp
-for small steps, or take the request id from a source that doesn't depend on the wall clock.
+### A11 — After the clock steps back, every request fails for as long as the step · **fixed** (0.10)
+Every request gets an id from `SnowflakeRequestIdSupplier`. It used the `com.github.cnsvili:snowflake` 1.0.1 library,
+which refuses to issue ids while the clock is behind its last timestamp, so every request, health checks included,
+failed with HTTP 500 `Clock moved backwards. Refusing for N seconds`. In the colima Docker VM the clock stepped back
+about 50 seconds several times an hour, which failed benchmark runs and kept a fresh engine from passing its health
+check. Fixed: the supplier generates the ids itself, in the same layout (41 bits of time, 6 of worker, 16 of
+sequence), and when the clock steps back it keeps counting from its last timestamp; the library is removed. Tests:
+`SnowflakeRequestIdSupplierTest` (a 52-second step back; 200,000 ids within one millisecond). The benchmark waits out
+the refusal when measuring releases up to 0.9.1.
 
 ### A1 — Non-JSON responses by default · **fixed**
 Query and load endpoints return a Java `toString()` (e.g. `QueryResourceInfo@48764515`) unless the request sends
@@ -311,6 +320,26 @@ for the tests: the root pom's `test.jvm.opens` opens `java.lang`, `java.lang.ref
 `java.io`, `java.nio` and `sun.nio.ch` to the test JVMs (JDK 11 accepts the same flags). The JDK 17 CI job now passes:
 1,271 tests, 0 failures. Still open: running the engine on JDK 17 is not tested (the start script and the Docker image
 use JDK 11); it would need the same `--add-opens` (Phase 6).
+
+## Logging
+
+### S1 — The engine sometimes hangs at start-up, before it logs anything · **fixed** (0.10)
+About 1 start in 3 of the Docker image hung for good right after `java ... FuseRunner`, with no further log line and
+`/fuse/health` never answering. Thread dump: logback's `ConsoleAppender` (`<withJansi>true</withJansi>` in the logback
+configs) loads jansi, whose `CLibrary` extracts a native library and runs `chmod` through `Runtime.exec`; that fork
+never returned (OpenJDK 11.0.14 on Alpine 3.14, the image's base). Jansi is only needed for colours on Windows
+consoles. Fixed: `withJansi` is `false` in all three logback configs, so the fork never happens. Found 2026-11-26 while
+benchmarking Phase 7.3 (it failed the version comparison's health wait). The image's EOL base (Alpine 3.14, JDK
+11.0.14) is a separate cleanup.
+
+### O1 — logback 1.5 rejects the Elasticsearch log appender's `<property>` entries · open
+Since logback 1.5 (#187), the engine prints `ERROR in ...PropertyModelHandler - In <property> element, either the
+"file" attribute alone, ...` 20 times at start-up: the `<properties><property>` list of the
+`com.internetitem.logback.elasticsearch.ElasticsearchAppender` in `distribution/resources/logConfig/logback.xml` (and
+the Dragons copy) is now read as logback's own `<property>` element. Console and file logging work (CI checks that the
+engine logs); only that appender's extra fields are lost. The appender ships logs to `http://localhost:9200/_bulk`,
+which inside the Docker stack isn't OpenSearch, so it likely never worked there. Options: drop the appender, or move to
+an OpenSearch appender configured from `opensearch.hosts`. Found 2026-11-26.
 
 ## Test infrastructure
 

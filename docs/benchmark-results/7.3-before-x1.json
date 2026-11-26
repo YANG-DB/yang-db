@@ -1,0 +1,509 @@
+{
+ "meta": {
+  "label": "main before 7.3",
+  "scale": 1,
+  "runs": 5,
+  "warmup": 1,
+  "stored_docs": 42685,
+  "git": "325f6ddd0",
+  "date": "2026-11-26T14:51:38+00:00"
+ },
+ "queries": {
+  "Q1": {
+   "p50_ms": 55.5,
+   "p95_ms": 68.5,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1000,
+    "relationships": 0
+   }
+  },
+  "Q2a": {
+   "p50_ms": 118.9,
+   "p95_ms": 130.9,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 100,
+    "relationships": 475
+   }
+  },
+  "Q2": {
+   "p50_ms": 69.3,
+   "p95_ms": 82.6,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 99,
+    "relationships": 349
+   }
+  },
+  "Q3": {
+   "p50_ms": 36.5,
+   "p95_ms": 61.3,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 22,
+    "relationships": 30
+   }
+  },
+  "Q4": {
+   "p50_ms": 32.6,
+   "p95_ms": 33.8,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 22,
+    "relationships": 30
+   }
+  },
+  "Q5": {
+   "p50_ms": 154.1,
+   "p95_ms": 236.2,
+   "ops": {
+    "query": 36,
+    "fetch": 9,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 63,
+   "rows": {
+    "entities": 515,
+    "relationships": 2437
+   }
+  },
+  "Q6": {
+   "p50_ms": 115.7,
+   "p95_ms": 128.5,
+   "ops": {
+    "query": 78,
+    "fetch": 29,
+    "scroll": 39,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 146,
+   "rows": {
+    "entities": 28,
+    "relationships": 73
+   }
+  },
+  "Q7": {
+   "p50_ms": 33.1,
+   "p95_ms": 38.6,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 91,
+    "relationships": 181
+   }
+  },
+  "Q8": {
+   "p50_ms": 28.4,
+   "p95_ms": 32.3,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 56,
+    "relationships": 145
+   }
+  },
+  "Q9": {
+   "p50_ms": 229.1,
+   "p95_ms": 256.2,
+   "ops": {
+    "query": 48,
+    "fetch": 12,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 78,
+   "rows": {
+    "entities": 1000,
+    "relationships": 2964
+   }
+  },
+  "QA": {
+   "p50_ms": 42.3,
+   "p95_ms": 53.6,
+   "ops": {
+    "query": 30,
+    "fetch": 15,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 60,
+   "rows": {
+    "entities": 1623,
+    "relationships": 0
+   }
+  },
+  "QB": {
+   "p50_ms": 50.9,
+   "p95_ms": 59.1,
+   "ops": {
+    "query": 60,
+    "fetch": 6,
+    "scroll": 30,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 96,
+   "rows": {
+    "entities": 1100,
+    "relationships": 0
+   }
+  },
+  "QC": {
+   "p50_ms": 11.3,
+   "p95_ms": 16.0,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 100,
+    "relationships": 0
+   }
+  },
+  "QD": {
+   "p50_ms": 8.6,
+   "p95_ms": 13.0,
+   "ops": {
+    "query": 6,
+    "fetch": 1,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 10,
+   "rows": {
+    "entities": 1,
+    "relationships": 0
+   }
+  },
+  "QE": {
+   "p50_ms": 27.9,
+   "p95_ms": 32.3,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 161,
+    "relationships": 96
+   }
+  },
+  "QF": {
+   "p50_ms": 23.3,
+   "p95_ms": 28.0,
+   "ops": {
+    "query": 30,
+    "fetch": 12,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 57,
+   "rows": {
+    "entities": 15,
+    "relationships": 14
+   }
+  },
+  "QG": {
+   "p50_ms": 87.2,
+   "p95_ms": 90.9,
+   "ops": {
+    "query": 60,
+    "fetch": 21,
+    "scroll": 30,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 111,
+   "rows": {
+    "entities": 133,
+    "relationships": 155
+   }
+  },
+  "R1": {
+   "p50_ms": 20.2,
+   "p95_ms": 22.9,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 50,
+    "relationships": 64
+   }
+  },
+  "R2": {
+   "p50_ms": 28.2,
+   "p95_ms": 33.3,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 93,
+    "relationships": 211
+   }
+  },
+  "R3": {
+   "p50_ms": 37.1,
+   "p95_ms": 45.5,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 100,
+    "relationships": 403
+   }
+  },
+  "R4": {
+   "p50_ms": 26.5,
+   "p95_ms": 37.9,
+   "ops": {
+    "query": 36,
+    "fetch": 9,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 63,
+   "rows": {
+    "entities": 56,
+    "relationships": 32
+   }
+  },
+  "R5": {
+   "p50_ms": 27.1,
+   "p95_ms": 38.8,
+   "ops": {
+    "query": 36,
+    "fetch": 9,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 63,
+   "rows": {
+    "entities": 56,
+    "relationships": 32
+   }
+  },
+  "R6": {
+   "p50_ms": 16.0,
+   "p95_ms": 17.6,
+   "ops": {
+    "query": 18,
+    "fetch": 3,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R7": {
+   "p50_ms": 6.7,
+   "p95_ms": 7.4,
+   "ops": {
+    "query": 3,
+    "fetch": 0,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R8": {
+   "p50_ms": 13.6,
+   "p95_ms": 18.8,
+   "ops": {
+    "query": 18,
+    "fetch": 7,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 34,
+   "rows": {
+    "entities": 9,
+    "relationships": 8
+   }
+  },
+  "R9": {
+   "p50_ms": 22.9,
+   "p95_ms": 26.7,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 50,
+    "relationships": 64
+   }
+  },
+  "R10": {
+   "p50_ms": 40.5,
+   "p95_ms": 48.1,
+   "ops": {
+    "query": 42,
+    "fetch": 18,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 78,
+   "rows": {
+    "entities": 88,
+    "relationships": 152
+   }
+  },
+  "gql:GQ1": {
+   "p50_ms": 26.1,
+   "p95_ms": 34.5,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1000,
+    "relationships": 0
+   }
+  },
+  "gql:GQ2": {
+   "p50_ms": 15.2,
+   "p95_ms": 16.9,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 121,
+    "relationships": 0
+   }
+  },
+  "gql:GQ3": {
+   "p50_ms": 22.5,
+   "p95_ms": 23.8,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 161,
+    "relationships": 96
+   }
+  },
+  "gql:GQ4": {
+   "p50_ms": 28.1,
+   "p95_ms": 32.4,
+   "ops": {
+    "query": 24,
+    "fetch": 12,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 48,
+   "rows": {
+    "entities": 212,
+    "relationships": 195
+   }
+  }
+ }
+}
