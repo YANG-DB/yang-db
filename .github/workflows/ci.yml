@@ -41,7 +41,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '11'
-          cache: maven
+
+      # Maven dependencies. setup-java's own cache (cache: maven) has no fallback: a changed pom.xml means an empty
+      # cache, ~600 MB from Maven Central at once, and HTTP 429s (one job retried for 27 min and failed, #196).
+      # restore-keys starts from the latest cache instead, so only what changed is downloaded. The project's own
+      # snapshots are left out, so a cache never serves a stale com.yangdb artifact.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/yangdb
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-${{ runner.os }}-
 
       - name: Show the Maven version (429 retries need 3.9+)
         run: mvn -v | head -1
@@ -86,7 +97,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: maven
+
+      # Maven dependencies: see the Build & test job
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/yangdb
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-${{ runner.os }}-
 
       # run every module's tests even when some fail, so one run shows everything JDK 17 still trips on;
       # the summary step below fails the job if any test failed
@@ -126,7 +145,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '11'
-          cache: maven
+
+      # Maven dependencies: see the Build & test job
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/yangdb
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-${{ runner.os }}-
 
       - name: Build the distribution (core + Dragons assembly)
         run: $MVN install -DskipTests -P core,dragons-assembly
