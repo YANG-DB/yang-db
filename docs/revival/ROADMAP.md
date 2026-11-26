@@ -280,8 +280,15 @@ Follow-ups (open):
       ~600 MB from Maven Central in all three jobs at once, and HTTP 429 failures (#196's JDK 11 job)
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
-- [ ] Prune stale remote branches (now also `spec/v1-json-schema`, `spec/v1-rules-endpoint-printer`,
-      `ci/maven-cache-fallback`)
+- [x] Prune stale remote branches (2026-11-26): 79 deleted. That's every branch already merged into `main`, the six
+      2023–24 Dependabot branches, `upgrade-rehearsal`, `planning-opensearch-upgrade`, `release/0.1`–`0.4` and
+      `master`. The last seven are kept as tags `v0.1`, `v0.2`, `v0.2.1`, `v0.3`, `v0.3.1`, `v0.4` and
+      `archive/master-2019`.
+- [ ] Review the 2017–2022 branches with work that isn't on `main` (keep, tag or delete): `develop`, `sql_support`,
+      `develop-es7_4_2-support`, `pgql-lang`, `query-resource-monitor`, `materialize`, `common-tasks`, `graphql`,
+      `gremlin-server`, `elastic-7.3.0`, `version_0.5_release`, `Jan-2020-RC2-fix_April_2020`, `metrics-report`,
+      `newStructure`, and the `feature/*` branches. Recent release branches (`release/0.8.x`, `release/0.9.x`,
+      `release-0.9.1`) stay
 
 ## Dev environment notes
 - JDK 11 + Maven; Docker via colima on macOS. Quickstart: [docker/README.md](../../docker/README.md).
