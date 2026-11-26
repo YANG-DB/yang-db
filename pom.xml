@@ -95,8 +95,6 @@
         <antlr4.version>4.13.1</antlr4.version>
         <resilience4jVersion>1.6.1</resilience4jVersion>
 
-        <!-- com.github.cnsvili.snowflake.version -->
-        <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
 
         <!-- graphviz svg graph visualization -->
         <graphviz.version>0.18.0</graphviz.version>
@@ -531,12 +529,6 @@
                 <version>${commons-codec.version}</version>
             </dependency>
 
-            <!-- snowflake ids -->
-            <dependency>
-                <groupId>com.github.cnsvili</groupId>
-                <artifactId>snowflake</artifactId>
-                <version>${com.github.cnsvili.snowflake.version}</version>
-            </dependency>
             <!-- snowflake ids -->
 
             <dependency>

@@ -111,10 +111,6 @@
             <artifactId>lang-painless</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cnsvili</groupId>
-            <artifactId>snowflake</artifactId>
-        </dependency>
-        <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
         </dependency>

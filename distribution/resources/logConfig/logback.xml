@@ -19,7 +19,8 @@
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-    <withJansi>true</withJansi>
+    <!-- no jansi: only Windows consoles need it, and loading it forks a chmod that can hang the JVM at start-up (S1) -->
+    <withJansi>false</withJansi>
     <encoder>
       <pattern>%green(%-23requestId) %green(%-23requestExternalId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %yellow(%-6elapsedFrom)  %yellow(%-6networkElasticElapsedTotal) %white(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %cyan(%-8logType) %cyan(%-20methodName) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
