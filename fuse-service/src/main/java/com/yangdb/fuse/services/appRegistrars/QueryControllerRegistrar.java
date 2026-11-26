@@ -54,6 +54,8 @@ import com.yangdb.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.yangdb.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.yangdb.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.yangdb.fuse.model.query.Query;
+import com.yangdb.fuse.model.query.V1Spec;
+import com.yangdb.fuse.model.query.V1TextPrinter;
 import com.yangdb.fuse.model.resourceInfo.FuseError;
 import com.yangdb.fuse.model.resourceInfo.QueryResourceInfo;
 import com.yangdb.fuse.model.transport.*;
@@ -63,7 +65,6 @@ import com.yangdb.fuse.services.controllers.QueryController;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.Response;
 import org.jooby.*;
-import org.jooby.apitool.ApiTool;
 
 import java.io.File;
 import java.util.HashMap;
@@ -218,11 +219,6 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
         app.get(appUrlSupplier.resourceUrl(":queryId") + "/plan/visualize",
                 (req, resp) -> API.planView(app, req, resp, this));
 
-        //swagger
-        app.use(new ApiTool()
-                .swagger("/swagger")
-                .raml("/raml")
-        );
 
     }
 
@@ -243,6 +239,12 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
     }
 
     private void v1Context(Jooby app, AppUrlSupplier appUrlSupplier) {
+        /** the V1 query JSON Schema (docs/spec/v1/query.schema.json) */
+        app.get(appUrlSupplier.queryStoreUrl() + "/v1/schema", req -> API.schemaV1());
+
+        /** print a v1 query as one line of text */
+        app.post(appUrlSupplier.queryStoreUrl() + "/v1/print", req -> API.printV1(req));
+
         /** validate a v1 query */
         app.post(appUrlSupplier.queryStoreUrl() + "/v1/validate", req -> API.validateV1(app, req, this.getController(app)));
 
@@ -271,6 +273,16 @@ public class QueryControllerRegistrar extends AppControllerRegistrarBase<QueryCo
 
         public static final String CYPHER = "cypher";
         public static final String SPARQL = "sparql";
+
+        public static Result schemaV1() {
+            Route.of("schemaV1").write();
+            return Results.ok(V1Spec.querySchema()).type(MediaType.valueOf(V1Spec.SCHEMA_MEDIA_TYPE));
+        }
+
+        public static Result printV1(final Request req) throws Exception {
+            Route.of("printV1").write();
+            return Results.ok(V1TextPrinter.print(req.body(Query.class))).type(MediaType.plain);
+        }
 
         public static Result validateV1(Jooby app, final Request req, QueryController controller) throws Exception {
             Route.of("validateAndRewriteQuery").write();

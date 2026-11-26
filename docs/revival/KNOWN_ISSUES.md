@@ -108,6 +108,39 @@ relationships too, and every property of each dragon. The OpenSearch requests ma
 every element (`DefaultSelectionAsgStrategy` projects them all into `_source.includes`). Found 2026-11-26 from the
 search slow log while checking Phase 7.2. GraphQL is not affected: it fetches and returns the selected fields.
 
+### Q16 — V1: `some` (OR) between property filters behaves as `all` (AND) · open
+Found while writing the V1 spec (2026-11-26), checked live against the Dragons data. Two filters on Person `height`
+(`< 165`: 8 persons, `> 182`: 9 persons, 17 together in OpenSearch) return **0** when combined with OR as
+an `EPropGroup` with `quantType: "some"`, a `Quant1` `some` over the two `EProp`s, a `RelPropGroup` `some` (same on
+`Own.startDate`), or a deprecated `HQuant` `some`. Cypher's `WHERE p.height < 165 OR p.height > 182` returns 17: the
+translator branches the whole pattern instead. Workaround in V1: `Start → Quant1 some → one copy of the entity per
+filter` (returns 17). `some` between *relation* branches works.
+
+### Q17 — V1: `WhereByConstraint` without `joinType` returns an empty response · open
+`/fuse/query/v1/validate` accepts it, `/run` answers 200 with an empty `data` object and no error, and the log shows a
+`NullPointerException` at `AsgNamedParametersStrategy.isForEachJoin` (the JSON reader leaves `joinType` null; only the
+Java constructors default it). With `"joinType": "FOR_EACH"` or `"FULL"` the query runs. The V1 schema now requires it.
+
+### Q18 — `/fuse/query/v1/validate` validates before rewriting, unlike `/run` · open
+`validateAndRewriteQuery` transforms and validates but skips the rewrite strategies that `/run` applies first. A query
+with a `RelUntyped` runs, but `/validate` answers 200 with an empty body: a validator throws
+`NullPointerException` (`CompositeValidatorStrategy.java:55`) on the not-yet-inferred relation type. The same empty
+200 answers an unknown relation type, an unknown ontology, a where-by on a missing tag and a non-numeric value for a
+numeric property; `/run` reports each with an error (some unclear: `No value present` for the missing tag). The other
+way round, `/validate` accepts a where-by on an unknown field and reports two adjacent entities that `/run` lets through
+to the planner (`No valid plan was found`). Examples in [docs/spec/v1/rules.md](../spec/v1/rules.md).
+
+### Q20 — V1: a cycle crashes instead of being reported · open
+A query whose `next` points back to an element on its path (`A -Know-> B -Know-> A`, by eNum) never reaches
+`AsgCycleValidatorStrategy`: `/run` answers `failed building the cursor request forwardPaths:
+java.lang.StackOverflowError`, `/validate` answers HTTP 500. The ASG builder follows `next` recursively before
+anything checks for cycles. Example in [docs/spec/v1/rules.md](../spec/v1/rules.md) (rule 3).
+
+### Q19 — V1: `RelUntyped` with no `vTypes` drops the relation · open
+`Person -[RelUntyped, no vTypes]-> EUntyped` (meaning "any relation") returns the 100 persons and no relationships or
+far-side entities. With `vTypes` listed it works (`["Own"]` matches `Rel Own`; `["Own","MemberOf"]` returns both). The
+V1 schema requires a non-empty `vTypes`.
+
 ## Found by the legacy-test triage (Phase 3, stream I; see [IGNORED_TESTS.md](IGNORED_TESTS.md))
 
 ### Q9 — Cypher keeps only the first type of a multi-type relationship · **now an explicit error**

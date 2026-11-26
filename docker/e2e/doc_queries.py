@@ -230,6 +230,49 @@ def playground(fuse, os_url, one_click):
     return failed
 
 
+def api_reference(fuse):
+    """The API reference (/swagger, Swagger UI 5 over the OpenAPI 3.1 file) and the V1 spec routes respond:
+    GET /fuse/query/v1/schema serves the repo's schema, POST /fuse/query/v1/print prints a query."""
+    print("\nAPI reference and V1 spec")
+    base = fuse.rsplit("/fuse", 1)[0]
+
+    def get(url, data=None):
+        req = urllib.request.Request(url, data=data, method="POST" if data else "GET",
+                                     headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return r.status, r.headers.get("Content-Type", ""), r.read().decode("utf-8")
+        except urllib.error.HTTPError as e:
+            return e.code, "", ""
+        except Exception as e:  # noqa: BLE001
+            return type(e).__name__, "", ""
+
+    schema_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "docs", "spec", "v1", "query.schema.json")
+    query = {"ont": "Dragons", "elements": [
+        {"eNum": 0, "type": "Start", "next": 1},
+        {"eNum": 1, "type": "ETyped", "eTag": "A", "eType": "Person", "next": 2},
+        {"eNum": 2, "type": "Rel", "rType": "Own", "dir": "R", "next": 3},
+        {"eNum": 3, "type": "ETyped", "eTag": "B", "eType": "Dragon"}]}
+    checks = []
+    code, _, body = get(base + "/swagger")
+    checks.append(("GET /swagger", code == 200 and "/public/assets/swagger/openapi.json" in body, code))
+    code, _, _ = get(base + "/swagger/ui/swagger-ui-bundle.js")
+    checks.append(("GET /swagger/ui/swagger-ui-bundle.js", code == 200, code))
+    code, _, body = get(base + "/public/assets/swagger/openapi.json")
+    checks.append(("GET /public/assets/swagger/openapi.json (OpenAPI 3.1)",
+                   code == 200 and json.loads(body or "{}").get("openapi") == "3.1.0", code))
+    code, ctype, body = get(fuse + "/query/v1/schema")
+    same = code == 200 and json.loads(body) == json.load(open(schema_file))
+    checks.append(("GET /fuse/query/v1/schema = docs/spec/v1/query.schema.json",
+                   same and ctype.startswith("application/schema+json"), f"{code} {ctype}"))
+    code, _, body = get(fuse + "/query/v1/print", json.dumps(query).encode())
+    checks.append(("POST /fuse/query/v1/print", code == 200 and body == "start (A:Person) -[:Own]-> (B:Dragon)",
+                   f"{code} {body[:80]!r}"))
+    for name, ok, got in checks:
+        print(f"  {'ok' if ok else 'FAIL':5} {name}  ({got})")
+    return sum(not ok for _, ok, _ in checks)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fuse", default="http://localhost:8888/fuse")
@@ -289,6 +332,7 @@ def main(argv=None):
         failed += bool(bad)
         print(f"  {'ERROR' if bad else 'ok':5} cursorType={ct:12} {r.get('error') or (r['errors'][:1] if r['errors'] else 'responds')}")
 
+    failed += api_reference(a.fuse)
     failed += playground(a.fuse, a.opensearch, one_click=a.load)
 
     print(f"\n{'ALL PASS' if not failed else f'{failed} check(s) not passing'}")

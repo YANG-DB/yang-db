@@ -181,7 +181,7 @@
         <!-- the version the OpenSearch 2.19.7 rest client declares -->
         <commons-codec.version>1.18.0</commons-codec.version>
         <!-- the version opensearch-x-content 2.19.7 declares (jackson-dataformat-yaml 2.18 needs snakeyaml 2.x);
-             tinkerpop 3.2.5 and jooby-apitool would otherwise bring 1.15 / 1.19 -->
+             tinkerpop 3.2.5 would otherwise bring 1.15 -->
         <snakeyaml.version>2.1</snakeyaml.version>
         <!-- Apache HTTP components: the versions the OpenSearch 2.19.7 rest client declares (rdf4j brings httpcore 4.4.14) -->
         <httpclient.version>4.5.14</httpclient.version>
@@ -650,12 +650,6 @@
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-metrics</artifactId>
                 <version>${jooby.version}</version>
-            </dependency>
-            <!-- jooby -->
-            <dependency>
-                <groupId>org.jooby</groupId>
-                <artifactId>jooby-apitool</artifactId>
-                <version>1.6.0</version>
             </dependency>
             <!-- opensearch -->
             <dependency>

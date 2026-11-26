@@ -146,9 +146,8 @@
         </resources>
         <plugins>
             <!--
-              Swagger UI 5 for the Dragons playground page (/dragons/swagger). Unpacked into this jar under
-              dragons/playground/ui instead of being a dependency: as a dependency, Maven would replace the swagger-ui
-              3.17.1 webjar that jooby-apitool needs for the generated /swagger, and the service would fail to start.
+              Swagger UI 5 for the Dragons playground page (/dragons/swagger), unpacked into this jar under
+              dragons/playground/ui. (fuse-service now also ships the same webjar version, for /swagger.)
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

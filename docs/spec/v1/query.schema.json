@@ -93,11 +93,12 @@
     },
 
     "coreElementTypes": {
-      "enum": ["Start", "ETyped", "EConcrete", "EUntyped", "Rel", "RelPattern", "Quant1",
+      "enum": ["Start", "ETyped", "EConcrete", "EUntyped", "Rel", "RelPattern", "RelUntyped", "Quant1",
                "EProp", "EPropGroup", "RelProp", "RelPropGroup", "OptionalComp"]
     },
     "extensionElementTypes": {
-      "enum": ["RelUntyped", "HQuant", "CountComp", "EAgg", "EComb", "RComb", "Agg",
+      "description": "Accepted, not specified. HQuant is deprecated: use a RelPropGroup.",
+      "enum": ["HQuant", "CountComp", "EAgg", "EComb", "RComb", "Agg",
                "TypedEndPattern", "UnTypedEndPattern",
                "SchematicEProp", "SchematicRankedEProp", "ScoreEProp", "CalculatedEProp", "FunctionEProp",
                "FunctionRelProp", "RedundantRelProp", "RedundantSelectionRelProp"]
@@ -116,6 +117,7 @@
         { "if": { "properties": { "type": { "const": "EUntyped" } }, "required": ["type"] },     "then": { "$ref": "#/$defs/EUntyped" } },
         { "if": { "properties": { "type": { "const": "Rel" } }, "required": ["type"] },          "then": { "$ref": "#/$defs/Rel" } },
         { "if": { "properties": { "type": { "const": "RelPattern" } }, "required": ["type"] },   "then": { "$ref": "#/$defs/RelPattern" } },
+        { "if": { "properties": { "type": { "const": "RelUntyped" } }, "required": ["type"] },   "then": { "$ref": "#/$defs/RelUntyped" } },
         { "if": { "properties": { "type": { "const": "Quant1" } }, "required": ["type"] },       "then": { "$ref": "#/$defs/Quant1" } },
         { "if": { "properties": { "type": { "const": "EProp" } }, "required": ["type"] },        "then": { "$ref": "#/$defs/EProp" } },
         { "if": { "properties": { "type": { "const": "EPropGroup" } }, "required": ["type"] },   "then": { "$ref": "#/$defs/EPropGroup" } },
@@ -241,6 +243,27 @@
       "additionalProperties": false
     },
 
+    "RelUntyped": {
+      "description": "One relation of any type in vTypes and of no type in nvTypes. vTypes must list at least one type: with none (meaning 'any relation') the engine drops the relation (KNOWN_ISSUES Q19).",
+      "type": "object",
+      "properties": {
+        "type": { "const": "RelUntyped" },
+        "eNum": { "$ref": "#/$defs/eNum" },
+        "eTag": { "$ref": "#/$defs/tag" },
+        "vTypes": { "$ref": "#/$defs/typeSet", "minItems": 1 },
+        "nvTypes": { "$ref": "#/$defs/typeSet" },
+        "dir": { "$ref": "#/$defs/direction" },
+        "wrapper": { "type": "string", "description": "Optional tag for the relation in results." },
+        "next": { "$ref": "#/$defs/ref" },
+        "b": { "$ref": "#/$defs/ref" },
+        "typed": { "$ref": "#/$defs/readOnlyTyped" },
+        "parentTyped": { "$ref": "#/$defs/readOnlyParentTypes" },
+        "parentType": { "$ref": "#/$defs/readOnlyParentTypes" }
+      },
+      "required": ["type", "eNum", "vTypes", "dir"],
+      "additionalProperties": false
+    },
+
     "Quant1": {
       "description": "Branches the query: every eNum in 'next' starts a branch (a property, a property group, a relation, or a nested quantifier) hanging off the preceding entity. qType says how the branches combine.",
       "type": "object",
@@ -346,9 +369,9 @@
       "description": "Operators whose value the engine does not check."
     },
 
-    "coreConstraintTypes": { "enum": ["Constraint"] },
+    "coreConstraintTypes": { "enum": ["Constraint", "WhereByConstraint"] },
     "extensionConstraintTypes": {
-      "enum": ["InnerQueryConstraint", "WhereByConstraint", "ParameterizedConstraint",
+      "enum": ["InnerQueryConstraint", "ParameterizedConstraint",
                "OptionalUnaryParameterizedConstraint", "JoinParameterizedConstraint"]
     },
 
@@ -358,8 +381,36 @@
       "properties": {
         "type": { "anyOf": [ { "$ref": "#/$defs/coreConstraintTypes" }, { "$ref": "#/$defs/extensionConstraintTypes" } ] }
       },
-      "if": { "properties": { "type": { "const": "Constraint" } }, "required": ["type"] },
-      "then": { "$ref": "#/$defs/Constraint" }
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "Constraint" } }, "required": ["type"] },        "then": { "$ref": "#/$defs/Constraint" } },
+        { "if": { "properties": { "type": { "const": "WhereByConstraint" } }, "required": ["type"] }, "then": { "$ref": "#/$defs/WhereByConstraint" } }
+      ]
+    },
+
+    "op": {
+      "anyOf": [
+        { "$ref": "#/$defs/noValueOps" }, { "$ref": "#/$defs/singleValueOps" }, { "$ref": "#/$defs/twoValueOps" },
+        { "$ref": "#/$defs/listValueOps" }, { "$ref": "#/$defs/uncheckedOps" }
+      ]
+    },
+
+    "WhereByConstraint": {
+      "description": "Compares the property with another entity's property. The engine runs the path up to the entity tagged tagEntity as a separate inner query and collects its projectedField values. FOR_EACH keeps a match when 'op' holds for at least one collected value; FULL keeps it when 'op' holds for every value. expr is optional: an expression containing $val is evaluated (Aviator) with each collected value in place of $val, not checked live.",
+      "type": "object",
+      "properties": {
+        "type": { "const": "WhereByConstraint" },
+        "op": { "$ref": "#/$defs/op" },
+        "tagEntity": { "type": "string", "minLength": 1, "description": "eTag of the entity whose property is compared." },
+        "projectedField": { "$ref": "#/$defs/typeName", "description": "Property of the tagged entity to compare with." },
+        "joinType": {
+          "enum": ["FOR_EACH", "FULL"],
+          "description": "Required: without it the engine fails to run the query (KNOWN_ISSUES Q17)."
+        },
+        "expr": {},
+        "iType": { "enum": ["[]", "[)", "(]", "()"] }
+      },
+      "required": ["type", "op", "tagEntity", "projectedField", "joinType"],
+      "additionalProperties": false
     },
 
     "Constraint": {
@@ -367,12 +418,7 @@
       "type": "object",
       "properties": {
         "type": { "const": "Constraint" },
-        "op": {
-          "anyOf": [
-            { "$ref": "#/$defs/noValueOps" }, { "$ref": "#/$defs/singleValueOps" }, { "$ref": "#/$defs/twoValueOps" },
-            { "$ref": "#/$defs/listValueOps" }, { "$ref": "#/$defs/uncheckedOps" }
-          ]
-        },
+        "op": { "$ref": "#/$defs/op" },
         "expr": {
           "description": "The value to compare with. Its JSON type should match the property's ontology type: string, number, boolean, or a date as an ISO-8601 string."
         },

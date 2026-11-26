@@ -113,6 +113,15 @@
                     <exclude>version/*.properties</exclude>
                 </excludes>
             </resource>
+            <!-- the V1 query JSON Schema ships in the jar (spec/v1/query.schema.json, served at /fuse/query/v1/schema);
+                 docs/spec/v1 stays its only copy -->
+            <resource>
+                <directory>${project.basedir}/../docs/spec/v1</directory>
+                <targetPath>spec/v1</targetPath>
+                <includes>
+                    <include>query.schema.json</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 

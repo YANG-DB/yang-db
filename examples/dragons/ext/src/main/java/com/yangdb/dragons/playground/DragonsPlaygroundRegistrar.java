@@ -51,7 +51,7 @@ import java.util.*;
  */
 public class DragonsPlaygroundRegistrar extends AppControllerRegistrarBase<DataLoaderController> {
     static final String ONTOLOGY = "Dragons";
-    /** Swagger UI 5, unpacked into this jar by the pom (not a dependency: that would replace ApiTool's 3.17.1) */
+    /** Swagger UI 5, unpacked into this jar by the pom */
     static final String SWAGGER_UI = "/dragons/playground/ui/";
     static final String SPEC = "/dragons/playground/openapi.json";
     static final String TUTORIAL = "/dragons/tutorial/";

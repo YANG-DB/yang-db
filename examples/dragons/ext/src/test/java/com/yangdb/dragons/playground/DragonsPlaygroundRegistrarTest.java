@@ -22,16 +22,6 @@ public class DragonsPlaygroundRegistrarTest {
     }
 
     @Test
-    public void generatedSwaggerKeepsItsOwnSwaggerUi() {
-        // jooby-apitool serves /swagger from the swagger-ui 3.17.1 webjar and fails service startup without it. A
-        // swagger-ui dependency of any other version in this module would replace it in the distribution.
-        Assert.assertNotNull("jooby-apitool's swagger-ui 3.17.1 webjar was replaced",
-                getClass().getResource("/META-INF/resources/webjars/swagger-ui/3.17.1/index.html"));
-        Assert.assertNull("a second swagger-ui webjar is on the classpath",
-                getClass().getResource("/META-INF/resources/webjars/swagger-ui/5.35.1/index.html"));
-    }
-
-    @Test
     public void everyTutorialFileAndTheOntologyAreBundled() throws Exception {
         for (String[] file : DragonsPlaygroundRegistrar.FILES) {
             String csv = DragonsPlaygroundRegistrar.resource(DragonsPlaygroundRegistrar.TUTORIAL + "csv/" + file[0]);
