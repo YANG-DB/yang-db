@@ -37,7 +37,7 @@ curl http://localhost:8888/fuse/health           # "Alive And Well..." once YANG
 |---|---|
 | YANG-DB (REST API) | http://localhost:8888/fuse |
 | **Dragons playground** | http://localhost:8888/dragons/swagger |
-| Full API (Swagger) | http://localhost:8888/swagger# |
+| Full API (OpenAPI 3.1) | http://localhost:8888/swagger |
 | OpenSearch | http://localhost:9200 |
 | OpenSearch Dashboards | http://localhost:5601 |
 

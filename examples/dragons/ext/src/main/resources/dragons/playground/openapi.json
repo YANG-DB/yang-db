@@ -3,7 +3,7 @@
   "info": {
     "title": "YANG-DB Dragons playground",
     "version": "1.0",
-    "description": "Try the [Dragons tutorial](https://github.com/YANG-DB/yang-db/tree/main/docs/tutorial/sample/dragons) without copying text around.\n\n1. **Set up the tutorial**: run `POST /dragons/tutorial/load` once. It registers the Dragons ontology, creates the indices and loads every tutorial CSV.\n2. **Query the dragons**: open `GET /query/cypher/run`, pick a query from the *Examples* list and press **Execute**.\n\nEvery example here is also checked by the end-to-end suite (`docker/e2e`), so they are known to work. The full, generated API is at [/swagger](/swagger)."
+    "description": "Try the [Dragons tutorial](https://github.com/YANG-DB/yang-db/tree/main/docs/tutorial/sample/dragons) without copying text around.\n\n1. **Set up the tutorial**: run `POST /dragons/tutorial/load` once. It registers the Dragons ontology, creates the indices and loads every tutorial CSV.\n2. **Query the dragons**: open `GET /query/cypher/run`, pick a query from the *Examples* list and press **Execute**.\n\nEvery example here is also checked by the end-to-end suite (`docker/e2e`), so they are known to work. The full API reference is at [/swagger](/swagger)."
   },
   "servers": [
     {

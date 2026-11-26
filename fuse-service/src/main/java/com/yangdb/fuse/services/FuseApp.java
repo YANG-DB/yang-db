@@ -54,6 +54,7 @@ import com.yangdb.fuse.services.appRegistrars.*;
 import com.yangdb.fuse.services.extensions.YangDbExtensions;
 import javaslang.Tuple2;
 import org.jooby.Jooby;
+import org.jooby.MediaType;
 import org.jooby.RequestLogger;
 import org.jooby.Results;
 import org.jooby.caffeine.CaffeineCache;
@@ -95,8 +96,11 @@ public class FuseApp extends Jooby {
                 .metric("gc", new GarbageCollectorMetricSet()));
 
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {}));
-        // swagger support
-        get("swagger/swagger.json", () -> Results.redirect("/public/assets/swagger/swagger.json"));
+        // API docs: Swagger UI 5 over the distribution's OpenAPI 3.1 spec (swagger.json: the old address)
+        get("swagger", () -> Results.ok(SwaggerUiPage.html()).type(MediaType.html));
+        assets(SwaggerUiPage.UI + "**", SwaggerUiPage.WEBJAR + "{0}");
+        get("swagger/openapi.json", () -> Results.redirect(SwaggerUiPage.SPEC));
+        get("swagger/swagger.json", () -> Results.redirect(SwaggerUiPage.SPEC));
         get("redocly/redocly", () -> Results.redirect("/public/assets/redocly/redocly.html"));
         // opensearch bigDesk support (
         get("bigdesk", () -> Results.redirect("/public/assets/bigdesk/index.html"));

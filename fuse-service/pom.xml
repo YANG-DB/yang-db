@@ -74,9 +74,11 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-metrics</artifactId>
         </dependency>
+        <!-- Swagger UI 5 for /swagger (SwaggerUiPage.VERSION must match) -->
         <dependency>
-            <groupId>org.jooby</groupId>
-            <artifactId>jooby-apitool</artifactId>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>5.35.1</version>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>

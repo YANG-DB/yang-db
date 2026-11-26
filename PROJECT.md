@@ -68,7 +68,7 @@ curl -H 'Accept: application/json' \
 ```
 
 Then try the **Dragons playground** at http://localhost:8888/dragons/swagger: one click loads the tutorial data,
-and every tutorial query is ready to run from a list. The full generated API is at http://localhost:8888/swagger#. Full details in [docker/README.md](docker/README.md),
+and every tutorial query is ready to run from a list. The full API reference (OpenAPI 3.1) is at http://localhost:8888/swagger. Full details in [docker/README.md](docker/README.md),
 and the [Dragons tutorial](docs/tutorial/sample/dragons/README.md) walks through creating the ontology,
 [loading data](docs/tutorial/sample/dragons/load-data.md) and
 [querying it](docs/tutorial/sample/dragons/query-the-data.md).

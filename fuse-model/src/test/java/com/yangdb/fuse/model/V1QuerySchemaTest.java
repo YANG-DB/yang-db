@@ -14,6 +14,7 @@ import com.yangdb.fuse.model.query.optional.OptionalComp;
 import com.yangdb.fuse.model.query.properties.*;
 import com.yangdb.fuse.model.query.properties.constraint.Constraint;
 import com.yangdb.fuse.model.query.properties.constraint.ConstraintOp;
+import com.yangdb.fuse.model.query.properties.constraint.WhereByConstraint;
 import com.yangdb.fuse.model.query.properties.projection.IdentityProjection;
 import com.yangdb.fuse.model.query.quant.Quant1;
 import com.yangdb.fuse.model.query.quant.QuantType;
@@ -112,7 +113,7 @@ public class V1QuerySchemaTest {
     public void docExamplesMatchSchema() throws IOException {
         Pattern block = Pattern.compile("```(?:json)?\\s*\\n(\\{.*?)\\n```", Pattern.DOTALL);
         int checked = 0;
-        for (String doc : Arrays.asList("docs/spec/v1/README.md", "docs/info/components/query_language.md",
+        for (String doc : Arrays.asList("docs/spec/v1/README.md", "docs/spec/v1/rules.md", "docs/info/components/query_language.md",
                 "docs/tutorial/architecture/query-lifecycle.md")) {
             Matcher m = block.matcher(read(REPO.resolve(doc)));
             while (m.find()) {
@@ -122,14 +123,22 @@ public class V1QuerySchemaTest {
                 }
             }
         }
-        assertTrue("expected V1 examples in the docs", checked >= 3);
+        assertTrue("expected V1 examples in the docs", checked >= 15);
+    }
+
+    /** what GET /fuse/query/v1/schema serves is the docs copy, byte for byte */
+    @Test
+    public void schemaShippedInTheJarIsTheDocsCopy() {
+        assertEquals(read(REPO.resolve("docs/spec/v1/query.schema.json")), com.yangdb.fuse.model.query.V1Spec.querySchema());
     }
 
     @Test
-    public void swaggerExamplesMatchSchema() throws IOException {
-        JsonNode swagger = mapper.readTree(REPO.resolve("distribution/resources/assembly/Dragons/public/assets/swagger/swagger.json").toFile());
-        assertValid("swagger Query example", swagger.at("/definitions/Query/example"));
-        assertValid("swagger QueryRequest example", swagger.at("/definitions/QueryRequest/example/query"));
+    public void openApiExamplesMatchSchema() throws IOException {
+        JsonNode openapi = mapper.readTree(REPO.resolve("distribution/resources/assembly/Dragons/public/assets/swagger/openapi.json").toFile());
+        assertValid("OpenAPI V1Query example", openapi.at("/components/examples/V1Query/value"));
+        assertValid("OpenAPI QueryRequest example", openapi.at("/components/schemas/QueryRequest/example/query"));
+        // the V1 query body is the published schema, served by the engine
+        assertEquals("/fuse/query/v1/schema", openapi.at("/components/schemas/Query/$ref").asText());
     }
 
     /** The engine's own serializer output, for every core element type, must validate. */
@@ -150,7 +159,10 @@ public class V1QuerySchemaTest {
                 new Rel(10, "fire", Rel.Direction.RL, null, 11, 12),
                 new EConcrete(11, "C", "Dragon", "d1", "Smaug", 0),
                 RelProp.of(12, "temperature", Constraint.of(ConstraintOp.inSet, Arrays.asList(1, 2, 3))),
-                EProp.of(13, "color", Constraint.of(ConstraintOp.eq, "red"))
+                EProp.of(13, "color", Constraint.of(ConstraintOp.eq, "red")),
+                new RelUntyped(14, new HashSet<>(Arrays.asList("Own", "Know")), Rel.Direction.R, null, 15),
+                new EUntyped(15, "D", 0, 0),
+                EProp.of(16, "height", WhereByConstraint.of(ConstraintOp.gt, "A", "height"))
         )).build();
         assertValid("serialized core query", mapper.valueToTree(q));
     }
@@ -168,7 +180,8 @@ public class V1QuerySchemaTest {
         assertValid("empty", mapper.readTree(withProp("{\"type\":\"Constraint\",\"op\":\"empty\"}")));
         assertValid("in range", mapper.readTree(withProp("{\"type\":\"Constraint\",\"op\":\"in range\",\"expr\":[1,2],\"iType\":\"(]\"}")));
         assertValid("in set", mapper.readTree(withProp("{\"type\":\"Constraint\",\"op\":\"in set\",\"expr\":[\"a\",\"b\",\"c\"]}")));
-        assertValid("extension constraint", mapper.readTree(withProp("{\"type\":\"WhereByConstraint\",\"op\":\"eq\",\"tagEntity\":\"B\"}")));
+        assertValid("where-by", mapper.readTree(withProp("{\"type\":\"WhereByConstraint\",\"op\":\"gt\",\"tagEntity\":\"A\",\"projectedField\":\"height\",\"joinType\":\"FOR_EACH\"}")));
+        assertValid("extension constraint", mapper.readTree(withProp("{\"type\":\"InnerQueryConstraint\",\"op\":\"eq\",\"tagEntity\":\"B\"}")));
         assertValid("extension element", mapper.readTree(HEAD + "{\"eNum\":2,\"type\":\"HQuant\",\"qType\":\"all\",\"next\":[3]}]}"));
     }
 
@@ -191,6 +204,10 @@ public class V1QuerySchemaTest {
         assertInvalid("concrete entity without id", HEAD + "{\"eNum\":2,\"type\":\"EConcrete\",\"eType\":\"Dragon\"}]}");
         assertInvalid("no Start", "{\"ont\":\"D\",\"elements\":[{\"eNum\":1,\"type\":\"ETyped\",\"eType\":\"P\"}]}");
         assertInvalid("two Starts", "{\"ont\":\"D\",\"elements\":[{\"eNum\":0,\"type\":\"Start\"},{\"eNum\":1,\"type\":\"Start\"}]}");
+        assertInvalid("where-by without joinType (the engine fails to run it, KNOWN_ISSUES Q17)",
+                withProp("{\"type\":\"WhereByConstraint\",\"op\":\"gt\",\"tagEntity\":\"A\",\"projectedField\":\"height\"}"));
+        assertInvalid("untyped relation with no types (the engine drops it, KNOWN_ISSUES Q19)",
+                HEAD + "{\"eNum\":2,\"type\":\"RelUntyped\",\"vTypes\":[],\"dir\":\"R\"}]}");
         assertInvalid("no ontology", "{\"elements\":[{\"eNum\":0,\"type\":\"Start\"}]}");
     }
 }

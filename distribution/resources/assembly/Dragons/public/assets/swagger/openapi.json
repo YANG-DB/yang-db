@@ -1,0 +1,7212 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "YangDB API",
+    "version": "0.10.0",
+    "description": "REST API of the YangDB graph engine, as served by the Dragons distribution. V1 query bodies follow the V1 JSON Schema served at `GET /fuse/query/v1/schema` (docs/spec/v1 in the repository)."
+  },
+  "servers": [
+    {
+      "url": "/fuse"
+    }
+  ],
+  "tags": [
+    {
+      "name": "YangDb",
+      "description": "Everything about YangDb Graph Engine."
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Get API Info",
+        "description": "API Info",
+        "responses": {
+          "200": {
+            "description": "API resources urls"
+          }
+        }
+      }
+    },
+    "/catalog/ontology": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "add an ontology to catalog",
+        "description": "add an ontology to catalog",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ontology"
+              }
+            }
+          },
+          "description": "Ontology"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get all Ontology catalog resources",
+        "description": "Ontology catalog resources",
+        "responses": {
+          "200": {
+            "description": "All Ontology "
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get Ontology resource by name ",
+        "description": "Ontology resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ontology Json"
+          }
+        }
+      }
+    },
+    "/catalog/ontology/{id}/visualize": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Fetch ontology and visualize as SVG graph",
+        "description": "Fetch ontology by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/catalog/schema": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get available schemas",
+        "description": "Ontology schema resource",
+        "responses": {
+          "200": {
+            "description": "Schema Json array"
+          }
+        }
+      }
+    },
+    "/catalog/schema/{id}": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "Get schemas by Id",
+        "description": "Get Ontology schema resource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schema Json"
+          }
+        }
+      }
+    },
+    "/dashboard/count": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of different server statistical metrics",
+        "description": "summery server statistical metrics",
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of different server statistical metrics or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/created/{ontology}": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of created DB elements by creation time ",
+        "description": "summery of time bases created DB elements ",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "path",
+            "description": "ontology.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> Show summery of created DB elements by creation time  or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/dashboard/entities/{ontology}": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Show summery of DB existing entities",
+        "description": "summery of DB entities",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "path",
+            "description": "ontology.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> summery of db elements created (entities / properties) or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/graphql/ontology/{id}": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "graphQL IDL into Ontology",
+        "description": "Transform a graphQL IDL into V1 Ontology - see https://graphql.org/learn/schema/",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "description": "graphQL IDL"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ontology"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Liveness",
+        "responses": {
+          "200": {
+            "description": "Alive",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/idgen": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Take a range of ids",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "sequence name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "numIds",
+            "in": "query",
+            "description": "how many ids",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/idgen/init": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Init DB id Sequencer",
+        "description": "Initialize DB id Sequencer tables",
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "description": "Sequence names [Entity,Relation,Evalue,Rvalue,workerId]  ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Initiated"
+          }
+        }
+      }
+    },
+    "/internal/config": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server configurations (according to app.config)",
+        "description": "Server configuration",
+        "responses": {
+          "200": {
+            "description": "Server configuration"
+          }
+        }
+      }
+    },
+    "/internal/cursorBindings": {
+      "get": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Cursor types and the classes that serve them",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/snowflakeId": {
+      "get": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "A new unique id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/statisticsProvider/name": {
+      "get": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "The planner's statistics provider",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/statisticsProvider/refresh": {
+      "put": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Reload the statistics provider's setup",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/statisticsProvider/setup": {
+      "get": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "The statistics provider's setup",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/version": {
+      "get": {
+        "tags": [
+          "management"
+        ],
+        "summary": "Get server version",
+        "description": "Server versions",
+        "responses": {
+          "200": {
+            "description": "Server version"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/csv/load": {
+      "post": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Load csv into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "description": "CSV"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/csv/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload json/zip File with CSV file into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "description": "Load CSV into DB according to specific ontology Transformer ",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File Ontological type - edge / vertex",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "File Ontological label - Person/Dragon/Kingdom ...",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "file"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/drop": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Drop E/S templates & Indices related to the ontology",
+        "description": "Drop  E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices dropped or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/graph/load": {
+      "post": {
+        "tags": [
+          "load"
+        ],
+        "summary": "Load Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogicalGraph"
+              }
+            }
+          },
+          "description": "Logical Graph"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/graph/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Upload json/zip File with Logical graph into DB according to specific ontology Transformer (see /catalog/ontology)",
+        "description": "Load Logical graph into DB according to specific ontology Transformer ",
+        "parameters": [
+          {
+            "name": "directive",
+            "in": "query",
+            "description": "Directive [UPSERT/INSERT] ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "file"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of graph elements created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/indices": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Generate E/S indices with related mapping associated with the ontology according to given physical provider",
+        "description": "Generate E/S indices with related mapping associated with the ontology according to given physical provider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices created || or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/init": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "description": "Initialize (Drop & Create) E/S templates & Indices related to the ontology",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of indices created or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/load/ontology/{id}/mapping": {
+      "get": {
+        "tags": [
+          "init"
+        ],
+        "summary": "Generate E/S templates mapping related to the ontology according to given physical provider",
+        "description": "Generate E/S templates mapping related to the ontology according to given physical provider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> number of mapping templates created || or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Basic general query Info",
+        "description": "Basic query Info",
+        "responses": {
+          "200": {
+            "description": "Basic query Info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueryInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Create a V1 query (same as POST /query/v1)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The query resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/call": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a stored (parameterized) query with parameter values",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteStoredQueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The query resource with the first page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a cypher query request",
+        "description": "submit a query to the engine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CypherQueryRequest"
+              }
+            }
+          },
+          "description": "Cypher Query json request"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/cypher/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run cypher query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "schema": {
+              "enum": [
+                "graph",
+                "csv",
+                "forwardPaths",
+                "projection",
+                "count"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "cypher",
+            "in": "query",
+            "description": "cypher query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "Match (p1:Person)-[know:Know]->(p2:Person {name:'Myriel'})  return *"
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a cypher query: the query text is the request body",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursor type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "forwardPaths",
+                "graph",
+                "paths",
+                "findPaths",
+                "csv",
+                "projection",
+                "count",
+                "graphHierarchy",
+                "hierarchyFlatten",
+                "inner",
+                "LogicalGraphCursorRequest"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/graph/api/findPath": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute find Path graph query",
+        "description": "Execute find Path graph query between two concrete vertices",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceEntity",
+            "in": "query",
+            "description": "source entity type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "description": "vertex source Id ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetEntity",
+            "in": "query",
+            "description": "target entity type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetId",
+            "in": "query",
+            "description": "vertex target Id ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "relationType",
+            "in": "query",
+            "description": "Relation Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxHops",
+            "in": "query",
+            "description": "maximum number of hops",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/graph/api/getNeighbors": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute get vertex & neighbors by id",
+        "description": "Execute find specific vertex & its neighbors by id",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "entity type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "vertex Id ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/graph/api/getVertex": {
+      "get": {
+        "tags": [
+          "GraphApi"
+        ],
+        "summary": "Execute get vertex by id",
+        "description": "Execute find specific vertex by id",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "entity type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "vertex Id ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a graphQL query request",
+        "description": "submit a graphQL to the engine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphQLQueryRequest"
+              }
+            }
+          },
+          "description": "graphQL Query json request"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/graphQL/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run graphQL query directly  ",
+        "description": "submit & run a graphQL query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "schema": {
+              "enum": [
+                "graph",
+                "csv",
+                "forwardPaths"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "graphQL",
+            "in": "query",
+            "description": "graphQL query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "{\n    human {\n        name,\n        friends {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            friends {\n                name,\n                description\n            }\n        }\n    }\n}"
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a graphQL query: the query text is the request body",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursor type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "forwardPaths",
+                "graph",
+                "paths",
+                "findPaths",
+                "csv",
+                "projection",
+                "count",
+                "graphHierarchy",
+                "hierarchyFlatten",
+                "inner",
+                "LogicalGraphCursorRequest"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/sparql": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a sparql query request",
+        "description": "submit a sparql to the engine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SparqlQueryRequest"
+              }
+            }
+          },
+          "description": "sparql Query json request"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/sparql/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run sparql query directly  ",
+        "description": "submit & run a sparql query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "schema": {
+              "enum": [
+                "graph",
+                "csv",
+                "forwardPaths"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sparql",
+            "in": "query",
+            "description": "sparql query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a sparql query: the query text is the request body",
+        "parameters": [
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursor type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "forwardPaths",
+                "graph",
+                "paths",
+                "findPaths",
+                "csv",
+                "projection",
+                "count",
+                "graphHierarchy",
+                "hierarchyFlatten",
+                "inner",
+                "LogicalGraphCursorRequest"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit a (V1) query request",
+        "description": "submit a query to the engine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              }
+            }
+          },
+          "description": "V1 Query json request"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery (HATEOAS Rest Specification).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/plan": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated plan ",
+        "description": "submit V1 query and see generated plan ",
+        "requestBody": {
+          "required": true,
+          "description": "V1 query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              },
+              "examples": {
+                "V1Query": {
+                  "$ref": "#/components/examples/V1Query"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The execution plan with its cost, printed as one JSON string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/print": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Print a V1 query as one line of text",
+        "description": "For reading only: there is no parser for the text. Example: `start (A:Person) -[:Own]-> (B:Dragon)`.",
+        "requestBody": {
+          "required": true,
+          "description": "V1 query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              },
+              "examples": {
+                "V1Query": {
+                  "$ref": "#/components/examples/V1Query"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The query as text",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/run": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & run V1 query directly  ",
+        "description": "submit & run a query to the engine",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "schema": {
+              "enum": [
+                "graph",
+                "csv",
+                "forwardPaths"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "V1 query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              },
+              "examples": {
+                "V1Query": {
+                  "$ref": "#/components/examples/V1Query"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query summery with first page result data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/schema": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The V1 query JSON Schema",
+        "description": "The JSON Schema (draft 2020-12) of a V1 query, the body of the /query/v1 routes. Rules beyond the schema: docs/spec/v1/rules.md in the repository.",
+        "responses": {
+          "200": {
+            "description": "V1 query JSON Schema",
+            "content": {
+              "application/schema+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/traversal": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "submit V1 query and see generated execution traversal gremlin ",
+        "description": "submit V1 query and see generated execution traversal gremlin ",
+        "requestBody": {
+          "required": true,
+          "description": "V1 query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              },
+              "examples": {
+                "V1Query": {
+                  "$ref": "#/components/examples/V1Query"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The Gremlin traversal, pretty-printed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/v1/validate": {
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "submit & validate V1 query directly  ",
+        "description": "submit & validate a query to the engine",
+        "requestBody": {
+          "required": true,
+          "description": "V1 query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              },
+              "examples": {
+                "V1Query": {
+                  "$ref": "#/components/examples/V1Query"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a Query validation summery ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryValidation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch query info by ID",
+        "description": "Fetch query info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Deletes a query by ID",
+        "description": "Deletes a query by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Create a query in any registered language",
+        "description": "Here `id` is the language name. Any registered language: v1, cypher, graphQL, sparql; an unknown one answers 404 with the list.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query language",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/QueryRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CypherQueryRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GraphQLQueryRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SparqlQueryRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The query resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown language"
+          }
+        }
+      }
+    },
+    "/query/{id}/asg": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's ASG (the engine's internal form)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/asg/json": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's ASG as plain JSON",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/asg/print": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's ASG, printed as a tree",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/asg/visualize": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch Asg query and visualize as SVG graph",
+        "description": "Fetch ASG query by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor": {
+      "post": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Create cursor ",
+        "description": "Create cursor for query Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursorType",
+            "schema": {
+              "enum": [
+                "graph",
+                "csv",
+                "forwardPaths",
+                "projection"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCursorRequest"
+              }
+            }
+          },
+          "description": "Create Cursor request"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "The query's cursors",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}": {
+      "get": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Fetch cursor info by ID",
+        "description": "Fetch cursor info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cursor"
+        ],
+        "summary": "Deletes a cursor by ID",
+        "description": "Deletes a cursor by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "The cursor's pages",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "required": true,
+            "description": "cursor id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch the next page",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "required": true,
+            "description": "cursor id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}": {
+      "get": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Fetch page info by ID",
+        "description": "Fetch page info by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "page"
+        ],
+        "summary": "Deletes a page by ID",
+        "description": "Deletes a page by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A <code>204</code>"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/data": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Fetch Page data by id",
+        "description": "Fetch Page data by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/format/{format}/data": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Fetch Page data with format ",
+        "description": "Fetch Page data with format ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "description": "data format",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/cursor/{cursorId}/page/{pageId}/visualize": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Page data visualization ",
+        "description": " Page data visualization  ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageId",
+            "in": "path",
+            "description": "page ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/plan": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's execution plan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/graph": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's execution plan as a graph (nodes and edges)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cycle",
+            "in": "query",
+            "description": "include cycles",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/json": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "Fetch query plan by query ID",
+        "description": "Fetch query plan by query ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/print": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's execution plan, printed",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/plan/visualize": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "Fetch Execution Plan and visualize as SVG graph",
+        "description": "Fetch Execution Plan by query id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/planVerbose": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's execution plan with every step the planner considered",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/print": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query's V1 form, printed as a tree",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/profile": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Profile query ",
+        "description": "Profile query by execution",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{id}/v1": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "The query as V1",
+        "description": "A query sent in another language has no V1 form: the answer then has no elements.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "query id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Query"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/query/{id}/visualize": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Fetch query and visualize as SVG graph",
+        "description": "Fetch query by id and visualize as SVG graph",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with a single query info or <code>404</code>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/query/{lang}/run": {
+      "get": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a query in any registered language",
+        "description": "Any registered language: v1, cypher, graphQL, sparql; an unknown one answers 404 with the list. The query text is the `query` parameter or the request body.",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "query language",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "query text (or send it as the body)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursor type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "forwardPaths",
+                "graph",
+                "paths",
+                "findPaths",
+                "csv",
+                "projection",
+                "count",
+                "graphHierarchy",
+                "hierarchyFlatten",
+                "inner",
+                "LogicalGraphCursorRequest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The query resource with the first page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown language"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "query"
+        ],
+        "summary": "Run a query in any registered language",
+        "description": "Any registered language: v1, cypher, graphQL, sparql; an unknown one answers 404 with the list. The query text is the `query` parameter or the request body.",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "description": "query language",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "query text (or send it as the body)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ontology",
+            "in": "query",
+            "description": "ontology name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursorType",
+            "in": "query",
+            "description": "cursor type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "forwardPaths",
+                "graph",
+                "paths",
+                "findPaths",
+                "csv",
+                "projection",
+                "count",
+                "graphHierarchy",
+                "hierarchyFlatten",
+                "inner",
+                "LogicalGraphCursorRequest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The query resource with the first page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown language"
+          }
+        }
+      }
+    },
+    "/query/{queryId}/cursor/{cursorId}/nextPageData": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Fetch Next Page data ",
+        "description": "Fetch Next Page data with given size ",
+        "parameters": [
+          {
+            "name": "queryId",
+            "in": "path",
+            "description": "query ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursorId",
+            "in": "path",
+            "description": "cursor ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "deletePage",
+            "in": "query",
+            "description": "deletePage flag.",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns <code>200</code> with first page of data or <code>404</code>"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/sparql/ontology/{id}": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "OWL IDL into Ontology",
+        "description": "Transform a OWL IDL into V1 Ontology - see https://www.w3.org/TR/owl-features/",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "description": "OWL IDL"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ontology"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/ontology/{id}": {
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "SQL DDL into Ontology",
+        "description": "Transform a SQL DDL into V1 Ontology ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ontology name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "description": "DDL SQL"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an Ontology object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ontology"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SequenceNames": {
+        "type": "string",
+        "example": "Entity,Relation,Evalue,Rvalue"
+      },
+      "Ontology": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "ont": "LesMiserables",
+          "entityTypes": [
+            {
+              "eType": "Person",
+              "name": "Person",
+              "metadata": [],
+              "properties": [
+                "id",
+                "firstName",
+                "lastName",
+                "gender",
+                "birthDate",
+                "deathDate",
+                "name"
+              ]
+            }
+          ],
+          "relationshipTypes": [
+            {
+              "rType": "Know",
+              "name": "Know",
+              "directional": true,
+              "ePairs": [
+                {
+                  "eTypeA": "Person",
+                  "eTypeB": "Person"
+                }
+              ],
+              "metadata": [],
+              "properties": [
+                "id",
+                "startDate"
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "pType": "id",
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "pType": "firstName",
+              "name": "firstName",
+              "type": "string"
+            },
+            {
+              "pType": "lastName",
+              "name": "lastName",
+              "type": "string"
+            },
+            {
+              "pType": "gender",
+              "name": "gender",
+              "type": "string"
+            },
+            {
+              "pType": "birthDate",
+              "name": "birthDate",
+              "type": "date"
+            },
+            {
+              "pType": "startDate",
+              "name": "startDate",
+              "type": "date"
+            },
+            {
+              "pType": "deathDate",
+              "name": "deathDate",
+              "type": "string"
+            },
+            {
+              "pType": "name",
+              "name": "name",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "CypherQueryRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "query"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Query language",
+            "default": "cypher"
+          },
+          "ontology": {
+            "type": "string",
+            "description": "Ontology name (V1 queries also name it in `query.ont`)"
+          },
+          "query": {
+            "type": "string",
+            "description": "cypher query text"
+          },
+          "createCursorRequest": {
+            "$ref": "#/components/schemas/CreateCursorRequest"
+          },
+          "storageType": {
+            "type": "string",
+            "enum": [
+              "_volatile",
+              "_stored"
+            ],
+            "default": "_volatile"
+          },
+          "queryType": {
+            "type": "string",
+            "enum": [
+              "concrete",
+              "parameterized"
+            ],
+            "default": "concrete"
+          },
+          "ttl": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "searchPlan": {
+            "type": "boolean",
+            "default": true
+          },
+          "planTraceOptions": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "info",
+                  "debug",
+                  "trace",
+                  "verbose"
+                ]
+              }
+            }
+          }
+        },
+        "example": {
+          "id": "1",
+          "name": "Q1",
+          "ontology": "Dragons",
+          "query": "Match (p1:Person)-[o:Own]->(d2:Dragon )  return *",
+          "type": "cypher"
+        }
+      },
+      "SparqlQueryRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "query"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Query language",
+            "default": "sparql"
+          },
+          "ontology": {
+            "type": "string",
+            "description": "Ontology name (V1 queries also name it in `query.ont`)"
+          },
+          "query": {
+            "type": "string",
+            "description": "sparql query text"
+          },
+          "createCursorRequest": {
+            "$ref": "#/components/schemas/CreateCursorRequest"
+          },
+          "storageType": {
+            "type": "string",
+            "enum": [
+              "_volatile",
+              "_stored"
+            ],
+            "default": "_volatile"
+          },
+          "queryType": {
+            "type": "string",
+            "enum": [
+              "concrete",
+              "parameterized"
+            ],
+            "default": "concrete"
+          },
+          "ttl": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "searchPlan": {
+            "type": "boolean",
+            "default": true
+          },
+          "planTraceOptions": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "info",
+                  "debug",
+                  "trace",
+                  "verbose"
+                ]
+              }
+            }
+          }
+        },
+        "example": {
+          "id": "1",
+          "name": "q1",
+          "ontology": "Dragons",
+          "query": "\"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\\n\" +\n \"SELECT ?name\\n\" +\n \"WHERE {\\n\" +\n  \"    ?person foaf:firstName ?name .\\n\" +\n \"    ?person rdf:type foaf:Person .\\n\" +\n \"}\""
+        }
+      },
+      "GraphQLQueryRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "query"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Query language",
+            "default": "graphQL"
+          },
+          "ontology": {
+            "type": "string",
+            "description": "Ontology name (V1 queries also name it in `query.ont`)"
+          },
+          "query": {
+            "type": "string",
+            "description": "graphQL query text"
+          },
+          "createCursorRequest": {
+            "$ref": "#/components/schemas/CreateCursorRequest"
+          },
+          "storageType": {
+            "type": "string",
+            "enum": [
+              "_volatile",
+              "_stored"
+            ],
+            "default": "_volatile"
+          },
+          "queryType": {
+            "type": "string",
+            "enum": [
+              "concrete",
+              "parameterized"
+            ],
+            "default": "concrete"
+          },
+          "ttl": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "searchPlan": {
+            "type": "boolean",
+            "default": true
+          },
+          "planTraceOptions": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "info",
+                  "debug",
+                  "trace",
+                  "verbose"
+                ]
+              }
+            }
+          }
+        },
+        "example": {
+          "id": "1",
+          "name": "Q1",
+          "ontology": "Dragons",
+          "query": "{\n    person {\n        name,\n        knows {\n            name\n        },\n        owns {\n            name,\n            appearsIn,\n            knows {\n                name,\n                description\n            }\n        }\n    }\n}"
+        }
+      },
+      "QueryRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "query"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Query language",
+            "default": "v1"
+          },
+          "ontology": {
+            "type": "string",
+            "description": "Ontology name (V1 queries also name it in `query.ont`)"
+          },
+          "query": {
+            "$ref": "#/components/schemas/Query"
+          },
+          "createCursorRequest": {
+            "$ref": "#/components/schemas/CreateCursorRequest"
+          },
+          "storageType": {
+            "type": "string",
+            "enum": [
+              "_volatile",
+              "_stored"
+            ],
+            "default": "_volatile"
+          },
+          "queryType": {
+            "type": "string",
+            "enum": [
+              "concrete",
+              "parameterized"
+            ],
+            "default": "concrete"
+          },
+          "ttl": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "searchPlan": {
+            "type": "boolean",
+            "default": true
+          },
+          "planTraceOptions": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "info",
+                  "debug",
+                  "trace",
+                  "verbose"
+                ]
+              }
+            }
+          }
+        },
+        "example": {
+          "id": "1",
+          "name": "Q1",
+          "query": {
+            "ont": "Dragons",
+            "elements": [
+              {
+                "type": "Start",
+                "eNum": 0,
+                "next": 1
+              },
+              {
+                "type": "ETyped",
+                "eNum": 1,
+                "next": 2,
+                "eTag": "A",
+                "eType": "Person"
+              },
+              {
+                "eNum": 2,
+                "type": "Quant1",
+                "qType": "all",
+                "next": [
+                  3,
+                  5
+                ]
+              },
+              {
+                "type": "Rel",
+                "dir": "R",
+                "eNum": 3,
+                "next": 4,
+                "rType": "Know"
+              },
+              {
+                "type": "ETyped",
+                "eNum": 4,
+                "eTag": "B",
+                "eType": "Person"
+              },
+              {
+                "type": "Rel",
+                "dir": "R",
+                "eNum": 5,
+                "next": 6,
+                "rType": "Know"
+              },
+              {
+                "type": "ETyped",
+                "eNum": 6,
+                "eTag": "Ev",
+                "eType": "Person"
+              }
+            ]
+          },
+          "createCursorRequest": {
+            "maxExecutionTime": 600000,
+            "cursorType": "LogicalGraphCursorRequest",
+            "format": "XML",
+            "createPageRequest": {
+              "pageSize": 100,
+              "fetch": false
+            },
+            "include": "all"
+          }
+        }
+      },
+      "CreateCursorRequest": {
+        "type": "object",
+        "required": [
+          "cursorType"
+        ],
+        "properties": {
+          "cursorType": {
+            "type": "string",
+            "enum": [
+              "forwardPaths",
+              "graph",
+              "paths",
+              "findPaths",
+              "csv",
+              "projection",
+              "count",
+              "graphHierarchy",
+              "hierarchyFlatten",
+              "inner",
+              "LogicalGraphCursorRequest"
+            ],
+            "description": "Picks the cursor; some types take more fields (e.g. `format` for graph cursors)"
+          },
+          "maxExecutionTime": {
+            "type": "integer",
+            "format": "int64",
+            "default": 600000,
+            "description": "Milliseconds"
+          },
+          "profile": {
+            "type": "boolean",
+            "default": false
+          },
+          "ontology": {
+            "type": "string"
+          },
+          "include": {
+            "type": "string",
+            "enum": [
+              "all",
+              "entities",
+              "relationships"
+            ],
+            "default": "all"
+          },
+          "createPageRequest": {
+            "$ref": "#/components/schemas/CreatePageRequest"
+          }
+        }
+      },
+      "CreatePageRequest": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "default": 1000
+          },
+          "fetch": {
+            "type": "boolean",
+            "description": "Fetch the page's data in the same call"
+          }
+        }
+      },
+      "Query": {
+        "$ref": "/fuse/query/v1/schema",
+        "description": "A V1 query: see docs/spec/v1 in the repository, or GET /fuse/query/v1/schema."
+      },
+      "QueryInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "PlanInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "TraversalInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "OntologyPhysicalProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "QueryValidation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "LogicalGraph": {
+        "type": "object",
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogicalNode"
+            }
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogicalEdge"
+            }
+          }
+        },
+        "example": {
+          "nodes": [
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Myriel",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Myriel",
+                "age": 43
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Napoleon",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Napoleon",
+                "age": 68
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Mlle.Baptistine",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mlle.Baptistine",
+                "age": 21
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Mme.Magloire",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.Magloire",
+                "age": 13
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "CountessdeLo",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "CountessdeLo",
+                "age": 32
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Geborand",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Geborand",
+                "age": 73
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Champtercier",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Champtercier",
+                "age": 51
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Cravatte",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Cravatte",
+                "age": 23
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "Count",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Count",
+                "age": 58
+              }
+            },
+            {
+              "metadata": {
+                "group": 1
+              },
+              "id": "OldMan",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "OldMan",
+                "age": 70
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Labarre",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Labarre",
+                "age": 27
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Valjean",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Valjean",
+                "age": 25
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Marguerite",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Marguerite",
+                "age": 40
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Mme.deR",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.deR",
+                "age": 9
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Isabeau",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Isabeau",
+                "age": 10
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Gervais",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Gervais",
+                "age": 36
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Tholomyes",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Tholomyes",
+                "age": 42
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Listolier",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Listolier",
+                "age": 31
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Fameuil",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Fameuil",
+                "age": 30
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Blacheville",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Blacheville",
+                "age": 27
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Favourite",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Favourite",
+                "age": 20
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Dahlia",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Dahlia",
+                "age": 19
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Zephine",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Zephine",
+                "age": 17
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Fantine",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Fantine",
+                "age": 16
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Mme.Thenardier",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.Thenardier",
+                "age": 37
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Thenardier",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Thenardier",
+                "age": 19
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Cosette",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Cosette",
+                "age": 24
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Javert",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Javert",
+                "age": 31
+              }
+            },
+            {
+              "metadata": {
+                "group": 0
+              },
+              "id": "Fauchelevent",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Fauchelevent",
+                "age": 38
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Bamatabois",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Bamatabois",
+                "age": 21
+              }
+            },
+            {
+              "metadata": {
+                "group": 3
+              },
+              "id": "Perpetue",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Perpetue",
+                "age": 29
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Simplice",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Simplice",
+                "age": 19
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Scaufflaire",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Scaufflaire",
+                "age": 19
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Woman1",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Woman1",
+                "age": 20
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Judge",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Judge",
+                "age": 39
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Champmathieu",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Champmathieu",
+                "age": 45
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Brevet",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Brevet",
+                "age": 35
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Chenildieu",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Chenildieu",
+                "age": 30
+              }
+            },
+            {
+              "metadata": {
+                "group": 2
+              },
+              "id": "Cochepaille",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Cochepaille",
+                "age": 32
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Pontmercy",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Pontmercy",
+                "age": 22
+              }
+            },
+            {
+              "metadata": {
+                "group": 6
+              },
+              "id": "Boulatruelle",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Boulatruelle",
+                "age": 21
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Eponine",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Eponine",
+                "age": 20
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Anzelma",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Anzelma",
+                "age": 190
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Woman2",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Woman2",
+                "age": 18
+              }
+            },
+            {
+              "metadata": {
+                "group": 0
+              },
+              "id": "MotherInnocent",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "MotherInnocent",
+                "age": 28
+              }
+            },
+            {
+              "metadata": {
+                "group": 0
+              },
+              "id": "Gribier",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Gribier",
+                "age": 41
+              }
+            },
+            {
+              "metadata": {
+                "group": 7
+              },
+              "id": "Jondrette",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Jondrette",
+                "age": 45
+              }
+            },
+            {
+              "metadata": {
+                "group": 7
+              },
+              "id": "Mme.Burgon",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.Burgon",
+                "age": 43
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Gavroche",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Gavroche",
+                "age": 23
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Gillenormand",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Gillenormand",
+                "age": 23
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Magnon",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Magnon",
+                "age": 36
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Mlle.Gillenormand",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mlle.Gillenormand",
+                "age": 37
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Mme.Pontmercy",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.Pontmercy",
+                "age": 38
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Mlle.Vaubois",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mlle.Vaubois",
+                "age": 28
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Lt.Gillenormand",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Lt.Gillenormand",
+                "age": 24
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Marius",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Marius",
+                "age": 22
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "BaronessT",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "BaronessT",
+                "age": 12
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Mabeuf",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mabeuf",
+                "age": 11
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Enjolras",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Enjolras",
+                "age": 10
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Combeferre",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Combeferre",
+                "age": 9
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Prouvaire",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Prouvaire",
+                "age": 8
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Feuilly",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Feuilly",
+                "age": 7
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Courfeyrac",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Courfeyrac",
+                "age": 6
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Bahorel",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Bahorel",
+                "age": 18
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Bossuet",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Bossuet",
+                "age": 17
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Joly",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Joly",
+                "age": 16
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Grantaire",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Grantaire",
+                "age": 15
+              }
+            },
+            {
+              "metadata": {
+                "group": 9
+              },
+              "id": "MotherPlutarch",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "MotherPlutarch",
+                "age": 25
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Gueulemer",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Gueulemer",
+                "age": 27
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Babet",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Babet",
+                "age": 29
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Claquesous",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Claquesous",
+                "age": 30
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Montparnasse",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Montparnasse",
+                "age": 60
+              }
+            },
+            {
+              "metadata": {
+                "group": 5
+              },
+              "id": "Toussaint",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Toussaint",
+                "age": 68
+              }
+            },
+            {
+              "metadata": {
+                "group": 10
+              },
+              "id": "Child1",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Child1",
+                "age": 8
+              }
+            },
+            {
+              "metadata": {
+                "group": 10
+              },
+              "id": "Child2",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Child2",
+                "age": 8
+              }
+            },
+            {
+              "metadata": {
+                "group": 4
+              },
+              "id": "Brujon",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Brujon",
+                "age": 28
+              }
+            },
+            {
+              "metadata": {
+                "group": 8
+              },
+              "id": "Mme.Hucheloup",
+              "label": "Person",
+              "type": "logical",
+              "properties": {
+                "name": "Mme.Hucheloup",
+                "age": 78
+              }
+            }
+          ],
+          "edges": [
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Napoleon",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mlle.Baptistine",
+              "target": "Myriel",
+              "metadata": {
+                "value": 8
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Magloire",
+              "target": "Myriel",
+              "metadata": {
+                "value": 10
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Magloire",
+              "target": "Mlle.Baptistine",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "CountessdeLo",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Geborand",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Champtercier",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cravatte",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Count",
+              "target": "Myriel",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "OldMan",
+              "target": "Myriel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Valjean",
+              "target": "Labarre",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Valjean",
+              "target": "Mme.Magloire",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Valjean",
+              "target": "Mlle.Baptistine",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Valjean",
+              "target": "Myriel",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marguerite",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.deR",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Isabeau",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gervais",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Listolier",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fameuil",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fameuil",
+              "target": "Listolier",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Blacheville",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Blacheville",
+              "target": "Listolier",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Blacheville",
+              "target": "Fameuil",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Favourite",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Favourite",
+              "target": "Listolier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Favourite",
+              "target": "Fameuil",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Favourite",
+              "target": "Blacheville",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Dahlia",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Dahlia",
+              "target": "Listolier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Dahlia",
+              "target": "Fameuil",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Dahlia",
+              "target": "Blacheville",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Dahlia",
+              "target": "Favourite",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Listolier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Fameuil",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Blacheville",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Favourite",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Zephine",
+              "target": "Dahlia",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Listolier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Fameuil",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Blacheville",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Favourite",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Dahlia",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Zephine",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Marguerite",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fantine",
+              "target": "Valjean",
+              "metadata": {
+                "value": 9
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Thenardier",
+              "target": "Fantine",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Thenardier",
+              "target": "Valjean",
+              "metadata": {
+                "value": 7
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Thenardier",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 13
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Thenardier",
+              "target": "Fantine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Thenardier",
+              "target": "Valjean",
+              "metadata": {
+                "value": 12
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cosette",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cosette",
+              "target": "Valjean",
+              "metadata": {
+                "value": 31
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cosette",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cosette",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Javert",
+              "target": "Valjean",
+              "metadata": {
+                "value": 17
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Javert",
+              "target": "Fantine",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Javert",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Javert",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Javert",
+              "target": "Cosette",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fauchelevent",
+              "target": "Valjean",
+              "metadata": {
+                "value": 8
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Fauchelevent",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bamatabois",
+              "target": "Fantine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bamatabois",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bamatabois",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Perpetue",
+              "target": "Fantine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Simplice",
+              "target": "Perpetue",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Simplice",
+              "target": "Valjean",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Simplice",
+              "target": "Fantine",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Simplice",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Scaufflaire",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Woman1",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Woman1",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Judge",
+              "target": "Valjean",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Judge",
+              "target": "Bamatabois",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Champmathieu",
+              "target": "Valjean",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Champmathieu",
+              "target": "Judge",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Champmathieu",
+              "target": "Bamatabois",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brevet",
+              "target": "Judge",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brevet",
+              "target": "Champmathieu",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brevet",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brevet",
+              "target": "Bamatabois",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Chenildieu",
+              "target": "Judge",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Chenildieu",
+              "target": "Champmathieu",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Chenildieu",
+              "target": "Brevet",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Chenildieu",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Chenildieu",
+              "target": "Bamatabois",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Judge",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Champmathieu",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Brevet",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Chenildieu",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Cochepaille",
+              "target": "Bamatabois",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Pontmercy",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Boulatruelle",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Eponine",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Eponine",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Anzelma",
+              "target": "Eponine",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Anzelma",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Anzelma",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Woman2",
+              "target": "Valjean",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Woman2",
+              "target": "Cosette",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Woman2",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "MotherInnocent",
+              "target": "Fauchelevent",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "MotherInnocent",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gribier",
+              "target": "Fauchelevent",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Burgon",
+              "target": "Jondrette",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gavroche",
+              "target": "Mme.Burgon",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gavroche",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gavroche",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gavroche",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gillenormand",
+              "target": "Cosette",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gillenormand",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Magnon",
+              "target": "Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Magnon",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mlle.Gillenormand",
+              "target": "Gillenormand",
+              "metadata": {
+                "value": 9
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mlle.Gillenormand",
+              "target": "Cosette",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mlle.Gillenormand",
+              "target": "Valjean",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Pontmercy",
+              "target": "Mlle.Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Pontmercy",
+              "target": "Pontmercy",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mlle.Vaubois",
+              "target": "Mlle.Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Lt.Gillenormand",
+              "target": "Mlle.Gillenormand",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Lt.Gillenormand",
+              "target": "Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Lt.Gillenormand",
+              "target": "Cosette",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Mlle.Gillenormand",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Gillenormand",
+              "metadata": {
+                "value": 12
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Pontmercy",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Lt.Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Cosette",
+              "metadata": {
+                "value": 21
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Valjean",
+              "metadata": {
+                "value": 19
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Tholomyes",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Eponine",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Marius",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "BaronessT",
+              "target": "Gillenormand",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "BaronessT",
+              "target": "Marius",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mabeuf",
+              "target": "Marius",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mabeuf",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mabeuf",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Enjolras",
+              "target": "Marius",
+              "metadata": {
+                "value": 7
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Enjolras",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 7
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Enjolras",
+              "target": "Javert",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Enjolras",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Enjolras",
+              "target": "Valjean",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Combeferre",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 15
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Combeferre",
+              "target": "Marius",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Combeferre",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Combeferre",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Prouvaire",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Prouvaire",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Prouvaire",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Feuilly",
+              "target": "Marius",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Marius",
+              "metadata": {
+                "value": 9
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 17
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 13
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 7
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Feuilly",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Courfeyrac",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Courfeyrac",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Feuilly",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bahorel",
+              "target": "Marius",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Marius",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Courfeyrac",
+              "metadata": {
+                "value": 12
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Bahorel",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 10
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Feuilly",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 9
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Bossuet",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Bahorel",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Bossuet",
+              "metadata": {
+                "value": 7
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Courfeyrac",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Feuilly",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Joly",
+              "target": "Marius",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Bossuet",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Combeferre",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Courfeyrac",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Joly",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Bahorel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Feuilly",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Grantaire",
+              "target": "Prouvaire",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "MotherPlutarch",
+              "target": "Mabeuf",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 5
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Gueulemer",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Gueulemer",
+              "metadata": {
+                "value": 6
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Javert",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Babet",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Babet",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Gueulemer",
+              "metadata": {
+                "value": 4
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Mme.Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Claquesous",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Babet",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Gueulemer",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Claquesous",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Montparnasse",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Toussaint",
+              "target": "Cosette",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Toussaint",
+              "target": "Javert",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Toussaint",
+              "target": "Valjean",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Child1",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Child2",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 2
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Child2",
+              "target": "Child1",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Babet",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Gueulemer",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Thenardier",
+              "metadata": {
+                "value": 3
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Eponine",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Claquesous",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Brujon",
+              "target": "Montparnasse",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Bossuet",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Joly",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Grantaire",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Bahorel",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Courfeyrac",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Gavroche",
+              "metadata": {
+                "value": 1
+              }
+            },
+            {
+              "type": "logicalRel",
+              "label": "Know",
+              "source": "Mme.Hucheloup",
+              "target": "Enjolras",
+              "metadata": {
+                "value": 1
+              }
+            }
+          ]
+        }
+      },
+      "LogicalEdge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        }
+      },
+      "GraphQLSchema": {
+        "type": "string"
+      },
+      "OWLSchema": {
+        "type": "string"
+      },
+      "LogicalNode": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Properties"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        }
+      },
+      "Metadata": {
+        "type": "object",
+        "properties": {
+          "anyOf": {
+            "$ref": "#/components/schemas/Property"
+          }
+        }
+      },
+      "Properties": {
+        "type": "object",
+        "properties": {
+          "anyOf": {
+            "$ref": "#/components/schemas/Property"
+          }
+        }
+      },
+      "Property": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "ExecuteStoredQueryRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/QueryRequest"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  }
+                }
+              },
+              "executionParams": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "examples": {
+      "V1Query": {
+        "summary": "Person -[Own]-> Dragon",
+        "value": {
+          "ont": "Dragons",
+          "elements": [
+            {
+              "type": "Start",
+              "eNum": 0,
+              "next": 1
+            },
+            {
+              "type": "ETyped",
+              "eNum": 1,
+              "next": 2,
+              "eTag": "A",
+              "eType": "Person"
+            },
+            {
+              "eNum": 2,
+              "type": "Quant1",
+              "qType": "all",
+              "next": [
+                3
+              ]
+            },
+            {
+              "type": "Rel",
+              "dir": "R",
+              "eNum": 3,
+              "next": 4,
+              "rType": "Know"
+            },
+            {
+              "type": "ETyped",
+              "eNum": 4,
+              "eTag": "B",
+              "eType": "Person"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

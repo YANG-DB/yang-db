@@ -1,10 +1,14 @@
 ## YANG-DB REST API
 
-### Swagger API
-Once the engine has started - please open the swagger API page file 
-   
+### API reference
+Once the engine has started, open the API reference (OpenAPI 3.1, the spec file is
+`distribution/resources/assembly/Dragons/public/assets/swagger/openapi.json`):
+
     http://localhost:8888/swagger
     http://localhost:8888/redocly/redocly
+
+V1 query bodies are specified by a JSON Schema, served at `GET /fuse/query/v1/schema`; see
+[docs/spec/v1](../spec/v1/README.md).
 
 
 YangDb has multiple API endpoints that serve different purposes:
@@ -46,7 +50,9 @@ This is the main query API used to question the Data held by the engine.
 
 The API supports creating queries in the following languages:
 
-* V1 query language (default language) - `[POST] /fuse/query/v1`, `/fuse/query/v1/run`
+* V1 query language (default language) - `[POST] /fuse/query/v1`, `/fuse/query/v1/run`; also
+  `[GET] /fuse/query/v1/schema` (the [JSON Schema](../spec/v1/README.md)) and `[POST] /fuse/query/v1/print`
+  (the query as one line of text)
 * Cypher query language - `[POST] /fuse/query/cypher`, `[GET] /fuse/query/cypher/run`
 * GraphQL language (the extensions/graphql plugin) - `[POST] /fuse/query/graphQL`, `[GET] /fuse/query/graphQL/run`
 * SparQL language - `[POST] /fuse/query/sparql`, `[GET] /fuse/query/sparql/run`

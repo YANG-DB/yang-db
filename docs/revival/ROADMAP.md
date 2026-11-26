@@ -251,8 +251,15 @@ Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Ph
 Publish V1 as a spec other tools can build on ([docs/spec/v1](../spec/v1/README.md)).
 - [x] JSON Schema of the wire format for the core types, tested against the repo's fixtures, the docs, the Swagger
       examples and the engine's serializer output (`V1QuerySchemaTest`)
-- [ ] ANTLR grammar for a text notation of V1 that compiles to the JSON (agree the notation first)
-- [ ] Spell out the rules beyond the schema (references, cycles, alternation, ontology) with examples
+- [x] Rules beyond the schema, each with an example and the engine's answer, checked in CI (`rules.md`, `V1RulesTest`)
+- [x] Serve the schema: `GET /fuse/query/v1/schema` (packaged from docs/spec/v1 into fuse-model)
+- [x] `RelUntyped` and `WhereByConstraint` in the core; `HQuant` deprecated. Found Q16–Q20 on the way
+- [x] Text form, print only: `V1TextPrinter`, `POST /fuse/query/v1/print`
+- [x] API reference: Swagger 2.0 file → OpenAPI 3.1 (`openapi.json`, every served route), Swagger UI 5 at
+      `/swagger` instead of jooby-apitool, V1 bodies `$ref` the served schema
+- [ ] Fix Q16 (OR between property filters), Q17–Q20 (engine)
+- [ ] ANTLR grammar for the text form, only if writing V1 by hand becomes a need (the printer's notation is the
+      starting point)
 
 ## Phase 8 — Ongoing hygiene
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
