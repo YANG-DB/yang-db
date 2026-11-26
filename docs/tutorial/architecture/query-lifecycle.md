@@ -114,7 +114,7 @@ tree in place. The ones that matter for this query:
 | `EPropGroupingAsgStrategy`, `Quant1PropertiesGroupingAsgStrategy`, `RelPropGroupingAsgStrategy` | gather each element's conditions into one property group per element (`EPropGroup`, `RelPropGroup`) |
 | `ConstraintTypeTransformationAsgStrategy` | converts the literal to the property's ontology type |
 | `ExactConstraintTransformationAsgStrategy` (fuse-dv-asg) | `name` is a `text` property, so equality must use its exact-match `name.keyword` sub-field. That's why this strategy needs the physical schema |
-| `DefaultSelectionAsgStrategy` | adds a projection of every ontology property of each element, so the answer carries them |
+| `DefaultSelectionAsgStrategy` | adds a projection of every ontology property of each element, so the answer carries them. This is also why Cypher `RETURN` doesn't narrow the answer: every element of the pattern comes back with all its properties, whatever `RETURN` lists (Q15) |
 
 Other strategies infer the types of untyped nodes (`MATCH (n)`), expand ranges, and simplify `IN` and `LIKE`
 constraints.
@@ -224,19 +224,23 @@ Each controller builds its search with a chain of **search appenders** (`control
   physical schema, so only `person`, `own` or `dragon` is searched, not every index.
 - `ConstraintSearchAppender` translates the Gremlin constraint into an OpenSearch `bool` query.
 - Other appenders set the size, the `_source` fields to fetch (only the projected properties), and the edge
-  direction.
+  direction. Every search sends an explicit `_source.includes` list, never the whole document: the projected
+  properties, the edge fields joins need, minus anything an edge already carries as a redundant field (in step 3
+  below, the dragon search leaves out `name`, which the `Own` edge has as `entityB.name`).
 
 The search goes out through the `Client` interface: `TimeoutClientAdvisor` → `LoggingClient` (both fuse-dv-core) →
-**`RestBridgeClient`** (fuse-opensearch-client) → the REST high-level client → HTTP on port 9200. Every search is
-read with a scroll (`SearchHitScrollIterable`), so large results come in batches.
+**`RestBridgeClient`** (fuse-opensearch-client) → the REST high-level client → HTTP on port 9200.
+`SearchHitScrollIterable` reads the hits: first a plain search for one page (up to `opensearch.scroll_size`, 10,000);
+if that page isn't full, it's the whole result. Only after a full page does the same search continue as a scroll,
+so large results come in batches, and the scroll is cleared at the end.
 A scroll freezes the index for that one search only. The other searches of the same query, and the searches for
 later pages, see the index as it is when they run: there is no snapshot across a query yet. One Point in Time per
 cursor is planned ([OPENSEARCH_MIGRATION.md §10](../../revival/OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)).
 The converters `DiscreteVertexConverter` and `DiscreteEdgeConverter` turn hits back into graph vertices and edges.
 
 These are the requests OpenSearch received for the query, from its search slow log. `boost` and similar defaults
-were removed, and single-clause `bool` wrappers flattened. In the log itself each search appears once per shard, and
-once more per shard for its scroll follow-up; the planner's count (`size: 0`) isn't scrolled.
+were removed, and single-clause `bool` wrappers flattened. In the log each search appears once per shard. (Before 0.10
+each also appeared once more per shard, for an empty scroll follow-up.)
 
 ```jsonc
 // planning: CountCostEstimator counts the filtered start entity
