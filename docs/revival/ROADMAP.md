@@ -254,27 +254,51 @@ Items, in the recommended order:
 Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
 7.7 follows the PIT work; 7.8 only on evidence.
 
-## Workstream — V1 language specification
+## Workstream — V1 language specification ✅ done 2026-11-26 (PRs #196, #198; follow-ups below)
 Publish V1 as a spec other tools can build on ([docs/spec/v1](../spec/v1/README.md)).
 - [x] JSON Schema of the wire format for the core types, tested against the repo's fixtures, the docs, the Swagger
-      examples and the engine's serializer output (`V1QuerySchemaTest`)
+      examples and the engine's serializer output (`V1QuerySchemaTest`) (#196)
 - [x] Rules beyond the schema, each with an example and the engine's answer, checked in CI (`rules.md`, `V1RulesTest`)
 - [x] Serve the schema: `GET /fuse/query/v1/schema` (packaged from docs/spec/v1 into fuse-model)
 - [x] `RelUntyped` and `WhereByConstraint` in the core; `HQuant` deprecated. Found Q16–Q20 on the way
 - [x] Text form, print only: `V1TextPrinter`, `POST /fuse/query/v1/print`
 - [x] API reference: Swagger 2.0 file → OpenAPI 3.1 (`openapi.json`, every served route), Swagger UI 5 at
-      `/swagger` instead of jooby-apitool, V1 bodies `$ref` the served schema
-- [ ] Fix Q16 (OR between property filters), Q17–Q20 (engine)
+      `/swagger` instead of jooby-apitool, V1 bodies `$ref` the served schema (rules page to here: #198)
+
+Follow-ups (open):
+- [ ] Q16: `some` (OR) between property filters behaves as `all`; the biggest of the five, it gives wrong answers
+      silently. Workaround documented in rules.md
+- [ ] Q17–Q20: where-by without `joinType`, `/validate` checking less than `/run`, `RelUntyped` without `vTypes`,
+      cycles crashing. When one is fixed, update its example's marker in rules.md (`V1RulesTest` will fail until then)
+      and relax the schema where it guards against it (Q17, Q19)
+- [ ] Specify more extension types as they get used (`CountComp`, `InnerQueryConstraint`, ...)
 - [ ] ANTLR grammar for the text form, only if writing V1 by hand becomes a need (the printer's notation is the
       starting point)
 
 ## Phase 8 — Ongoing hygiene
+- [x] CI Maven cache falls back to the latest cache when a `pom.xml` changes (#199). Before, a changed POM meant
+      ~600 MB from Maven Central in all three jobs at once, and HTTP 429 failures (#196's JDK 11 job)
 - [ ] Clear the Dependabot backlog (the OpenSearch bump itself is Phases 5–6)
 - [x] Resolve or retire the `dragons-sys-test` profile failures: retired in Phase 1
-- [ ] Prune stale remote branches
+- [x] Prune stale remote branches (2026-11-26): 79 deleted. That's every branch already merged into `main`, the six
+      2023–24 Dependabot branches, `upgrade-rehearsal`, `planning-opensearch-upgrade`, `release/0.1`–`0.4` and
+      `master`. The last seven are kept as tags `v0.1`, `v0.2`, `v0.2.1`, `v0.3`, `v0.3.1`, `v0.4` and
+      `archive/master-2019`.
+- [ ] Review the 2017–2022 branches with work that isn't on `main` (keep, tag or delete): `develop`, `sql_support`,
+      `develop-es7_4_2-support`, `pgql-lang`, `query-resource-monitor`, `materialize`, `common-tasks`, `graphql`,
+      `gremlin-server`, `elastic-7.3.0`, `version_0.5_release`, `Jan-2020-RC2-fix_April_2020`, `metrics-report`,
+      `newStructure`, and the `feature/*` branches. Recent release branches (`release/0.8.x`, `release/0.9.x`,
+      `release-0.9.1`) stay
 
 ## Dev environment notes
 - JDK 11 + Maven; Docker via colima on macOS. Quickstart: [docker/README.md](../../docker/README.md).
+- Homebrew's Maven runs on Homebrew's newest JDK (27 on 2026-11-26), where Mockito-based tests fail
+  (`Could not modify all classes [class java.lang.Object, ...]`). Set `JAVA_HOME` to the JDK 11 first.
+- With the repo open in VS Code, its Java extension compiles into the same `target/` folders and leaves broken classes
+  that an incremental Maven build reuses ("Unresolved compilation problem", or a type with no package). Build with
+  `clean`.
+- Stacked PRs: merge the base, retarget the stacked PR to `main`, then merge it. Merged right after its base, #197
+  went into the base's branch instead of `main` and had to be re-landed (#198), as #164 did before (#165).
 - Full tutorial load sequence: `GET /fuse/idgen/init?names=Entity,Relation,Evalue,Rvalue,workerId` → `POST /fuse/catalog/ontology` (Dragons.json) → `GET /fuse/load/ontology/Dragons/init` → `POST /fuse/load/ontology/Dragons/csv/load?directive=INSERT&type=vertex|edge&label=<Type>` per CSV.
 - With the Docker stack up, run tests on other ports (see the agent rules above) or stop it first (`docker compose -f docker/docker-compose-os.yml stop`, data volumes are kept).
 - On external (non-APFS) drives macOS writes `._*` sidecar files that break git and Maven; delete them before building and set `git config core.fileMode false`. They also block OpenSearch from deleting index folders, so keep the test node's data off such drives with `-Dfuse.test.data.dir=/tmp/...`.
