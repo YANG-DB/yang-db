@@ -253,11 +253,16 @@ Items, in the recommended order:
 - [ ] 7.10 **Cypher `RETURN` selects elements and properties** (Q15): return only the listed elements, and for
       `RETURN d.name` only those properties, fetching only them. A behaviour change of the API (fewer properties or
       elements per row), with its own tests and release note. *(medium)*
-- [ ] 7.11 **Profile the engine side** (measured 2026-11-27): OpenSearch is only 2–15% of a query's time on the
+- [~] 7.11 **Profile the engine side** (measured 2026-11-27): OpenSearch is only 2–15% of a query's time on the
       tutorial data (Q9: 41 of 272 ms; Q5: 15 of 146 ms; Q2a: 1 of 60 ms); the rest is the engine's traversal and
       row assembly (Q9 ~170 ms) and JSON rendering (Q9 41 ms, 2.7 MB, about 900 bytes per relationship). Phase 7
       so far cut OpenSearch's work by a third to a half (7.3, 7.4); latency is in the engine. Next: profile Q9 and Q5
       at scale 10 with Java Flight Recorder, then fix the hot spots, measured with the benchmark.
+      **First round done (2026-11-28):** the top cost was `String.format` in per-row text (`Assignment.getId` hashes
+      the row's `toString`; `distinct` keys rows with `AssignmentDescriptor.print`), 15–20% of the CPU; replaced
+      by concatenation of the same text. Responses byte-for-byte identical (ids included); **-12%
+      latency at scale 10** (Q9 −10%, QG −19%, QA −21%). The profile is flat now; next candidates are small
+      (string hashing in `UniGraphVertexStep`, OpenSearch JSON parsing).
 - [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
       searches at no code cost.
 

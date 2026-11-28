@@ -1,0 +1,510 @@
+{
+ "meta": {
+  "label": "before 7.11",
+  "scale": 10,
+  "page_size": 100000,
+  "runs": 5,
+  "warmup": 1,
+  "stored_docs": 429347,
+  "git": "796a09954",
+  "date": "2026-11-28T07:12:04+00:00"
+ },
+ "queries": {
+  "Q1": {
+   "p50_ms": 226.3,
+   "p95_ms": 319.6,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "Q2a": {
+   "p50_ms": 602.2,
+   "p95_ms": 653.1,
+   "ops": {
+    "query": 12,
+    "fetch": 12,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 24,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4750
+   }
+  },
+  "Q2": {
+   "p50_ms": 292.1,
+   "p95_ms": 305.2,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 990,
+    "relationships": 3490
+   }
+  },
+  "Q3": {
+   "p50_ms": 28.8,
+   "p95_ms": 30.8,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q4": {
+   "p50_ms": 30.5,
+   "p95_ms": 34.8,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q5": {
+   "p50_ms": 1636.1,
+   "p95_ms": 1823.5,
+   "ops": {
+    "query": 72,
+    "fetch": 24,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 108,
+   "rows": {
+    "entities": 5150,
+    "relationships": 24370
+   }
+  },
+  "Q6": {
+   "p50_ms": 644.4,
+   "p95_ms": 795.8,
+   "ops": {
+    "query": 63,
+    "fetch": 51,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 117,
+   "rows": {
+    "entities": 280,
+    "relationships": 730
+   }
+  },
+  "Q7": {
+   "p50_ms": 129.3,
+   "p95_ms": 151.2,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 910,
+    "relationships": 1810
+   }
+  },
+  "Q8": {
+   "p50_ms": 121.6,
+   "p95_ms": 134.3,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 560,
+    "relationships": 1450
+   }
+  },
+  "Q9": {
+   "p50_ms": 2820.5,
+   "p95_ms": 3219.1,
+   "ops": {
+    "query": 228,
+    "fetch": 54,
+    "scroll": 48,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 330,
+   "rows": {
+    "entities": 10000,
+    "relationships": 29640
+   }
+  },
+  "QA": {
+   "p50_ms": 439.5,
+   "p95_ms": 454.9,
+   "ops": {
+    "query": 45,
+    "fetch": 21,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 81,
+   "rows": {
+    "entities": 16230,
+    "relationships": 0
+   }
+  },
+  "QB": {
+   "p50_ms": 278.6,
+   "p95_ms": 280.9,
+   "ops": {
+    "query": 30,
+    "fetch": 6,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 11000,
+    "relationships": 0
+   }
+  },
+  "QC": {
+   "p50_ms": 32.5,
+   "p95_ms": 33.2,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 1000,
+    "relationships": 0
+   }
+  },
+  "QD": {
+   "p50_ms": 7.2,
+   "p95_ms": 7.9,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 10,
+    "relationships": 0
+   }
+  },
+  "QE": {
+   "p50_ms": 255.3,
+   "p95_ms": 379.6,
+   "ops": {
+    "query": 15,
+    "fetch": 12,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 30,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "QF": {
+   "p50_ms": 53.0,
+   "p95_ms": 65.7,
+   "ops": {
+    "query": 15,
+    "fetch": 15,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 30,
+   "rows": {
+    "entities": 150,
+    "relationships": 140
+   }
+  },
+  "QG": {
+   "p50_ms": 800.7,
+   "p95_ms": 844.2,
+   "ops": {
+    "query": 57,
+    "fetch": 45,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 105,
+   "rows": {
+    "entities": 1330,
+    "relationships": 1550
+   }
+  },
+  "R1": {
+   "p50_ms": 62.4,
+   "p95_ms": 64.6,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 500,
+    "relationships": 640
+   }
+  },
+  "R2": {
+   "p50_ms": 146.3,
+   "p95_ms": 157.3,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 930,
+    "relationships": 2110
+   }
+  },
+  "R3": {
+   "p50_ms": 260.5,
+   "p95_ms": 266.0,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4030
+   }
+  },
+  "R4": {
+   "p50_ms": 91.6,
+   "p95_ms": 121.5,
+   "ops": {
+    "query": 54,
+    "fetch": 18,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 72,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R5": {
+   "p50_ms": 96.1,
+   "p95_ms": 100.5,
+   "ops": {
+    "query": 54,
+    "fetch": 18,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 72,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R6": {
+   "p50_ms": 83.1,
+   "p95_ms": 111.6,
+   "ops": {
+    "query": 51,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 54,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R7": {
+   "p50_ms": 6.4,
+   "p95_ms": 7.3,
+   "ops": {
+    "query": 3,
+    "fetch": 0,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 3,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R8": {
+   "p50_ms": 15.8,
+   "p95_ms": 16.3,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 90,
+    "relationships": 80
+   }
+  },
+  "R9": {
+   "p50_ms": 58.6,
+   "p95_ms": 65.8,
+   "ops": {
+    "query": 12,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 21,
+   "rows": {
+    "entities": 500,
+    "relationships": 640
+   }
+  },
+  "R10": {
+   "p50_ms": 120.5,
+   "p95_ms": 146.7,
+   "ops": {
+    "query": 24,
+    "fetch": 18,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 42,
+   "rows": {
+    "entities": 880,
+    "relationships": 1520
+   }
+  },
+  "gql:GQ1": {
+   "p50_ms": 170.6,
+   "p95_ms": 181.5,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "gql:GQ2": {
+   "p50_ms": 32.8,
+   "p95_ms": 36.3,
+   "ops": {
+    "query": 3,
+    "fetch": 3,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 1210,
+    "relationships": 0
+   }
+  },
+  "gql:GQ3": {
+   "p50_ms": 65.5,
+   "p95_ms": 87.1,
+   "ops": {
+    "query": 9,
+    "fetch": 9,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 18,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "gql:GQ4": {
+   "p50_ms": 93.6,
+   "p95_ms": 99.1,
+   "ops": {
+    "query": 12,
+    "fetch": 12,
+    "scroll": 0,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 24,
+   "rows": {
+    "entities": 2120,
+    "relationships": 1950
+   }
+  }
+ }
+}

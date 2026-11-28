@@ -39,6 +39,16 @@ docker/bench/compare_versions.sh /tmp/bench 1 "v0.8.0 1.3.0 v0.8.0" "v0.9.1 2.19
 python3 docker/bench/bench.py --report /tmp/bench/v0.8.0-x1.json /tmp/bench/v0.9.1-x1.json /tmp/bench/main-x1.json
 ```
 
+**Check that results don't change.** `snapshot.py OUT_DIR` saves every query's full response, with only the
+fields that differ between runs removed (request id, timings, query and cursor ids). Snapshot before and after a
+change that should be invisible and `diff -r` the two folders: every file must be identical.
+
+**Profile the engine.** Start the engine with full stacks for Java Flight Recorder (a compose override with
+`environment: [JAVA_TOOL_OPTIONS=-XX:FlightRecorderOptions=stackdepth=1024]` for the `fuse` service), then
+`docker exec dragons-graph jcmd 7 JFR.start name=p settings=profile filename=/tmp/p.jfr`, run the queries,
+`JFR.stop name=p`, `docker cp dragons-graph:/tmp/p.jfr .` and read it with `jfr print --events jdk.ExecutionSample`
+or JDK Mission Control.
+
 ## In CI
 
 The Docker e2e job runs `bench.py` on the tutorial data after the e2e suite. It writes the table to the job summary
