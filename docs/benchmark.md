@@ -272,6 +272,22 @@ bulks quickly:
 Every query returns the same rows with all three. At scale 1 every step's input is under 1,000 ids, so nothing
 changes there. Raw results: `benchmark-results/7.4-*.json`.
 
+## Where the time goes (2026-11-27)
+
+On the tutorial data, the share of a query's time spent in OpenSearch (the slowest shard of each search phase, from
+the search slow log, summed) against the client-side total and the engine's own timings in the response
+(`elapsed`, `renderElapsed`):
+
+| query | total | OpenSearch | engine: traversal and row assembly | engine: JSON rendering | response |
+|---|---:|---:|---:|---:|---:|
+| Q9 (2,964 relationships) | 272 ms | 41 ms (15%) | ~170 ms | 41 ms | 2.7 MB |
+| Q5 | 146 ms | 15 ms (10%) | ~75 ms | 33 ms | 2.3 MB |
+| Q2a | 60 ms | 1 ms (2%) | ~34 ms | 13 ms | 1.1 MB |
+
+Phases 7.3 and 7.4 cut OpenSearch's work by a third to a half, which a busy cluster feels, but most of the latency is
+in the engine. Planning is small: about 3–4 ms per query warm, at most about 2 ms more with a cold count cache (7.6).
+Next: profile the engine (ROADMAP 7.11).
+
 ## Rerun it
 
 ```bash
