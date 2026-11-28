@@ -68,6 +68,10 @@ import org.opensearch.action.get.MultiGetAction;
 import org.opensearch.action.get.MultiGetRequest;
 import org.opensearch.action.index.IndexAction;
 import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.search.CreatePitAction;
+import org.opensearch.action.search.CreatePitRequest;
+import org.opensearch.action.search.DeletePitAction;
+import org.opensearch.action.search.DeletePitRequest;
 import org.opensearch.action.search.ClearScrollAction;
 import org.opensearch.action.search.ClearScrollRequest;
 import org.opensearch.action.search.MultiSearchAction;
@@ -216,6 +220,9 @@ public class RestBridgeClient extends AbstractClient {
         h.put(SearchScrollAction.INSTANCE, (c, r, l) -> c.rest.scrollAsync((SearchScrollRequest) r, c.options, l(l)));
         h.put(ClearScrollAction.INSTANCE, (c, r, l) -> c.rest.clearScrollAsync((ClearScrollRequest) r, c.options, l(l)));
         h.put(MultiSearchAction.INSTANCE, (c, r, l) -> c.rest.msearchAsync((MultiSearchRequest) r, c.options, l(l)));
+        // Point in Time (consistent cursors, ROADMAP 7.8); a search reads a PIT through SearchAction (source.pit)
+        h.put(CreatePitAction.INSTANCE, (c, r, l) -> c.rest.createPitAsync((CreatePitRequest) r, c.options, l(l)));
+        h.put(DeletePitAction.INSTANCE, (c, r, l) -> c.rest.deletePitAsync((DeletePitRequest) r, c.options, l(l)));
         h.put(GetAction.INSTANCE, (c, r, l) -> c.rest.getAsync((GetRequest) r, c.options, l(l)));
         h.put(MultiGetAction.INSTANCE, (c, r, l) -> c.rest.mgetAsync((MultiGetRequest) r, c.options, l(l)));
         h.put(ExplainAction.INSTANCE, (c, r, l) -> c.rest.explainAsync((ExplainRequest) r, c.options, l(l)));

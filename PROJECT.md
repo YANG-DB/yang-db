@@ -144,6 +144,10 @@ Each module's purpose and key classes, and the path of a query through them, are
     lacks, 4 have invalid SPARQL text, 4 expect a different translation; the reasons are on each test).
   - **V1**, the native JSON query format, covers what the planner supports. "SQL support" is a DDL importer that turns
     table definitions into an ontology; it doesn't run SQL queries.
+- **Consistency.** By default each search of a query sees the index as it is when that search runs, so a query's
+  steps and later pages can see writes made in between. For one snapshot per query, set `opensearch.paging.mode = pit`
+  in `application.conf`, or send `"consistent": true` in a cursor request: the query then reads an OpenSearch Point in
+  Time (it holds a server-side context per shard while the cursor has pages left; OpenSearch allows 300 per node).
 - **Security.** YANG-DB's REST API has **no authentication or authorization** and no multi-tenancy: run it on a
   trusted network, or behind a gateway that adds them. It connects to OpenSearch over HTTP or HTTPS
   (`https://host:port` in `opensearch.hosts`) but can't send credentials, so the cluster must accept unauthenticated

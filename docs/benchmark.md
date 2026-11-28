@@ -321,6 +321,45 @@ Scale 10, same data and cluster, old image then new image: **sum of p50 latencie
 After this the profile is flat: no method above about 6% of the samples (the largest are hashing of freshly built
 strings, and parsing OpenSearch's JSON). Raw results: `benchmark-results/7.12-*.json`.
 
+## Phase 7.8: Point in Time, opt-in
+
+What a consistent cursor costs, and that the default didn't change. Scale 10, the same data and cluster, three
+images in turn: `main` before the change, the change with `opensearch.paging.mode = scroll` (the default) and with
+`opensearch.paging.mode = pit`.
+
+| scale 10 | main (before) | scroll (default) | pit |
+|---|---:|---:|---:|
+| OpenSearch operations, 31 queries | 1,374 | 1,374 | **1,239 (−10%)** |
+| sum of p50 latencies | 8,459 ms | 8,274 ms | 8,477 ms |
+| responses | | byte-for-byte identical to main (31/31) | the same rows, in another order (see Q9 below) |
+| PIT contexts left open after the runs | 0 | 0 | 0 |
+
+p50 latency · OpenSearch operations, the slowest queries:
+
+| query | main (before) | scroll (default) | pit |
+|---|---:|---:|---:|
+| Q9 | 2,389 ms · 330 | 2,458 ms · 330 | 2,495 ms · 237 |
+| Q5 | 1,618 ms · 108 | 1,436 ms · 108 | 1,436 ms · 84 |
+| QG | 604 ms · 105 | 609 ms · 105 | 694 ms · 99 |
+| Q6 | 520 ms · 117 | 526 ms · 117 | 520 ms · 111 |
+| QA | 366 ms · 81 | 327 ms · 81 | 365 ms · 51 |
+| QB | 229 ms · 36 | 213 ms · 36 | 242 ms · 51 |
+| Q1 | 220 ms · 6 | 225 ms · 6 | 223 ms · 9 |
+
+- **The default is unchanged**: same requests, same responses, same latency (within the ±8% noise).
+- **PIT mode costs about nothing overall**: no scrolls (−10% operations), latency within noise. Per query it ranges
+  from a bit cheaper (Q5, Q9 operations) to a bit dearer (QG +15% latency; QB's untyped search now fans out over all
+  vertex indices of its PIT). Opening and deleting the PIT is one request each per cursor.
+- **Q9** (`return d1, distinct(f), d2`): `distinct` keeps the first relationship it meets for each pair of dragons
+  with several `Fire` edges. PIT mode reads hits in `_doc, _index, _id` order, so for 6,228 of the 29,640 pairs it
+  keeps a different edge than scroll mode does. The same pairs, the same dragons, the same counts; each mode is
+  deterministic.
+
+Measured first (2026-11-28) and the reason for the design: a PIT holds one context per shard of its indices; one PIT
+over all 19 graph indices is 57 contexts, and OpenSearch refused the 7th concurrent one (`search.max_open_pit_context`
+300). So a PIT is opened only when asked for, only on the indices the query reads, and released as soon as the cursor
+is exhausted (a page shorter than asked for), deleted or expired. Raw results: `benchmark-results/7.8-*.json`.
+
 ## Rerun it
 
 ```bash

@@ -48,7 +48,8 @@ import static org.mockito.Mockito.when;
         com.yangdb.fuse.executor.ontology.discrete.TraversalIdentityIT.class,
         OpensearchIndexProviderMappingFactoryIT.class,
         com.yangdb.fuse.executor.resource.PersistentResourceStoreIT.class,
-        com.yangdb.fuse.core.driver.BasicIdGeneratorIT.class
+        com.yangdb.fuse.core.driver.BasicIdGeneratorIT.class,
+        com.yangdb.fuse.executor.opensearch.PointInTimeConsistencyIT.class
 })
 public class TestSuiteIndexProviderSuite implements BaseSuiteMarker {
     private static ElasticEmbeddedNode elasticEmbeddedNode;

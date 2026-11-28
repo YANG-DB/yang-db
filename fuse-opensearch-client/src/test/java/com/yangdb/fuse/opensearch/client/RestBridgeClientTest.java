@@ -431,6 +431,7 @@ public class RestBridgeClientTest {
     public void supportedActionsAreTheDocumentedSet() {
         assertEquals(new HashSet<>(Arrays.asList(
                 SearchAction.INSTANCE, SearchScrollAction.INSTANCE, ClearScrollAction.INSTANCE, MultiSearchAction.INSTANCE,
+                org.opensearch.action.search.CreatePitAction.INSTANCE, org.opensearch.action.search.DeletePitAction.INSTANCE,
                 GetAction.INSTANCE, MultiGetAction.INSTANCE, ExplainAction.INSTANCE, FieldCapabilitiesAction.INSTANCE,
                 IndexAction.INSTANCE, BulkAction.INSTANCE, DeleteAction.INSTANCE, UpdateAction.INSTANCE,
                 CreateIndexAction.INSTANCE, DeleteIndexAction.INSTANCE, IndicesExistsAction.INSTANCE, RefreshAction.INSTANCE,

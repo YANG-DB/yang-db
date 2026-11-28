@@ -96,7 +96,7 @@ path in 5.5 and the remote IT in 5.7.
 | 6.2 Bridge on 3.x | 6.1 | The RHLC is **deprecated since 3.0** but still published (latest 3.10.0, checked 2026-11-23). Keep the bridge on it for 3.10, or move it onto `opensearch-java`; either way the PIT calls (6.5) move with it |
 | 6.3 Data path | 6.1 | 3.x reads only 2.x-created indices: document "upgrade to 2.19 first, or reindex" |
 | 6.4 Verify and release | 6.2, 6.3, 6.5 | Same gate as 5.7 and 5.8 |
-| 6.5 Point in Time per cursor | none: done on 2.19 first as ROADMAP 7.8 | One PIT per cursor with `search_after` paging instead of per-search scrolls, so a whole query reads one snapshot. PIT is unchanged in 3.x. Design and limits: [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned) |
+| 6.5 Point in Time per cursor | done on 2.19 as ROADMAP 7.8 (opt-in); on 3.x check that sorting on `_id` still works (`indices.id_field_data.enabled`, deprecated) or use `_shard_doc` if OpenSearch adds it | One PIT per cursor with `search_after` paging instead of per-search scrolls, so a whole query reads one snapshot. PIT is unchanged in 3.x. Design and limits: [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned) |
 
 ## Definition of done (both phases)
 1. `mvn clean test` green with ITs running, test count not lower than before the phase.

@@ -52,6 +52,25 @@ import org.opensearch.client.Client;
 import org.unipop.process.Profiler;
 import org.unipop.process.Profiler.Noop;
 
+import com.google.inject.name.Named;
+import com.yangdb.fuse.dispatcher.provision.PointInTimes;
+import com.yangdb.fuse.dispatcher.utils.PlanUtil;
+import com.yangdb.fuse.model.execution.plan.PlanOp;
+import com.yangdb.fuse.model.execution.plan.entity.EntityOp;
+import com.yangdb.fuse.model.execution.plan.relation.RelationOp;
+import com.yangdb.fuse.model.query.entity.EEntityBase;
+import com.yangdb.fuse.model.query.entity.ETyped;
+import com.yangdb.fuse.model.query.entity.EUntyped;
+import com.yangdb.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import org.opensearch.action.search.CreatePitAction;
+import org.opensearch.action.search.CreatePitRequest;
+import org.opensearch.action.search.CreatePitResponse;
+import org.opensearch.action.search.DeletePitAction;
+import org.opensearch.action.search.DeletePitRequest;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.core.action.ActionListener;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,6 +122,11 @@ public class StandardCursorDriver extends CursorDriverBase {
         String prefix = String.format("%s.%s", queryResource.getQueryMetadata().getId(), cursorId);
         traversal.asAdmin().getSideEffects().register(CONTEXT, () -> prefix, null);
 
+        //a consistent cursor reads one Point in Time for all its searches and pages (ROADMAP 7.8)
+        if (isConsistent(cursorRequest)) {
+            openPointInTime(prefix, executionPlan.getPlan(), ontology, queryResource.getQueryMetadata().getTtl());
+        }
+
         //default no operation profiler - no memory footprint or activity
         traversal.asAdmin().getSideEffects().register(PROFILER, () -> Noop.instance, null);
 
@@ -118,6 +142,66 @@ public class StandardCursorDriver extends CursorDriverBase {
         Profiler profiler = traversal.asAdmin().getSideEffects().get(PROFILER);
 
         return new CursorResource(cursorId, cursor, new QueryProfileInfo.QueryProfileInfoImpl(profiler.get()), cursorRequest);
+    }
+
+    /** the request's choice, else opensearch.paging.mode (scroll unless set to pit) */
+    boolean isConsistent(CreateCursorRequest cursorRequest) {
+        return cursorRequest.getConsistent() != null
+                ? cursorRequest.getConsistent()
+                : PAGING_MODE_PIT.equalsIgnoreCase(this.pagingMode);
+    }
+
+    private void openPointInTime(String cursorContext, Plan plan, Ontology ontology, long queryTtl) {
+        String[] indices = planIndices(plan, this.schemaProvider.get(ontology)).toArray(new String[0]);
+        if (indices.length == 0) {
+            return; // nothing to search: the cursor's searches have no indices either
+        }
+        // the PIT lives while the cursor may still be read: the query's ttl between pages (each search extends it)
+        long keepAlive = queryTtl > 0 ? queryTtl : DEFAULT_PIT_KEEP_ALIVE_MS;
+        CreatePitRequest request = new CreatePitRequest(TimeValue.timeValueMillis(keepAlive), false, indices);
+        // the schema may name indices that don't exist (a type with no data yet, e.g. Dragons' profession): a scroll
+        // search skips them, so the PIT does too
+        request.indicesOptions(org.opensearch.action.support.IndicesOptions.LENIENT_EXPAND_OPEN);
+        CreatePitResponse response = this.client.execute(CreatePitAction.INSTANCE, request).actionGet();
+        String pitId = response.getId();
+        PointInTimes.register(cursorContext, new PointInTimes.Handle(pitId, keepAlive, () ->
+                this.client.execute(DeletePitAction.INSTANCE, new DeletePitRequest(pitId),
+                        ActionListener.wrap(r -> { }, e -> { /* expires with its keep-alive anyway */ }))));
+    }
+
+    /**
+     * The indices a plan reads: those of its entity and relationship types in the physical schema (all vertex types for an
+     * untyped entity). The PIT is opened on these only: each of their shards holds one PIT context on the cluster.
+     */
+    static Set<String> planIndices(Plan plan, GraphElementSchemaProvider schema) {
+        Set<String> labelsV = new LinkedHashSet<>();
+        Set<String> labelsE = new LinkedHashSet<>();
+        Plan flat = PlanUtil.flat(plan);
+        for (PlanOp op : flat.getOps()) {
+            if (op instanceof EntityOp) {
+                EEntityBase e = ((EntityOp) op).getAsgEbase().geteBase();
+                if (e instanceof ETyped) {
+                    labelsV.add(((ETyped) e).geteType());
+                } else if (e instanceof EUntyped && !((EUntyped) e).getvTypes().isEmpty()) {
+                    labelsV.addAll(((EUntyped) e).getvTypes());
+                } else {
+                    schema.getVertexLabels().forEach(labelsV::add);
+                }
+            } else if (op instanceof RelationOp) {
+                labelsE.add(((RelationOp) op).getAsgEbase().geteBase().getrType());
+            }
+        }
+        Set<String> indices = new LinkedHashSet<>();
+        labelsV.forEach(l -> schema.getVertexSchemas(l).forEach(v -> v.getIndexPartitions()
+                .ifPresent(p -> p.getIndices().forEach(indices::add))));
+        labelsE.forEach(l -> schema.getEdgeSchemas(l).forEach(e -> e.getIndexPartitions()
+                .ifPresent(p -> p.getIndices().forEach(indices::add))));
+        return indices;
+    }
+
+    @com.google.inject.Inject(optional = true)
+    public void setPagingMode(@Named(PAGING_MODE) String pagingMode) {
+        this.pagingMode = pagingMode;
     }
 
     protected TraversalCursorContext createContext(QueryResource queryResource, CreateCursorRequest cursorRequest, String cursorId, Ontology ontology, GraphTraversal<?, ?> traversal) {
@@ -169,6 +253,10 @@ public class StandardCursorDriver extends CursorDriverBase {
     //endregion
 
     //region Fields
+    public static final String PAGING_MODE = "opensearch.paging.mode";
+    public static final String PAGING_MODE_PIT = "pit";
+    static final long DEFAULT_PIT_KEEP_ALIVE_MS = 5 * 60 * 1000;
+    private String pagingMode = "scroll";
     private OntologyProvider ontologyProvider;
     private PlanTraversalTranslator planTraversalTranslator;
     private CursorFactory cursorFactory;

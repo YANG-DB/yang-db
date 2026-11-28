@@ -80,6 +80,12 @@ public class ExecutorModule extends ModuleBase {
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         bindGraphWriters(env, conf, binder);
         bindResourceManager(env, conf, binder);
+        // how cursors page through hits: "scroll" (default: plain search, then a scroll for large results) or "pit" (one
+        // Point in Time snapshot per cursor, paged with search_after); a cursor request's "consistent" overrides it
+        binder.bindConstant().annotatedWith(com.google.inject.name.Names.named(
+                com.yangdb.fuse.core.driver.StandardCursorDriver.PAGING_MODE))
+                .to(conf.hasPath(com.yangdb.fuse.core.driver.StandardCursorDriver.PAGING_MODE)
+                        ? conf.getString(com.yangdb.fuse.core.driver.StandardCursorDriver.PAGING_MODE) : "scroll");
         bindGraphInitiator(env, conf, binder);
         bindGraphDataLoader(env, conf, binder);
         bindCSVDataLoader(env, conf, binder);

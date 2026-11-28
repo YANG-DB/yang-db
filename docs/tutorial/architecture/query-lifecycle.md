@@ -236,7 +236,9 @@ The search goes out through the `Client` interface: `TimeoutClientAdvisor` → `
 **`RestBridgeClient`** (fuse-opensearch-client) → the REST high-level client → HTTP on port 9200.
 `SearchHitScrollIterable` reads the hits: first a plain search for one page (up to `opensearch.scroll_size`, 10,000);
 if that page isn't full, it's the whole result. Only after a full page does the same search continue as a scroll,
-so large results come in batches, and the scroll is cleared at the end.
+so large results come in batches, and the scroll is cleared at the end. With
+`opensearch.paging.mode = pit` (or `"consistent": true` on the cursor request) the cursor instead reads one Point in
+Time: every search of the query, on every page, sees the same snapshot, and large results page with `search_after`.
 A scroll freezes the index for that one search only. The other searches of the same query, and the searches for
 later pages, see the index as it is when they run: there is no snapshot across a query yet. One Point in Time per
 cursor is planned ([OPENSEARCH_MIGRATION.md §10](../../revival/OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)).

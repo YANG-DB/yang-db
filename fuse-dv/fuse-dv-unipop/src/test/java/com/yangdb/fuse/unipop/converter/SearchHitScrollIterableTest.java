@@ -18,6 +18,8 @@ import org.opensearch.action.search.SearchType;
 import org.opensearch.client.Client;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import com.yangdb.fuse.dispatcher.provision.PointInTimes;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
@@ -145,6 +147,43 @@ public class SearchHitScrollIterableTest {
 
         verify(clear).addScrollId("s1");
         verify(client, times(1)).prepareClearScroll();
+    }
+
+    @Test
+    public void consistentCursorReadsItsPointInTimeWithSearchAfterAndNoScroll() {
+        SearchRequest request = new SearchRequest("dragon", "idx_fire_*").source(new SearchSourceBuilder());
+        when(search.request()).thenReturn(request);
+        when(provisioning.pointInTime()).thenReturn(java.util.Optional.of(new PointInTimes.Handle("pit-1", 60000, () -> { })));
+        ListenableActionFuture<SearchResponse> first = page(null, sorted(hits(0, PAGE)));
+        ListenableActionFuture<SearchResponse> second = page(null, sorted(hits(3, 5)));
+        when(search.execute()).thenReturn(first, second);
+
+        assertEquals(ids(0, 5), read(Long.MAX_VALUE));
+
+        // the PIT fixes the indices: the request names none, and filters on _index instead
+        assertEquals(0, request.indices().length);
+        ArgumentCaptor<QueryBuilder> query = ArgumentCaptor.forClass(QueryBuilder.class);
+        verify(search).setQuery(query.capture());
+        String filter = query.getValue().toString();
+        assertTrue(filter.contains("\"_index\"") && filter.contains("idx_fire_*") && filter.contains("dragon"));
+        assertEquals("pit-1", request.source().pointInTimeBuilder().getId());
+        // the second page continues after the first page's last hit
+        assertEquals(java.util.Arrays.asList(2), java.util.Arrays.asList(request.source().searchAfter()));
+        verify(search).addSort("_doc", org.opensearch.search.sort.SortOrder.ASC);
+        verify(search).addSort("_index", org.opensearch.search.sort.SortOrder.ASC);
+        verify(search).addSort("_id", org.opensearch.search.sort.SortOrder.ASC);
+        verify(search, never()).setScroll(any(TimeValue.class));
+        verify(client, never()).prepareSearchScroll(anyString());
+        verify(client, never()).prepareClearScroll();
+    }
+
+    /** hits with sort values, as a sorted (PIT) search returns them */
+    private static SearchHit[] sorted(SearchHit[] hits) {
+        for (SearchHit hit : hits) {
+            hit.sortValues(new Object[]{Integer.parseInt(hit.getId())},
+                    new org.opensearch.search.DocValueFormat[]{org.opensearch.search.DocValueFormat.RAW});
+        }
+        return hits;
     }
 
     private List<String> read(long limit) {

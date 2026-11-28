@@ -82,6 +82,11 @@ public abstract class PageDriverBase implements PageDriver {
         createInnerPage(queryResource.get(), cursorId, pageSize);
         PageResource<QueryResultBase> pageResource = this.createResource(queryResource.get(), cursorResource.get(), pageId, pageSize);
         this.resourceStore.addPageResource(queryId, cursorId, pageResource);
+        // a page shorter than asked for means the cursor is exhausted: its Point in Time, if any, isn't needed anymore
+        if (pageResource.getActualSize() < pageSize) {
+            com.yangdb.fuse.dispatcher.provision.PointInTimes.release(
+                    com.yangdb.fuse.dispatcher.provision.PointInTimes.cursorContext(queryId, cursorId));
+        }
 
         return Optional.of(new PageResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId, pageId),
