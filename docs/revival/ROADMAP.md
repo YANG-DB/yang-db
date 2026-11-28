@@ -237,10 +237,15 @@ Items, in the recommended order:
       Measured at scale 10: **−33% OpenSearch operations for whole results, −28% and −6% latency for a 100-row first
       page**, same rows; a fixed 10,000 would have made first pages up to 5× slower.
       [docs/benchmark.md](../benchmark.md#phase-74-growing-bulks). The remaining `msearch` pairs could join 7.5.
-- [ ] 7.5 **Run independent work concurrently**: `OR` branches and independent searches in parallel (virtual threads
-      once Phase 6 moves to JDK 21), so latency is the slowest branch, not the sum. *(medium)*
-- [ ] 7.6 **Statistics-based cost estimates** by default, with live counts as the fallback using
-      `request_cache=true`; cuts planning time, which is pure overhead on small queries. *(medium)*
+- [~] 7.5 **Run independent work concurrently**: measured 2026-11-27, **deferred to Phase 6** (JDK 21 virtual
+      threads). Comma patterns (Q6, QF, QG) are planned as one chain, each step needing the previous step's ids, so
+      they have no parallel branches; the only independent work is `OR` branches (R10), which run back to back and
+      cost the sum of the branches (38.6 ms = 20.5 + 19.0 at scale 1). Parallel branches would save at most the
+      shorter branch: about 1% of the benchmark's latency, for a thread pool, cancellation and buffering.
+- [~] 7.6 **Statistics-based cost estimates**: measured 2026-11-27, **not worth it**. Planning (parse, rewrite,
+      plan) takes about 3–4 ms per query warm, 9% of the run including the HTTP round trip; with a cold count cache it
+      costs at most about 2 ms more (a single-entity query with a new filter value; within noise with a
+      relationship). Switching to statistics could change the plans chosen, for a gain of about 2 ms.
 - [ ] 7.7 **Stream results and evict idle cursors**: lower memory and a faster first page on large results. Builds on
       Phase 6's Point in Time per cursor, which also replaces the per-search scroll contexts. *(medium)*
 - [ ] 7.8 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
@@ -248,6 +253,11 @@ Items, in the recommended order:
 - [ ] 7.10 **Cypher `RETURN` selects elements and properties** (Q15): return only the listed elements, and for
       `RETURN d.name` only those properties, fetching only them. A behaviour change of the API (fewer properties or
       elements per row), with its own tests and release note. *(medium)*
+- [ ] 7.11 **Profile the engine side** (measured 2026-11-27): OpenSearch is only 2–15% of a query's time on the
+      tutorial data (Q9: 41 of 272 ms; Q5: 15 of 146 ms; Q2a: 1 of 60 ms); the rest is the engine's traversal and
+      row assembly (Q9 ~170 ms) and JSON rendering (Q9 41 ms, 2.7 MB, about 900 bytes per relationship). Phase 7
+      so far cut OpenSearch's work by a third to a half (7.3, 7.4); latency is in the engine. Next: profile Q9 and Q5
+      at scale 10 with Java Flight Recorder, then fix the hot spots, measured with the benchmark.
 - [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
       searches at no code cost.
 
