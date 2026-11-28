@@ -183,7 +183,7 @@ M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Fo
       per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
 - [ ] **Point in Time per cursor**: moved to Phase 7 as **7.8** (it runs on 2.19 already; 3.x keeps the same API).
 
-## Phase 7 — Speed and efficiency
+## Phase 7 — Speed and efficiency (7.1–7.8 and the first round of 7.12 released in **[v0.10.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.10.0)**, 2026-11-28)
 Goal: fewer round trips to OpenSearch, less data per round trip and less planning overhead per query, each change
 shown by numbers rather than assumed. Every item must leave the e2e doc-query results unchanged
 (`docker/e2e/doc_queries.py`): these change *how* the engine calls OpenSearch, never *what* a query returns.

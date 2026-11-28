@@ -36,6 +36,16 @@ during long runs and hangs embedded-OpenSearch tests, so run long builds under `
 must run ITs on their own `-Dfuse.test.http.port/transport.port` under `lockf -k /tmp/yangdb-it.lock`, and never
 `mvn install`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21), or B1.
 
+### Note (2026-11-28): v0.10.0 released
+**v0.10.0** is out: branch `release/0.10.x` (cut from main `f4f754b93`, poms `0.10.0`), tag `v0.10.0`, marked latest;
+the Release workflow attached the distribution and published `ghcr.io/yang-db/yang.db:0.10.0` (+ `latest`, amd64 and
+arm64); e2e ALL PASS against the published image. Contents: Phase 7 speed work (7.1–7.8, 7.12 first round), opt-in
+PIT cursors (`opensearch.paging.mode`), V1 spec (#196, #198), release prep #205 (O1, Temurin base image, plugin
+pins, Q16, Q17). Against 0.9.1 at scale 10: −61% OpenSearch operations, −12% latency, same rows. Main is
+`0.11.0-SNAPSHOT`. **Next:** Phase 6 (OpenSearch 3.x, JDK 21; check the PIT `_id` sort there), L5 (loader bulks),
+Q18–Q20, ROADMAP 7.12 (profiling round 2), 7.11 (Cypher RETURN). Patch releases: as for 0.9.1 (branch from
+`release/0.10.x`, merge main or cherry-pick, PR with a merge commit, `gh release create v0.10.x --target <sha>`).
+
 ### Note (2026-11-25): benchmark, community review, published image
 - Phase 7.1 done (#189): `docker/bench/` (bench.py, scale_data.py, compare_versions.sh), results in
   `docs/benchmark.md` (v0.8.0 on OpenSearch 1.3 vs v0.9.0 / v0.9.1 / main on 2.19.7, scale 1 and 10). CI's e2e job

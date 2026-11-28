@@ -360,6 +360,13 @@ over all 19 graph indices is 57 contexts, and OpenSearch refused the 7th concurr
 300). So a PIT is opened only when asked for, only on the indices the query reads, and released as soon as the cursor
 is exhausted (a page shorter than asked for), deleted or expired. Raw results: `benchmark-results/7.8-*.json`.
 
+## 0.10.0 against 0.9.1
+
+The release, measured against the previous one (2026-11-28; both on OpenSearch 2.19.7, scale 10, fresh clusters):
+OpenSearch operations 3,543 → **1,374 (−61%)**, scroll operations 969 → 84, sum of p50 latencies 8,339 →
+**7,316 ms (−12%)**, the same rows for all 31 queries. Per query: [the 0.10.0 release notes](releases/v0.10.0.md#performance);
+raw results: `benchmark-results/0.10.0-vs-0.9.1-*.json`.
+
 ## Rerun it
 
 ```bash

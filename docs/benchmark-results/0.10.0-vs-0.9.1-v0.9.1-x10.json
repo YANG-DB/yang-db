@@ -1,0 +1,510 @@
+{
+ "meta": {
+  "label": "v0.9.1 (OpenSearch 2.19.7)",
+  "scale": 10,
+  "page_size": 100000,
+  "runs": 5,
+  "warmup": 1,
+  "stored_docs": 426796,
+  "git": "f4f754b93",
+  "date": "2026-11-28T19:07:02+00:00"
+ },
+ "queries": {
+  "Q1": {
+   "p50_ms": 252.5,
+   "p95_ms": 321.1,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "Q2a": {
+   "p50_ms": 554.7,
+   "p95_ms": 658.9,
+   "ops": {
+    "query": 24,
+    "fetch": 12,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 48,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4750
+   }
+  },
+  "Q2": {
+   "p50_ms": 329.3,
+   "p95_ms": 352.1,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 990,
+    "relationships": 3490
+   }
+  },
+  "Q3": {
+   "p50_ms": 47.0,
+   "p95_ms": 55.7,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q4": {
+   "p50_ms": 49.0,
+   "p95_ms": 50.5,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 220,
+    "relationships": 300
+   }
+  },
+  "Q5": {
+   "p50_ms": 1157.3,
+   "p95_ms": 1204.6,
+   "ops": {
+    "query": 108,
+    "fetch": 30,
+    "scroll": 42,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 180,
+   "rows": {
+    "entities": 5150,
+    "relationships": 24370
+   }
+  },
+  "Q6": {
+   "p50_ms": 591.5,
+   "p95_ms": 630.4,
+   "ops": {
+    "query": 207,
+    "fetch": 96,
+    "scroll": 102,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 405,
+   "rows": {
+    "entities": 280,
+    "relationships": 730
+   }
+  },
+  "Q7": {
+   "p50_ms": 129.2,
+   "p95_ms": 144.5,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 910,
+    "relationships": 1810
+   }
+  },
+  "Q8": {
+   "p50_ms": 118.6,
+   "p95_ms": 128.9,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 560,
+    "relationships": 1450
+   }
+  },
+  "Q9": {
+   "p50_ms": 2082.5,
+   "p95_ms": 2627.8,
+   "ops": {
+    "query": 408,
+    "fetch": 84,
+    "scroll": 144,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 636,
+   "rows": {
+    "entities": 10000,
+    "relationships": 29640
+   }
+  },
+  "QA": {
+   "p50_ms": 413.8,
+   "p95_ms": 454.5,
+   "ops": {
+    "query": 45,
+    "fetch": 21,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 81,
+   "rows": {
+    "entities": 16230,
+    "relationships": 0
+   }
+  },
+  "QB": {
+   "p50_ms": 237.5,
+   "p95_ms": 265.3,
+   "ops": {
+    "query": 60,
+    "fetch": 6,
+    "scroll": 30,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 96,
+   "rows": {
+    "entities": 11000,
+    "relationships": 0
+   }
+  },
+  "QC": {
+   "p50_ms": 35.1,
+   "p95_ms": 42.6,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1000,
+    "relationships": 0
+   }
+  },
+  "QD": {
+   "p50_ms": 17.9,
+   "p95_ms": 25.9,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10,
+    "relationships": 0
+   }
+  },
+  "QE": {
+   "p50_ms": 180.1,
+   "p95_ms": 231.2,
+   "ops": {
+    "query": 21,
+    "fetch": 12,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 42,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "QF": {
+   "p50_ms": 42.6,
+   "p95_ms": 59.5,
+   "ops": {
+    "query": 30,
+    "fetch": 15,
+    "scroll": 15,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 60,
+   "rows": {
+    "entities": 150,
+    "relationships": 140
+   }
+  },
+  "QG": {
+   "p50_ms": 753.4,
+   "p95_ms": 938.4,
+   "ops": {
+    "query": 159,
+    "fetch": 72,
+    "scroll": 78,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 309,
+   "rows": {
+    "entities": 1330,
+    "relationships": 1550
+   }
+  },
+  "R1": {
+   "p50_ms": 62.5,
+   "p95_ms": 67.7,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 500,
+    "relationships": 640
+   }
+  },
+  "R2": {
+   "p50_ms": 137.6,
+   "p95_ms": 155.8,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 930,
+    "relationships": 2110
+   }
+  },
+  "R3": {
+   "p50_ms": 237.1,
+   "p95_ms": 294.2,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 1000,
+    "relationships": 4030
+   }
+  },
+  "R4": {
+   "p50_ms": 116.5,
+   "p95_ms": 136.3,
+   "ops": {
+    "query": 252,
+    "fetch": 36,
+    "scroll": 126,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 414,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R5": {
+   "p50_ms": 117.2,
+   "p95_ms": 164.1,
+   "ops": {
+    "query": 252,
+    "fetch": 36,
+    "scroll": 126,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 414,
+   "rows": {
+    "entities": 560,
+    "relationships": 320
+   }
+  },
+  "R6": {
+   "p50_ms": 90.8,
+   "p95_ms": 103.8,
+   "ops": {
+    "query": 126,
+    "fetch": 3,
+    "scroll": 123,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 252,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R7": {
+   "p50_ms": 12.9,
+   "p95_ms": 13.9,
+   "ops": {
+    "query": 3,
+    "fetch": 0,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 6,
+   "rows": {
+    "entities": 0,
+    "relationships": 0
+   }
+  },
+  "R8": {
+   "p50_ms": 21.0,
+   "p95_ms": 24.2,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 90,
+    "relationships": 80
+   }
+  },
+  "R9": {
+   "p50_ms": 60.7,
+   "p95_ms": 65.0,
+   "ops": {
+    "query": 21,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 39,
+   "rows": {
+    "entities": 500,
+    "relationships": 640
+   }
+  },
+  "R10": {
+   "p50_ms": 151.7,
+   "p95_ms": 228.9,
+   "ops": {
+    "query": 42,
+    "fetch": 18,
+    "scroll": 18,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 78,
+   "rows": {
+    "entities": 880,
+    "relationships": 1520
+   }
+  },
+  "gql:GQ1": {
+   "p50_ms": 148.5,
+   "p95_ms": 160.5,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 10000,
+    "relationships": 0
+   }
+  },
+  "gql:GQ2": {
+   "p50_ms": 33.4,
+   "p95_ms": 51.8,
+   "ops": {
+    "query": 6,
+    "fetch": 3,
+    "scroll": 3,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 12,
+   "rows": {
+    "entities": 1210,
+    "relationships": 0
+   }
+  },
+  "gql:GQ3": {
+   "p50_ms": 65.0,
+   "p95_ms": 82.0,
+   "ops": {
+    "query": 18,
+    "fetch": 9,
+    "scroll": 9,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 36,
+   "rows": {
+    "entities": 1610,
+    "relationships": 960
+   }
+  },
+  "gql:GQ4": {
+   "p50_ms": 92.4,
+   "p95_ms": 99.2,
+   "ops": {
+    "query": 24,
+    "fetch": 12,
+    "scroll": 12,
+    "get": 0
+   },
+   "ops_stable": true,
+   "ops_total": 48,
+   "rows": {
+    "entities": 2120,
+    "relationships": 1950
+   }
+  }
+ }
+}

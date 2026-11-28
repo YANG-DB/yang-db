@@ -19,7 +19,7 @@ Status values: `not started` · `investigating` · `fixing` · `testing` · `don
 | C — Service & loader | A1, L4 | **A1 merged to local main**; L4 → stream E | `worktree-agent-acdc794fa7038a886` | `54896dc37` A1 | — |
 | D — Data, docs & e2e | D1, D2, S13 | **merged to local main** | `worktree-agent-a28d8e52a88b602de` | `5e32376ca` D1, `4588df726` S13, `a37981c53` D2 | needs rebuilt image to go green |
 | E — Time partitions | L4 range buckets | **done, all merged** (r2 `e498ad46a`); e2e confirmation pending | `worktree-agent-a7164b98179501307` | `6b0a1c346` L4 | — |
-| Lead | — | Phases 0–5 done; v0.8.0, v0.9.0, v0.9.1 released. Since 0.9.1: Dependabot cleared (#187), B1 fixed (#188), Phase 7.1 benchmark (#189), community review addressed (#190; JDK 17 tests green), README pointer (#191); image `ghcr.io/yang-db/yang.db:0.9.1` published and e2e-verified (2026-11-25). Next: Phase 7.2–7.3, then Phase 6. Resume: agents/lead.md | `main` | — | — |
+| Lead | — | Phases 0–5 done; v0.8.0, v0.9.0, v0.9.1, **v0.10.0** released (2026-11-28: Phase 7 speed work, opt-in PIT cursors, V1 spec, Q16/Q17; vs 0.9.1 at scale 10: −61% OpenSearch operations, −12% latency). Main is 0.11.0-SNAPSHOT. Next: Phase 6 (OpenSearch 3.x, JDK 21), ROADMAP 7.12, L5, Q18–Q20. Resume: agents/lead.md | `main` | — | — |
 
 ## Timeline
 - 2026-11-20 — Stage 0 done and pushed (`3ace71186`): 1,064 tests, 0 failures, ITs running.
