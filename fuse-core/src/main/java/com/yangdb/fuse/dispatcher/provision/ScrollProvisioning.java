@@ -43,6 +43,11 @@ public interface ScrollProvisioning {
 
     boolean clearScrolls();
 
+    /** the Point in Time this traversal's searches read, when its cursor is consistent (ROADMAP 7.8) */
+    default java.util.Optional<PointInTimes.Handle> pointInTime() {
+        return java.util.Optional.empty();
+    }
+
     class NoOpScrollProvisioning implements ScrollProvisioning {
         private Logger logger = LoggerFactory.getLogger(NoOpScrollProvisioning.class);
 
@@ -75,6 +80,11 @@ public interface ScrollProvisioning {
         private String context;
         private MetricRegistry scrollRegistry;
         private MetricRegistry metricRegistry;
+
+        @Override
+        public java.util.Optional<PointInTimes.Handle> pointInTime() {
+            return PointInTimes.get(this.context);
+        }
 
         public MetricRegistryScrollProvisioning(MetricRegistry metricRegistry,String context) {
             this.metricRegistry = metricRegistry;

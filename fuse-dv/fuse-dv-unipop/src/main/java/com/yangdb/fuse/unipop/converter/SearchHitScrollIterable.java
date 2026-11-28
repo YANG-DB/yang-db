@@ -32,7 +32,10 @@ import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.SearchHit;
+import org.opensearch.search.builder.PointInTimeBuilder;
 import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.search.sort.SortOrder;
+import com.yangdb.fuse.dispatcher.provision.PointInTimes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -159,6 +162,11 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
                 finish();
                 return;
             }
+            java.util.Optional<PointInTimes.Handle> pit = this.iterable.scrollProvision.pointInTime();
+            if (pit.isPresent()) {
+                fetchFromPointInTime(pit.get());
+                return;
+            }
 
             if (!this.started) {
                 this.started = true;
@@ -233,6 +241,48 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             builder.setQuery(rest);
         }
 
+        /**
+         * A consistent cursor (ROADMAP 7.8): every request reads the cursor's Point in Time, so this search, the cursor's
+         * other searches and its later pages all see one snapshot. A PIT request names no indices (the PIT fixes them),
+         * so the indices this search meant become an {@code _index} filter; pages follow with {@code search_after} on a
+         * sort that is unique per hit: {@code _doc} (cheap), then {@code _index} and {@code _id}. No scroll is used.
+         */
+        private void fetchFromPointInTime(PointInTimes.Handle pit) {
+            SearchRequestBuilder builder = this.iterable.getSearchRequestBuilder();
+            if (!this.started) {
+                this.started = true;
+                prepare();
+                String[] indices = builder.request().indices();
+                builder.request().indices(new String[0]);
+                builder.request().routing((String) null);
+                if (indices != null && indices.length > 0) {
+                    BoolQueryBuilder inIndices = QueryBuilders.boolQuery().minimumShouldMatch(1);
+                    for (String index : indices) {
+                        inIndices.should(index.contains("*") || index.contains("?")
+                                ? QueryBuilders.wildcardQuery("_index", index)
+                                : QueryBuilders.termQuery("_index", index));
+                    }
+                    SearchSourceBuilder source = builder.request().source();
+                    QueryBuilder query = source != null && source.query() != null ? source.query() : QueryBuilders.matchAllQuery();
+                    builder.setQuery(QueryBuilders.boolQuery().filter(query).filter(inIndices));
+                }
+                builder.addSort("_doc", SortOrder.ASC).addSort("_index", SortOrder.ASC).addSort("_id", SortOrder.ASC);
+                builder.request().source().pointInTimeBuilder(
+                        new PointInTimeBuilder(pit.getId()).setKeepAlive(TimeValue.timeValueMillis(pit.getKeepAliveMillis())));
+            } else {
+                builder.request().source().searchAfter(this.searchAfter);
+            }
+            SearchHit[] hits = builder.execute().actionGet().getHits().getHits();
+            for (SearchHit hit : hits) {
+                take(hit, false);
+            }
+            if (hits.length < this.pageSize || this.counter >= this.iterable.getLimit()) {
+                this.done = true;
+                return;
+            }
+            this.searchAfter = hits[hits.length - 1].getSortValues();
+        }
+
         /** sort, search type and page size, set once on the request (the scroll fallback reuses it) */
         private void prepare() {
             SearchRequestBuilder builder = this.iterable.getSearchRequestBuilder();
@@ -284,6 +334,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         private int pageSize;
         private boolean started;
         private boolean done;
+        private Object[] searchAfter;
         //endregion
     }
     //endregion

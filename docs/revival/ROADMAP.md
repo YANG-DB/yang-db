@@ -250,15 +250,19 @@ Items, in the recommended order:
       thread-safe. Streaming: pages are already computed lazily (a 100-row first page of Q9 at scale 10 takes 0.22 s,
       the whole result 2.6 s, from 7.4), so what remains is the cursor's Point in Time (7.8).
 
-- [ ] 7.8 **Point in Time per cursor** (added 2026-11-28): today no query uses PIT: each search, or each scroll of
-      a large one, sees the index as it is when that search starts, so the searches of one query, and of its later
-      pages, can see different states of the data. Plan: open one PIT when a cursor is created, run every search of
-      the query on every page against it with `search_after` instead of scroll, extend its keep-alive per page, and
-      delete it with the cursor, including when an idle query expires (7.7). Limits: `search.max_open_pit_context`
-      (300 per node by default) and `point_in_time.max_keep_alive` (24 h). Works on 2.19 (PIT exists since 2.4) and
-      on 3.x unchanged. Verified by an integration test that writes between pages and doesn't see the write, by
-      the e2e results, and by the benchmark (OpenSearch work and latency). Design:
-      [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned). *(medium)*
+- [x] 7.8 **Point in Time per cursor, opt-in** (2026-11-28). Measured first: a PIT holds one context per shard of
+      its indices (one over all 19 graph indices: 57), and OpenSearch refused the 7th concurrent one
+      (`search.max_open_pit_context`, 300 per node), so "one PIT per cursor for every query" would have failed the 7th
+      query within 5 minutes. Built instead, with both modes kept: `opensearch.paging.mode = scroll` (default:
+      unchanged) or `pit`, and a cursor request's `"consistent": true|false` overrides it. A consistent cursor opens
+      one PIT on the indices its plan reads (lenient about indices that don't exist), every search of the cursor runs
+      against it (no indices named, an `_index` filter instead), pages with `search_after` on `_doc, _index, _id`
+      (OpenSearch 2.19 has no `_shard_doc`), and the PIT is released when the cursor is exhausted, deleted or expires.
+      Verified: `PointInTimeConsistencyIT` (a write between two searches of a consistent cursor isn't seen; without a
+      PIT it is), e2e ALL PASS in both modes, 0 PIT contexts left. Scale 10: default responses byte-for-byte identical
+      to main; PIT mode −10% OpenSearch operations, latency within noise
+      ([docs/benchmark.md](../benchmark.md#phase-78-point-in-time-opt-in)). Phase 6 note: the `_id` sort needs
+      `indices.id_field_data.enabled` (on in 2.19, deprecated).
 - [ ] 7.9 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
       touches one shard instead of all. Needs a reindex, so it comes last, and only if 7.1 shows hops dominate. *(large)*
 - [ ] 7.10 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
@@ -278,7 +282,7 @@ Items, in the recommended order:
       (string hashing in `UniGraphVertexStep`, OpenSearch JSON parsing).
 
 Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
-7.8 (PIT) next; 7.9 only on evidence.
+7.9 only on evidence.
 
 ## Workstream — V1 language specification ✅ done 2026-11-26 (PRs #196, #198; follow-ups below)
 Publish V1 as a spec other tools can build on ([docs/spec/v1](../spec/v1/README.md)).

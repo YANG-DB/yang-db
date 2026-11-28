@@ -212,7 +212,12 @@ requested. Each search is a **scroll** (`SearchHitScrollIterable`, keep-alive `o
 YANG-DB never calls the Point in Time API. The client wrappers pass `createPit` through, but `RestBridgeClient`
 doesn't translate it.
 
-**Planned:** one Point in Time per cursor, with `search_after` paging: ROADMAP **7.8**, on 2.19, before Phase 6.
+**Built (ROADMAP 7.8, 2026-11-28), as an option:** `opensearch.paging.mode = pit` (or a cursor request's
+`"consistent": true`) gives a cursor one Point in Time on the indices its plan reads, paged with `search_after` on
+`_doc, _index, _id`, released when the cursor is exhausted, deleted or expires. The default stays `scroll`, because a
+PIT holds one context per shard and OpenSearch allows 300 per node: one PIT over all the graph's indices is 57 of
+them. The plan below is the original design; the measurements and the differences are in
+[docs/benchmark.md](../benchmark.md#phase-78-point-in-time-opt-in).
 1. **Create a PIT** (`POST /<indices>/_search/point_in_time?keep_alive=…`) over the ontology's indices when the
    cursor is created. Keep its id in the cursor context (`TraversalCursorContext`).
 2. **Run every search for that cursor against the PIT:** the start, edge, far-end and count searches, on every page.

@@ -123,6 +123,19 @@ public abstract class CreateCursorRequest {
         this.createPageRequest = createPageRequest;
     }
 
+    /**
+     * Read one consistent snapshot of the index for the whole cursor (an OpenSearch Point in Time; ROADMAP 7.8): true or
+     * false; unset (null) follows the engine's {@code opensearch.paging.mode} (scroll by default).
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Boolean getConsistent() {
+        return consistent;
+    }
+
+    public void setConsistent(Boolean consistent) {
+        this.consistent = consistent;
+    }
+
     public void setOntology(String ontology) {
         this.ontology = ontology;
     }
@@ -175,6 +188,7 @@ public abstract class CreateCursorRequest {
     //region Fields
     private long maxExecutionTime = DEFAULT_EXECUTION_TIME;
     private boolean profile = false;
+    private Boolean consistent;
     private String cursorType;
     private String ontology;
     private CreatePageRequest createPageRequest;

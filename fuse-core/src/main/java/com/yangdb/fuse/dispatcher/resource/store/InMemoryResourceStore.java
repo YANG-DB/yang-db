@@ -119,6 +119,8 @@ public class InMemoryResourceStore implements ResourceStore {
     @Override
     public boolean deleteQueryResource(String queryId) {
         this.lastUsed.remove(queryId);
+        // a consistent cursor's Point in Time (ROADMAP 7.8) goes with its query, on delete and on expiry
+        com.yangdb.fuse.dispatcher.provision.PointInTimes.releaseQuery(queryId);
         return this.queryResources.remove(queryId)!=null;
     }
     @Override
