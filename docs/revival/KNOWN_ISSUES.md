@@ -94,14 +94,19 @@ expected. Confirmed by e2e run 4 on a freshly rebuilt image (all 21 checks pass)
 - The projection cursor projects nothing for a count-filtered query (`WHERE count(k) > n`); plain queries project
   normally (found 2026-11-20 while reviewing the tutorial).
 
-### Q14 — Every query stays in the engine's memory until its TTL; many large queries fill the heap · open
-Each query (with its cursor and fetched results) is kept in `InMemoryResourceStore` until its TTL (default 5 minutes)
-passes; expired queries are removed at most every 5 minutes. A client that doesn't `DELETE /fuse/query/:id` after a
-run leaves them all in memory: at 10 times the tutorial data, ~190 benchmark runs in a few minutes ran the 1 GB engine
-heap out (`java.lang.OutOfMemoryError`, then every query failing) (`docs/benchmark.md`). The benchmark deletes each
-query after its run. Fix: Phase 7.7 (stream results, evict idle cursors), e.g. a cap on stored results by size.
+### Q14 — Stored queries were never removed; large ones filled the heap · **fixed** (0.10, Phase 7.7)
+Every query is kept in `InMemoryResourceStore`, with its cursor and fetched pages, so that clients can fetch pages
+again. Each query has a ttl (`CreateQueryRequest.ttl`, default 5 minutes), but nothing enforced it: the removal method
+(`removeOldQueries`) was never called. An earlier version of this entry said queries were removed after the ttl; that
+was wrong. A client that doesn't `DELETE` its queries kept every one in memory for good: about 54 MB per stored Q9
+at 10× the tutorial data (measured), so a few dozen ran the 1 GB heap out. The store's map was also a plain
+`HashMap` shared by concurrent request threads. Fixed: a query is removed once it hasn't been used for longer than
+its ttl (using the query, a cursor or a page, or its composite query, counts as use; ttl 0 or less: never), checked
+every 30 seconds in the background; the maps are concurrent. Checked live: a query with a 10-second ttl was gone
+after 25 seconds; three Q9 queries from `/run` (default ttl, never deleted) took the heap from 33 to 200 MB and were all removed after 316 s, heap back to 34 MB.
+`InMemoryResourceStoreTest`.
 
-### Q15 — Cypher `RETURN` doesn't select elements or properties · open (feature, ROADMAP 7.10)
+### Q15 — Cypher `RETURN` doesn't select elements or properties · open (feature, ROADMAP 7.11)
 The engine always returns the whole matched pattern with every ontology property of each element, whatever the
 `RETURN` clause lists: `MATCH (p:Person)-[o:Own]->(d:Dragon) RETURN d.name` returns the persons and the `Own`
 relationships too, and every property of each dragon. The OpenSearch requests match: they fetch every property of

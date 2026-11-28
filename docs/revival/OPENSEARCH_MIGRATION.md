@@ -212,7 +212,7 @@ requested. Each search is a **scroll** (`SearchHitScrollIterable`, keep-alive `o
 YANG-DB never calls the Point in Time API. The client wrappers pass `createPit` through, but `RestBridgeClient`
 doesn't translate it.
 
-**Planned:** one Point in Time per cursor, with `search_after` paging.
+**Planned:** one Point in Time per cursor, with `search_after` paging: ROADMAP **7.8**, on 2.19, before Phase 6.
 1. **Create a PIT** (`POST /<indices>/_search/point_in_time?keep_alive=…`) over the ontology's indices when the
    cursor is created. Keep its id in the cursor context (`TraversalCursorContext`).
 2. **Run every search for that cursor against the PIT:** the start, edge, far-end and count searches, on every page.

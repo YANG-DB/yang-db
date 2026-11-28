@@ -124,7 +124,7 @@ Each module's purpose and key classes, and the path of a query through them, are
 - Node label union `(n:A|B)` is not supported (openCypher 9 grammar). Use `MATCH (n) WHERE n:A OR n:B`.
 - Cyclic patterns, which close a loop back to an already-matched node, are rejected with an explicit error.
 - `RETURN` doesn't narrow the answer: every element of the matched pattern comes back with all its properties,
-  whatever `RETURN` lists (`RETURN d.name` returns all of `d` and the rest of the path too). Planned (Q15, ROADMAP 7.10).
+  whatever `RETURN` lists (`RETURN d.name` returns all of `d` and the rest of the path too). Planned (Q15, ROADMAP 7.11).
 - A count filter (`WHERE count(r) > n`) counts all of the start node's relationships; row filters on the far end
   only restrict which neighbours are returned.
 
@@ -148,7 +148,7 @@ Each module's purpose and key classes, and the path of a query through them, are
   trusted network, or behind a gateway that adds them. It connects to OpenSearch over HTTP or HTTPS
   (`https://host:port` in `opensearch.hosts`) but can't send credentials, so the cluster must accept unauthenticated
   requests from it. The quickstart disables the OpenSearch security plugin: for local use only.
-- **Scale.** Each query keeps its results in the engine's memory until it's deleted or its TTL (5 minutes) passes,
+- **Scale.** Each query keeps its results in the engine's memory until it's deleted or unused for its TTL (5 minutes by default),
   and a single CSV load is one bulk request. Measured numbers are in the [benchmark](docs/benchmark.md); open issues
   in [KNOWN_ISSUES.md](docs/revival/KNOWN_ISSUES.md).
 

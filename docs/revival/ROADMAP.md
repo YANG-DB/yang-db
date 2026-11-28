@@ -181,10 +181,7 @@ M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Fo
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
 - [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
       per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
-- [ ] **Point in Time per cursor**: every search of a query, on every page, reads the same snapshot of the index
-      (PIT + `search_after` instead of per-search scrolls). Can land on 2.19 before the 3.x move (PIT exists since 2.4),
-      and carries over to 3.x unchanged. Design, limits and 3.x compatibility:
-      [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned)
+- [ ] **Point in Time per cursor**: moved to Phase 7 as **7.8** (it runs on 2.19 already; 3.x keeps the same API).
 
 ## Phase 7 — Speed and efficiency
 Goal: fewer round trips to OpenSearch, less data per round trip and less planning overhead per query, each change
@@ -219,7 +216,7 @@ Items, in the recommended order:
       v0.8.0 (OpenSearch 1.3) / v0.9.0 / v0.9.1 / main: [docs/benchmark.md](../benchmark.md). Found L5, Q14, A11.
 - [x] 7.2 **Fetch only the projected fields**: already in place (see above; found 2026-11-26). The remaining gap is
       that Cypher `RETURN` doesn't project (Q15); making it project changes what the API returns, so it is a feature
-      of its own (7.10), not a speed item, and the benchmark (all `RETURN *`) can't show a gain from it.
+      of its own (7.11), not a speed item, and the benchmark (all `RETURN *`) can't show a gain from it.
 - [x] 7.3 **Plain search for small results** (2026-11-26): each search starts as a plain search; a page that isn't
       full is the whole result, so no scroll is opened, no empty follow-up is sent and nothing is cleared. Only after a
       full page does the same search continue as a scroll (hits already returned are skipped), and an opened scroll
@@ -246,14 +243,30 @@ Items, in the recommended order:
       plan) takes about 3–4 ms per query warm, 9% of the run including the HTTP round trip; with a cold count cache it
       costs at most about 2 ms more (a single-entity query with a new filter value; within noise with a
       relationship). Switching to statistics could change the plans chosen, for a gain of about 2 ms.
-- [ ] 7.7 **Stream results and evict idle cursors**: lower memory and a faster first page on large results. Builds on
-      Phase 6's Point in Time per cursor, which also replaces the per-search scroll contexts. *(medium)*
-- [ ] 7.8 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
+- [x] 7.7 **Evict idle queries** (2026-11-28; streaming part: see below). Measured first: a stored query holds
+      its fetched pages (Q9 at scale 10: about 54 MB of heap), and the ttl was never enforced, so every query a client
+      didn't delete stayed for good (Q14 was described wrongly as a 5-minute expiry). Now a query is removed after its
+      ttl without use (default 5 minutes, checked every 30 s; a slowly paging client keeps it), and the store is
+      thread-safe. Streaming: pages are already computed lazily (a 100-row first page of Q9 at scale 10 takes 0.22 s,
+      the whole result 2.6 s, from 7.4), so what remains is the cursor's Point in Time (7.8).
+
+- [ ] 7.8 **Point in Time per cursor** (added 2026-11-28): today no query uses PIT: each search, or each scroll of
+      a large one, sees the index as it is when that search starts, so the searches of one query, and of its later
+      pages, can see different states of the data. Plan: open one PIT when a cursor is created, run every search of
+      the query on every page against it with `search_after` instead of scroll, extend its keep-alive per page, and
+      delete it with the cursor, including when an idle query expires (7.7). Limits: `search.max_open_pit_context`
+      (300 per node by default) and `point_in_time.max_keep_alive` (24 h). Works on 2.19 (PIT exists since 2.4) and
+      on 3.x unchanged. Verified by an integration test that writes between pages and doesn't see the write, by
+      the e2e results, and by the benchmark (OpenSearch work and latency). Design:
+      [OPENSEARCH_MIGRATION.md §10](OPENSEARCH_MIGRATION.md#10-next-consistent-query-snapshots-with-point-in-time-planned). *(medium)*
+- [ ] 7.9 **Route edge lookups to one shard** by source vertex id (`SearchBuilder` already supports routing): a hop
       touches one shard instead of all. Needs a reindex, so it comes last, and only if 7.1 shows hops dominate. *(large)*
-- [ ] 7.10 **Cypher `RETURN` selects elements and properties** (Q15): return only the listed elements, and for
+- [ ] 7.10 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
+      searches at no code cost.
+- [ ] 7.11 **Cypher `RETURN` selects elements and properties** (Q15): return only the listed elements, and for
       `RETURN d.name` only those properties, fetching only them. A behaviour change of the API (fewer properties or
       elements per row), with its own tests and release note. *(medium)*
-- [~] 7.11 **Profile the engine side** (measured 2026-11-27): OpenSearch is only 2–15% of a query's time on the
+- [~] 7.12 **Profile the engine side** (measured 2026-11-27): OpenSearch is only 2–15% of a query's time on the
       tutorial data (Q9: 41 of 272 ms; Q5: 15 of 146 ms; Q2a: 1 of 60 ms); the rest is the engine's traversal and
       row assembly (Q9 ~170 ms) and JSON rendering (Q9 41 ms, 2.7 MB, about 900 bytes per relationship). Phase 7
       so far cut OpenSearch's work by a third to a half (7.3, 7.4); latency is in the engine. Next: profile Q9 and Q5
@@ -263,11 +276,9 @@ Items, in the recommended order:
       by concatenation of the same text. Responses byte-for-byte identical (ids included); **-12%
       latency at scale 10** (Q9 −10%, QG −19%, QA −21%). The profile is flat now; next candidates are small
       (string hashing in `UniGraphVertexStep`, OpenSearch JSON parsing).
-- [ ] 7.9 **Try concurrent segment search** (an OpenSearch cluster setting) on the benchmark; helps large single
-      searches at no code cost.
 
 Sequencing: 7.1 first. 7.2 and 7.3 are small and low-risk and can land before Phase 6; 7.4–7.6 are the big wins;
-7.7 follows the PIT work; 7.8 only on evidence.
+7.8 (PIT) next; 7.9 only on evidence.
 
 ## Workstream — V1 language specification ✅ done 2026-11-26 (PRs #196, #198; follow-ups below)
 Publish V1 as a spec other tools can build on ([docs/spec/v1](../spec/v1/README.md)).

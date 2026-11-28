@@ -57,7 +57,7 @@ The slowest queries at scale 10 are Q9 (2.5 s: every `Fire` relationship between
 
 - **A large CSV fails to load as a whole** (L5): the loader sends a whole file as one bulk request, and OpenSearch
   rejects the 115,030-row Fire file at scale 10. The benchmark loads in pieces of 20,000 rows.
-- **Queries stay in memory for 5 minutes** (Q14): without deleting them, a few hundred large queries ran the 1 GB
+- **Queries stayed in memory for good** (Q14, fixed in 0.10 by Phase 7.7: the 5-minute ttl was never enforced): without deleting them, a few hundred large queries ran the 1 GB
   engine heap out at scale 10. The benchmark deletes each query after its run; clients should too.
 - **A clock step stopped the engine** (A11, fixed in 0.10): when the VM's clock stepped back about 50 seconds, every
   request failed for 47 seconds ("Clock moved backwards"). That run was discarded and repeated. The benchmark now
@@ -286,9 +286,9 @@ the search slow log, summed) against the client-side total and the engine's own 
 
 Phases 7.3 and 7.4 cut OpenSearch's work by a third to a half, which a busy cluster feels, but most of the latency is
 in the engine. Planning is small: about 3–4 ms per query warm, at most about 2 ms more with a cold count cache (7.6).
-Next: profile the engine (ROADMAP 7.11).
+Next: profile the engine (ROADMAP 7.12).
 
-## Phase 7.11: profiling the engine
+## Phase 7.12: profiling the engine
 
 Java Flight Recorder on Q9 and Q5 at scale 10 (8 runs each, `settings=profile`, full stacks via
 `JAVA_TOOL_OPTIONS=-XX:FlightRecorderOptions=stackdepth=1024`). The largest single cost was **building text with
@@ -319,7 +319,7 @@ Scale 10, same data and cluster, old image then new image: **sum of p50 latencie
 | QB | 279 ms | 220 ms | -21% |
 
 After this the profile is flat: no method above about 6% of the samples (the largest are hashing of freshly built
-strings, and parsing OpenSearch's JSON). Raw results: `benchmark-results/7.11-*.json`.
+strings, and parsing OpenSearch's JSON). Raw results: `benchmark-results/7.12-*.json`.
 
 ## Rerun it
 
