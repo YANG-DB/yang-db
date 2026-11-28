@@ -320,6 +320,86 @@ Follow-ups (open):
       `newStructure`, and the `feature/*` branches. Recent release branches (`release/0.8.x`, `release/0.9.x`,
       `release-0.9.1`) stay
 
+## Phase 9 — Future ideas (from a comparison with JanusGraph, 2026-11-28)
+Candidates for versions after the revival, not commitments: each needs the maintainer's go-ahead and a design note
+before work starts. IDs `F1`–`F20` are for referring to them.
+
+**How the two differ.** JanusGraph can't run on OpenSearch alone: it keeps the graph in a separate store (Cassandra,
+ScyllaDB, HBase, BerkeleyDB) and uses OpenSearch only as an optional *mixed index* for full-text, geo and range
+lookups (OpenSearch 2 and 3 through its Elasticsearch backend since 1.2.0). YANG-DB keeps everything in OpenSearch and
+maps an ontology onto existing indices, so the data never moves. That is the reason YANG-DB exists, and none of the
+ideas below should give it up.
+
+| Area | JanusGraph | YANG-DB |
+|---|---|---|
+| Storage | Lists of each vertex's edges in a wide-column store; OpenSearch only for indexes | Documents in OpenSearch; joins done with `terms` lookups |
+| Using existing data | No: data must be loaded into JanusGraph | Yes: the ontology maps onto existing indices |
+| Query languages | Gremlin (full TinkerPop), reads and writes | Cypher, GraphQL, SPARQL, V1; read-only |
+| Planning | Step by step, guided by indexes | Cost-based, using index statistics |
+| Writes | Transactions (locking depends on the store) | Bulk CSV/JSON load API only |
+| Indexes | Composite, mixed, **vertex-centric** (edges per vertex, for vertices with huge numbers of edges) | OpenSearch mappings; redundant fields on edges |
+| Analytics | Spark graph computer, vertex programs (PageRank, connected components) | None |
+| Path queries | `repeat()`, `shortestPath()` | Fixed-length patterns; cycles rejected (Q6, Q20) |
+| Clients | Gremlin Server; drivers for Python, JS, .NET, Go; many visualizers | REST + OpenAPI, Java client |
+| Security | Authentication on Gremlin Server | None; can't send OpenSearch credentials |
+| Element TTL | Per vertex and edge label | None (only stored queries expire) |
+| Profiling | `profile()` step, Dropwizard metrics | Benchmark harness; nothing per query in the API |
+
+**Tier 1: high value, fits the design**
+- [ ] F1 **Authentication, and OpenSearch credentials**: basic auth, API keys or JWT on the REST API; basic auth and
+      AWS SigV4 towards OpenSearch. Today's lack of both rules out most real deployments. *(medium)*
+- [ ] F2 **Variable-length paths and shortest path**: Cypher `-[*1..5]->` and `shortestPath()`, run as a bounded
+      breadth-first search with a visited set. Builds on the cycle handling (Q6, Q20). *(large)*
+- [ ] F3 **Query profiling**: `?profile=true` returns, per step, the searches, hits, time and the planner's estimate
+      against the actual count (like Gremlin's `profile()`). Turns the Phase 7 slow-log analysis into a feature. *(small–medium)*
+- [ ] F4 **Gremlin front-end**, read-only first: the most-used graph language, and the way into JanusGraph's tools
+      (Gremlin console, G.V(), graph-notebook). The engine already runs on TinkerPop (unipop); review the old
+      `gremlin-server` branch (Phase 8) first. *(medium–large)*
+- [ ] F5 **Indexes for vertices with very many edges**: sorted, filterable edges per vertex for hub vertices (nested
+      documents, or routing per vertex as in 7.9), the counterpart of JanusGraph's vertex-centric index. *(large)*
+
+**Tier 2: write path and data management**
+- [ ] F6 **Write queries**: Cypher `CREATE` / `MERGE` / `SET` / `DELETE` and GraphQL mutations as bulk and update
+      requests, checked against the ontology. Optimistic concurrency (`if_seq_no` / `if_primary_term`), not
+      transactions with locking. *(large)*
+- [ ] F7 **Schema rules enforced on write**: multiplicity (`ONE2MANY`, `SIMPLE`, …) and property cardinality
+      (`SINGLE` / `LIST` / `SET`) declared in the ontology and checked by the loader. *(medium)*
+- [ ] F8 **Index lifecycle API**: reindex when the ontology changes (`_reindex` and aliases), report index status,
+      roll out mapping changes with no downtime. *(medium)*
+- [ ] F9 **TTL per entity or relationship type**, through ISM policies on time-partitioned indices. *(small–medium)*
+- [ ] F10 **Streaming and incremental loads**: chunked loads with backpressure instead of one bulk request per CSV,
+      and an ingest endpoint for Kafka or Data Prepper. *(medium)*
+
+**Tier 3: analytics and ecosystem**
+- [ ] F11 **Graph algorithms**: PageRank, connected components, degree and communities over a subgraph, in the engine
+      or through Spark (opensearch-hadoop), with results written back as properties. *(large)*
+- [ ] F12 **Client SDKs**, Python first, generated from the OpenAPI 3.1 spec. *(small–medium)*
+- [ ] F13 **Graph exploration in OpenSearch Dashboards**: a graph-view plugin calling the YANG-DB API (see
+      `dashboards/`). *(large)*
+- [ ] F14 **Multi-tenancy**: ontologies isolated per tenant, index-name prefixes, the caller's identity passed to
+      OpenSearch security roles. Needs F1. *(medium)*
+- [ ] F15 **Metrics endpoint**: Micrometer or Prometheus metrics for query latency, OpenSearch operations, open
+      cursors and the planner's cache hit rate. *(small)*
+
+**Tier 4: OpenSearch features JanusGraph can't offer**
+- [ ] F16 **Vector similarity in patterns**: `WHERE knn(d.embedding, $v, 10)` with OpenSearch k-NN, then expand from
+      the matches (GraphRAG: retrieval by embedding followed by graph expansion). *(medium)*
+- [ ] F17 **Relevance-scored results**: keep `_score` from text matches and order paths by it. *(small–medium)*
+- [ ] F18 **Aggregations in graph queries**: Cypher `count` / `sum` / `avg` with grouping, pushed down as OpenSearch
+      aggregations. *(medium)*
+- [ ] F19 **Cross-cluster graphs**: entities in different clusters, through cross-cluster search. *(medium)*
+- [ ] F20 **Ontology import from existing indices**: infer a draft ontology from live mappings and fields that look
+      like foreign keys, next to the OWL and SQL-DDL importers. *(medium)*
+
+**Ideas not to adopt:** a separate storage backend like JanusGraph's (it would undo YANG-DB's reason to exist), and
+full transactions with locking (OpenSearch can't support them; F6 uses optimistic concurrency).
+
+**Suggested order:** F1, F3 and F15 (small, unblock real users); then F2 and F16 (the clearest positioning: graph and
+vector search over the OpenSearch data you already have); then F4; then the write path (F6–F10).
+
+Sources: [JanusGraph changelog](https://docs.janusgraph.org/changelog),
+[JanusGraph Elasticsearch/OpenSearch index backend](https://docs.janusgraph.org/index-backend/elasticsearch/).
+
 ## Dev environment notes
 - JDK 11 + Maven; Docker via colima on macOS. Quickstart: [docker/README.md](../../docker/README.md).
 - Homebrew's Maven runs on Homebrew's newest JDK (27 on 2026-11-26), where Mockito-based tests fail
