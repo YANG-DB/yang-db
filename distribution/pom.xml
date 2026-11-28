@@ -86,10 +86,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.internetitem</groupId>
-            <artifactId>logback-elasticsearch-appender</artifactId>
-        </dependency>
         <!--  jmx monitoring      -->
         <dependency>
             <groupId>org.jolokia</groupId>

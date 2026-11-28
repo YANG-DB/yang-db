@@ -243,11 +243,25 @@ A where-by on a missing tag:
 ```
 Text form: `start (A:Person) {height > any(Z.height)}`
 
-## OR between property filters: branch the pattern
+## OR between property filters
 
-`some` between property filters of one entity (an `EPropGroup` or `Quant1` with `some`) currently behaves as `all`
-(KNOWN_ISSUES Q16). Until that's fixed, write OR by branching the whole pattern, one copy of the entity per filter.
-Persons shorter than 165 cm or taller than 182 cm:
+`some` between property filters of one entity (an `EPropGroup` or `Quant1` with `some`) is OR, also between filters on
+the same property (before 0.10 those were merged as AND: KNOWN_ISSUES Q16). Persons shorter than 165 cm or taller than
+182 cm:
+
+<!-- engine: accepts -->
+```json
+{"ont": "Dragons", "elements": [
+  {"eNum": 0, "type": "Start", "next": 1},
+  {"eNum": 1, "type": "ETyped", "eTag": "A", "eType": "Person", "next": 2},
+  {"eNum": 2, "type": "Quant1", "qType": "some", "next": [3, 4]},
+  {"eNum": 3, "type": "EProp", "pType": "height", "con": {"type": "Constraint", "op": "lt", "expr": 165}},
+  {"eNum": 4, "type": "EProp", "pType": "height", "con": {"type": "Constraint", "op": "gt", "expr": 182}}
+]}
+```
+Text form: `start (A:Person) some{ {height < 165} | {height > 182} }`
+
+Branching the whole pattern, one copy of the entity per filter, gives the same answer:
 
 <!-- engine: accepts -->
 ```json

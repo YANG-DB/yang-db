@@ -567,7 +567,11 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("'range' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
         }
 
-        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+        // conditions on one field can share a range clause only where they are ANDed (must, filter): x > 1 and x < 5 is
+        // one range. In should (OR) and must_not they are separate clauses: merging "height < 165 OR height > 182" made
+        // one empty range "between 182 and 165" (Q16), and merging two must_not ranges negated their AND instead.
+        boolean conjunctive = this.current.op == Op.must || this.current.op == Op.filter;
+        if (conjunctive && StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
             this.current = seekLocalName(current, name);
             return this;
         }

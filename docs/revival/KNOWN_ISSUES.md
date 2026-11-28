@@ -113,18 +113,22 @@ relationships too, and every property of each dragon. The OpenSearch requests ma
 every element (`DefaultSelectionAsgStrategy` projects them all into `_source.includes`). Found 2026-11-26 from the
 search slow log while checking Phase 7.2. GraphQL is not affected: it fetches and returns the selected fields.
 
-### Q16 — V1: `some` (OR) between property filters behaves as `all` (AND) · open
-Found while writing the V1 spec (2026-11-26), checked live against the Dragons data. Two filters on Person `height`
-(`< 165`: 8 persons, `> 182`: 9 persons, 17 together in OpenSearch) return **0** when combined with OR as
-an `EPropGroup` with `quantType: "some"`, a `Quant1` `some` over the two `EProp`s, a `RelPropGroup` `some` (same on
-`Own.startDate`), or a deprecated `HQuant` `some`. Cypher's `WHERE p.height < 165 OR p.height > 182` returns 17: the
-translator branches the whole pattern instead. Workaround in V1: `Start → Quant1 some → one copy of the entity per
-filter` (returns 17). `some` between *relation* branches works.
+### Q16 — V1: `some` (OR) between filters on the same property behaved as AND · **fixed** (0.10)
+Found while writing the V1 spec (2026-11-26): `height < 165` OR `height > 182` on Person (8 + 9 = 17 persons) returned 0
+as an `EPropGroup`/`Quant1`/`RelPropGroup`/`HQuant` with `some`. Cause (2026-11-28): the OR reached OpenSearch intact as
+a `bool` `should`, but the query builder merged the two conditions on `height` into one range clause, as it does for
+AND, giving "between 182 and 165", which matches nothing. `CompareQueryTranslator` names each range after its field and
+`QueryBuilder.range` reused a same-named range in any context. Fixed: ranges are shared only in AND contexts (`must`,
+`filter`); in `should` and `must_not` (which had the same flaw: two exclusions became the negation of their AND) each
+condition is its own clause. OR between different properties was never affected. Checked live: 17 persons;
+`RangeMergeTest`. Every playground query's response is byte-for-byte unchanged.
 
-### Q17 — V1: `WhereByConstraint` without `joinType` returns an empty response · open
-`/fuse/query/v1/validate` accepts it, `/run` answers 200 with an empty `data` object and no error, and the log shows a
-`NullPointerException` at `AsgNamedParametersStrategy.isForEachJoin` (the JSON reader leaves `joinType` null; only the
-Java constructors default it). With `"joinType": "FOR_EACH"` or `"FULL"` the query runs. The V1 schema now requires it.
+### Q17 — V1: `WhereByConstraint` without `joinType` returned an empty response · **fixed** (0.10)
+`/run` answered 200 with an empty `data` object (a `NullPointerException` at `AsgNamedParametersStrategy.isForEachJoin`):
+the JSON reader left `joinType` null, and only the Java constructors set it. Fixed: a missing `joinType` follows the
+operator, as the constructors do (`FOR_EACH` for a single-value operator, `FULL` otherwise). The V1 schema still
+requires it. `WhereByConstraintJsonTest`; checked live. Still open: an exception during a run can come back as 200 with
+an empty body instead of an error.
 
 ### Q18 — `/fuse/query/v1/validate` validates before rewriting, unlike `/run` · open
 `validateAndRewriteQuery` transforms and validates but skips the rewrite strategies that `/run` applies first. A query
@@ -368,18 +372,15 @@ configs) loads jansi, whose `CLibrary` extracts a native library and runs `chmod
 never returned (OpenJDK 11.0.14 on Alpine 3.14, the image's base). Jansi is only needed for colours on Windows
 consoles. Fixed: `withJansi` is `false` in all three logback configs, so the fork never happens. Found 2026-11-26 while
 benchmarking Phase 7.3 (it failed the version comparison's health wait). The image's EOL base (Alpine 3.14, JDK
-11.0.14) is a separate cleanup.
+11.0.14) was replaced in 0.10 by `eclipse-temurin:11-jdk`.
 
-### O1 — logback 1.5 rejects the Elasticsearch log appender's `<property>` entries · open
-Since logback 1.5 (#187), the engine prints `ERROR in ...PropertyModelHandler - In <property> element, either the
-"file" attribute alone, ...` 20 times at start-up: the `<properties><property>` list of the
-`com.internetitem.logback.elasticsearch.ElasticsearchAppender` in `distribution/resources/logConfig/logback.xml` (and
-the Dragons copy) is now read as logback's own `<property>` element. Console and file logging work (CI checks that the
-engine logs); only that appender's extra fields are lost. The appender ships logs to `http://localhost:9200/_bulk`,
-which inside the Docker stack isn't OpenSearch, so it likely never worked there. Options: drop the appender, or move to
-an OpenSearch appender configured from `opensearch.hosts`. Found 2026-11-26.
-
-## Test infrastructure
+### O1 — logback 1.5 rejected the Elasticsearch log appender's `<property>` entries · **fixed** (0.10)
+Since logback 1.5 (#187), every start printed 20 `ERROR in ...PropertyModelHandler` lines for the
+`com.internetitem.logback.elasticsearch.ElasticsearchAppender` in the distributed logback configs, whose `<property>`
+list logback now reads as its own element. The appender shipped logs to `http://localhost:9200/_bulk`, which isn't
+OpenSearch inside the Docker stack. Fixed: the appender, its error log and the `logback-elasticsearch-appender`
+dependency are removed; console and file logging are unchanged. To ship logs to OpenSearch, collect the container's
+output or the `log/` files.
 
 ### T1 — Integration suite crashes when OpenSearch already runs, and reports success · **fixed**
 `TestSuiteIndexProviderSuite` reuses a locally running cluster if one answers on the test HTTP port, but

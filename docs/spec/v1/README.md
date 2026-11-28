@@ -68,9 +68,10 @@ schema accepts them with any fields, and does not specify them. `HQuant` is one 
 
 Known gaps, with workarounds in [rules.md](rules.md) and details in
 [KNOWN_ISSUES](../../revival/KNOWN_ISSUES.md):
-- `some` between property filters of one entity behaves as `all` (Q16); `some` between relation branches works.
-- `RelUntyped` needs at least one type in `vTypes` (Q19), and `WhereByConstraint` needs `joinType` (Q17). The
-  schema requires both.
+- `RelUntyped` needs at least one type in `vTypes` (Q19); the schema requires it.
+- Fixed in 0.10: `some` between filters on the same property behaved as `all` (Q16), and a `WhereByConstraint`
+  without `joinType` returned an empty response (Q17; the engine now follows the operator, the schema still requires
+  `joinType`).
 
 ## Where the schema is stricter than the engine
 
