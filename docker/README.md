@@ -14,7 +14,7 @@ This is the quickstart for YANG-DB: it runs the Dragons sample graph on top of O
 Each release from 0.9.1 on publishes `ghcr.io/yang-db/yang.db:<version>` (linux/amd64 and linux/arm64; `latest` is
 the latest release). Run it without building anything:
 ```bash
-YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.9.1 docker compose -f docker-compose-os.yml up -d
+YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.10.0 docker compose -f docker-compose-os.yml up -d
 ```
 The `yangdb/yang.db` images on Docker Hub are from 2020 (Elasticsearch era) and are not updated.
 

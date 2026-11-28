@@ -21,7 +21,7 @@ graph database.
 
 > **Status (2026):** the project is being revived after a few quiet years. `main` builds against
 > OpenSearch **2.19.7** (upgraded from 1.3.0 in Phase 5; 3.x is planned). The latest release is
-> [0.9.1](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.1) (OpenSearch 2.19.7, bug fixes on top of [0.9.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.0)); [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)
+> [0.10.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.10.0) (OpenSearch 2.19.7: faster, consistent cursors, the V1 spec); [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0)
 > is the last on OpenSearch 1.3. Each has a ready-built distribution attached. The full build is green (about 1,300 tests, integration suites
 > included; each [CI run](https://github.com/YANG-DB/yang-db/actions/workflows/ci.yml) shows the exact count), and
 > every documented tutorial query passes end to end on Docker
@@ -45,7 +45,7 @@ OpenSearch 2.19.7 and OpenSearch Dashboards:
 
 ```bash
 cd docker
-YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.9.1 docker compose -f docker-compose-os.yml up -d
+YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.10.0 docker compose -f docker-compose-os.yml up -d
 curl http://localhost:8888/fuse/health
 ```
 

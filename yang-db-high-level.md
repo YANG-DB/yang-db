@@ -7,8 +7,8 @@
 * How it works inside: the [architecture tutorial](docs/tutorial/architecture/README.md) (every module, and one query followed from text to results)
 
 ### Run
-* Download the latest release, [0.9.1](https://github.com/YANG-DB/yang-db/releases/tag/v0.9.1) (OpenSearch 2.19.7):
-  unpack the attached `yangdb-0.9.1-distribution.tar.gz`, set `opensearch.hosts` (and `opensearch.http.port`, default
+* Download the latest release, [0.10.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.10.0) (OpenSearch 2.19.7):
+  unpack the attached `yangdb-0.10.0-distribution.tar.gz`, set `opensearch.hosts` (and `opensearch.http.port`, default
   9200) in `dragon/config/application.conf` to your OpenSearch, then run `dragon/start-fuse-service.sh`. The previous release, [0.8.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.8.0), runs on OpenSearch 1.3.
 * Or run it with Docker next to OpenSearch: build the image and start the stack as described in
   [docker/README.md](docker/README.md), then open http://localhost:8888/dragons/swagger.
@@ -23,7 +23,7 @@
 #### Project YANG-DB
 * [wiki](https://github.com/YANG-DB/yang-db/wiki)
 * [Version Info](https://github.com/YANG-DB/yang-db/wiki/Version-Features-Summary)
-* [Release notes](docs/releases) ([0.9.1](docs/releases/v0.9.1.md), [0.9.0](docs/releases/v0.9.0.md), [0.8.0](docs/releases/v0.8.0.md); older: [V0.51](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes))
+* [Release notes](docs/releases) ([0.10.0](docs/releases/v0.10.0.md), [0.9.1](docs/releases/v0.9.1.md), [0.9.0](docs/releases/v0.9.0.md), [0.8.0](docs/releases/v0.8.0.md); older: [V0.51](https://github.com/YANG-DB/yang-db/wiki/V0.51---Relaese.notes))
 
 ##### Members:
 
