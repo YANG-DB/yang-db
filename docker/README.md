@@ -8,7 +8,7 @@ This is the quickstart for YANG-DB: it runs the Dragons sample graph on top of O
 
 ## Prerequisites
 - Docker with the `docker compose` plugin
-- To build the image yourself: JDK 11 and Maven 3.6+ (see Requirements in [PROJECT.md](../PROJECT.md#requirements))
+- To build the image yourself: JDK 11 or 21, and Maven 3.6+ (see Requirements in [PROJECT.md](../PROJECT.md#requirements))
 
 ## Prebuilt image
 Each release from 0.9.1 on publishes `ghcr.io/yang-db/yang.db:<version>` (linux/amd64 and linux/arm64; `latest` is

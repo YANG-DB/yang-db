@@ -1,10 +1,10 @@
 # Dockerfile for YANG-DB graph database
 # MAINTAINER Lior Perry<www.youngdb.org>
 # Java
-# Eclipse Temurin JDK 11 on Ubuntu: a maintained base with current JDK 11 updates, for linux/amd64 and linux/arm64
+# Eclipse Temurin JDK 21 on Ubuntu: a maintained base with current JDK 21 updates, for linux/amd64 and linux/arm64
 # (it replaced alpine:3.14, end of life, with OpenJDK 11.0.14 from 2022). A JDK rather than a JRE, like before, so
 # jcmd and Java Flight Recorder are there for diagnostics (docker/bench/README.md).
-FROM eclipse-temurin:11-jdk
+FROM eclipse-temurin:21-jdk
 
 # curl for the health check; bash runs the start script
 RUN apt-get update \

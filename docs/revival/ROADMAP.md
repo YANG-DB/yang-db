@@ -179,8 +179,15 @@ M1, M2, P2, Q11, Q13, plus T3 (a test suite that wiped a running OpenSearch). Fo
 `agents/bugfix2-*.md`.
 
 ## Phase 6 — OpenSearch 3.x (JDK 21, Lucene 10)
-- [ ] JDK 21 for build and runtime; then the 3.x census, bridge, data path ("upgrade to 2.19 first") and verification,
-      per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships)
+Target: OpenSearch **3.10.1** (latest, 2026-11-28). Its REST client is compiled for Java 21, so the engine must run on
+JDK 21 first. Stages, per [OPENSEARCH_UPGRADE.md](OPENSEARCH_UPGRADE.md#phase-6--opensearch-3x-after-phase-5-ships):
+- [x] 6.0 **JDK 21** (2026-11-28), still on OpenSearch 2.19: build, all 1,358 tests and the engine run on JDK 21 (byte-buddy
+      for Mockito, `--add-opens` in the start script); CI checks JDK 11 and 21; the Docker image runs on 21
+- [ ] 6.1 census: OpenSearch 3.10.1, every compile and test break listed
+- [ ] 6.2 fix the breaks; the bridge stays on the 3.10 REST client; compile for Java 21
+- [ ] 6.3 in-place upgrade rehearsal: data from 0.10.0 on 2.19 opened by 3.10.1, same results
+- [ ] 6.4 verify (e2e, benchmark against 0.10.0) and release
+- [ ] 6.5 PIT mode on 3.x: check the `_id` sort
 - [ ] **Point in Time per cursor**: moved to Phase 7 as **7.8** (it runs on 2.19 already; 3.x keeps the same API).
 
 ## Phase 7 — Speed and efficiency (7.1–7.8 and the first round of 7.12 released in **[v0.10.0](https://github.com/YANG-DB/yang-db/releases/tag/v0.10.0)**, 2026-11-28)

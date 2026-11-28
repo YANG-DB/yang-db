@@ -84,10 +84,11 @@ jobs:
           path: '**/target/surefire-reports/'
           retention-days: 7
 
-  # JDK 11 is the supported JDK (PROJECT.md, Requirements); the build and tests must also pass on JDK 17, the next step
-  # towards Phase 6 (JDK 21). The test JVMs need the --add-opens in test.jvm.opens (root pom) for that.
-  build-test-jdk17:
-    name: Build & test on JDK 17
+  # JDK 11 is the supported JDK today (PROJECT.md, Requirements); the build and tests must also pass on JDK 21, which
+  # Phase 6 (OpenSearch 3.x) requires: its client is compiled for Java 21. The Docker image runs the engine on 21.
+  # The test JVMs need the --add-opens in test.jvm.opens (root pom).
+  build-test-jdk21:
+    name: Build & test on JDK 21
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -96,7 +97,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       # Maven dependencies: see the Build & test job
       - uses: actions/cache@v4
@@ -107,9 +108,9 @@ jobs:
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-${{ runner.os }}-
 
-      # run every module's tests even when some fail, so one run shows everything JDK 17 still trips on;
+      # run every module's tests even when some fail, so one run shows everything JDK 21 still trips on;
       # the summary step below fails the job if any test failed
-      - name: mvn clean test on JDK 17
+      - name: mvn clean test on JDK 21
         run: $MVN clean test -Dmaven.test.failure.ignore=true
 
       - name: Test summary
@@ -122,7 +123,7 @@ jobs:
               r = ET.parse(p).getroot()
               t += int(r.get('tests', 0)); f += int(r.get('failures', 0))
               e += int(r.get('errors', 0)); s += int(r.get('skipped', 0))
-          print(f"### JDK 17 tests: {t} run, {f} failures, {e} errors, {s} skipped")
+          print(f"### JDK 21 tests: {t} run, {f} failures, {e} errors, {s} skipped")
           bad = []
           for p in glob.glob('**/target/surefire-reports/TEST-*.xml', recursive=True):
               r = ET.parse(p).getroot()
@@ -130,9 +131,9 @@ jobs:
                   bad.append(r.get('name'))
           if bad:
               print("\nFailing classes:\n" + "\n".join(f"- `{n}`" for n in sorted(bad)))
-          open('jdk17-failed', 'w').write(str(len(bad)))
+          open('jdk21-failed', 'w').write(str(len(bad)))
           EOF
-          cat jdk17-failed; test "$(cat jdk17-failed)" = 0
+          cat jdk21-failed; test "$(cat jdk21-failed)" = 0
 
   docker-e2e:
     name: Docker e2e
