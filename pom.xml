@@ -64,7 +64,9 @@
         <!-- plugins -->
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
         <maven-surefire-report-plugin.version>2.22.0</maven-surefire-report-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
@@ -187,7 +189,6 @@
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
         <httpasyncclient.version>4.1.5</httpasyncclient.version>
-        <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
         <!-- metrics -->
         <metrics-core.version>3.1.2</metrics-core.version>
@@ -802,11 +803,6 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.internetitem</groupId>
-                <artifactId>logback-elasticsearch-appender</artifactId>
-                <version>${logback-elasticsearch-appender.version}</version>
-            </dependency>
             <!-- log4j: log4j-bom, above -->
             <!-- logging -->
 
@@ -1009,6 +1005,25 @@
         </plugins>
         <pluginManagement>
             <plugins>
+                <!-- every plugin has a fixed version: an unversioned plugin makes Maven fetch its metadata from Central
+                     on every build, and when Central is slow or rate-limits, each fetch waits through all the retries
+                     (two such waits cost a CI build 18 minutes, PR #204). maven-bundle-plugin isn't used by this build
+                     but its metadata was looked up too. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven-bundle-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

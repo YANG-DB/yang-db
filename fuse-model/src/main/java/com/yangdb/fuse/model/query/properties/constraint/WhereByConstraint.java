@@ -77,8 +77,16 @@ public class WhereByConstraint extends Constraint implements WhereByFacet {
         return projectedField;
     }
 
+    /**
+     * The join type, or when the query doesn't say (a V1 JSON query may leave it out), the one the constructors choose:
+     * FOR_EACH for a single-value operator, FULL otherwise. A null join type used to crash the rewrite
+     * (AsgNamedParametersStrategy) and return an empty response (Q17).
+     */
     @Override
     public JoinType getJoinType() {
+        if (joinType == null) {
+            return getOp() != null && ConstraintOp.singleValueOps.contains(getOp()) ? JoinType.FOR_EACH : JoinType.FULL;
+        }
         return joinType;
     }
 
