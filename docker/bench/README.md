@@ -22,7 +22,7 @@ python3 bench/bench.py --only Q5 Q9 --runs 10    # some queries only
 
 Options: `--runs` (default 5) and `--warmup` (default 1, unmeasured, so the planner's cached counts are in place),
 `--out results.json`, `--summary file` (appends the markdown table, e.g. to `$GITHUB_STEP_SUMMARY`).
-Each query is deleted after its run: the engine keeps queries in memory until their TTL passes (Q14 in
+Each query is deleted after its run, as clients should: the engine keeps a query in memory until it has been unused for its TTL (Q14 in
 [KNOWN_ISSUES](../../docs/revival/KNOWN_ISSUES.md)).
 
 **Bigger data.** `scale_data.py N DIR` writes N disjoint copies of the tutorial CSVs (copy `k` prefixes every id with

@@ -26,32 +26,58 @@ import com.yangdb.fuse.dispatcher.resource.CursorResource;
 import com.yangdb.fuse.dispatcher.resource.PageResource;
 import com.yangdb.fuse.dispatcher.resource.QueryResource;
 import com.yangdb.fuse.model.transport.CreateQueryRequest;
-import javaslang.collection.Stream;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Created by lior.perry on 06/03/2017.
+ * Volatile (in-memory) store of queries, with their cursors and fetched pages.
+ * <p>
+ * A query is removed once it hasn't been used for longer than its ttl ({@code CreateQueryRequest.ttl}, default 5
+ * minutes; 0 or less keeps it until it's deleted). Using a query, one of its cursors or pages, or a composite query
+ * that contains it, counts as use. A background check runs every {@link #CHECK_INTERVAL_MS}.
+ * <p>
+ * Before Phase 7.7 the ttl was never enforced: every query a client didn't delete stayed in memory for good, and a
+ * stored query with a large page holds tens of MB (Q9 at 10x the tutorial data: about 54 MB), so a few dozen ran the
+ * engine out of heap (Q14 in docs/revival/KNOWN_ISSUES.md).
  */
 public class InMemoryResourceStore implements ResourceStore {
+    static final long CHECK_INTERVAL_MS = 30_000;
+
+    private static final ScheduledExecutorService EXPIRY = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "query-resource-expiry");
+        t.setDaemon(true);
+        return t;
+    });
+
     //region Constructors
     public InMemoryResourceStore() {
-        this.queryResources = new HashMap<>();
-        this.sync = new Object();
-        this.lastQueryRemovalTime = System.currentTimeMillis();
+        this(System::currentTimeMillis);
+        EXPIRY.scheduleWithFixedDelay(this::removeExpiredQuietly, CHECK_INTERVAL_MS, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
+
+    /** for tests: a store with its own clock and no background check (call {@link #removeExpired()}) */
+    InMemoryResourceStore(LongSupplier clock) {
+        this.queryResources = new ConcurrentHashMap<>();
+        this.lastUsed = new ConcurrentHashMap<>();
+        this.clock = clock;
     }
     //endregion
 
     //region ResourceStore Implementation
     @Override
     public Collection<QueryResource> getQueryResources() {
-        return this.queryResources.values();
+        return new ArrayList<>(this.queryResources.values());
     }
 
     @Override
@@ -64,7 +90,11 @@ public class InMemoryResourceStore implements ResourceStore {
 
     @Override
     public Optional<QueryResource> getQueryResource(String id) {
-        return Optional.ofNullable(this.queryResources.get(id));
+        QueryResource resource = this.queryResources.get(id);
+        if (resource != null) {
+            used(resource);
+        }
+        return Optional.ofNullable(resource);
     }
 
     @Override
@@ -82,14 +112,15 @@ public class InMemoryResourceStore implements ResourceStore {
     @Override
     public boolean addQueryResource(QueryResource queryResource) {
         this.queryResources.put(queryResource.getQueryMetadata().getId(), queryResource);
+        used(queryResource);
         return true;
     }
 
     @Override
     public boolean deleteQueryResource(String queryId) {
+        this.lastUsed.remove(queryId);
         return this.queryResources.remove(queryId)!=null;
     }
-
     @Override
     public boolean addCursorResource(String queryId, CursorResource cursorResource) {
         Optional<QueryResource> queryResource = this.getQueryResource(queryId);
@@ -139,25 +170,41 @@ public class InMemoryResourceStore implements ResourceStore {
     }
     //endregion
 
-    //region Private Methods
-    private void removeOldQueries() {
-        final long currentTime = System.currentTimeMillis();
+    //region Expiry
+    /** removes every query that hasn't been used for longer than its ttl; returns how many */
+    int removeExpired() {
+        long now = this.clock.getAsLong();
+        List<String> expired = this.queryResources.entrySet().stream()
+                .filter(e -> {
+                    long ttl = e.getValue().getQueryMetadata().getTtl();
+                    Long last = this.lastUsed.get(e.getKey());
+                    return ttl > 0 && last != null && now - last > ttl;
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        expired.forEach(this::deleteQueryResource);
+        return expired.size();
+    }
 
-        if (currentTime - this.lastQueryRemovalTime >= 300000) {
-            synchronized (this.sync) {
-                List<String> queryKeysToDelete =
-                        Stream.ofAll(this.queryResources.entrySet())
-                        .filter(entry -> (currentTime - entry.getValue().getQueryMetadata().getCreationTime()) >
-                                entry.getValue().getQueryMetadata().getTtl())
-                        .map(Map.Entry::getKey)
-                        .toJavaList();
+    private void removeExpiredQuietly() {
+        try {
+            removeExpired();
+        } catch (RuntimeException e) {
+            // keep the schedule alive; the next check tries again
+        }
+    }
 
-                Stream.ofAll(queryKeysToDelete).forEach(this::deleteQueryResource);
-
-                this.lastQueryRemovalTime = currentTime;
+    /** marks a query, and the inner queries of a composite one, as used now */
+    private void used(QueryResource resource) {
+        long now = this.clock.getAsLong();
+        this.lastUsed.put(resource.getQueryMetadata().getId(), now);
+        for (QueryResource inner : resource.getInnerQueryResources()) {
+            if (inner != resource) {
+                used(inner);
             }
         }
     }
+    //endregion
 
     @Override
     public boolean test(CreateQueryRequest.StorageType type) {
@@ -167,9 +214,8 @@ public class InMemoryResourceStore implements ResourceStore {
 //endregion
 
     //region Fields
-    private Map<String, QueryResource> queryResources;
-
-    private long lastQueryRemovalTime;
-    private final Object sync;
+    private final Map<String, QueryResource> queryResources;
+    private final Map<String, Long> lastUsed;
+    private final LongSupplier clock;
     //endregion
 }
