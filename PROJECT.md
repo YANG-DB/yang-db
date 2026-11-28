@@ -32,7 +32,7 @@ graph database.
 
 | | |
 |---|---|
-| Java | **JDK 11** for building, testing and running (the code compiles to Java 11; CI and the Docker image use Temurin/OpenJDK 11). The build and tests also pass on **JDK 17**, which CI checks on every pull request; running the engine on 17 is not tested yet. JDK 21 is Phase 6 of the [roadmap](docs/revival/ROADMAP.md) |
+| Java | **JDK 11 or 21** for building, testing and running (the code compiles to Java 11). CI builds and tests on both on every pull request, and the Docker image runs the engine on Temurin **JDK 21**. OpenSearch 3.x (Phase 6 of the [roadmap](docs/revival/ROADMAP.md)) will require JDK 21 |
 | Maven | 3.6 or later (CI uses 3.9) |
 | OpenSearch | **2.19.x** for 0.9 and `main`; 1.3 for the 0.8 line. See [Limitations](#limitations) |
 | Docker | with `docker compose`, for the quickstart |
@@ -49,7 +49,7 @@ YANGDB_IMAGE=ghcr.io/yang-db/yang.db YANGDB_TAG=0.10.0 docker compose -f docker-
 curl http://localhost:8888/fuse/health
 ```
 
-Or build the image yourself from this checkout (JDK 11 and Maven). The build takes a couple of minutes once Maven has
+Or build the image yourself from this checkout (JDK 11 or 21, and Maven). The build takes a couple of minutes once Maven has
 downloaded the dependencies. Measured disk use: about 0.8 GB for the Maven repository, 0.9 GB for the build, and
 about 5 GB of images (OpenSearch 2 GB, Dashboards 2.4 GB, YANG-DB 0.8 GB):
 

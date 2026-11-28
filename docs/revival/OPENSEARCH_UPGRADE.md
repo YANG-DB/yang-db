@@ -91,7 +91,7 @@ path in 5.5 and the remote IT in 5.7.
 ## Phase 6 — OpenSearch 3.x (after Phase 5 ships)
 | Step | Depends on | Work |
 |---|---|---|
-| 6.0 JDK 21 | Phase 5 | Build and run on JDK 21: Guice, Jooby 1.x, javaslang, Mockito and reflection access (`--add-opens`); CI and Docker base image to 21 |
+| 6.0 JDK 21 | Phase 5 | **Done (2026-11-28)**: build, tests and engine on JDK 21, still on OpenSearch 2.19 and compiled for Java 11. Only two things broke: Mockito 3.12's byte-buddy couldn't read Java 21 classes (31 bridge tests; byte-buddy raised to 1.18.17), and the engine didn't start without `--add-opens` (J1; the start script passes them now). CI checks JDK 11 and 21; the Docker image runs on 21 |
 | 6.1 Lucene 10 / 3.x API census | 6.0 | Same census method as 5.0, against 3.10.x |
 | 6.2 Bridge on 3.x | 6.1 | The RHLC is **deprecated since 3.0** but still published (latest 3.10.0, checked 2026-11-23). Keep the bridge on it for 3.10, or move it onto `opensearch-java`; either way the PIT calls (6.5) move with it |
 | 6.3 Data path | 6.1 | 3.x reads only 2.x-created indices: document "upgrade to 2.19 first, or reindex" |

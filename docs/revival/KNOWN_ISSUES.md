@@ -355,15 +355,12 @@ success/failure lists, which reads like "0 of 0 loaded".
 
 ## JDK
 
-### J1 — On JDK 17 the tests stopped at fuse-core: reflective access is blocked · **fixed** (tests)
+### J1 — On JDK 17+ the tests, then the engine, stopped on blocked reflective access · **fixed**
 JDK 17 refused the reflection that older libraries use: first `ClassLoader.defineClass` (cglib, on the OWL
 translation path, in fuse-core), then `java.util.regex.Pattern.namedGroups` (47 planner tests in fuse-dv-epb). Fixed
 for the tests: the root pom's `test.jvm.opens` opens `java.lang`, `java.lang.reflect`, `java.util`, `java.util.regex`,
 `java.io`, `java.nio` and `sun.nio.ch` to the test JVMs (JDK 11 accepts the same flags). The JDK 17 CI job now passes:
-1,271 tests, 0 failures. Still open: running the engine on JDK 17 is not tested (the start script and the Docker image
-use JDK 11); it would need the same `--add-opens` (Phase 6).
-
-## Logging
+1,271 tests, 0 failures. The engine itself (Phase 6.0, 2026-11-28) didn't start on JDK 21 either (`InaccessibleObjectException` on `ClassLoader.defineClass` during Guice start-up); `start-fuse-service.sh` now passes the same `--add-opens` set (`--illegal-access`, used before, was removed in JDK 17). The Docker image runs on JDK 21: e2e ALL PASS, the benchmark unchanged.
 
 ### S1 — The engine sometimes hangs at start-up, before it logs anything · **fixed** (0.10)
 About 1 start in 3 of the Docker image hung for good right after `java ... FuseRunner`, with no further log line and
