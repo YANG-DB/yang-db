@@ -36,13 +36,16 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
     //region Private Methods
     private String patternValue(Assignment<Entity, Relationship> assignment) {
         StringJoiner joiner = new StringJoiner("-", "", "");
+        // the first entity with each id, as getEntityById found it by scanning the list for every relationship
+        Map<String, Entity> byId = new HashMap<>();
+        assignment.getEntities().forEach(e -> byId.putIfAbsent(e.geteID(), e));
 
         assignment.getRelationships().stream().sorted()
                 .forEach(rel -> {
-                    joiner.add(print(getEntityById(rel.geteID1(), assignment).orElseGet(() ->
+                    joiner.add(print(Optional.ofNullable(byId.get(rel.geteID1())).orElseGet(() ->
                             new Entity(Collections.emptySet(), rel.geteID1(), "???", Collections.emptyMap()))));
                     joiner.add(print(rel));
-                    joiner.add(print(getEntityById(rel.geteID2(), assignment).orElseGet(() ->
+                    joiner.add(print(Optional.ofNullable(byId.get(rel.geteID2())).orElseGet(() ->
                             new Entity(Collections.emptySet(), rel.geteID1(), "???", Collections.emptyMap()))));
                 });
         if(joiner.length() > 0 )
@@ -54,20 +57,17 @@ public class AssignmentDescriptor implements Descriptor<Assignment<Entity, Relat
         return joiner.toString();
     }
 
-    private Optional<Entity> getEntityById(String id, Assignment<Entity, Relationship> assignment) {
-        return assignment.getEntities().stream().filter(e -> e.geteID().equals(id)).findFirst();
-    }
-
     public static String print(Assignment<Entity, Relationship> item) {
         return new AssignmentDescriptor().patternValue(item);
     }
 
     private static String print(Entity entity) {
-        return String.format("[%s,%s, %s]", entity.geteID(), strip(String.join(",", entity.geteTag())), entity.geteType());
+        // same text as String.format("[%s,%s, %s]", ...), without a format string (it runs for every row: distinct)
+        return "[" + entity.geteID() + "," + strip(String.join(",", entity.geteTag())) + ", " + entity.geteType() + "]";
     }
 
     private static String print(Relationship relationship) {
-        return String.format("(%s, %s)", relationship.getrID(), relationship.getrType());
+        return "(" + relationship.getrID() + ", " + relationship.getrType() + ")";
     }
 
     private static String strip(String value) {

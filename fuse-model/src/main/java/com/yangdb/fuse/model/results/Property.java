@@ -106,7 +106,9 @@ public class Property {
     //region Override Methods
     @Override
     public String toString() {
-        return String.format("Property [pType = %s, value = %s]", this.pType, this.value);
+        // the same text as String.format("Property [pType = %s, value = %s]", ...), without parsing a format string:
+        // it runs for every property of every row (Assignment.getId hashes the row's text; Phase 7.11)
+        return "Property [pType = " + this.pType + ", value = " + this.value + "]";
     }
     //endregion
 

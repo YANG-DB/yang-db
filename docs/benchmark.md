@@ -288,6 +288,39 @@ Phases 7.3 and 7.4 cut OpenSearch's work by a third to a half, which a busy clus
 in the engine. Planning is small: about 3–4 ms per query warm, at most about 2 ms more with a cold count cache (7.6).
 Next: profile the engine (ROADMAP 7.11).
 
+## Phase 7.11: profiling the engine
+
+Java Flight Recorder on Q9 and Q5 at scale 10 (8 runs each, `settings=profile`, full stacks via
+`JAVA_TOOL_OPTIONS=-XX:FlightRecorderOptions=stackdepth=1024`). The largest single cost was **building text with
+`String.format`**, 15–20% of the engine's CPU together with the regex `String.format` uses to parse its pattern:
+
+- `Assignment.getId()` is a hash of the row's `toString()`, and Jackson calls it for every row it renders; that text
+  includes every property, each formatted by `Property.toString` with `String.format`.
+- `AssignmentsQueryResult.distinct` keys every row with `AssignmentDescriptor.print`, also `String.format`, and looked
+  up each relationship's entities by scanning the row's entity list.
+
+Fixed by building the same text with plain concatenation (a test pins it to the `String.format` output, because the
+row ids are hashes of it) and indexing the entities by id. **Every response is byte-for-byte identical, row ids
+included** (`docker/bench/snapshot.py`, all 31 queries at scale 10; two runs of the same build are identical too, so
+the check is meaningful). OpenSearch work is unchanged.
+
+Scale 10, same data and cluster, old image then new image: **sum of p50 latencies 9,702 → 8,585 ms
+(-12%)**.
+
+| query | before | after | change |
+|---|---:|---:|---:|
+| Q9 | 2,820 ms | 2,535 ms | -10% |
+| Q5 | 1,636 ms | 1,495 ms | -9% |
+| QG | 801 ms | 647 ms | -19% |
+| Q6 | 644 ms | 554 ms | -14% |
+| Q2a | 602 ms | 548 ms | -9% |
+| QA | 440 ms | 346 ms | -21% |
+| Q2 | 292 ms | 288 ms | -1% |
+| QB | 279 ms | 220 ms | -21% |
+
+After this the profile is flat: no method above about 6% of the samples (the largest are hashing of freshly built
+strings, and parsing OpenSearch's JSON). Raw results: `benchmark-results/7.11-*.json`.
+
 ## Rerun it
 
 ```bash
